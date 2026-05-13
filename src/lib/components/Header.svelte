@@ -332,9 +332,9 @@
                     >
                         <div class="h-16 w-16 rounded-full overflow-hidden">
                             <img
-                                src="/images/community-logo1.png"
-                                alt=""
-                                class="w-full h-full object-cover scale-[1.2]"
+                                src="/images/chachmei-logo.png"
+                                alt="חכמי העדה"
+                                class="w-full h-full object-contain bg-white"
                             />
                         </div>
                     </a>
