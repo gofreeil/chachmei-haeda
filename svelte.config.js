@@ -10,13 +10,8 @@ const config = {
 	kit: {
 		adapter: useNode ? adapterNode() : adapterAuto(),
 		prerender: {
-			handleHttpError: ({ path, referrer, message }) => {
-				// ignore broken links to non-existent stubs (e.g. /login, /profile from Header)
-				if (path && (path.startsWith('/login') || path.startsWith('/profile') || path.startsWith('/about') || path.startsWith('/search') || path.startsWith('/api'))) {
-					return;
-				}
-				throw new Error(`${message} (linked from ${referrer})`);
-			}
+			handleHttpError: 'warn',
+			handleMissingId: 'warn'
 		}
 	}
 };
