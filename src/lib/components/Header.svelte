@@ -217,7 +217,7 @@
                                 <img
                                     src="/images/chachmei-logo.png"
                                     alt="חכמי העדה"
-                                    class="w-full h-full object-contain bg-white"
+                                    class="w-full h-full object-cover scale-[1.5]"
                                 />
                             </div>
                             <div
@@ -334,7 +334,7 @@
                             <img
                                 src="/images/chachmei-logo.png"
                                 alt="חכמי העדה"
-                                class="w-full h-full object-contain bg-white"
+                                class="w-full h-full object-cover scale-[1.5]"
                             />
                         </div>
                     </a>
