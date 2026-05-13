@@ -1,0 +1,41 @@
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# SQLite DB
+community.db
+community.db-shm
+community.db-wal
+
+# Claude worktrees
+.claude/worktrees/
+
+# Claude runtime locks
+.claude/scheduled_tasks.lock
+
+# Windows null device
+nul
+
+# Source images for categories — kept locally as backup, not in git
+static/images/categories-source/
+data/
