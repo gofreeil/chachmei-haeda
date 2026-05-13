@@ -215,9 +215,9 @@
                         <div class="relative">
                             <div class="h-12 w-12 rounded-full overflow-hidden flex-shrink-0">
                                 <img
-                                    src="/images/community-logo1.png"
-                                    alt=""
-                                    class="w-full h-full object-cover scale-[1.2]"
+                                    src="/images/chachmei-logo.png"
+                                    alt="חכמי העדה"
+                                    class="w-full h-full object-contain bg-white"
                                 />
                             </div>
                             <div

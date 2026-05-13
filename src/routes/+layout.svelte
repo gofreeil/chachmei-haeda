@@ -21,8 +21,8 @@
 
 <svelte:head>
 	<title>חכמי העדה</title>
-	<link rel="icon" href="/images/community-logo1.png" type="image/png" />
-	<link rel="apple-touch-icon" href="/images/community-logo1.png" />
+	<link rel="icon" href="/favicon.png" type="image/png" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 </svelte:head>
 
 <a href="#main-content" class="skip-link">דלג לתוכן הראשי</a>
