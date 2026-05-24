@@ -14,12 +14,12 @@ export interface Ad {
 export const ads: Ad[] = [
     {
         id: 1,
-        title: "בתי הפיוס",
-        description: "מתנדבים לתת לך עזרה מלאה בדין / פיוס בכל סיכסוך",
-        cta: "יש לך סיכסוך? לחץ לפתרון",
-        href: "https://chachmim.vercel.app/",
-        image: "/images/bati-hapius.png",
-        color: "from-orange-600 to-red-600"
+        title: "קהילה בשכונה",
+        description: "האתר השכונתי המוביל — חיבור תושבים, גמ\"חים, חוגים ועוד",
+        cta: "כנס לקהילה השכונתית שלך",
+        href: "https://community-blush.vercel.app/",
+        image: "/images/community-neighborhood.png",
+        color: "from-blue-500 to-purple-600"
     },
     {
         id: 9,
