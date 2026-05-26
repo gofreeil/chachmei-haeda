@@ -3,8 +3,8 @@
 	<meta name="description" content="חובת החברה לסייע לכל אדם נצרך — בגופו, בנפשו ובממונו" />
 </svelte:head>
 
-<section class="py-10 md:py-14 px-4 max-w-3xl mx-auto text-right" dir="rtl">
-	<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent text-center">
+<section class="py-10 md:py-14 px-4 max-w-3xl mx-auto" dir="rtl" style="text-align: justify; text-justify: inter-word;">
+	<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent text-center" style="text-align: center;">
 		אודותנו
 	</h1>
 
@@ -17,7 +17,7 @@
 			<p class="text-lg md:text-xl text-amber-200 leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif;">
 				שנאמר: "פָּתֹחַ תִּפְתַּח אֶת יָדְךָ לוֹ וְהַעֲבֵט תַּעֲבִיטֶנּוּ דֵּי מַחְסֹרוֹ אֲשֶׁר יֶחְסַר לוֹ"
 			</p>
-			<footer class="mt-2 text-sm text-gray-400">(דברים ט"ו, ח)</footer>
+			<footer class="mt-2 text-sm text-gray-400" style="text-align: right;">(דברים ט"ו, ח)</footer>
 		</blockquote>
 
 		<p class="mt-8 text-base md:text-lg text-gray-200 leading-loose">

@@ -338,9 +338,9 @@
                             />
                         </div>
                     </a>
-                    <!-- Tooltip - Below Logo -->
+                    <!-- Tooltip - Below enlarged logo (1.7x = 190px tall) -->
                     <div
-                        class="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:block z-[9999]"
+                        class="absolute top-full left-1/2 -translate-x-1/2 mt-24 hidden group-hover:block z-[9999]"
                     >
                         <div
                             class="bg-gray-900 text-white text-sm rounded-lg px-4 py-2 shadow-xl whitespace-nowrap"
