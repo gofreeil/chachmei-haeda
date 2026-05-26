@@ -321,7 +321,7 @@
                 <div class="relative group">
                     <a
                         href="/"
-                        class="logo-link flex h-28 w-28 animate-pulse-slow items-center justify-center rounded-xl shadow-lg"
+                        class="logo-link flex h-28 w-28 items-center justify-center rounded-xl shadow-lg"
                     >
                         <div class="h-16 w-16 rounded-full overflow-hidden">
                             <img
@@ -331,9 +331,10 @@
                             />
                         </div>
                     </a>
-                    <!-- Tooltip - Below enlarged logo (1.7x = 190px tall) -->
+                    <!-- Tooltip - Below enlarged logo (1.3x = ~146px tall, grows leftward from top-right) -->
                     <div
-                        class="absolute top-full left-1/2 -translate-x-1/2 mt-24 hidden group-hover:block z-[9999]"
+                        class="absolute top-full -translate-x-1/2 mt-9 hidden group-hover:block z-[9999]"
+                        style="left: 39px;"
                     >
                         <div
                             class="bg-gray-900 text-white text-sm rounded-lg px-4 py-2 shadow-xl whitespace-nowrap"
@@ -356,18 +357,18 @@
             </div>
 <div class="flex items-center gap-2">
                 <!-- כפתור אודות עם תצוגה מקדימה -->
-                <div
-                    class="relative"
-                    id="about-btn-wrapper"
-                    onmouseenter={handleAboutEnter}
-                    onmouseleave={handleAboutLeave}
-                    role="presentation"
-                >
+                <div class="relative" id="about-btn-wrapper">
                     <button
                         class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105 hover:tracking-wide"
                         style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
-                        onmouseenter={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 0 24px 6px rgba(167,139,250,0.7), 0 4px 15px rgba(124,58,237,0.5)'}
-                        onmouseleave={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 4px 15px rgba(124,58,237,0.4)'}
+                        onmouseenter={(e) => {
+                            (e.currentTarget as HTMLElement).style.boxShadow='0 0 24px 6px rgba(167,139,250,0.7), 0 4px 15px rgba(124,58,237,0.5)';
+                            handleAboutEnter(e);
+                        }}
+                        onmouseleave={(e) => {
+                            (e.currentTarget as HTMLElement).style.boxShadow='0 4px 15px rgba(124,58,237,0.4)';
+                            handleAboutLeave();
+                        }}
                         onclick={() => goto("/about/revenue")}
                     >
                         {tFn("about")}
@@ -385,8 +386,10 @@
                            transform-origin: top center;"
                 >
                     <img
-                        src="/images/bati-hapius.png"
+                        src="/images/bati-hapius.jpg"
                         alt="בתי הפיוס"
+                        loading="eager"
+                        decoding="async"
                         style="width:580px; border-radius:24px;
                                -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
@@ -575,7 +578,7 @@
         will-change: transform;
     }
     :global(.logo-link:hover) {
-        transform: scale(1.7);
+        transform: scale(1.3);
         z-index: 60;
     }
 </style>
