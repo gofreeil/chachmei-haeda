@@ -328,7 +328,7 @@
                 <div class="relative group">
                     <a
                         href="/"
-                        class="flex h-28 w-28 animate-pulse-slow items-center justify-center rounded-xl shadow-lg transition-transform hover:scale-105"
+                        class="logo-link flex h-28 w-28 animate-pulse-slow items-center justify-center rounded-xl shadow-lg"
                     >
                         <div class="h-16 w-16 rounded-full overflow-hidden">
                             <img
@@ -381,8 +381,8 @@
                             opacity:0; transform:scale(0.05);
                             transform-origin: top center;">
                     <img
-                        src="/images/community-neighborhood.png"
-                        alt="קהילה בשכונה"
+                        src="/images/bati-hapius.png"
+                        alt="בתי הפיוס"
                         style="width:580px; border-radius:24px;
                                -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
@@ -563,5 +563,15 @@
 
     :global(.online-counter) {
         animation: blink-every-2min 120s ease-in-out infinite;
+    }
+
+    :global(.logo-link) {
+        transition: transform 0.3s ease-out;
+        transform-origin: top right;
+        will-change: transform;
+    }
+    :global(.logo-link:hover) {
+        transform: scale(1.7);
+        z-index: 60;
     }
 </style>
