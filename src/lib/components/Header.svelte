@@ -26,6 +26,27 @@
     let showLangDropdown = $state(false);
     let onlineUsers = $state(1);
 
+    // About preview hover state
+    let aboutPreviewVisible = $state(false);
+    let aboutPreviewLeft = $state(0);
+    let aboutPreviewTop = $state(0);
+
+    function handleAboutEnter(e: MouseEvent) {
+        const target = e.currentTarget as HTMLElement;
+        const rect = target.getBoundingClientRect();
+        const imgW = 580;
+        let left = rect.left + rect.width / 2 - imgW / 2;
+        if (left < 8) left = 8;
+        if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
+        aboutPreviewLeft = left;
+        aboutPreviewTop = rect.bottom + 10;
+        aboutPreviewVisible = true;
+    }
+
+    function handleAboutLeave() {
+        aboutPreviewVisible = false;
+    }
+
     async function pingServer() {
         try {
             const res = await fetch('/api/ping', { method: 'POST' });
@@ -100,27 +121,6 @@
         pingServer();
         const usersInterval = setInterval(pingServer, 30000);
 
-        // hover על כפתור אודות — תמונה ב-fixed position
-        const preview = document.getElementById('about-preview') as HTMLElement | null;
-        const btnWrapper = document.getElementById('about-btn-wrapper');
-        if (preview && btnWrapper) {
-            btnWrapper.addEventListener('mouseenter', () => {
-                const rect = btnWrapper.getBoundingClientRect();
-                const imgW = 700;
-                let left = rect.left + rect.width / 2 - imgW / 2;
-                if (left < 8) left = 8;
-                if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
-                preview.style.left = left + 'px';
-                preview.style.top = (rect.bottom + 10) + 'px';
-                preview.style.opacity = '1';
-                preview.style.transform = 'scale(1)';
-            });
-            btnWrapper.addEventListener('mouseleave', () => {
-                preview.style.opacity = '0';
-                preview.style.transform = 'scale(0.05)';
-            });
-        }
-
         document.addEventListener("click", handleClickOutside);
         return () => {
             clearInterval(usersInterval);
@@ -183,16 +183,9 @@
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
-	// סגור תמונת preview של אודות בזמן ניווט
+	// סגור תמונת preview של אודות בזמן ניווט (עיכוב קצר כדי שתישאר עוד רגע)
 	beforeNavigate(() => {
-		const preview = document.getElementById('about-preview') as HTMLElement | null;
-		if (preview) {
-			// עיכוב של שנייה אחת כדי שהתמונה תישאר עוד רגע
-			// שקיפות הולכת וגוברת ללא הקטנה
-			setTimeout(() => {
-				preview.style.opacity = '0';
-			}, 1000);
-		}
+		setTimeout(() => { aboutPreviewVisible = false; }, 1000);
 	});
 
 </script>
@@ -363,7 +356,13 @@
             </div>
 <div class="flex items-center gap-2">
                 <!-- כפתור אודות עם תצוגה מקדימה -->
-                <div class="relative" id="about-btn-wrapper">
+                <div
+                    class="relative"
+                    id="about-btn-wrapper"
+                    onmouseenter={handleAboutEnter}
+                    onmouseleave={handleAboutLeave}
+                    role="presentation"
+                >
                     <button
                         class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105 hover:tracking-wide"
                         style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
@@ -375,11 +374,16 @@
                     </button>
                 </div>
                 <!-- תמונת preview — position:fixed כדי לחמוק מ-overflow של ההדר -->
-                <div id="about-preview"
-                     style="position:fixed; z-index:9999; pointer-events:none;
-                            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-                            opacity:0; transform:scale(0.05);
-                            transform-origin: top center;">
+                <div
+                    id="about-preview"
+                    style:left="{aboutPreviewLeft}px"
+                    style:top="{aboutPreviewTop}px"
+                    style:opacity={aboutPreviewVisible ? 1 : 0}
+                    style:transform={aboutPreviewVisible ? 'scale(1)' : 'scale(0.05)'}
+                    style="position:fixed; z-index:9999; pointer-events:none;
+                           transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+                           transform-origin: top center;"
+                >
                     <img
                         src="/images/bati-hapius.png"
                         alt="בתי הפיוס"
