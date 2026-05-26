@@ -30,4 +30,29 @@
 			בכפוף לחכמת התורה!
 		</p>
 	</div>
+
+	<!-- הדיינים -->
+	<div class="mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10" style="text-align: center;">
+		<h2 class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent">
+			הדיינים העומדים בבתי הפיוס
+		</h2>
+
+		<ul class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-right list-none">
+			{#each [
+				'הרב דניאל סטבסקי',
+				'הרב רועי זאגא',
+				'הרב אריה ליפו',
+				'הרב בועז מלט',
+				'הרב יעקב יוסף וונדר',
+				'הרב שמואל מורנו',
+				'הרב נדב סופי',
+				'הרב מאיר הלוי'
+			] as rabbi}
+				<li class="flex items-center gap-3 rounded-lg bg-white/5 border border-amber-400/20 px-4 py-3 transition-colors hover:bg-white/10">
+					<span class="text-amber-300 text-lg" aria-hidden="true">✦</span>
+					<span class="text-base md:text-lg text-white font-semibold">{rabbi}</span>
+				</li>
+			{/each}
+		</ul>
+	</div>
 </section>
