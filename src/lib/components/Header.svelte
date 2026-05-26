@@ -1,7 +1,7 @@
 <script lang="ts">
     import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
-    import { goto, beforeNavigate } from "$app/navigation";
+    import { goto } from "$app/navigation";
     import { onMount } from "svelte";
     import { page } from '$app/state';
 
@@ -25,27 +25,6 @@
 
     let showLangDropdown = $state(false);
     let onlineUsers = $state(1);
-
-    // About preview hover state
-    let aboutPreviewVisible = $state(false);
-    let aboutPreviewLeft = $state(0);
-    let aboutPreviewTop = $state(0);
-
-    function handleAboutEnter(e: MouseEvent) {
-        const target = e.currentTarget as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const imgW = 580;
-        let left = rect.left + rect.width / 2 - imgW / 2;
-        if (left < 8) left = 8;
-        if (left + imgW > window.innerWidth - 8) left = window.innerWidth - imgW - 8;
-        aboutPreviewLeft = left;
-        aboutPreviewTop = rect.bottom + 10;
-        aboutPreviewVisible = true;
-    }
-
-    function handleAboutLeave() {
-        aboutPreviewVisible = false;
-    }
 
     async function pingServer() {
         try {
@@ -183,10 +162,6 @@
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
-	// סגור תמונת preview של אודות בזמן ניווט (עיכוב קצר כדי שתישאר עוד רגע)
-	beforeNavigate(() => {
-		setTimeout(() => { aboutPreviewVisible = false; }, 1000);
-	});
 
 </script>
 
@@ -331,10 +306,10 @@
                             />
                         </div>
                     </a>
-                    <!-- Tooltip - Below enlarged logo (1.3x = ~146px tall, grows leftward from top-right) -->
+                    <!-- Tooltip - Below enlarged logo (1.15x = ~129px tall, grows leftward from top-right) -->
                     <div
-                        class="absolute top-full -translate-x-1/2 mt-9 hidden group-hover:block z-[9999]"
-                        style="left: 39px;"
+                        class="absolute top-full -translate-x-1/2 mt-6 hidden group-hover:block z-[9999]"
+                        style="left: 48px;"
                     >
                         <div
                             class="bg-gray-900 text-white text-sm rounded-lg px-4 py-2 shadow-xl whitespace-nowrap"
@@ -356,45 +331,32 @@
                 </a>
             </div>
 <div class="flex items-center gap-2">
-                <!-- כפתור אודות עם תצוגה מקדימה -->
-                <div class="relative" id="about-btn-wrapper">
+                <!-- כפתור אודות עם תצוגה מקדימה (CSS-only hover) -->
+                <div class="relative about-hover-trigger" id="about-btn-wrapper">
                     <a
                         href="/about/revenue"
                         class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105 hover:tracking-wide no-underline"
                         style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
-                        onmouseenter={(e) => {
-                            (e.currentTarget as HTMLElement).style.boxShadow='0 0 24px 6px rgba(167,139,250,0.7), 0 4px 15px rgba(124,58,237,0.5)';
-                            handleAboutEnter(e);
-                        }}
-                        onmouseleave={(e) => {
-                            (e.currentTarget as HTMLElement).style.boxShadow='0 4px 15px rgba(124,58,237,0.4)';
-                            handleAboutLeave();
-                        }}
+                        onmouseenter={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 0 24px 6px rgba(167,139,250,0.7), 0 4px 15px rgba(124,58,237,0.5)'}
+                        onmouseleave={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 4px 15px rgba(124,58,237,0.4)'}
                     >
                         {tFn("about")}
                     </a>
-                </div>
-                <!-- תמונת preview — position:fixed כדי לחמוק מ-overflow של ההדר -->
-                <div
-                    id="about-preview"
-                    style:left="{aboutPreviewLeft}px"
-                    style:top="{aboutPreviewTop}px"
-                    style:opacity={aboutPreviewVisible ? 1 : 0}
-                    style:transform={aboutPreviewVisible ? 'scale(1)' : 'scale(0.05)'}
-                    style="position:fixed; z-index:9999; pointer-events:none;
-                           transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-                           transform-origin: top center;"
-                >
-                    <img
-                        src="/images/bati-hapius.jpg"
-                        alt="בתי הפיוס"
-                        loading="eager"
-                        decoding="async"
-                        style="width:580px; border-radius:24px;
-                               -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
-                               mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
-                               filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"
-                    />
+                    <!-- תצוגה מקדימה — מופיעה ב-CSS hover, ממוקמת מתחת לכפתור עם anchor ימני -->
+                    <div
+                        class="about-preview-popup absolute top-full right-0 mt-3 z-[9999]"
+                    >
+                        <img
+                            src="/images/bati-hapius.jpg"
+                            alt="בתי הפיוס"
+                            loading="eager"
+                            decoding="async"
+                            style="width:580px; max-width:90vw; border-radius:24px;
+                                   -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
+                                   mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
+                                   filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"
+                        />
+                    </div>
                 </div>
                 <!-- Language Dropdown -->
                 <div class="lang-dropdown-container relative">
@@ -578,7 +540,20 @@
         will-change: transform;
     }
     :global(.logo-link:hover) {
-        transform: scale(1.3);
+        transform: scale(1.15);
         z-index: 60;
+    }
+
+    /* About hover preview — CSS-only, no JS needed */
+    :global(.about-hover-trigger .about-preview-popup) {
+        opacity: 0;
+        transform: scale(0.6);
+        transform-origin: top center;
+        transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        pointer-events: none;
+    }
+    :global(.about-hover-trigger:hover .about-preview-popup) {
+        opacity: 1;
+        transform: scale(1);
     }
 </style>
