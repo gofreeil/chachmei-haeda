@@ -351,7 +351,7 @@
                             alt="בתי הפיוס"
                             loading="eager"
                             decoding="async"
-                            style="width:580px; max-width:90vw; border-radius:24px;
+                            style="width:260px; max-width:90vw; border-radius:24px;
                                    -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                    mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
                                    filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"
