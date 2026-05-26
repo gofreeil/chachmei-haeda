@@ -302,14 +302,14 @@
                             <img
                                 src="/images/chachmei-logo.png"
                                 alt="חכמי העדה"
-                                class="w-full h-full object-cover scale-[1.5]"
+                                class="w-full h-full object-contain"
                             />
                         </div>
                     </a>
-                    <!-- Tooltip - Below enlarged logo (1.15x = ~129px tall, grows leftward from top-right) -->
+                    <!-- Tooltip - Below enlarged logo (1.8x = ~202px tall, grows leftward from top-right anchor) -->
                     <div
-                        class="absolute top-full -translate-x-1/2 mt-6 hidden group-hover:block z-[9999]"
-                        style="left: 48px;"
+                        class="absolute top-full -translate-x-1/2 mt-24 hidden group-hover:block z-[9999]"
+                        style="left: 11px;"
                     >
                         <div
                             class="bg-gray-900 text-white text-sm rounded-lg px-4 py-2 shadow-xl whitespace-nowrap"
@@ -540,7 +540,7 @@
         will-change: transform;
     }
     :global(.logo-link:hover) {
-        transform: scale(1.15);
+        transform: scale(1.8);
         z-index: 60;
     }
 
