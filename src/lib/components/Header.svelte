@@ -556,6 +556,7 @@
         transition: text-shadow 0.35s ease-out, letter-spacing 0.35s ease-out, color 0.35s ease-out;
     }
     :global(.header-logo-title:has(.logo-link:hover) .header-title-block) {
+        transform: translateX(-3rem);
         filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.45));
     }
     :global(.header-logo-title:has(.logo-link:hover) .header-title-h1) {
