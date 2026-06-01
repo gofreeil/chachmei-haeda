@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { hearings } from '$lib/data/hearings';
+	import { getEvent, shabbatEntryTime, type CalEvent } from '$lib/data/jewish-calendar';
 
 	const dayNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
 
@@ -61,8 +62,11 @@
 		isToday: boolean;
 		isPast: boolean;
 		isShabbat: boolean;
+		isFriday: boolean;
 		isBooked: boolean;
 		isEmpty: boolean;
+		event: CalEvent | undefined;
+		shabbatEntry: string | undefined;
 	};
 
 	function emptyCell(): Cell {
@@ -73,8 +77,11 @@
 			isToday: false,
 			isPast: false,
 			isShabbat: false,
+			isFriday: false,
 			isBooked: false,
-			isEmpty: true
+			isEmpty: true,
+			event: undefined,
+			shabbatEntry: undefined
 		};
 	}
 
@@ -92,15 +99,19 @@
 			const d = new Date(monthStart);
 			d.setDate(d.getDate() + i);
 			const ds = toDateStr(d);
+			const dow = d.getDay();
 			cells.push({
 				date: ds,
 				day: hebDay(d),
 				gregLabel: `${d.getDate()}.${d.getMonth() + 1}`,
 				isToday: ds === todayStr,
 				isPast: ds < todayStr,
-				isShabbat: d.getDay() === 6,
+				isShabbat: dow === 6,
+				isFriday: dow === 5,
 				isBooked: bookedSet.has(ds),
-				isEmpty: false
+				isEmpty: false,
+				event: getEvent(ds),
+				shabbatEntry: dow === 5 ? shabbatEntryTime(d) : undefined
 			});
 		}
 
@@ -109,7 +120,9 @@
 	});
 
 	function isAvailable(c: Cell): boolean {
-		return !c.isEmpty && !c.isPast && !c.isShabbat && !c.isBooked;
+		if (c.isEmpty || c.isPast || c.isShabbat || c.isBooked) return false;
+		if (c.event?.blocking) return false;
+		return true;
 	}
 
 	function prevMonth() {
@@ -127,15 +140,33 @@
 
 	let hoveredCell = $state<Cell | null>(null);
 
+	function eventColorClass(kind: CalEvent['kind']): string {
+		switch (kind) {
+			case 'יום-טוב':
+				return 'border-purple-400/70 bg-purple-500/30 text-purple-50';
+			case 'חוה"מ':
+				return 'border-purple-400/50 bg-purple-500/15 text-purple-100';
+			case 'צום':
+				return 'border-gray-400/60 bg-gray-500/25 text-gray-100';
+			case 'לאומי':
+				return 'border-blue-400/70 bg-blue-500/25 text-blue-50';
+			case 'מועד':
+				return 'border-orange-400/60 bg-orange-500/20 text-orange-100';
+		}
+	}
+
 	function cellTooltip(c: Cell): string {
 		if (c.isEmpty) return '';
-		if (c.isPast) return 'תאריך עבר';
-		if (c.isShabbat) return 'שבת — אין דיונים';
+		const parts: string[] = [c.date];
+		if (c.event) parts.push(c.event.name);
+		if (c.shabbatEntry) parts.push(`כניסת שבת ${c.shabbatEntry}`);
+		if (c.isShabbat) parts.push('שבת — אין דיונים');
 		if (c.isBooked) {
 			const h = bookedMap.get(c.date);
-			return h ? `תפוס — ${h.caseName} ${h.time}` : 'תפוס';
-		}
-		return 'פנוי — לחץ לקביעת דיון';
+			parts.push(h ? `תפוס — ${h.caseName} ${h.time}` : 'תפוס');
+		} else if (c.isPast) parts.push('תאריך עבר');
+		else if (isAvailable(c)) parts.push('פנוי — לחץ לקביעת דיון');
+		return parts.join(' · ');
 	}
 </script>
 
@@ -185,46 +216,78 @@
 					title={cellTooltip(c)}
 					onmouseenter={() => (hoveredCell = c)}
 					onmouseleave={() => (hoveredCell = null)}
-					class="cal-cell available aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold border border-green-500/30 bg-green-500/10 text-green-200 hover:bg-green-500/30 hover:border-green-400 hover:scale-105 transition-all"
+					class="cal-cell available aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold border border-green-500/40 bg-green-500/15 text-green-100 hover:bg-green-500/40 hover:border-green-300 hover:scale-105 transition-all relative
+						{c.event ? 'ring-1 ring-' + (c.event.kind === 'לאומי' ? 'blue' : c.event.kind === 'מועד' ? 'orange' : 'gray') + '-400/60' : ''}
+						{c.isToday ? 'ring-2 ring-blue-300' : ''}"
 				>
-					<span>{c.day}</span>
-					<span class="text-[10px] font-normal opacity-60">{c.gregLabel}</span>
+					<span class="leading-none">{c.day}</span>
+					<span class="text-[10px] font-normal opacity-60 mt-0.5">{c.gregLabel}</span>
+					{#if c.event}
+						<span class="text-[9px] font-bold text-orange-200 mt-0.5 truncate w-full px-1 text-center">{c.event.name}</span>
+					{:else if c.shabbatEntry}
+						<span class="text-[9px] font-normal text-yellow-200/80 mt-0.5">🕯 {c.shabbatEntry}</span>
+					{/if}
 				</a>
 			{:else}
 				<div
 					title={cellTooltip(c)}
 					onmouseenter={() => (hoveredCell = c)}
 					onmouseleave={() => (hoveredCell = null)}
-					class="aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold cursor-not-allowed
-						{c.isBooked ? 'border border-red-500/40 bg-red-500/15 text-red-200' : ''}
-						{c.isShabbat && !c.isBooked ? 'border border-yellow-500/30 bg-yellow-500/10 text-yellow-300/70' : ''}
-						{c.isPast && !c.isBooked && !c.isShabbat ? 'border border-white/5 bg-white/5 text-gray-600' : ''}
-						{c.isToday ? 'ring-2 ring-blue-400' : ''}"
+					class="aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold cursor-not-allowed border
+						{c.isBooked
+							? 'border-red-400/70 bg-red-500/25 text-red-50'
+							: c.event?.blocking
+								? eventColorClass(c.event.kind)
+								: c.isShabbat
+									? 'border-yellow-400/50 bg-yellow-500/15 text-yellow-100'
+									: c.isPast
+										? 'border-white/5 bg-white/5 text-gray-600'
+										: 'border-white/10 bg-white/5 text-gray-300'}
+						{c.isToday ? 'ring-2 ring-blue-300' : ''}"
 				>
-					<span>{c.day}</span>
-					<span class="text-[10px] font-normal opacity-50">{c.gregLabel}</span>
+					<span class="leading-none">{c.day}</span>
+					<span class="text-[10px] font-normal opacity-60 mt-0.5">{c.gregLabel}</span>
+					{#if c.event}
+						<span class="text-[9px] font-bold mt-0.5 truncate w-full px-1 text-center">{c.event.name}</span>
+					{:else if c.shabbatEntry}
+						<span class="text-[9px] font-normal text-yellow-200/80 mt-0.5">🕯 {c.shabbatEntry}</span>
+					{/if}
 				</div>
 			{/if}
 		{/each}
 	</div>
 
-	<div class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-300 justify-center">
-		<span class="flex items-center gap-1.5">
-			<span class="w-3 h-3 rounded border border-green-500/40 bg-green-500/20"></span>
-			פנוי
-		</span>
-		<span class="flex items-center gap-1.5">
-			<span class="w-3 h-3 rounded border border-red-500/40 bg-red-500/20"></span>
-			תפוס
-		</span>
-		<span class="flex items-center gap-1.5">
-			<span class="w-3 h-3 rounded border border-yellow-500/30 bg-yellow-500/20"></span>
-			שבת
-		</span>
-		<span class="flex items-center gap-1.5">
-			<span class="w-3 h-3 rounded ring-2 ring-blue-400 bg-transparent"></span>
-			היום
-		</span>
+	<div class="mt-5 rounded-xl border border-white/10 bg-black/20 p-3 md:p-4">
+		<div class="flex flex-wrap gap-x-5 gap-y-3 text-sm md:text-base font-bold text-white justify-center">
+			<span class="flex items-center gap-2">
+				<span class="w-5 h-5 rounded-md border-2 border-green-300 bg-green-400/70 shadow-[0_0_8px_rgba(74,222,128,0.6)]"></span>
+				פנוי
+			</span>
+			<span class="flex items-center gap-2">
+				<span class="w-5 h-5 rounded-md border-2 border-red-300 bg-red-400/70 shadow-[0_0_8px_rgba(248,113,113,0.6)]"></span>
+				תפוס
+			</span>
+			<span class="flex items-center gap-2">
+				<span class="w-5 h-5 rounded-md border-2 border-yellow-300 bg-yellow-400/70 shadow-[0_0_8px_rgba(250,204,21,0.6)]"></span>
+				שבת
+			</span>
+			<span class="flex items-center gap-2">
+				<span class="w-5 h-5 rounded-md border-2 border-purple-300 bg-purple-400/70 shadow-[0_0_8px_rgba(192,132,252,0.6)]"></span>
+				חג
+			</span>
+			<span class="flex items-center gap-2">
+				<span class="w-5 h-5 rounded-md border-2 border-orange-300 bg-orange-400/70 shadow-[0_0_8px_rgba(251,146,60,0.6)]"></span>
+				מועד
+			</span>
+			<span class="flex items-center gap-2">
+				<span class="w-5 h-5 rounded-md border-2 border-blue-300 bg-blue-400/70 shadow-[0_0_8px_rgba(96,165,250,0.6)]"></span>
+				לאומי
+			</span>
+			<span class="flex items-center gap-2">
+				<span class="w-5 h-5 rounded-md ring-2 ring-blue-300 bg-transparent"></span>
+				היום
+			</span>
+		</div>
 	</div>
 
 	{#if hoveredCell && !hoveredCell.isEmpty}
@@ -235,12 +298,21 @@
 					<span class="font-bold">{hoveredCell.date}</span> —
 					{#if h}{h.caseName} בשעה {h.time}{:else}תפוס{/if}
 				</p>
+			{:else if hoveredCell.event}
+				<p class="text-orange-200">
+					<span class="font-bold">{hoveredCell.date}</span> — {hoveredCell.event.name}
+					{#if hoveredCell.event.blocking}<span class="text-red-300"> (אין דיונים)</span>{/if}
+				</p>
+			{:else if hoveredCell.shabbatEntry}
+				<p class="text-yellow-200">
+					<span class="font-bold">{hoveredCell.date}</span> — ערב שבת, כניסת שבת {hoveredCell.shabbatEntry}
+				</p>
 			{:else if isAvailable(hoveredCell)}
 				<p class="text-green-300">
 					<span class="font-bold">{hoveredCell.date}</span> — פנוי, לחץ לקביעת דיון
 				</p>
 			{:else if hoveredCell.isShabbat}
-				<p class="text-yellow-300">
+				<p class="text-yellow-200">
 					<span class="font-bold">{hoveredCell.date}</span> — שבת קודש
 				</p>
 			{:else if hoveredCell.isPast}
@@ -254,6 +326,6 @@
 
 <style>
 	.cal-cell.available:hover {
-		box-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
+		box-shadow: 0 0 12px rgba(74, 222, 128, 0.5);
 	}
 </style>
