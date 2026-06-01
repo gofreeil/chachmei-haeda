@@ -4,29 +4,35 @@
 
 	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
 
-	// ───────────────── Prerequisite (רישום וקבלת UECC) ─────────────────
+	// ───────────────── חתימה על UECC (פרופיל קיים) ─────────────────
 	let isRegistered = $state(false);
 	let hasAcceptedUECC = $state(false);
 	let userName = $state('');
 	let userPhone = $state('');
 	let userEmail = $state('');
-	let regUECC = $state(false);
-	let regArbitration = $state(false);
 
-	// ───────────────── תוכן הדיון ─────────────────
+	// ───────────────── תוכן הדיון (טיוטה) ─────────────────
 	type DrawerKey = 'nickname' | 'parties' | 'date' | null;
 	let openDrawer = $state<DrawerKey>('nickname');
 
 	let nickname = $state('');
-	let plaintiffName = $state(''); // התובע — ברירת מחדל: המשתמש עצמו
+	let plaintiffName = $state('');
 	let plaintiffPhone = $state('');
-	let defendantName = $state(''); // הנתבע
+	let defendantName = $state('');
 	let defendantPhone = $state('');
 	let subject = $state('');
 	let details = $state('');
 	let proposedDate = $state('');
 
-	// ───────────────── מצב אישורים ─────────────────
+	// ───────────────── שלב חתימה (לפני נעילה) ─────────────────
+	let showSignatureStep = $state(false);
+	let regUECC = $state(false);
+	let regArbitration = $state(false);
+	let signerName = $state('');
+	let signerPhone = $state('');
+	let signerEmail = $state('');
+
+	// ───────────────── מצב אישורים (אחרי שמירה) ─────────────────
 	let saved = $state(false);
 	let caseId = $state('');
 	let approvals = $state({
@@ -36,8 +42,10 @@
 	});
 
 	const allApproved = $derived(approvals.plaintiff && approvals.defendant && approvals.beitDin);
+	let draftLoaded = $state(false);
+	let draftRestoredNotice = $state(false);
 
-	// ───────────────── טעינה משמורה מקומית (MVP) ─────────────────
+	// ───────────────── טעינה: פרופיל + טיוטה ─────────────────
 	onMount(() => {
 		try {
 			const user = JSON.parse(localStorage.getItem('chachmei-user') || 'null');
@@ -47,26 +55,45 @@
 				userName = user.name || '';
 				userPhone = user.phone || '';
 				userEmail = user.email || '';
-				plaintiffName ||= userName;
-				plaintiffPhone ||= userPhone;
 			}
+			const draft = JSON.parse(localStorage.getItem('chachmei-hearing-draft') || 'null');
+			if (draft) {
+				nickname = draft.nickname || '';
+				plaintiffName = draft.plaintiffName || '';
+				plaintiffPhone = draft.plaintiffPhone || '';
+				defendantName = draft.defendantName || '';
+				defendantPhone = draft.defendantPhone || '';
+				subject = draft.subject || '';
+				details = draft.details || '';
+				proposedDate = draft.proposedDate || '';
+				if (nickname || plaintiffName || defendantName || subject) draftRestoredNotice = true;
+			}
+			if (!plaintiffName && userName) plaintiffName = userName;
+			if (!plaintiffPhone && userPhone) plaintiffPhone = userPhone;
 			if (preferredDate && !proposedDate) proposedDate = preferredDate;
 		} catch {}
+		draftLoaded = true;
 	});
 
-	function registerUser() {
-		if (!userName.trim() || !userPhone.trim() || !regUECC || !regArbitration) return;
+	// ───────────────── שמירה אוטומטית של טיוטה ─────────────────
+	$effect(() => {
+		if (!draftLoaded || saved) return;
+		const draft = {
+			nickname,
+			plaintiffName,
+			plaintiffPhone,
+			defendantName,
+			defendantPhone,
+			subject,
+			details,
+			proposedDate
+		};
 		try {
-			localStorage.setItem(
-				'chachmei-user',
-				JSON.stringify({ name: userName, phone: userPhone, email: userEmail, uecc: true, arbitration: true })
-			);
+			const hasAny = Object.values(draft).some((v) => String(v ?? '').trim());
+			if (hasAny) localStorage.setItem('chachmei-hearing-draft', JSON.stringify(draft));
+			else localStorage.removeItem('chachmei-hearing-draft');
 		} catch {}
-		isRegistered = true;
-		hasAcceptedUECC = true;
-		plaintiffName ||= userName;
-		plaintiffPhone ||= userPhone;
-	}
+	});
 
 	function toggle(key: DrawerKey) {
 		openDrawer = openDrawer === key ? null : key;
@@ -82,12 +109,48 @@
 		);
 	}
 
-	function saveCase(e: Event) {
+	function onSubmitDraft(e: Event) {
 		e.preventDefault();
 		if (!readyToSubmit()) return;
+		if (isRegistered && hasAcceptedUECC) {
+			finalizeCase();
+		} else {
+			signerName = userName || plaintiffName || '';
+			signerPhone = userPhone || plaintiffPhone || '';
+			signerEmail = userEmail || '';
+			showSignatureStep = true;
+			scrollToTop();
+		}
+	}
+
+	function signAndFinalize() {
+		if (!signerName.trim() || !signerPhone.trim() || !regUECC || !regArbitration) return;
+		try {
+			localStorage.setItem(
+				'chachmei-user',
+				JSON.stringify({
+					name: signerName,
+					phone: signerPhone,
+					email: signerEmail,
+					uecc: true,
+					arbitration: true
+				})
+			);
+		} catch {}
+		isRegistered = true;
+		hasAcceptedUECC = true;
+		userName = signerName;
+		userPhone = signerPhone;
+		userEmail = signerEmail;
+		if (!plaintiffName.trim()) plaintiffName = signerName;
+		if (!plaintiffPhone.trim()) plaintiffPhone = signerPhone;
+		showSignatureStep = false;
+		finalizeCase();
+	}
+
+	function finalizeCase() {
 		caseId = 'C-' + Math.floor(100000 + Math.random() * 900000);
 		approvals = { plaintiff: true, defendant: false, beitDin: false };
-		saved = true;
 		try {
 			const cases = JSON.parse(localStorage.getItem('chachmei-cases') || '[]');
 			cases.push({
@@ -104,18 +167,37 @@
 				createdAt: new Date().toISOString()
 			});
 			localStorage.setItem('chachmei-cases', JSON.stringify(cases));
+			localStorage.removeItem('chachmei-hearing-draft');
 		} catch {}
+		saved = true;
+		scrollToTop();
 	}
 
-	function resetForm() {
+	function scrollToTop() {
+		if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
+	function backToForm() {
+		showSignatureStep = false;
+	}
+
+	function clearDraft() {
 		nickname = '';
-		plaintiffName = userName;
-		plaintiffPhone = userPhone;
+		plaintiffName = userName || '';
+		plaintiffPhone = userPhone || '';
 		defendantName = '';
 		defendantPhone = '';
 		subject = '';
 		details = '';
 		proposedDate = '';
+		try {
+			localStorage.removeItem('chachmei-hearing-draft');
+		} catch {}
+		draftRestoredNotice = false;
+	}
+
+	function resetForm() {
+		clearDraft();
 		approvals = { plaintiff: false, defendant: false, beitDin: false };
 		saved = false;
 		openDrawer = 'nickname';
@@ -134,71 +216,7 @@
 		<p class="mt-3 text-gray-300">פתיחת תיק חדש לבוררות ושלום על פי דין תורה</p>
 	</header>
 
-	{#if !isRegistered || !hasAcceptedUECC}
-		<!-- ───────────── חוצץ: רישום + אישור UECC ───────────── -->
-		<div class="rounded-2xl border-2 border-yellow-400/40 bg-yellow-500/5 p-6 md:p-8">
-			<h2 class="text-xl md:text-2xl font-bold text-yellow-200 mb-2">🔑 לפני שמתחילים — הרשמה ואישור הקוד</h2>
-			<p class="text-gray-300 mb-5 leading-relaxed">
-				כל מעורב בדיון נדרש להירשם ולקבל על עצמו את הקוד האתי UECC ואת סמכות בית הדין. שלב זה חיוני
-				לפני הגשת בקשה.
-			</p>
-			<div class="grid md:grid-cols-2 gap-4">
-				<label class="block">
-					<span class="text-sm font-bold text-gray-300">שם מלא *</span>
-					<input
-						type="text"
-						bind:value={userName}
-						required
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
-					/>
-				</label>
-				<label class="block">
-					<span class="text-sm font-bold text-gray-300">טלפון *</span>
-					<input
-						type="tel"
-						bind:value={userPhone}
-						required
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
-					/>
-				</label>
-			</div>
-			<label class="block mt-4">
-				<span class="text-sm font-bold text-gray-300">אימייל</span>
-				<input
-					type="email"
-					bind:value={userEmail}
-					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
-				/>
-			</label>
-
-			<div class="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 mt-5 space-y-3">
-				<label class="flex items-start gap-3 cursor-pointer">
-					<input type="checkbox" bind:checked={regUECC} class="mt-1" />
-					<span class="text-gray-200 text-sm">
-						אני מקבל על עצמי את
-						<a href="/ethical-code" class="text-blue-300 underline">הקוד האתי UECC</a>
-						ושבע מצוות בני נח כתנאי לעריכת הדיון.
-					</span>
-				</label>
-				<label class="flex items-start gap-3 cursor-pointer">
-					<input type="checkbox" bind:checked={regArbitration} class="mt-1" />
-					<span class="text-gray-200 text-sm">
-						אני מסכים שהמחלוקת תוכרע בבית הדין של חכמי העדה על פי דין תורה, ומקבל על עצמי לציית
-						לפסק הדין.
-					</span>
-				</label>
-			</div>
-
-			<button
-				type="button"
-				onclick={registerUser}
-				disabled={!userName.trim() || !userPhone.trim() || !regUECC || !regArbitration}
-				class="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
-			>
-				✓ הרשמה ואישור הקוד
-			</button>
-		</div>
-	{:else if saved}
+	{#if saved}
 		<!-- ───────────── מצב לאחר שמירה — לוח אישורים ───────────── -->
 		<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-6 md:p-8">
 			<div class="flex items-center justify-between mb-4">
@@ -284,15 +302,111 @@
 				← פתיחת תיק נוסף
 			</button>
 		</div>
+	{:else if showSignatureStep}
+		<!-- ───────────── שלב חתימה: לפני נעילת התאריך ───────────── -->
+		<div class="rounded-2xl border-2 border-yellow-400/40 bg-yellow-500/5 p-6 md:p-8">
+			<div class="flex items-start justify-between gap-3 mb-2">
+				<h2 class="text-xl md:text-2xl font-bold text-yellow-200">🔑 שלב אחרון — חתימה על הקוד האתי</h2>
+				<button
+					type="button"
+					onclick={backToForm}
+					class="shrink-0 text-sm text-blue-300 hover:text-blue-200 underline"
+				>
+					← חזרה לעריכת הפרטים
+				</button>
+			</div>
+			<p class="text-gray-300 mb-5 leading-relaxed">
+				הפרטים נשמרו כטיוטה. כדי לנעול את התאריך ולפתוח את התיק, יש לאשר את הקוד האתי UECC ואת
+				סמכות בית הדין. חתימה זו תקפה גם לדיונים עתידיים.
+			</p>
+			<div class="grid md:grid-cols-2 gap-4">
+				<label class="block">
+					<span class="text-sm font-bold text-gray-300">שם מלא *</span>
+					<input
+						type="text"
+						bind:value={signerName}
+						required
+						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
+					/>
+				</label>
+				<label class="block">
+					<span class="text-sm font-bold text-gray-300">טלפון *</span>
+					<input
+						type="tel"
+						bind:value={signerPhone}
+						required
+						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
+					/>
+				</label>
+			</div>
+			<label class="block mt-4">
+				<span class="text-sm font-bold text-gray-300">אימייל</span>
+				<input
+					type="email"
+					bind:value={signerEmail}
+					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
+				/>
+			</label>
+
+			<div class="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 mt-5 space-y-3">
+				<label class="flex items-start gap-3 cursor-pointer">
+					<input type="checkbox" bind:checked={regUECC} class="mt-1" />
+					<span class="text-gray-200 text-sm">
+						אני מקבל על עצמי את
+						<a href="/ethical-code" class="text-blue-300 underline">הקוד האתי UECC</a>
+						ושבע מצוות בני נח כתנאי לעריכת הדיון.
+					</span>
+				</label>
+				<label class="flex items-start gap-3 cursor-pointer">
+					<input type="checkbox" bind:checked={regArbitration} class="mt-1" />
+					<span class="text-gray-200 text-sm">
+						אני מסכים שהמחלוקת תוכרע בבית הדין של חכמי העדה על פי דין תורה, ומקבל על עצמי לציית
+						לפסק הדין.
+					</span>
+				</label>
+			</div>
+
+			<button
+				type="button"
+				onclick={signAndFinalize}
+				disabled={!signerName.trim() || !signerPhone.trim() || !regUECC || !regArbitration}
+				class="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
+			>
+				✓ חתימה ונעילת התאריך
+			</button>
+		</div>
 	{:else}
 		<!-- ───────────── המגירות (Accordion) ───────────── -->
+		{#if isRegistered && hasAcceptedUECC}
+			<div class="mb-5 rounded-xl border border-green-500/30 bg-green-500/5 p-3 text-center text-sm text-green-300">
+				✓ מחובר כ-<strong>{userName}</strong> · הקוד האתי UECC כבר חתום
+			</div>
+		{:else}
+			<div class="mb-5 rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 text-center text-sm text-blue-200">
+				💡 מלא את הפרטים כטיוטה — חתימה על הקוד האתי תידרש רק בסוף, לפני נעילת התאריך.
+			</div>
+		{/if}
+
 		{#if preferredDate}
-			<div class="mb-5 rounded-xl border border-green-500/40 bg-green-500/10 p-4 text-center">
+			<div class="mb-3 rounded-xl border border-green-500/40 bg-green-500/10 p-4 text-center">
 				<span class="text-green-300 font-bold">📅 תאריך נבחר מהלוח: {preferredDate}</span>
 			</div>
 		{/if}
 
-		<form onsubmit={saveCase} class="space-y-3">
+		{#if draftRestoredNotice}
+			<div class="mb-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3 flex items-center justify-between gap-3">
+				<span class="text-sm text-yellow-200">📝 שחזרנו טיוטה שהתחלת קודם.</span>
+				<button
+					type="button"
+					onclick={clearDraft}
+					class="text-xs text-yellow-300 hover:text-yellow-100 underline shrink-0"
+				>
+					התחל מחדש
+				</button>
+			</div>
+		{/if}
+
+		<form onsubmit={onSubmitDraft} class="space-y-3">
 			<!-- מגירה 1: שם כינוי לדיון -->
 			<div class="rounded-xl border border-blue-500/20 bg-white/5 overflow-hidden">
 				<button
@@ -395,7 +509,7 @@
 							></textarea>
 						</label>
 						<p class="text-xs text-gray-400">
-							💡 הנתבע נדרש גם הוא להירשם ולקבל על עצמו את הקוד האתי לפני שיוכל לאשר את התאריך.
+							💡 הנתבע ייצור איתו קשר ויחתום על הקוד האתי לפני שיוכל לאשר את התאריך.
 						</p>
 					</div>
 				{/if}
@@ -439,7 +553,11 @@
 				disabled={!readyToSubmit()}
 				class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
 			>
-				💾 שמור והעבר את ההצעה לרבנים
+				{#if isRegistered && hasAcceptedUECC}
+					💾 שמור והעבר את ההצעה לרבנים
+				{:else}
+					← המשך לחתימה ונעילת התאריך
+				{/if}
 			</button>
 		</form>
 	{/if}
