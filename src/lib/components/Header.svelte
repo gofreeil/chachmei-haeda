@@ -29,13 +29,13 @@
 
     const navItems = [
         { href: '/', label: 'בית', icon: '🏠' },
+        { href: '/about/revenue', label: 'אודות', icon: 'ℹ️' },
         { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
         { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
         { href: '/request-hearing', label: 'בקשת דיון', icon: '⚖️' },
         { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
         { href: '/rulings', label: 'פסקי דין', icon: '📋' },
         { href: '/articles', label: 'מאמרי רבנים', icon: '📚' },
-        { href: '/about/revenue', label: 'אודות', icon: 'ℹ️' },
     ];
 
     async function pingServer() {
@@ -253,15 +253,6 @@
                                 </div>
                             {/if}
                         </div>
-                        <!-- כפתור אודות - מובייל -->
-                        <a
-                            href="/about/revenue"
-                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors no-underline"
-                            aria-label="אודות קהילה"
-                        >
-                            <span class="text-xl font-bold text-white leading-none">ℹ</span>
-                        </a>
-
                         <!-- כפתור דגל שפה - מובייל -->
                         <div class="relative lang-dropdown-container">
                             <button
@@ -413,33 +404,6 @@
                             {/each}
                         </div>
                     {/if}
-                </div>
-                <!-- כפתור אודות עם תצוגה מקדימה (CSS-only hover) -->
-                <div class="relative about-hover-trigger" id="about-btn-wrapper">
-                    <a
-                        href="/about/revenue"
-                        class="relative flex items-center rounded-lg px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105 hover:tracking-wide no-underline"
-                        style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 15px rgba(124,58,237,0.4);"
-                        onmouseenter={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 0 24px 6px rgba(167,139,250,0.7), 0 4px 15px rgba(124,58,237,0.5)'}
-                        onmouseleave={(e) => (e.currentTarget as HTMLElement).style.boxShadow='0 4px 15px rgba(124,58,237,0.4)'}
-                    >
-                        {tFn("about")}
-                    </a>
-                    <!-- תצוגה מקדימה — מופיעה ב-CSS hover, ממוקמת מתחת לכפתור עם anchor ימני -->
-                    <div
-                        class="about-preview-popup absolute top-full right-0 mt-3 z-[9999]"
-                    >
-                        <img
-                            src="/images/bati-hapius.jpg"
-                            alt="בתי הפיוס"
-                            loading="eager"
-                            decoding="async"
-                            style="width:260px; max-width:90vw; border-radius:24px;
-                                   -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
-                                   mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 55%, transparent 100%);
-                                   filter: drop-shadow(0 0 40px rgba(0,0,0,0.95)) drop-shadow(0 0 80px rgba(0,0,0,0.7));"
-                        />
-                    </div>
                 </div>
                 <!-- Language Dropdown -->
                 <div class="lang-dropdown-container relative">
@@ -627,16 +591,4 @@
         z-index: 60;
     }
 
-    /* About hover preview — CSS-only, no JS needed */
-    :global(.about-hover-trigger .about-preview-popup) {
-        opacity: 0;
-        transform: scale(0.6);
-        transform-origin: top center;
-        transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-        pointer-events: none;
-    }
-    :global(.about-hover-trigger:hover .about-preview-popup) {
-        opacity: 1;
-        transform: scale(1);
-    }
 </style>
