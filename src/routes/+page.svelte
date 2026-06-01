@@ -120,11 +120,4 @@
 			</a>
 		</div>
 	</div>
-
-	<a
-		href="/ethical-code"
-		class="inline-block mt-6 px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-bold hover:scale-105 transition-transform"
-	>
-		קרא את הקוד המלא →
-	</a>
 </section>
