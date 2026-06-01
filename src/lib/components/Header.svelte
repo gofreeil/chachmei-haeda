@@ -619,38 +619,12 @@
 
     :global(.logo-link) {
         transition: transform 0.3s ease-out;
-        transform-origin: 0% 25%;
+        transform-origin: center center;
         will-change: transform;
     }
     :global(.logo-link:hover) {
-        transform: scale(2);
+        transform: scale(1.3);
         z-index: 60;
-    }
-
-    /* כשהעכבר על הלוגו — הזזת הכותרת שמאלה והדגשה */
-    :global(.header-title-block) {
-        transition: transform 0.35s ease-out, filter 0.35s ease-out;
-    }
-    :global(.header-title-h1) {
-        transition: letter-spacing 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
-    }
-    :global(.header-title-p) {
-        transition: text-shadow 0.35s ease-out, letter-spacing 0.35s ease-out, color 0.35s ease-out;
-    }
-    :global(.header-logo-title:has(.logo-link:hover) .header-title-block) {
-        transform: translateX(-1rem);
-        filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.45));
-    }
-    :global(.header-logo-title:has(.logo-link:hover) .header-title-h1) {
-        letter-spacing: 0.03em;
-        transform: scale(1.06);
-        transform-origin: right center;
-        filter: brightness(1.15) saturate(1.2);
-    }
-    :global(.header-logo-title:has(.logo-link:hover) .header-title-p) {
-        letter-spacing: 0.03em;
-        color: #ffffff;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
     }
 
     /* About hover preview — CSS-only, no JS needed */
