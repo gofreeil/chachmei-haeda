@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { hearings } from '$lib/data/hearings';
 	import { getEvent, shabbatEntryTime, type CalEvent } from '$lib/data/jewish-calendar';
+	import { getParsha } from '$lib/data/parshiyot';
 
 	const dayNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
 
 	const hebDayFmt = new Intl.DateTimeFormat('en-US-u-ca-hebrew', { day: 'numeric' });
 	const hebMonthFmt = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { month: 'long' });
-	const hebYearFmt = new Intl.DateTimeFormat('en-US-u-ca-hebrew', { year: 'numeric' });
+	const hebYearGematriaFmt = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { year: 'numeric' });
+	const gregMonthFmt = new Intl.DateTimeFormat('he-IL', { month: 'long' });
 
 	function hebDay(d: Date): number {
 		return parseInt(hebDayFmt.format(d), 10);
@@ -14,8 +16,12 @@
 	function hebMonthName(d: Date): string {
 		return hebMonthFmt.format(d);
 	}
-	function hebYear(d: Date): string {
-		return hebYearFmt.format(d);
+	function hebYearGematria(d: Date): string {
+		// "ה׳תשפ״ו" → "תשפ״ו" (מסיר את אות האלפים)
+		return hebYearGematriaFmt.format(d).replace(/^[הוזחט]׳?\s*/, '');
+	}
+	function gregMonth(d: Date): string {
+		return gregMonthFmt.format(d);
 	}
 
 	function startOfHebMonth(d: Date): Date {
@@ -67,6 +73,7 @@
 		isEmpty: boolean;
 		event: CalEvent | undefined;
 		shabbatEntry: string | undefined;
+		parsha: string | undefined;
 	};
 
 	function emptyCell(): Cell {
@@ -81,7 +88,8 @@
 			isBooked: false,
 			isEmpty: true,
 			event: undefined,
-			shabbatEntry: undefined
+			shabbatEntry: undefined,
+			parsha: undefined
 		};
 	}
 
@@ -111,7 +119,8 @@
 				isBooked: bookedSet.has(ds),
 				isEmpty: false,
 				event: getEvent(ds),
-				shabbatEntry: dow === 5 ? shabbatEntryTime(d) : undefined
+				shabbatEntry: dow === 5 ? shabbatEntryTime(d) : undefined,
+				parsha: dow === 6 ? getParsha(ds) : undefined
 			});
 		}
 
@@ -135,7 +144,18 @@
 		return monthStart.getTime() > todayMonthStartMs;
 	}
 
-	const monthLabel = $derived(`${hebMonthName(monthStart)} ${hebYear(monthStart)}`);
+	const monthLabel = $derived(`${hebMonthName(monthStart)} ${hebYearGematria(monthStart)}`);
+	const gregRangeLabel = $derived.by(() => {
+		const startD = monthStart;
+		const endD = new Date(nextHebMonthStart(monthStart).getTime() - 86400000);
+		const sm = gregMonth(startD);
+		const em = gregMonth(endD);
+		const sy = startD.getFullYear();
+		const ey = endD.getFullYear();
+		if (sm === em && sy === ey) return `${sm} ${sy}`;
+		if (sy === ey) return `${sm} – ${em} ${ey}`;
+		return `${sm} ${sy} – ${em} ${ey}`;
+	});
 	const availableCount = $derived(grid.filter((c) => isAvailable(c)).length);
 
 	let hoveredCell = $state<Cell | null>(null);
@@ -174,6 +194,7 @@
 		if (c.isEmpty) return '';
 		const parts: string[] = [c.date];
 		if (c.event) parts.push(c.event.name);
+		if (c.parsha) parts.push(`פרשת ${c.parsha}`);
 		if (c.shabbatEntry) parts.push(`כניסת שבת ${c.shabbatEntry}`);
 		if (c.isShabbat) parts.push('שבת — אין דיונים');
 		if (c.isBooked) {
@@ -200,7 +221,8 @@
 			→
 		</button>
 		<div class="text-center">
-			<h3 class="text-xl md:text-2xl font-black text-white">{monthLabel}</h3>
+			<h3 class="text-xl md:text-2xl font-black text-white leading-tight">{monthLabel}</h3>
+			<p class="text-[11px] md:text-xs text-blue-200/90 mt-0.5 font-semibold tracking-wide">{gregRangeLabel}</p>
 			<p class="text-xs text-blue-300 mt-1">
 				{availableCount} תאריכים פנויים החודש
 			</p>
@@ -239,6 +261,8 @@
 					<span class="text-[10px] font-normal opacity-60 mt-0.5">{c.gregLabel}</span>
 					{#if c.event}
 						<span class="text-[9px] font-bold text-orange-100 mt-0.5 truncate w-full px-1 text-center">{c.event.name}</span>
+					{:else if c.parsha}
+						<span class="text-[9px] font-bold text-cyan-100 mt-0.5 truncate w-full px-1 text-center">{c.parsha}</span>
 					{:else if c.shabbatEntry}
 						<span class="text-[9px] font-bold text-yellow-100 mt-0.5">🕯 {c.shabbatEntry}</span>
 					{/if}
@@ -264,6 +288,8 @@
 					<span class="text-[10px] font-normal opacity-60 mt-0.5">{c.gregLabel}</span>
 					{#if c.event}
 						<span class="text-[9px] font-bold mt-0.5 truncate w-full px-1 text-center">{c.event.name}</span>
+					{:else if c.parsha}
+						<span class="text-[9px] font-bold text-yellow-50 mt-0.5 truncate w-full px-1 text-center">{c.parsha}</span>
 					{:else if c.shabbatEntry}
 						<span class="text-[9px] font-bold text-yellow-100 mt-0.5">🕯 {c.shabbatEntry}</span>
 					{/if}
@@ -335,7 +361,7 @@
 			</p>
 		{:else if hoveredCell.isShabbat}
 			<p class="text-yellow-200">
-				<span class="font-bold">{hoveredCell.date}</span> — שבת קודש
+				<span class="font-bold">{hoveredCell.date}</span> — שבת קודש{#if hoveredCell.parsha}, פרשת {hoveredCell.parsha}{/if}
 			</p>
 		{:else if hoveredCell.isPast}
 			<p class="text-gray-400">
