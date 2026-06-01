@@ -79,7 +79,8 @@ function buildEventsCache(years: number): Map<string, CalEvent> {
 	const map = new Map<string, CalEvent>();
 	const start = new Date();
 	start.setHours(0, 0, 0, 0);
-	const totalDays = years * 366 + 7;
+	start.setDate(start.getDate() - 35); // לכסות את כל החודש העברי הנוכחי גם אם התחיל לפני יותר מחודש לועזי
+	const totalDays = years * 366 + 42;
 
 	for (let i = 0; i < totalDays; i++) {
 		const d = new Date(start);
