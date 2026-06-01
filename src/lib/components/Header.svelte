@@ -292,7 +292,7 @@
         <div
             class="hidden md:flex flex-col items-center pt-0 pb-0.5 md:flex-row md:items-center md:justify-between"
         >
-            <div class="flex items-center space-x-4">
+            <div class="header-logo-title flex items-center space-x-4">
                 <div class="relative group">
                     <a
                         href="/"
@@ -322,13 +322,13 @@
                         </div>
                     </div>
                 </div>
-                <a href="/" class="group">
+                <a href="/" class="group header-title-block">
                     <h1
-                        class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl font-bold text-transparent group-hover:opacity-80 transition-opacity"
+                        class="header-title-h1 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl font-bold text-transparent group-hover:opacity-80 transition-opacity"
                     >
                         {tFn("welcome")}
                     </h1>
-                    <p class="text-lg text-gray-100 font-extrabold group-hover:opacity-80 transition-opacity">{tFn("app_description")}</p>
+                    <p class="header-title-p text-lg text-gray-100 font-extrabold group-hover:opacity-80 transition-opacity">{tFn("app_description")}</p>
                 </a>
             </div>
 <div class="flex items-center gap-2">
@@ -537,12 +537,38 @@
 
     :global(.logo-link) {
         transition: transform 0.3s ease-out;
-        transform-origin: top right;
+        transform-origin: 100% 25%;
         will-change: transform;
     }
     :global(.logo-link:hover) {
         transform: scale(1.9);
         z-index: 60;
+    }
+
+    /* כשהעכבר על הלוגו — הזזת הכותרת שמאלה והדגשה */
+    :global(.header-title-block) {
+        transition: transform 0.35s ease-out, filter 0.35s ease-out;
+    }
+    :global(.header-title-h1) {
+        transition: letter-spacing 0.35s ease-out, transform 0.35s ease-out, filter 0.35s ease-out;
+    }
+    :global(.header-title-p) {
+        transition: text-shadow 0.35s ease-out, letter-spacing 0.35s ease-out, color 0.35s ease-out;
+    }
+    :global(.header-logo-title:has(.logo-link:hover) .header-title-block) {
+        transform: translateX(-1rem);
+        filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.45));
+    }
+    :global(.header-logo-title:has(.logo-link:hover) .header-title-h1) {
+        letter-spacing: 0.03em;
+        transform: scale(1.06);
+        transform-origin: right center;
+        filter: brightness(1.15) saturate(1.2);
+    }
+    :global(.header-logo-title:has(.logo-link:hover) .header-title-p) {
+        letter-spacing: 0.03em;
+        color: #ffffff;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
     }
 
     /* About hover preview — CSS-only, no JS needed */

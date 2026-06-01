@@ -1,13 +1,22 @@
 <script lang="ts">
+	import { page } from '$app/state';
+
+	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
+
 	let name = $state('');
 	let phone = $state('');
 	let email = $state('');
 	let opposing = $state('');
 	let subject = $state('');
 	let details = $state('');
+	let preferredDateInput = $state('');
 	let agreeArbitration = $state(false);
 	let agreeUECC = $state(false);
 	let submitted = $state(false);
+
+	$effect(() => {
+		if (preferredDate && !preferredDateInput) preferredDateInput = preferredDate;
+	});
 
 	function submit(e: Event) {
 		e.preventDefault();
@@ -42,6 +51,12 @@
 		</div>
 	{:else}
 		<form onsubmit={submit} class="space-y-5">
+			{#if preferredDate}
+				<div class="rounded-xl border border-green-500/40 bg-green-500/10 p-4 text-center">
+					<span class="text-green-300 font-bold">📅 תאריך מבוקש מהלוח: {preferredDate}</span>
+				</div>
+			{/if}
+
 			<div class="grid md:grid-cols-2 gap-4">
 				<label class="block">
 					<span class="text-sm font-bold text-gray-300">שם מלא של המבקש *</span>
@@ -63,14 +78,24 @@
 				</label>
 			</div>
 
-			<label class="block">
-				<span class="text-sm font-bold text-gray-300">אימייל</span>
-				<input
-					type="email"
-					bind:value={email}
-					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
-				/>
-			</label>
+			<div class="grid md:grid-cols-2 gap-4">
+				<label class="block">
+					<span class="text-sm font-bold text-gray-300">אימייל</span>
+					<input
+						type="email"
+						bind:value={email}
+						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+					/>
+				</label>
+				<label class="block">
+					<span class="text-sm font-bold text-gray-300">תאריך מועדף</span>
+					<input
+						type="date"
+						bind:value={preferredDateInput}
+						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+					/>
+				</label>
+			</div>
 
 			<label class="block">
 				<span class="text-sm font-bold text-gray-300">שם הצד שכנגד *</span>

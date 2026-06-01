@@ -1,4 +1,6 @@
 <script lang="ts">
+	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
+
 	const sections = [
 		{
 			href: '/request-hearing',
@@ -60,6 +62,16 @@
 		פלטפורמה לפתרון מחלוקות בין אדם לחברו, מאמרי רבנים מאושרים, ודיוני זום עם סיכומי הכרעה כתובים — הכל
 		תחת הקוד האתי הכלל-עולמי <span class="text-blue-300 font-bold">UECC</span>.
 	</p>
+</section>
+
+<section class="mb-10">
+	<header class="text-center mb-5">
+		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+			📅 לוח דיונים — בדוק אם התאריך פנוי
+		</h3>
+		<p class="mt-2 text-gray-400 text-sm">לחץ על תאריך פנוי בירוק כדי לפתוח בקשה לאותו יום</p>
+	</header>
+	<LiveCalendar />
 </section>
 
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0 pb-10">

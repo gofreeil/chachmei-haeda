@@ -111,12 +111,14 @@
 				{ n: 'ז', title: 'הקמת מערכת משפט צדק — מינוי דיינים', body: 'חובה על כל אומה להקים בתחומה בתי משפט אמת השווים לכל האוכלוסיה, ולמנות שופטים ישרים הצמודים לשבע מצוות בני נח. הסמכות לענוש את העוברים על המצוות. איסור חמור על אומות בני נח לשרות במקום בו אין מערכת משפט כזו.', img: '/images/7262c95d28eb13b988331fd0f3903273eee17bec96ad1b22378e0bb3 (1).jpg' }
 			] as m}
 				<div class="rounded-xl border border-blue-500/20 bg-blue-900/10 overflow-hidden">
-					<img src={m.img} alt={m.title} loading="lazy" class="w-full h-48 md:h-64 object-cover" />
 					<div class="p-5">
 						<h4 class="text-lg md:text-xl font-bold text-blue-300">
 							<span class="text-2xl text-yellow-400 ml-2">{m.n}.</span>{m.title}
 						</h4>
 						<p class="mt-2 text-gray-300 leading-relaxed">{m.body}</p>
+					</div>
+					<div class="flex justify-center px-4 pb-4">
+						<img src={m.img} alt={m.title} loading="lazy" class="max-h-40 md:max-h-48 w-auto object-contain rounded-lg" />
 					</div>
 				</div>
 			{/each}
