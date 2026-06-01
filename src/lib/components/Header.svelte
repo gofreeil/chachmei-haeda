@@ -24,7 +24,19 @@
     ];
 
     let showLangDropdown = $state(false);
+    let showNavMenu = $state(false);
     let onlineUsers = $state(1);
+
+    const navItems = [
+        { href: '/', label: 'בית', icon: '🏠' },
+        { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
+        { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
+        { href: '/request-hearing', label: 'בקשת דיון', icon: '⚖️' },
+        { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
+        { href: '/rulings', label: 'פסקי דין', icon: '📋' },
+        { href: '/articles', label: 'מאמרי רבנים', icon: '📚' },
+        { href: '/about/revenue', label: 'אודות', icon: 'ℹ️' },
+    ];
 
     async function pingServer() {
         try {
@@ -111,6 +123,9 @@
         const target = event.target as HTMLElement;
         if (!target.closest(".lang-dropdown-container")) {
             showLangDropdown = false;
+        }
+        if (!target.closest(".nav-menu-container")) {
+            showNavMenu = false;
         }
     }
 
@@ -205,6 +220,39 @@
                     </a>
 
                     <div class="flex items-center gap-1.5">
+                        <!-- תפריט ניווט נפתח - מובייל -->
+                        <div class="nav-menu-container relative">
+                            <button
+                                onclick={() => (showNavMenu = !showNavMenu)}
+                                class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
+                                aria-label="תפריט"
+                                aria-haspopup="menu"
+                                aria-expanded={showNavMenu}
+                            >
+                                <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+                                    <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
+                            {#if showNavMenu}
+                                <div
+                                    class="absolute left-0 z-[160] mt-2 w-56 rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-1"
+                                    role="menu"
+                                    aria-label="ניווט"
+                                >
+                                    {#each navItems as item}
+                                        <a
+                                            href={item.href}
+                                            role="menuitem"
+                                            class="flex items-center gap-3 px-4 py-2.5 text-right text-white hover:bg-white/10 transition-colors no-underline"
+                                            onclick={() => (showNavMenu = false)}
+                                        >
+                                            <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                            <span class="text-sm font-medium">{item.label}</span>
+                                        </a>
+                                    {/each}
+                                </div>
+                            {/if}
+                        </div>
                         <!-- כפתור אודות - מובייל -->
                         <a
                             href="/about/revenue"
@@ -332,6 +380,40 @@
                 </a>
             </div>
 <div class="flex items-center gap-2">
+                <!-- תפריט ניווט נפתח -->
+                <div class="nav-menu-container relative">
+                    <button
+                        class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-white transition-colors"
+                        onclick={() => (showNavMenu = !showNavMenu)}
+                        aria-label="תפריט"
+                        aria-haspopup="menu"
+                        aria-expanded={showNavMenu}
+                    >
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+                            <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <span class="font-bold">תפריט</span>
+                    </button>
+                    {#if showNavMenu}
+                        <div
+                            class="absolute right-0 z-[160] mt-2 w-60 rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-1"
+                            role="menu"
+                            aria-label="ניווט"
+                        >
+                            {#each navItems as item}
+                                <a
+                                    href={item.href}
+                                    role="menuitem"
+                                    class="flex items-center gap-3 px-4 py-2.5 text-right text-white hover:bg-white/10 transition-colors no-underline"
+                                    onclick={() => (showNavMenu = false)}
+                                >
+                                    <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                    <span class="text-sm font-medium">{item.label}</span>
+                                </a>
+                            {/each}
+                        </div>
+                    {/if}
+                </div>
                 <!-- כפתור אודות עם תצוגה מקדימה (CSS-only hover) -->
                 <div class="relative about-hover-trigger" id="about-btn-wrapper">
                     <a
