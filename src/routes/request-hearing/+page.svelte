@@ -1,28 +1,124 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 
 	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
 
-	let name = $state('');
-	let phone = $state('');
-	let email = $state('');
-	let opposing = $state('');
+	// ───────────────── Prerequisite (רישום וקבלת UECC) ─────────────────
+	let isRegistered = $state(false);
+	let hasAcceptedUECC = $state(false);
+	let userName = $state('');
+	let userPhone = $state('');
+	let userEmail = $state('');
+	let regUECC = $state(false);
+	let regArbitration = $state(false);
+
+	// ───────────────── תוכן הדיון ─────────────────
+	type DrawerKey = 'nickname' | 'parties' | 'date' | null;
+	let openDrawer = $state<DrawerKey>('nickname');
+
+	let nickname = $state('');
+	let plaintiffName = $state(''); // התובע — ברירת מחדל: המשתמש עצמו
+	let plaintiffPhone = $state('');
+	let defendantName = $state(''); // הנתבע
+	let defendantPhone = $state('');
 	let subject = $state('');
 	let details = $state('');
-	let preferredDateInput = $state('');
-	let agreeArbitration = $state(false);
-	let agreeUECC = $state(false);
-	let submitted = $state(false);
+	let proposedDate = $state('');
 
-	$effect(() => {
-		if (preferredDate && !preferredDateInput) preferredDateInput = preferredDate;
+	// ───────────────── מצב אישורים ─────────────────
+	let saved = $state(false);
+	let caseId = $state('');
+	let approvals = $state({
+		plaintiff: false,
+		defendant: false,
+		beitDin: false
 	});
 
-	function submit(e: Event) {
+	const allApproved = $derived(approvals.plaintiff && approvals.defendant && approvals.beitDin);
+
+	// ───────────────── טעינה משמורה מקומית (MVP) ─────────────────
+	onMount(() => {
+		try {
+			const user = JSON.parse(localStorage.getItem('chachmei-user') || 'null');
+			if (user) {
+				isRegistered = true;
+				hasAcceptedUECC = !!user.uecc;
+				userName = user.name || '';
+				userPhone = user.phone || '';
+				userEmail = user.email || '';
+				plaintiffName ||= userName;
+				plaintiffPhone ||= userPhone;
+			}
+			if (preferredDate && !proposedDate) proposedDate = preferredDate;
+		} catch {}
+	});
+
+	function registerUser() {
+		if (!userName.trim() || !userPhone.trim() || !regUECC || !regArbitration) return;
+		try {
+			localStorage.setItem(
+				'chachmei-user',
+				JSON.stringify({ name: userName, phone: userPhone, email: userEmail, uecc: true, arbitration: true })
+			);
+		} catch {}
+		isRegistered = true;
+		hasAcceptedUECC = true;
+		plaintiffName ||= userName;
+		plaintiffPhone ||= userPhone;
+	}
+
+	function toggle(key: DrawerKey) {
+		openDrawer = openDrawer === key ? null : key;
+	}
+
+	function readyToSubmit(): boolean {
+		return !!(
+			nickname.trim() &&
+			plaintiffName.trim() &&
+			defendantName.trim() &&
+			subject.trim() &&
+			proposedDate
+		);
+	}
+
+	function saveCase(e: Event) {
 		e.preventDefault();
-		if (!agreeArbitration || !agreeUECC) return;
-		// MVP: רק הצגת הצלחה. בעתיד — שליחה ל-Strapi.
-		submitted = true;
+		if (!readyToSubmit()) return;
+		caseId = 'C-' + Math.floor(100000 + Math.random() * 900000);
+		approvals = { plaintiff: true, defendant: false, beitDin: false };
+		saved = true;
+		try {
+			const cases = JSON.parse(localStorage.getItem('chachmei-cases') || '[]');
+			cases.push({
+				id: caseId,
+				nickname,
+				plaintiffName,
+				plaintiffPhone,
+				defendantName,
+				defendantPhone,
+				subject,
+				details,
+				proposedDate,
+				approvals: { ...approvals },
+				createdAt: new Date().toISOString()
+			});
+			localStorage.setItem('chachmei-cases', JSON.stringify(cases));
+		} catch {}
+	}
+
+	function resetForm() {
+		nickname = '';
+		plaintiffName = userName;
+		plaintiffPhone = userPhone;
+		defendantName = '';
+		defendantPhone = '';
+		subject = '';
+		details = '';
+		proposedDate = '';
+		approvals = { plaintiff: false, defendant: false, beitDin: false };
+		saved = false;
+		openDrawer = 'nickname';
 	}
 </script>
 
@@ -30,7 +126,7 @@
 	<title>בקשת דיון — חכמי העדה</title>
 </svelte:head>
 
-<section class="py-8 max-w-3xl mx-auto">
+<section class="py-8 max-w-3xl mx-auto px-3">
 	<header class="text-center mb-8">
 		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
 			בקשת דיון
@@ -38,119 +134,312 @@
 		<p class="mt-3 text-gray-300">פתיחת תיק חדש לבוררות ושלום על פי דין תורה</p>
 	</header>
 
-	{#if submitted}
-		<div class="rounded-2xl border border-green-500/30 bg-green-500/10 p-8 text-center">
-			<div class="text-6xl mb-4">✓</div>
-			<h2 class="text-2xl font-bold text-green-300">הבקשה נשלחה בהצלחה</h2>
-			<p class="mt-3 text-gray-200">
-				בית הדין יבחן את הבקשה ויחזור אליך תוך 7 ימי עבודה לתיאום מועד.
+	{#if !isRegistered || !hasAcceptedUECC}
+		<!-- ───────────── חוצץ: רישום + אישור UECC ───────────── -->
+		<div class="rounded-2xl border-2 border-yellow-400/40 bg-yellow-500/5 p-6 md:p-8">
+			<h2 class="text-xl md:text-2xl font-bold text-yellow-200 mb-2">🔑 לפני שמתחילים — הרשמה ואישור הקוד</h2>
+			<p class="text-gray-300 mb-5 leading-relaxed">
+				כל מעורב בדיון נדרש להירשם ולקבל על עצמו את הקוד האתי UECC ואת סמכות בית הדין. שלב זה חיוני
+				לפני הגשת בקשה.
 			</p>
-			<a href="/" class="mt-6 inline-block px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors">
-				חזרה לדף הבית
-			</a>
-		</div>
-	{:else}
-		<form onsubmit={submit} class="space-y-5">
-			{#if preferredDate}
-				<div class="rounded-xl border border-green-500/40 bg-green-500/10 p-4 text-center">
-					<span class="text-green-300 font-bold">📅 תאריך מבוקש מהלוח: {preferredDate}</span>
-				</div>
-			{/if}
-
 			<div class="grid md:grid-cols-2 gap-4">
 				<label class="block">
-					<span class="text-sm font-bold text-gray-300">שם מלא של המבקש *</span>
+					<span class="text-sm font-bold text-gray-300">שם מלא *</span>
 					<input
 						type="text"
-						bind:value={name}
+						bind:value={userName}
 						required
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
 					/>
 				</label>
 				<label class="block">
 					<span class="text-sm font-bold text-gray-300">טלפון *</span>
 					<input
 						type="tel"
-						bind:value={phone}
+						bind:value={userPhone}
 						required
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
 					/>
 				</label>
 			</div>
-
-			<div class="grid md:grid-cols-2 gap-4">
-				<label class="block">
-					<span class="text-sm font-bold text-gray-300">אימייל</span>
-					<input
-						type="email"
-						bind:value={email}
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
-					/>
-				</label>
-				<label class="block">
-					<span class="text-sm font-bold text-gray-300">תאריך מועדף</span>
-					<input
-						type="date"
-						bind:value={preferredDateInput}
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
-					/>
-				</label>
-			</div>
-
-			<label class="block">
-				<span class="text-sm font-bold text-gray-300">שם הצד שכנגד *</span>
+			<label class="block mt-4">
+				<span class="text-sm font-bold text-gray-300">אימייל</span>
 				<input
-					type="text"
-					bind:value={opposing}
-					required
-					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+					type="email"
+					bind:value={userEmail}
+					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
 				/>
 			</label>
 
-			<label class="block">
-				<span class="text-sm font-bold text-gray-300">נושא הסכסוך (בקצרה) *</span>
-				<input
-					type="text"
-					bind:value={subject}
-					required
-					placeholder="למשל: הלנת שכר, סכסוך שותפים, ערבות הלוואה..."
-					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
-				/>
-			</label>
-
-			<label class="block">
-				<span class="text-sm font-bold text-gray-300">פירוט הטענות *</span>
-				<textarea
-					bind:value={details}
-					required
-					rows="6"
-					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none resize-y"
-				></textarea>
-			</label>
-
-			<div class="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 space-y-3">
+			<div class="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 mt-5 space-y-3">
 				<label class="flex items-start gap-3 cursor-pointer">
-					<input type="checkbox" bind:checked={agreeArbitration} class="mt-1" />
+					<input type="checkbox" bind:checked={regUECC} class="mt-1" />
 					<span class="text-gray-200 text-sm">
-						אני מסכים שהמחלוקת תוכרע בבית הדין של חכמי העדה על פי דין תורה, ומקבל על עצמי לציית לפסק
-						הדין.
+						אני מקבל על עצמי את
+						<a href="/ethical-code" class="text-blue-300 underline">הקוד האתי UECC</a>
+						ושבע מצוות בני נח כתנאי לעריכת הדיון.
 					</span>
 				</label>
 				<label class="flex items-start gap-3 cursor-pointer">
-					<input type="checkbox" bind:checked={agreeUECC} class="mt-1" />
+					<input type="checkbox" bind:checked={regArbitration} class="mt-1" />
 					<span class="text-gray-200 text-sm">
-						אני מקבל על עצמי את <a href="/ethical-code" class="text-blue-300 underline">הקוד האתי UECC</a>
-						ושבע מצוות בני נח כתנאי לעריכת הדיון.
+						אני מסכים שהמחלוקת תוכרע בבית הדין של חכמי העדה על פי דין תורה, ומקבל על עצמי לציית
+						לפסק הדין.
 					</span>
 				</label>
 			</div>
 
 			<button
-				type="submit"
-				disabled={!agreeArbitration || !agreeUECC}
-				class="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.02] transition-transform"
+				type="button"
+				onclick={registerUser}
+				disabled={!userName.trim() || !userPhone.trim() || !regUECC || !regArbitration}
+				class="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
 			>
-				שלח בקשה
+				✓ הרשמה ואישור הקוד
+			</button>
+		</div>
+	{:else if saved}
+		<!-- ───────────── מצב לאחר שמירה — לוח אישורים ───────────── -->
+		<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-6 md:p-8">
+			<div class="flex items-center justify-between mb-4">
+				<h2 class="text-2xl font-bold text-blue-300">תיק #{caseId}</h2>
+				<span class="text-sm text-gray-400">{nickname}</span>
+			</div>
+
+			<p class="text-gray-200 mb-5">
+				התאריך המוצע <strong class="text-yellow-300">{proposedDate}</strong> לא יינעל ביומן עד שלושת הצדדים יאשרו:
+			</p>
+
+			<div class="space-y-3">
+				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
+					<div>
+						<div class="font-bold text-white">1. התובע</div>
+						<div class="text-sm text-gray-400">{plaintiffName}</div>
+					</div>
+					{#if approvals.plaintiff}
+						<span class="text-green-400 font-bold">✓ אישר</span>
+					{:else}
+						<button
+							onclick={() => (approvals.plaintiff = true)}
+							class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-bold"
+						>
+							אשר תאריך
+						</button>
+					{/if}
+				</div>
+
+				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
+					<div>
+						<div class="font-bold text-white">2. הנתבע</div>
+						<div class="text-sm text-gray-400">{defendantName}</div>
+					</div>
+					{#if approvals.defendant}
+						<span class="text-green-400 font-bold">✓ אישר</span>
+					{:else}
+						<button
+							onclick={() => (approvals.defendant = true)}
+							class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-bold"
+							title="המתנה לאישור הנתבע (סימולציה ב-MVP)"
+						>
+							ממתין לאישור
+						</button>
+					{/if}
+				</div>
+
+				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
+					<div>
+						<div class="font-bold text-white">3. בית הדין</div>
+						<div class="text-sm text-gray-400">רבני חכמי העדה</div>
+					</div>
+					{#if approvals.beitDin}
+						<span class="text-green-400 font-bold">✓ אישר</span>
+					{:else}
+						<button
+							onclick={() => (approvals.beitDin = true)}
+							class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-bold"
+							title="המתנה לאישור בית הדין (סימולציה ב-MVP)"
+						>
+							ממתין לאישור
+						</button>
+					{/if}
+				</div>
+			</div>
+
+			{#if allApproved}
+				<div class="mt-6 rounded-xl border-2 border-green-500/40 bg-green-500/10 p-5 text-center">
+					<div class="text-4xl mb-2">🎉</div>
+					<p class="text-green-200 font-bold text-lg">המועד אושר על ידי כל הצדדים ונקבע ביומן!</p>
+				</div>
+			{:else}
+				<div class="mt-6 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-center text-sm text-yellow-200">
+					⏳ המועד עוד לא נקבע ביומן — ממתינים לאישור שאר הצדדים
+				</div>
+			{/if}
+
+			<button
+				type="button"
+				onclick={resetForm}
+				class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
+			>
+				← פתיחת תיק נוסף
+			</button>
+		</div>
+	{:else}
+		<!-- ───────────── המגירות (Accordion) ───────────── -->
+		{#if preferredDate}
+			<div class="mb-5 rounded-xl border border-green-500/40 bg-green-500/10 p-4 text-center">
+				<span class="text-green-300 font-bold">📅 תאריך נבחר מהלוח: {preferredDate}</span>
+			</div>
+		{/if}
+
+		<form onsubmit={saveCase} class="space-y-3">
+			<!-- מגירה 1: שם כינוי לדיון -->
+			<div class="rounded-xl border border-blue-500/20 bg-white/5 overflow-hidden">
+				<button
+					type="button"
+					onclick={() => toggle('nickname')}
+					class="w-full flex items-center justify-between p-4 hover:bg-white/5 text-right"
+					aria-expanded={openDrawer === 'nickname'}
+				>
+					<span class="flex items-center gap-3">
+						<span class="text-2xl">🏷️</span>
+						<span class="font-bold text-white text-lg">שם כינוי לדיון זה</span>
+						{#if nickname}<span class="text-green-400 text-sm">✓</span>{/if}
+					</span>
+					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'nickname' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+				</button>
+				{#if openDrawer === 'nickname'}
+					<div class="p-4 pt-0 border-t border-white/10">
+						<input
+							type="text"
+							bind:value={nickname}
+							placeholder="לדוגמה: מחלוקת שותפים — מאפיית הזית"
+							class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+						/>
+						<p class="text-xs text-gray-400 mt-2">כינוי פנימי בלבד, לזיהוי מהיר של התיק.</p>
+					</div>
+				{/if}
+			</div>
+
+			<!-- מגירה 2: שמות המעורבים + נושא -->
+			<div class="rounded-xl border border-blue-500/20 bg-white/5 overflow-hidden">
+				<button
+					type="button"
+					onclick={() => toggle('parties')}
+					class="w-full flex items-center justify-between p-4 hover:bg-white/5 text-right"
+					aria-expanded={openDrawer === 'parties'}
+				>
+					<span class="flex items-center gap-3">
+						<span class="text-2xl">👥</span>
+						<span class="font-bold text-white text-lg">שמות המעורבים ונושא התיק</span>
+						{#if plaintiffName && defendantName && subject}<span class="text-green-400 text-sm">✓</span>{/if}
+					</span>
+					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'parties' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+				</button>
+				{#if openDrawer === 'parties'}
+					<div class="p-4 pt-0 border-t border-white/10 space-y-4">
+						<div class="grid md:grid-cols-2 gap-4">
+							<label class="block">
+								<span class="text-sm font-bold text-gray-300">שם התובע *</span>
+								<input
+									type="text"
+									bind:value={plaintiffName}
+									required
+									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+								/>
+							</label>
+							<label class="block">
+								<span class="text-sm font-bold text-gray-300">טלפון התובע</span>
+								<input
+									type="tel"
+									bind:value={plaintiffPhone}
+									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+								/>
+							</label>
+						</div>
+						<div class="grid md:grid-cols-2 gap-4">
+							<label class="block">
+								<span class="text-sm font-bold text-gray-300">שם הנתבע *</span>
+								<input
+									type="text"
+									bind:value={defendantName}
+									required
+									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+								/>
+							</label>
+							<label class="block">
+								<span class="text-sm font-bold text-gray-300">טלפון הנתבע</span>
+								<input
+									type="tel"
+									bind:value={defendantPhone}
+									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+								/>
+							</label>
+						</div>
+						<label class="block">
+							<span class="text-sm font-bold text-gray-300">נושא התיק *</span>
+							<input
+								type="text"
+								bind:value={subject}
+								required
+								placeholder="לדוגמה: הלנת שכר, סכסוך שותפים, ערבות הלוואה..."
+								class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+							/>
+						</label>
+						<label class="block">
+							<span class="text-sm font-bold text-gray-300">פירוט הטענות</span>
+							<textarea
+								bind:value={details}
+								rows="5"
+								class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none resize-y"
+							></textarea>
+						</label>
+						<p class="text-xs text-gray-400">
+							💡 הנתבע נדרש גם הוא להירשם ולקבל על עצמו את הקוד האתי לפני שיוכל לאשר את התאריך.
+						</p>
+					</div>
+				{/if}
+			</div>
+
+			<!-- מגירה 3: הצעת תאריך -->
+			<div class="rounded-xl border border-blue-500/20 bg-white/5 overflow-hidden">
+				<button
+					type="button"
+					onclick={() => toggle('date')}
+					class="w-full flex items-center justify-between p-4 hover:bg-white/5 text-right"
+					aria-expanded={openDrawer === 'date'}
+				>
+					<span class="flex items-center gap-3">
+						<span class="text-2xl">📅</span>
+						<span class="font-bold text-white text-lg">הצעת מועד לדיון</span>
+						{#if proposedDate}<span class="text-green-400 text-sm">✓</span>{/if}
+					</span>
+					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'date' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+				</button>
+				{#if openDrawer === 'date'}
+					<div class="p-4 pt-0 border-t border-white/10">
+						<label class="block">
+							<span class="text-sm font-bold text-gray-300">תאריך שעליו אני ובעל דיני סיכמנו *</span>
+							<input
+								type="date"
+								bind:value={proposedDate}
+								required
+								class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+							/>
+						</label>
+						<p class="text-xs text-gray-400 mt-2">
+							התאריך לא יינעל ביומן עד שגם הנתבע וגם בית הדין יאשרו אותו.
+						</p>
+					</div>
+				{/if}
+			</div>
+
+			<button
+				type="submit"
+				disabled={!readyToSubmit()}
+				class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
+			>
+				💾 שמור והעבר את ההצעה לרבנים
 			</button>
 		</form>
 	{/if}
