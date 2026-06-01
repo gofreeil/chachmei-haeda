@@ -2,23 +2,37 @@
 	import { hearings } from '$lib/data/hearings';
 
 	const dayNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
-	const monthNames = [
-		'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
-		'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'
-	];
 
-	const now = new Date();
-	const todayStr = toDateStr(now);
+	const hebDayFmt = new Intl.DateTimeFormat('en-US-u-ca-hebrew', { day: 'numeric' });
+	const hebMonthFmt = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { month: 'long' });
+	const hebYearFmt = new Intl.DateTimeFormat('en-US-u-ca-hebrew', { year: 'numeric' });
 
-	let viewYear = $state(now.getFullYear());
-	let viewMonth = $state(now.getMonth());
+	function hebDay(d: Date): number {
+		return parseInt(hebDayFmt.format(d), 10);
+	}
+	function hebMonthName(d: Date): string {
+		return hebMonthFmt.format(d);
+	}
+	function hebYear(d: Date): string {
+		return hebYearFmt.format(d);
+	}
 
-	const bookedSet = new Set(
-		hearings.filter((h) => h.status === 'מתוכנן').map((h) => h.date)
-	);
-	const bookedMap = new Map(
-		hearings.filter((h) => h.status === 'מתוכנן').map((h) => [h.date, h])
-	);
+	function startOfHebMonth(d: Date): Date {
+		const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+		while (hebDay(x) !== 1) x.setDate(x.getDate() - 1);
+		return x;
+	}
+	function nextHebMonthStart(monthStart: Date): Date {
+		const x = new Date(monthStart);
+		x.setDate(x.getDate() + 1);
+		while (hebDay(x) !== 1) x.setDate(x.getDate() + 1);
+		return x;
+	}
+	function prevHebMonthStart(monthStart: Date): Date {
+		const x = new Date(monthStart);
+		x.setDate(x.getDate() - 1);
+		return startOfHebMonth(x);
+	}
 
 	function toDateStr(d: Date): string {
 		const y = d.getFullYear();
@@ -27,88 +41,94 @@
 		return `${y}-${m}-${day}`;
 	}
 
+	const now = new Date();
+	const todayStr = toDateStr(now);
+	const todayMonthStartMs = startOfHebMonth(now).getTime();
+
+	let monthStart = $state(startOfHebMonth(now));
+
+	const bookedSet = new Set(
+		hearings.filter((h) => h.status === 'מתוכנן').map((h) => h.date)
+	);
+	const bookedMap = new Map(
+		hearings.filter((h) => h.status === 'מתוכנן').map((h) => [h.date, h])
+	);
+
 	type Cell = {
 		date: string;
 		day: number;
+		gregLabel: string;
 		isToday: boolean;
 		isPast: boolean;
 		isShabbat: boolean;
 		isBooked: boolean;
-		isOtherMonth: boolean;
+		isEmpty: boolean;
 	};
 
-	const grid = $derived.by(() => {
-		const first = new Date(viewYear, viewMonth, 1);
-		const firstDow = first.getDay();
-		const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-		const prevDays = new Date(viewYear, viewMonth, 0).getDate();
-		const cells: Cell[] = [];
-
-		for (let i = firstDow - 1; i >= 0; i--) {
-			const d = new Date(viewYear, viewMonth - 1, prevDays - i);
-			cells.push(buildCell(d, true));
-		}
-		for (let day = 1; day <= daysInMonth; day++) {
-			const d = new Date(viewYear, viewMonth, day);
-			cells.push(buildCell(d, false));
-		}
-		while (cells.length % 7 !== 0 || cells.length < 42) {
-			const last = cells[cells.length - 1];
-			const lastDate = new Date(last.date);
-			lastDate.setDate(lastDate.getDate() + 1);
-			cells.push(buildCell(lastDate, true));
-			if (cells.length >= 42) break;
-		}
-		return cells;
-	});
-
-	function buildCell(d: Date, isOtherMonth: boolean): Cell {
-		const dateStr = toDateStr(d);
-		const isShabbat = d.getDay() === 6;
-		const isPast = dateStr < todayStr;
+	function emptyCell(): Cell {
 		return {
-			date: dateStr,
-			day: d.getDate(),
-			isToday: dateStr === todayStr,
-			isPast,
-			isShabbat,
-			isBooked: bookedSet.has(dateStr),
-			isOtherMonth
+			date: '',
+			day: 0,
+			gregLabel: '',
+			isToday: false,
+			isPast: false,
+			isShabbat: false,
+			isBooked: false,
+			isEmpty: true
 		};
 	}
 
+	const grid = $derived.by(() => {
+		const nextStart = nextHebMonthStart(monthStart);
+		const daysInMonth = Math.round(
+			(nextStart.getTime() - monthStart.getTime()) / 86400000
+		);
+		const firstDow = monthStart.getDay();
+		const cells: Cell[] = [];
+
+		for (let i = 0; i < firstDow; i++) cells.push(emptyCell());
+
+		for (let i = 0; i < daysInMonth; i++) {
+			const d = new Date(monthStart);
+			d.setDate(d.getDate() + i);
+			const ds = toDateStr(d);
+			cells.push({
+				date: ds,
+				day: hebDay(d),
+				gregLabel: `${d.getDate()}.${d.getMonth() + 1}`,
+				isToday: ds === todayStr,
+				isPast: ds < todayStr,
+				isShabbat: d.getDay() === 6,
+				isBooked: bookedSet.has(ds),
+				isEmpty: false
+			});
+		}
+
+		while (cells.length < 42) cells.push(emptyCell());
+		return cells;
+	});
+
 	function isAvailable(c: Cell): boolean {
-		return !c.isPast && !c.isShabbat && !c.isBooked && !c.isOtherMonth;
+		return !c.isEmpty && !c.isPast && !c.isShabbat && !c.isBooked;
 	}
 
 	function prevMonth() {
-		if (viewMonth === 0) {
-			viewMonth = 11;
-			viewYear--;
-		} else {
-			viewMonth--;
-		}
+		monthStart = prevHebMonthStart(monthStart);
 	}
-
 	function nextMonth() {
-		if (viewMonth === 11) {
-			viewMonth = 0;
-			viewYear++;
-		} else {
-			viewMonth++;
-		}
+		monthStart = nextHebMonthStart(monthStart);
+	}
+	function canGoPrev(): boolean {
+		return monthStart.getTime() > todayMonthStartMs;
 	}
 
-	function canGoPrev(): boolean {
-		const cur = now.getFullYear() * 12 + now.getMonth();
-		const view = viewYear * 12 + viewMonth;
-		return view > cur;
-	}
+	const monthLabel = $derived(`${hebMonthName(monthStart)} ${hebYear(monthStart)}`);
+	const availableCount = $derived(grid.filter((c) => isAvailable(c)).length);
 
 	let hoveredCell = $state<Cell | null>(null);
 
 	function cellTooltip(c: Cell): string {
-		if (c.isOtherMonth) return '';
+		if (c.isEmpty) return '';
 		if (c.isPast) return 'תאריך עבר';
 		if (c.isShabbat) return 'שבת — אין דיונים';
 		if (c.isBooked) {
@@ -117,11 +137,12 @@
 		}
 		return 'פנוי — לחץ לקביעת דיון';
 	}
-
-	const availableCount = $derived(grid.filter((c) => isAvailable(c)).length);
 </script>
 
-<div class="rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-900/20 to-purple-900/10 p-5 md:p-6">
+<div
+	dir="rtl"
+	class="rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-900/20 to-purple-900/10 p-5 md:p-6"
+>
 	<header class="flex items-center justify-between gap-3 mb-4">
 		<button
 			type="button"
@@ -133,9 +154,7 @@
 			→
 		</button>
 		<div class="text-center">
-			<h3 class="text-xl md:text-2xl font-black text-white">
-				{monthNames[viewMonth]} {viewYear}
-			</h3>
+			<h3 class="text-xl md:text-2xl font-black text-white">{monthLabel}</h3>
 			<p class="text-xs text-blue-300 mt-1">
 				{availableCount} תאריכים פנויים החודש
 			</p>
@@ -158,7 +177,7 @@
 
 	<div class="grid grid-cols-7 gap-1">
 		{#each grid as c}
-			{#if c.isOtherMonth}
+			{#if c.isEmpty}
 				<div class="aspect-square rounded-lg bg-transparent"></div>
 			{:else if isAvailable(c)}
 				<a
@@ -166,22 +185,24 @@
 					title={cellTooltip(c)}
 					onmouseenter={() => (hoveredCell = c)}
 					onmouseleave={() => (hoveredCell = null)}
-					class="cal-cell available aspect-square rounded-lg flex items-center justify-center text-sm font-bold border border-green-500/30 bg-green-500/10 text-green-200 hover:bg-green-500/30 hover:border-green-400 hover:scale-105 transition-all"
+					class="cal-cell available aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold border border-green-500/30 bg-green-500/10 text-green-200 hover:bg-green-500/30 hover:border-green-400 hover:scale-105 transition-all"
 				>
-					{c.day}
+					<span>{c.day}</span>
+					<span class="text-[10px] font-normal opacity-60">{c.gregLabel}</span>
 				</a>
 			{:else}
 				<div
 					title={cellTooltip(c)}
 					onmouseenter={() => (hoveredCell = c)}
 					onmouseleave={() => (hoveredCell = null)}
-					class="aspect-square rounded-lg flex items-center justify-center text-sm font-bold cursor-not-allowed
+					class="aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold cursor-not-allowed
 						{c.isBooked ? 'border border-red-500/40 bg-red-500/15 text-red-200' : ''}
 						{c.isShabbat && !c.isBooked ? 'border border-yellow-500/30 bg-yellow-500/10 text-yellow-300/70' : ''}
 						{c.isPast && !c.isBooked && !c.isShabbat ? 'border border-white/5 bg-white/5 text-gray-600' : ''}
 						{c.isToday ? 'ring-2 ring-blue-400' : ''}"
 				>
-					{c.day}
+					<span>{c.day}</span>
+					<span class="text-[10px] font-normal opacity-50">{c.gregLabel}</span>
 				</div>
 			{/if}
 		{/each}
@@ -206,7 +227,7 @@
 		</span>
 	</div>
 
-	{#if hoveredCell && !hoveredCell.isOtherMonth}
+	{#if hoveredCell && !hoveredCell.isEmpty}
 		<div class="mt-3 text-center text-sm">
 			{#if hoveredCell.isBooked}
 				{@const h = bookedMap.get(hoveredCell.date)}
