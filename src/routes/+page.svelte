@@ -54,9 +54,19 @@
 </svelte:head>
 
 <section class="py-10 text-center">
-	<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent">
-		ברוכים הבאים לחכמי העדה
-	</h2>
+	<div class="flex flex-row items-center justify-center gap-4 md:gap-6 flex-wrap">
+		<div class="h-24 w-24 md:h-32 md:w-32 rounded-full overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-purple-500/30">
+			<img
+				src="/images/chachmei-logo.png"
+				alt="חכמי העדה"
+				class="w-full h-full object-contain scale-[1.15]"
+				style="image-rendering: -webkit-optimize-contrast;"
+			/>
+		</div>
+		<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent">
+			ברוכים הבאים לחכמי העדה
+		</h2>
+	</div>
 	<p class="mt-4 text-gray-300 text-lg md:text-xl">בית דין לבוררות ושלום על פי דין תורה</p>
 	<p class="mt-2 text-gray-400 text-sm md:text-base max-w-2xl mx-auto">
 		פלטפורמה לפתרון מחלוקות בין אדם לחברו, מאמרי רבנים מאושרים, ודיוני זום עם סיכומי הכרעה כתובים — הכל

@@ -7,7 +7,7 @@
 
 	const hebDayFmt = new Intl.DateTimeFormat('en-US-u-ca-hebrew', { day: 'numeric' });
 	const hebMonthFmt = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { month: 'long' });
-	const hebYearGematriaFmt = new Intl.DateTimeFormat('he-IL-u-ca-hebrew', { year: 'numeric' });
+	const hebYearNumericFmt = new Intl.DateTimeFormat('en-US-u-ca-hebrew', { year: 'numeric' });
 	const gregMonthFmt = new Intl.DateTimeFormat('he-IL', { month: 'long' });
 
 	function hebDay(d: Date): number {
@@ -16,9 +16,25 @@
 	function hebMonthName(d: Date): string {
 		return hebMonthFmt.format(d);
 	}
+	// 786 → "תשפ״ו". מיועד ל-3 ספרות אחרונות של שנה עברית.
+	function numToGematria(n: number): string {
+		const ones = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+		const tens = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+		const hundreds = ['', 'ק', 'ר', 'ש', 'ת', 'תק', 'תר', 'תש', 'תת', 'תתק'];
+		let str = hundreds[Math.floor(n / 100)] ?? '';
+		const r = n % 100;
+		if (r === 15) str += 'טו';
+		else if (r === 16) str += 'טז';
+		else {
+			str += tens[Math.floor(r / 10)] ?? '';
+			str += ones[r % 10] ?? '';
+		}
+		if (str.length === 1) return str + '׳'; // geresh
+		return str.slice(0, -1) + '״' + str.slice(-1); // gershayim
+	}
 	function hebYearGematria(d: Date): string {
-		// "ה׳תשפ״ו" → "תשפ״ו" (מסיר את אות האלפים)
-		return hebYearGematriaFmt.format(d).replace(/^[הוזחט]׳?\s*/, '');
+		const y = parseInt(hebYearNumericFmt.format(d), 10);
+		return numToGematria(y % 1000); // 5786 → 786 → "תשפ״ו"
 	}
 	function gregMonth(d: Date): string {
 		return gregMonthFmt.format(d);
