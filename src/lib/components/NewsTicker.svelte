@@ -68,7 +68,7 @@
 
 <section
 	aria-label="חדשות"
-	class="news-ticker-container border-y border-blue-900/40 bg-[#0f172a]/95 py-3 backdrop-blur-md shadow-lg"
+	class="news-ticker-container border-y border-amber-300/40 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 py-3 backdrop-blur-md shadow-lg"
 >
 	<!-- תוכן נגיש לקוראי מסך -->
 	<ul class="sr-only">
@@ -86,9 +86,9 @@
 	</button>
 
 	<div class="mx-auto max-w-7xl flex items-center px-4" aria-hidden="true">
-		<!-- תווית "חדשות" — בדומה לאתר קהילה בשכונה -->
+		<!-- תווית "חדשות" — בזהב/ענבר להתאמה לערכת הצבעים של האתר -->
 		<div
-			class="z-10 bg-red-600 px-5 py-3 rounded-lg text-base font-black text-white shadow-xl flex-shrink-0 ml-5 flex-col items-center justify-center border border-red-400 lg:flex hidden leading-tight"
+			class="z-10 bg-gradient-to-br from-amber-400 to-yellow-600 px-5 py-3 rounded-lg text-base font-black text-gray-900 shadow-xl flex-shrink-0 ml-5 flex-col items-center justify-center border-2 border-amber-200 lg:flex hidden leading-tight"
 		>
 			<span>חדשות</span>
 		</div>
@@ -110,17 +110,17 @@
 									href={item.sourceUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									class="text-lg md:text-xl font-bold text-blue-100 hover:text-blue-300 transition-colors"
+									class="text-lg md:text-xl font-bold text-amber-100 hover:text-amber-300 transition-colors"
 								>{item.line1}</a>
 							{:else}
-								<span class="text-lg md:text-xl font-bold text-blue-100">{item.line1}</span>
+								<span class="text-lg md:text-xl font-bold text-amber-100">{item.line1}</span>
 							{/if}
 							{#if item.line2}
-								<span class="text-sm md:text-base font-medium text-blue-300">{item.line2}</span>
+								<span class="text-sm md:text-base font-medium text-amber-200/90">{item.line2}</span>
 							{/if}
 						</div>
 						<!-- מפריד -->
-						<div class="h-10 w-px bg-gradient-to-b from-transparent via-gray-600 to-transparent"></div>
+						<div class="h-10 w-px bg-gradient-to-b from-transparent via-amber-400/60 to-transparent"></div>
 					</div>
 				{/each}
 			</div>
