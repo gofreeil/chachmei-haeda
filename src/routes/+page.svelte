@@ -187,6 +187,16 @@
 			</div>
 		</div>
 	{/if}
+
+	<div class="mt-8 flex justify-end">
+		<a
+			href="/activity"
+			class="text-sm md:text-base font-bold text-amber-700 hover:text-amber-900 transition-colors underline decoration-amber-400/60 underline-offset-4"
+		>
+			אל כלל הפעולות של חכמי העדה ←
+		</a>
+	</div>
+	<hr class="mt-2 border-t-2 border-amber-400/40" />
 </section>
 
 {#if latestArticle}
@@ -217,14 +227,6 @@
 			</h2>
 			<p class="text-sm text-blue-300 mb-2">מאת: {latestArticle.author}</p>
 			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
-			<div class="mt-3 pt-3 border-t border-blue-400/20 flex items-center justify-end gap-3 flex-wrap">
-				<a
-					href="/articles/{latestArticle.slug}"
-					class="text-blue-300 font-bold text-sm hover:text-blue-200 transition-colors"
-				>
-					פתח במסך נפרד ←
-				</a>
-			</div>
 		</article>
 	</section>
 {/if}
@@ -270,7 +272,7 @@
 					שאל את חכמי העדה
 				</h3>
 				<p class="text-gray-800 text-xs md:text-sm font-bold leading-snug">
-					יש לך שאלה בהלכה, במוסר עסקי או בעניין שלום בית? לחץ כאן לפתיחת טופס השאלה
+					יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי — פנה אל החכמים ותענה בהקדם האפשרי
 				</p>
 			</div>
 		</a>
