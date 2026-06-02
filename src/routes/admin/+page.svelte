@@ -9,17 +9,33 @@
 	const SESSION_KEY = 'chachmei-admin-session';
 	const ARTICLES_KEY = 'chachmei-custom-articles';
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
+	const NEWS_KEY = 'chachmei-custom-news';
 	const CASES_KEY = 'chachmei-cases';
 	const HOME_VIDEO_KEY = 'chachmei-home-video-url';
+
+	type NewsItem = {
+		id: string;
+		title: string;
+		summary: string;
+		sourceUrl?: string;
+		date: string;
+	};
 
 	let isLoggedIn = $state(false);
 	let passwordInput = $state('');
 	let loginError = $state('');
-	let activeTab = $state<'articles' | 'videos' | 'dates'>('articles');
+	let activeTab = $state<'articles' | 'videos' | 'news' | 'dates'>('articles');
 
 	let customArticles = $state<Article[]>([]);
 	let customActivity = $state<ActivityItem[]>([]);
+	let customNews = $state<NewsItem[]>([]);
 	let pendingCases = $state<any[]>([]);
+
+	// ───────────── טופס חדשות ─────────────
+	let newsTitle = $state('');
+	let newsSummary = $state('');
+	let newsSourceUrl = $state('');
+	let newsNotice = $state('');
 
 	// ───────────── טופס מאמר ─────────────
 	let artTitle = $state('');
@@ -95,6 +111,8 @@
 			if (Array.isArray(a)) customArticles = a;
 			const v = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
 			if (Array.isArray(v)) customActivity = v;
+			const n = JSON.parse(localStorage.getItem(NEWS_KEY) || '[]');
+			if (Array.isArray(n)) customNews = n;
 			const c = JSON.parse(localStorage.getItem(CASES_KEY) || '[]');
 			if (Array.isArray(c)) pendingCases = c;
 			const hv = localStorage.getItem(HOME_VIDEO_KEY);
@@ -221,6 +239,39 @@
 		} catch {}
 	}
 
+	// ───────────── ניהול חדשות לוקאליות ─────────────
+	function submitNews(e: Event) {
+		e.preventDefault();
+		if (!newsTitle.trim()) {
+			newsNotice = '⚠️ חובה למלא כותרת';
+			return;
+		}
+		const item: NewsItem = {
+			id: 'news-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+			title: newsTitle.trim(),
+			summary: newsSummary.trim(),
+			date: new Date().toISOString().slice(0, 10),
+			...(newsSourceUrl.trim() ? { sourceUrl: newsSourceUrl.trim() } : {})
+		};
+		customNews = [item, ...customNews];
+		try {
+			localStorage.setItem(NEWS_KEY, JSON.stringify(customNews));
+		} catch {}
+		newsTitle = '';
+		newsSummary = '';
+		newsSourceUrl = '';
+		newsNotice = '✅ החדשה נוספה — תופיע בטיקר בדף הבית (לוקאלית בלבד, לא בקהילה בשכונה)';
+		setTimeout(() => (newsNotice = ''), 5000);
+	}
+
+	function deleteCustomNews(id: string) {
+		if (!confirm('למחוק את החדשה?')) return;
+		customNews = customNews.filter((x) => x.id !== id);
+		try {
+			localStorage.setItem(NEWS_KEY, JSON.stringify(customNews));
+		} catch {}
+	}
+
 	// ───────────── אישור תאריכים ─────────────
 	function approveCase(id: string) {
 		pendingCases = pendingCases.map((c) =>
@@ -331,6 +382,16 @@
 				onclick={() => (activeTab = 'videos')}
 			>
 				🎬 סרטונים והודעות
+			</button>
+			<button
+				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'news'}
+				class:text-white={activeTab === 'news'}
+				class:text-gray-400={activeTab !== 'news'}
+				class:hover:text-gray-200={activeTab !== 'news'}
+				onclick={() => (activeTab = 'news')}
+			>
+				📰 חדשות
 			</button>
 			<button
 				class="relative px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
@@ -679,6 +740,100 @@
 							</div>
 						{/each}
 					</div>
+				</div>
+			</div>
+		{:else if activeTab === 'news'}
+			<div class="space-y-6">
+				<!-- הסבר -->
+				<div class="rounded-2xl border-2 border-blue-500/40 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 p-5 md:p-6">
+					<h2 class="text-xl font-black text-blue-200 mb-2">📰 ניהול טיקר החדשות</h2>
+					<p class="text-sm text-gray-300 leading-relaxed">
+						הטיקר בדף הבית מציג חדשות שמסונכרנות אוטומטית <strong class="text-blue-300">מהאתר "קהילה בשכונה"</strong> (סנכרון חד-כיווני).
+					</p>
+					<p class="text-sm text-gray-300 leading-relaxed mt-2">
+						חדשות שתוסיף כאן יופיעו <strong class="text-amber-300">רק בחכמי העדה</strong>, יסומנו בתווית "חכמי העדה", ולא יסונכרנו חזרה לאתר קהילה בשכונה.
+					</p>
+				</div>
+
+				<!-- טופס הוספה -->
+				<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-5 md:p-6">
+					<h2 class="text-xl font-black text-blue-200 mb-4">➕ הוספת חדשה לוקאלית</h2>
+					<form onsubmit={submitNews} class="grid grid-cols-1 gap-4">
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="news-title">כותרת *</label>
+							<input
+								id="news-title"
+								type="text"
+								bind:value={newsTitle}
+								placeholder="למשל: בית הדין יישב ביום שלישי הקרוב"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="news-summary">שורת תיאור (אופציונלי)</label>
+							<input
+								id="news-summary"
+								type="text"
+								bind:value={newsSummary}
+								placeholder="שורה משנית בטיקר"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="news-url">קישור (אופציונלי)</label>
+							<input
+								id="news-url"
+								type="url"
+								bind:value={newsSourceUrl}
+								dir="ltr"
+								placeholder="https://..."
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none text-right"
+							/>
+						</div>
+
+						{#if newsNotice}
+							<p class="text-sm font-bold {newsNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">
+								{newsNotice}
+							</p>
+						{/if}
+
+						<div>
+							<button
+								type="submit"
+								class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-black hover:opacity-90 transition-opacity"
+							>
+								הוסף לטיקר
+							</button>
+						</div>
+					</form>
+				</div>
+
+				<!-- רשימת חדשות לוקאליות -->
+				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
+					<h2 class="text-xl font-black text-white mb-4">📋 חדשות לוקאליות ({customNews.length})</h2>
+					{#if customNews.length === 0}
+						<p class="text-gray-400 text-sm">עוד לא הוספת חדשות לוקאליות. הוסף חדשה בטופס למעלה.</p>
+					{:else}
+						<div class="space-y-2">
+							{#each customNews as n}
+								<div class="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
+									<div class="min-w-0 flex-1">
+										<div class="font-bold text-white text-sm">{n.title}</div>
+										{#if n.summary}
+											<div class="text-xs text-gray-300 mt-0.5">{n.summary}</div>
+										{/if}
+										<div class="text-xs text-gray-500 mt-1">{n.date}</div>
+									</div>
+									<button
+										onclick={() => deleteCustomNews(n.id)}
+										class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold flex-shrink-0"
+									>
+										מחק
+									</button>
+								</div>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			</div>
 		{:else if activeTab === 'dates'}

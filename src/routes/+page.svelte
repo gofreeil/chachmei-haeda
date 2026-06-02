@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { activity, type ActivityItem } from '$lib/data/activity';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { latestAnswer } from '$lib/data/qa';
+	import NewsTicker from '$lib/components/NewsTicker.svelte';
 
 	const recentQa = latestAnswer();
 
 	let allArticles = $state<Article[]>(staticArticles);
-	let allActivity = $state<ActivityItem[]>(activity);
 	const DEFAULT_HOME_VIDEO = 'https://youtu.be/9ioV_PeaqWE?si=WN00o8ByG65ZOvQ4';
 	let homeVideoUrl = $state<string>(DEFAULT_HOME_VIDEO);
 
@@ -35,8 +34,6 @@
 		try {
 			const customArt = JSON.parse(localStorage.getItem('chachmei-custom-articles') || '[]');
 			if (Array.isArray(customArt)) allArticles = [...customArt, ...staticArticles];
-			const customAct = JSON.parse(localStorage.getItem('chachmei-custom-activity') || '[]');
-			if (Array.isArray(customAct)) allActivity = [...customAct, ...activity];
 			const savedVid = localStorage.getItem('chachmei-home-video-url');
 			if (savedVid !== null) homeVideoUrl = savedVid;
 		} catch {}
@@ -44,9 +41,6 @@
 
 	let latestArticle = $derived(
 		[...allArticles].sort((a, b) => b.date.localeCompare(a.date))[0]
-	);
-	let recentActivity = $derived(
-		[...allActivity].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
 	);
 
 	const heichalim = [
@@ -174,20 +168,19 @@
 
 
 <section class="mb-10">
-	<header class="text-center mb-5">
-		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
-			הפעילות שלנו
+	<header class="text-center mb-4">
+		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent">
+			📡 חדשות
 		</h3>
-		<a
-			href="/activity"
-			class="mt-1 inline-block text-sm font-bold text-cyan-300 hover:text-cyan-200 transition-colors"
-		>
-			לכל הפעילות ←
-		</a>
+		<p class="mt-1 text-xs md:text-sm font-bold text-gray-700">
+			מתעדכן אוטומטית ממאגר החדשות המשותף
+		</p>
 	</header>
 
+	<NewsTicker />
+
 	{#if embedVideoUrl}
-		<div class="mb-6 mx-auto max-w-xl md:max-w-2xl rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
+		<div class="mt-6 mx-auto max-w-xl md:max-w-2xl rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
 			<div class="relative w-full" style="padding-top: 56.25%">
 				<iframe
 					src={embedVideoUrl}
@@ -201,27 +194,6 @@
 			</div>
 		</div>
 	{/if}
-
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-		{#each recentActivity as a}
-			<a
-				href="/activity#{a.slug}"
-				class="block rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/8 to-cyan-500/8 hover:border-teal-400/50 hover:from-teal-500/15 hover:to-cyan-500/15 transition-all p-5 text-right group"
-			>
-				<div class="flex items-center justify-between gap-2 mb-3">
-					<span class="text-xs font-bold px-2.5 py-1 rounded-full border border-teal-400/40 bg-teal-500/15 text-teal-200">
-						{a.kind}
-					</span>
-					<span class="text-xs text-gray-500">{a.date}</span>
-				</div>
-				<h4 class="text-base md:text-lg font-bold text-white group-hover:text-cyan-200 transition-colors leading-snug">
-					{a.title}
-				</h4>
-				<p class="mt-2 text-sm text-gray-400 leading-relaxed line-clamp-3">{a.excerpt}</p>
-				<p class="mt-3 text-xs text-cyan-300">מאת: {a.author}</p>
-			</a>
-		{/each}
-	</div>
 </section>
 
 {#if latestArticle}
