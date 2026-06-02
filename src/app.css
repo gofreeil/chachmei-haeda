@@ -18,12 +18,21 @@
 
     --color-primary: #2563eb;
     --color-primary-light: #60a5fa;
-    --color-bg-dark: #070b14;
+    --color-bg-dark: #faf6ec;
 }
 
 :root {
     --header-height: 90px;
-    --bg-deep: #070b14;
+    /* מוד בהיר - רקע בצבע שמנת */
+    --bg-deep: #faf6ec;
+    --bg-cream: #faf6ec;
+    --bg-cream-soft: #f5efe0;
+    --bg-cream-card: #fffdf7;
+    --bg-cream-darker: #ede4d0;
+    --border-soft: #e0d5be;
+    --text-primary: #1a1a1a;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
 }
 
 html {
@@ -38,8 +47,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Assistant', sans-serif;
-    background-color: var(--bg-deep);
-    color: #f8fafc;
+    background-color: var(--bg-cream);
+    color: var(--text-primary);
     direction: rtl;
     font-size: 16.5px;
     /* clip במקום hidden — כדי שלא ניצור scroll container על body ולא נשבור sticky.
@@ -157,3 +166,99 @@ select option:checked {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ============================================================
+   ===== מוד בהיר — Light Theme Overrides (cream palette) =====
+   המרת כל הצבעים הכהים שהיו מיועדים לרקע כהה לערכים תואמי מוד בהיר
+   ============================================================ */
+
+/* רקעים כהים → קרם/לבן-שמנת */
+.bg-\[\#0f172a\],
+.bg-\[\#0d1117\],
+.bg-\[\#070b14\] {
+    background-color: var(--bg-cream) !important;
+}
+
+.bg-gray-900 { background-color: var(--bg-cream-card) !important; }
+.bg-gray-800 { background-color: var(--bg-cream-soft) !important; }
+.bg-gray-700 { background-color: var(--bg-cream-darker) !important; }
+.bg-gray-600 { background-color: var(--border-soft) !important; }
+
+.bg-slate-900 { background-color: var(--bg-cream-card) !important; }
+.bg-slate-800 { background-color: var(--bg-cream-soft) !important; }
+.bg-slate-700 { background-color: var(--bg-cream-darker) !important; }
+
+/* גוון לבן שקוף (היה משטח-זכוכית על רקע כהה) → גוון שחור שקוף עדין על קרם */
+.bg-white\/5  { background-color: rgba(0, 0, 0, 0.035) !important; }
+.bg-white\/8  { background-color: rgba(0, 0, 0, 0.05) !important; }
+.bg-white\/10 { background-color: rgba(0, 0, 0, 0.06) !important; }
+.bg-white\/15 { background-color: rgba(0, 0, 0, 0.08) !important; }
+.bg-white\/20 { background-color: rgba(0, 0, 0, 0.10) !important; }
+.bg-white\/30 { background-color: rgba(0, 0, 0, 0.14) !important; }
+
+/* hover על משטחי שקיפות לבנים */
+.hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.06) !important; }
+.hover\:bg-white\/15:hover { background-color: rgba(0, 0, 0, 0.08) !important; }
+.hover\:bg-white\/20:hover { background-color: rgba(0, 0, 0, 0.10) !important; }
+.hover\:bg-white\/30:hover { background-color: rgba(0, 0, 0, 0.14) !important; }
+
+/* "באר כהה" (bg-black/N) שהיה אזור עמוק יותר על רקע כהה → גוון קרם כהה יותר */
+.bg-black\/20 { background-color: rgba(120, 100, 60, 0.06) !important; }
+.bg-black\/30 { background-color: rgba(120, 100, 60, 0.08) !important; }
+.bg-black\/40 { background-color: rgba(120, 100, 60, 0.10) !important; }
+/* overlay של מודאלים — נשאר כהה כדי לשמור על המיקוד על התוכן */
+.bg-black\/50, .bg-black\/60, .bg-black\/70, .bg-black\/80, .bg-black\/90 {
+    background-color: rgba(0, 0, 0, 0.55) !important;
+}
+
+/* גבולות שהיו לבנים שקופים → גבולות כהים עדינים */
+.border-white\/5  { border-color: rgba(0, 0, 0, 0.05) !important; }
+.border-white\/10 { border-color: rgba(0, 0, 0, 0.10) !important; }
+.border-white\/15 { border-color: rgba(0, 0, 0, 0.12) !important; }
+.border-white\/20 { border-color: rgba(0, 0, 0, 0.15) !important; }
+.border-white\/30 { border-color: rgba(0, 0, 0, 0.20) !important; }
+.border-slate-900 { border-color: var(--border-soft) !important; }
+
+/* טקסט בהיר על רקע כהה → טקסט כהה על רקע קרם */
+.text-white      { color: var(--text-primary) !important; }
+.text-gray-100   { color: #1a1a1a !important; }
+.text-gray-200   { color: #1f2937 !important; }
+.text-gray-300   { color: #374151 !important; }
+.text-gray-400   { color: #4b5563 !important; }
+.text-gray-500   { color: #6b7280 !important; }
+.text-slate-100  { color: #1a1a1a !important; }
+.text-slate-200  { color: #1f2937 !important; }
+.text-slate-300  { color: #374151 !important; }
+.text-slate-400  { color: #4b5563 !important; }
+.text-white\/60  { color: rgba(0, 0, 0, 0.55) !important; }
+.text-white\/70  { color: rgba(0, 0, 0, 0.65) !important; }
+.text-white\/80  { color: rgba(0, 0, 0, 0.75) !important; }
+
+/* hover שטוב במוד כהה (hover:text-white) — במוד בהיר זה היה הופך את הטקסט לבן/בלתי קריא */
+.hover\:text-white:hover     { color: #0f172a !important; }
+.hover\:text-gray-100:hover  { color: #0f172a !important; }
+.hover\:text-gray-200:hover  { color: #1f2937 !important; }
+
+/* select <option> — נשאר עם רקע לבן וטקסט כהה (זה כבר היה תקין) */
+
+/* התאמת ה-select עצמו (לא ה-option) במוד בהיר */
+select {
+    background-color: var(--bg-cream-card) !important;
+    color: var(--text-primary) !important;
+}
+
+/* input/textarea — נשארים על משטח קרם בהיר */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="date"],
+textarea {
+    background-color: var(--bg-cream-card);
+    color: var(--text-primary);
+}
+
+/* "header-glow" השתמש ב-radial gradient כחול — שומרים, זה אקסנט יפה */

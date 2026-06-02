@@ -57,18 +57,6 @@
 			desc: 'פתיחת תיק חדש לבוררות ושלום על פי דין תורה'
 		},
 		{
-			href: '/activity',
-			icon: '📡',
-			title: 'הפעילות שלנו',
-			desc: 'סרטונים, מאמרים והודעות שחכמי בית הדין מפרסמים'
-		},
-		{
-			href: '/articles',
-			icon: '📚',
-			title: 'מאמרי רבנים',
-			desc: 'מאמרים שאושרו על ידי שלושה רבנים לפחות'
-		},
-		{
 			href: '/hearings',
 			icon: '🎥',
 			title: 'דיוני זום',
@@ -77,7 +65,7 @@
 		{
 			href: '/rulings',
 			icon: '📋',
-			title: 'פסקי דין',
+			title: 'ארכיון פסקי הדין',
 			desc: 'סיכומי דיון והכרעות פסוקות בכתב'
 		}
 	];
@@ -144,6 +132,27 @@
 </section>
 
 <section class="mb-10">
+	<header class="text-center mb-6">
+		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+			⚖️ כיצד קובעים דין
+		</h3>
+		<p class="mt-2 text-gray-400 text-sm md:text-base">ארבעה שלבים פשוטים לפתיחת תיק בוררות והכרעה</p>
+	</header>
+	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+		{#each rulingSteps as step}
+			<div class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right">
+				<div class="absolute top-4 left-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+					{step.num}
+				</div>
+				<div class="text-4xl mb-3">{step.icon}</div>
+				<h4 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h4>
+				<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
+			</div>
+		{/each}
+	</div>
+</section>
+
+<section class="mb-10">
 	<header class="text-center mb-5">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
 			📅 לוח דיונים — בחר תאריך פנוי
@@ -158,9 +167,11 @@
 		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
 			<div class="text-right">
 				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-					📖 המאמר האחרון
+					📖 מאמר חכמי העדה
 				</h3>
-				<p class="mt-2 text-gray-400 text-sm md:text-base">המאמר החדש ביותר שאושר על ידי שלושה רבנים</p>
+				<p class="mt-2 text-gray-400 text-sm md:text-base">
+					הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
+				</p>
 			</div>
 			<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
 				ארכיון המאמרים ←
@@ -311,27 +322,6 @@
 				<p class="mt-2 text-sm text-gray-400 leading-relaxed line-clamp-3">{a.excerpt}</p>
 				<p class="mt-3 text-xs text-cyan-300">מאת: {a.author}</p>
 			</a>
-		{/each}
-	</div>
-</section>
-
-<section class="mb-10">
-	<header class="text-center mb-6">
-		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-			⚖️ כיצד קובעים דין
-		</h3>
-		<p class="mt-2 text-gray-400 text-sm md:text-base">ארבעה שלבים פשוטים לפתיחת תיק בוררות והכרעה</p>
-	</header>
-	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-		{#each rulingSteps as step}
-			<div class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right">
-				<div class="absolute top-4 left-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
-					{step.num}
-				</div>
-				<div class="text-4xl mb-3">{step.icon}</div>
-				<h4 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h4>
-				<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
-			</div>
 		{/each}
 	</div>
 </section>

@@ -29,7 +29,7 @@
 <CoinAnimation />
 <MobileAdsDrawer currentUser={undefined} layoutUser={undefined} />
 <MobileAdPopup />
-<div class="min-h-screen flex flex-col bg-[#0f172a]">
+<div class="min-h-screen flex flex-col bg-[#faf6ec]">
 	<Header />
 
 	<div class="layout-container flex-grow">
