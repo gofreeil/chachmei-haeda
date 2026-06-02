@@ -163,7 +163,7 @@
 <section class="mb-10">
 	<header class="text-center mb-4">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent">
-			חדשות
+			חדשות מהיכל המעשה
 		</h3>
 		<p class="mt-1 text-xs md:text-sm font-bold text-gray-700">
 			הפעילות של חכמי העדה לקידום שלום בארץ ושאר חדשות
@@ -199,12 +199,12 @@
 	<div class="mt-2 flex items-center gap-3" aria-hidden="true">
 		<div
 			class="h-2 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
-			style="clip-path: polygon(0% 35%, 0% 65%, 100% 0%, 100% 100%);"
+			style="clip-path: polygon(0% 35%, 0% 65%, 92% 65%, 100% 100%, 100% 0%, 92% 35%);"
 		></div>
 		<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]">❦</span>
 		<div
 			class="h-2 flex-1 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
-			style="clip-path: polygon(0% 0%, 0% 100%, 100% 65%, 100% 35%);"
+			style="clip-path: polygon(0% 0%, 0% 100%, 8% 65%, 100% 65%, 100% 35%, 8% 35%);"
 		></div>
 	</div>
 </section>
