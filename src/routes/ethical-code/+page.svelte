@@ -135,15 +135,9 @@
 	</section>
 
 	<footer class="mt-8 border-t border-white/10 pt-4 text-center">
-		<p class="text-gray-400 mb-3 text-xs md:text-sm">
+		<p class="text-gray-400 text-xs md:text-sm">
 			מקורות: רמב"ם הלכות מלכים פרקים ח-י • תלמוד בבלי מסכת סנהדרין נו
 		</p>
-		<a
-			href="/signatories"
-			class="inline-block px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold text-sm hover:scale-105 transition-transform"
-		>
-			רשימת החתומים →
-		</a>
 	</footer>
 </article>
 
