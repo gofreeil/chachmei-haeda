@@ -202,21 +202,22 @@
 			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				מאמר חכמי העדה
 			</h3>
-			<p class="mt-2 text-gray-400 text-sm md:text-base">
-				הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
-			</p>
-			<a href="/articles" class="mt-1 inline-block text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
-				לכלל המאמרים ←
-			</a>
 		</header>
 		<article
 			class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(59,130,246,0.10)]"
 		>
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
-				<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
-					🆕 חדש
-				</span>
-				<span class="text-xs text-gray-400">{latestArticle.date}</span>
+				<div class="text-right">
+					<div class="flex items-center gap-2 flex-wrap">
+						<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
+							🆕 חדש
+						</span>
+						<span class="text-xs text-gray-400">הועלה ב-{latestArticle.date} · מאת {latestArticle.author}</span>
+					</div>
+				</div>
+				<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
+					לכלל המאמרים ←
+				</a>
 			</div>
 			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
 				{latestArticle.title}
