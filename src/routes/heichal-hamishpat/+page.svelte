@@ -89,6 +89,27 @@
 
 <svelte:head>
 	<title>היכל המשפט — חכמי העדה</title>
+	<meta name="description" content="היכל המשפט בחכמי העדה — פסקי דין, הכרעות ובוררות על פי דין תורה. לוח דיונים, פתיחת תיק וארכיון פסקי דין חתומים." />
+
+	<!-- Open Graph / WhatsApp / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="היכל המשפט — חכמי העדה" />
+	<meta property="og:description" content="פסקי דין, הכרעות ובוררות על פי דין תורה — בית הדין לבוררות ושלום של חכמי העדה. לוח דיונים, פתיחת תיק וארכיון פסקי דין חתומים." />
+	<meta property="og:image" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
+	<meta property="og:image:secure_url" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
+	<meta property="og:image:type" content="image/jpeg" />
+	<meta property="og:image:width" content="600" />
+	<meta property="og:image:height" content="600" />
+	<meta property="og:image:alt" content="לוגו חכמי העדה — היכל המשפט" />
+	<meta property="og:url" content="https://chachmim.vercel.app/heichal-hamishpat" />
+	<meta property="og:site_name" content="חכמי העדה" />
+	<meta property="og:locale" content="he_IL" />
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="היכל המשפט — חכמי העדה" />
+	<meta name="twitter:description" content="פסקי דין, הכרעות ובוררות על פי דין תורה — בית הדין לבוררות ושלום של חכמי העדה." />
+	<meta name="twitter:image" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
 </svelte:head>
 
 <section class="py-8">
