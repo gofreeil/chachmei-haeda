@@ -1,5 +1,63 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
+
+	let isRegistered = $state(false);
+	let userName = $state('');
+
+	type CaseFile = {
+		id: string;
+		caseName: string;
+		role: string;
+		status: 'פעיל' | 'הסתיים' | 'ממתין לדיון';
+		hearingDate: string;
+		summary: string;
+		videoUrl: string | null;
+		rulingUrl: string | null;
+	};
+
+	const myCases: CaseFile[] = [
+		{
+			id: 'TIK-2026-014',
+			caseName: 'בוררות עסקית — שותפות מסעדה',
+			role: 'תובע',
+			status: 'הסתיים',
+			hearingDate: '2026-05-12',
+			summary:
+				'מחלוקת על חלוקת רווחים בשנה השלישית להפעלת המסעדה. נקבעה חלוקה 60/40 לטובת המייסד שהביא את ההון העצמי, וצוות משכין שלום ילווה את ההפרדה ב-90 ימים הקרובים.',
+			videoUrl: '#video-tik-014',
+			rulingUrl: '#ruling-tik-014'
+		},
+		{
+			id: 'TIK-2026-022',
+			caseName: 'שלום בית — תיווך משפחתי',
+			role: 'מבקש',
+			status: 'ממתין לדיון',
+			hearingDate: '2026-06-18',
+			summary:
+				'בקשה לתיווך בסכסוך עם אחי על ניהול עיזבון. הצדדים הסכימו לפנות לבית הדין במקום לערכאות. תאריך נקבע. ממתינים לחתימה סופית של האח השני על אמנת המוסר.',
+			videoUrl: null,
+			rulingUrl: null
+		}
+	];
+
+	onMount(() => {
+		try {
+			const user = JSON.parse(localStorage.getItem('chachmei-user') || 'null');
+			if (user) {
+				isRegistered = true;
+				userName = user.name || user.nickname || 'המשתמש';
+			}
+		} catch {
+			/* ignore */
+		}
+	});
+
+	function statusColor(s: CaseFile['status']): string {
+		if (s === 'פעיל') return 'bg-blue-500/80 text-white';
+		if (s === 'הסתיים') return 'bg-green-600/80 text-white';
+		return 'bg-amber-500/80 text-white';
+	}
 
 	const rulingSteps = [
 		{
@@ -64,18 +122,6 @@
 			{/each}
 		</div>
 	</section>
-
-	<div class="mb-8 rounded-2xl border-2 border-purple-400/40 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-5 md:p-6 text-center">
-		<p class="text-gray-800 text-base md:text-lg font-bold mb-3">
-			מוכן לפתוח תיק? התחל בשלב 1 — חתימה על אמנת המוסר ובחירת תאריך
-		</p>
-		<a
-			href="/request-hearing"
-			class="inline-block px-7 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all"
-		>
-			⚖️ פתח בקשת דיון →
-		</a>
-	</div>
 
 	<section class="mb-8">
 		<header class="text-center mb-5">
@@ -159,6 +205,129 @@
 		<p class="mt-4 text-center text-gray-700 text-xs md:text-sm font-bold">
 			🔒 הדיון מוקלט ושמור באופן מאובטח · רק בעלי הדין ובית הדין נחשפים לתוכן
 		</p>
+	</section>
+
+	<div class="mb-8 rounded-2xl border-2 border-purple-400/40 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-5 md:p-6 text-center">
+		<p class="text-gray-800 text-base md:text-lg font-bold mb-3">
+			מוכן לפתוח תיק? התחל בשלב 1 — חתימה על אמנת המוסר ובחירת תאריך
+		</p>
+		<a
+			href="/request-hearing"
+			class="inline-block px-7 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all"
+		>
+			⚖️ פתח בקשת דיון →
+		</a>
+	</div>
+
+	<!-- ───────────── התיקים שלי + ארכיון וידאו ───────────── -->
+	<section class="mb-8">
+		<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
+			{#if isRegistered}
+				<header class="flex items-end justify-between gap-3 flex-wrap mb-5">
+					<div class="text-right">
+						<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+							📁 התיקים שלי
+						</h2>
+						<p class="mt-1 text-gray-700 text-sm md:text-base font-bold">
+							שלום {userName} · סיכומי הדיון וארכיון הוידאו של ההליכים שלך
+						</p>
+					</div>
+					<a href="/profile" class="text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors">
+						לאזור האישי המלא ←
+					</a>
+				</header>
+
+				<div class="space-y-4">
+					{#each myCases as c}
+						<article class="rounded-xl border border-indigo-400/30 bg-white/5 p-4 md:p-5">
+							<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
+								<div class="flex items-center gap-2 flex-wrap">
+									<span class="px-2.5 py-1 rounded-full text-xs font-black {statusColor(c.status)}">{c.status}</span>
+									<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-700/70 text-white">{c.id}</span>
+									<span class="text-xs font-bold text-gray-700">תפקידך: {c.role}</span>
+								</div>
+								<span class="text-xs font-bold text-gray-700">📅 {c.hearingDate}</span>
+							</div>
+							<h3 class="text-base md:text-lg font-extrabold text-gray-900 mb-2">{c.caseName}</h3>
+							<p class="text-sm text-gray-800 leading-relaxed mb-4">{c.summary}</p>
+							<div class="flex flex-wrap gap-2">
+								{#if c.videoUrl}
+									<a href={c.videoUrl} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-bold hover:scale-105 transition-transform shadow">
+										🎥 צפה בהקלטת הדיון
+									</a>
+								{:else}
+									<span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-500 text-sm font-bold cursor-not-allowed">
+										🎥 הקלטה — תהיה זמינה אחרי הדיון
+									</span>
+								{/if}
+								{#if c.rulingUrl}
+									<a href={c.rulingUrl} class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-bold hover:scale-105 transition-transform shadow">
+										📋 פסק דין חתום
+									</a>
+								{:else}
+									<span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-500 text-sm font-bold cursor-not-allowed">
+										📋 פסק דין — ממתין
+									</span>
+								{/if}
+							</div>
+						</article>
+					{/each}
+
+					{#if myCases.length === 0}
+						<p class="text-center text-gray-600 py-6">אין לך עדיין תיקים פעילים. <a href="/request-hearing" class="text-indigo-700 font-bold underline">פתח תיק חדש →</a></p>
+					{/if}
+				</div>
+			{:else}
+				<header class="text-center mb-5">
+					<div class="text-5xl mb-3">🔒</div>
+					<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+						התיקים שלי · ארכיון וידאו
+					</h2>
+					<p class="mt-3 text-gray-700 text-base md:text-lg font-bold max-w-2xl mx-auto">
+						לאחר רישום ופתיחת תיק בבית הדין — תוכל לעיין כאן בסיכום ההליך, הקלטות הוידאו ופסק הדין החתום של התיקים שלך
+					</p>
+				</header>
+
+				<!-- תצוגה מקדימה מטושטשת -->
+				<div class="relative mb-5">
+					<div class="space-y-3 pointer-events-none select-none blur-[6px] opacity-60" aria-hidden="true">
+						{#each myCases as c}
+							<div class="rounded-xl border border-indigo-400/30 bg-white/10 p-4">
+								<div class="flex items-center justify-between gap-2 mb-2">
+									<span class="px-2.5 py-1 rounded-full text-xs font-black {statusColor(c.status)}">{c.status}</span>
+									<span class="text-xs font-bold text-gray-700">{c.hearingDate}</span>
+								</div>
+								<h3 class="text-base font-extrabold text-gray-900 mb-1">{c.caseName}</h3>
+								<p class="text-sm text-gray-800 line-clamp-2">{c.summary}</p>
+							</div>
+						{/each}
+					</div>
+					<div class="absolute inset-0 flex items-center justify-center">
+						<div class="text-center">
+							<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/30 border border-yellow-500/60 text-yellow-800 text-xs font-black mb-3">
+								👁️ תצוגה מקדימה
+							</div>
+							<p class="text-gray-900 font-bold text-sm md:text-base">תוכן זה זמין רק למשתמשים רשומים</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex flex-col sm:flex-row gap-3 justify-center">
+					<a
+						href="/profile"
+						class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base hover:scale-105 transition-transform shadow text-center"
+					>
+						✍️ הירשם וצור חשבון
+					</a>
+					<a
+						href="/request-hearing"
+						class="inline-block px-6 py-3 rounded-xl bg-white/10 border border-indigo-400/40 text-gray-900 font-bold text-base hover:bg-white/20 transition-colors text-center"
+					>
+						פתח תיק חדש
+					</a>
+				</div>
+			{/if}
+		</div>
 	</section>
 
 	<section class="mb-8">
