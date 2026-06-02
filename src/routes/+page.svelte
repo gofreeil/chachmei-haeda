@@ -8,7 +8,8 @@
 
 	let allArticles = $state<Article[]>(staticArticles);
 	let allActivity = $state<ActivityItem[]>(activity);
-	let homeVideoUrl = $state<string>('');
+	const DEFAULT_HOME_VIDEO = 'https://youtu.be/9ioV_PeaqWE?si=WN00o8ByG65ZOvQ4';
+	let homeVideoUrl = $state<string>(DEFAULT_HOME_VIDEO);
 
 	function toEmbedUrl(url: string): string {
 		if (!url) return '';
@@ -37,7 +38,7 @@
 			const customAct = JSON.parse(localStorage.getItem('chachmei-custom-activity') || '[]');
 			if (Array.isArray(customAct)) allActivity = [...customAct, ...activity];
 			const savedVid = localStorage.getItem('chachmei-home-video-url');
-			if (savedVid) homeVideoUrl = savedVid;
+			if (savedVid !== null) homeVideoUrl = savedVid;
 		} catch {}
 	});
 
@@ -47,11 +48,6 @@
 	let recentActivity = $derived(
 		[...allActivity].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
 	);
-	const activityKindIcons: Record<string, string> = {
-		'סרטון': '🎬',
-		'מאמר': '📝',
-		'הודעה': '📣'
-	};
 
 	const heichalim = [
 		{
@@ -145,10 +141,13 @@
 			/>
 		</div>
 	</div>
-	<p class="mt-4 text-gray-900 text-xl md:text-2xl font-extrabold">בית דין לבוררות ושלום על פי תורת ישראל</p>
-	<p class="mt-3 text-gray-800 text-base md:text-lg font-bold max-w-2xl mx-auto">
-		פלטפורמה לפתרון מחלוקות בין אדם לחברו בצדק ובאחווה, פרסום מאמרים מחכמי ישראל, קידום חברה מתוקנת על ידי התנהלות תחת הקוד האתי העולמי <span class="text-blue-700 font-black">UECC</span>.
-	</p>
+	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label="קרא עוד אודותנו">
+		<p class="mt-4 text-gray-900 text-xl md:text-2xl font-extrabold group-hover:text-blue-700 transition-colors">בית דין לבוררות ושלום על פי תורת ישראל</p>
+		<p class="mt-3 text-gray-800 text-base md:text-lg font-bold max-w-2xl mx-auto group-hover:underline decoration-blue-400/60 underline-offset-4">
+			פלטפורמה לפתרון מחלוקות בין אדם לחברו בצדק ובאחווה, פרסום מאמרים מחכמי ישראל, קידום חברה מתוקנת על ידי התנהלות תחת הקוד האתי העולמי <span class="text-blue-700 font-black">UECC</span>.
+		</p>
+		<p class="mt-2 text-sm text-blue-700 font-bold opacity-80 group-hover:opacity-100">קרא עוד אודותנו ←</p>
+	</a>
 </section>
 
 <section class="mb-10">
@@ -178,7 +177,7 @@
 	<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
 		<div class="text-right">
 			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
-				📡 הפעילות שלנו
+				הפעילות שלנו
 			</h3>
 		</div>
 		<a
@@ -213,7 +212,7 @@
 			>
 				<div class="flex items-center justify-between gap-2 mb-3">
 					<span class="text-xs font-bold px-2.5 py-1 rounded-full border border-teal-400/40 bg-teal-500/15 text-teal-200">
-						{activityKindIcons[a.kind] ?? ''} {a.kind}
+						{a.kind}
 					</span>
 					<span class="text-xs text-gray-500">{a.date}</span>
 				</div>
@@ -232,7 +231,7 @@
 		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
 			<div class="text-right">
 				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-					📖 מאמר חכמי העדה
+					מאמר חכמי העדה
 				</h3>
 				<p class="mt-2 text-gray-400 text-sm md:text-base">
 					הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
