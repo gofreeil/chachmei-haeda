@@ -6,6 +6,7 @@
 	import RightAdBanner from "$lib/components/RightAdBanner.svelte";
 	import AdsSidebar from "$lib/components/AdsSidebar.svelte";
 	import Footer from "$lib/components/Footer.svelte";
+	import EthicalCodeBanner from "$lib/components/EthicalCodeBanner.svelte";
 	import CoinAnimation from "$lib/components/CoinAnimation.svelte";
 	import MobileAdsDrawer from "$lib/components/MobileAdsDrawer.svelte";
 	import MobileAdPopup from "$lib/components/MobileAdPopup.svelte";
@@ -38,6 +39,10 @@
 			{@render children()}
 		</main>
 		<AdsSidebar approvedAds={[]} />
+	</div>
+
+	<div class="max-w-7xl w-full mx-auto px-4 mt-2">
+		<EthicalCodeBanner />
 	</div>
 
 	<Footer />

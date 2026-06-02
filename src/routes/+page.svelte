@@ -108,13 +108,6 @@
 		}
 	];
 
-	const benefits = [
-		'אמינות עסקית: שותפים יודעים שדבריך נשמרים בנאמנות',
-		'גישה לקהילת בעלי ברית מוסרית — שידוכים עסקיים ותעסוקתיים',
-		'הגנה משפטית פנים-קהילתית: פתרון מחלוקות מהיר וצודק לפני ערכאות',
-		'התחייבות הדדית: עובדים, מעסיקים ולקוחות מקבלים על עצמם את אותה אמנה',
-		'ברכת הבורא והשגחה מיוחדת על העוסקים ביושר ובאמת'
-	];
 </script>
 
 <svelte:head>
@@ -284,60 +277,3 @@
 	</article>
 </section>
 
-<section class="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-4 md:p-6 mb-6">
-	<a
-		href="/ethical-code"
-		class="block group rounded-xl -m-1 p-1 hover:bg-yellow-500/5 transition-colors"
-		title="לדף הקוד האתי UECC"
-	>
-		<div class="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
-			<img
-				src="/images/Copilot_20260602_125425.png"
-				alt="הקוד האתי UECC"
-				class="flex-shrink-0 w-40 h-40 md:w-56 md:h-56 rounded-xl object-cover border-2 border-yellow-500/40 shadow-lg"
-				loading="lazy"
-			/>
-			<div class="flex-1 min-w-0 w-full">
-				<div class="flex items-center justify-between gap-2 flex-wrap mb-2">
-					<h3 class="text-lg md:text-2xl font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
-						יתרונות הקיום של הקוד המוסרי
-					</h3>
-					<span class="text-xs md:text-sm font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
-						לדף הקוד האתי ←
-					</span>
-				</div>
-				<ul class="space-y-1 text-gray-200 text-sm md:text-base leading-snug">
-					{#each benefits as b}
-						<li class="flex items-start gap-2">
-							<span class="text-yellow-400">✓</span>
-							<span>{b}</span>
-						</li>
-					{/each}
-				</ul>
-			</div>
-		</div>
-	</a>
-
-	<div class="mt-5 pt-4 border-t border-yellow-500/30 text-center">
-		<h4 class="text-base md:text-lg font-black text-yellow-200 mb-1">
-			הצטרף עוד היום לחתומים על הקוד האתי
-		</h4>
-		<p class="text-gray-200 leading-snug text-xs md:text-sm max-w-2xl mx-auto mb-3">
-			הצטרפותך מחזקת את מעגל היושר והאמון — קבל על עצמך את שבע מצוות בני נח והיה חלק מתיקון עולם.
-		</p>
-		<div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
-			<a
-				href="mailto:freedomhasbegun@gmail.com?subject=%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%94%D7%99%D7%97%D7%AA%D7%9D%20%D7%A2%D7%9C%20%D7%94%D7%A7%D7%95%D7%93%20%D7%94%D7%90%D7%AA%D7%99%20UECC&body=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%9C%D7%94%D7%99%D7%97%D7%AA%D7%9D%20%D7%A2%D7%9C%20%D7%94%D7%A7%D7%95%D7%93%20%D7%94%D7%90%D7%AA%D7%99%20%D7%94%D7%9B%D7%9C%D7%9C-%D7%A2%D7%95%D7%9C%D7%9E%D7%99%20UECC.%0A%0A%D7%A9%D7%9D%20%D7%9E%D7%9C%D7%90%3A%20%0A%D7%AA%D7%A4%D7%A7%D7%99%D7%93%2F%D7%A2%D7%99%D7%A1%D7%95%D7%A7%3A%20%0A%D7%A2%D7%99%D7%A8%3A%20%0A%D7%98%D7%9C%D7%A4%D7%95%D7%9F%3A%20%0A"
-				class="inline-block px-4 py-1.5 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 font-black text-sm hover:scale-105 hover:shadow-[0_0_15px_rgba(234,179,8,0.4)] transition-all"
-			>
-				✍️ חתום על הקוד
-			</a>
-			<a
-				href="/signatories"
-				class="inline-block px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-colors"
-			>
-				רשימת החתומים →
-			</a>
-		</div>
-	</div>
-</section>
