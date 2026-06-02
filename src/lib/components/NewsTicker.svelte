@@ -68,7 +68,7 @@
 
 <section
 	aria-label="חדשות"
-	class="news-ticker-container border-y border-amber-300/40 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 py-3 backdrop-blur-md shadow-lg"
+	class="news-ticker-container border-y border-amber-300/40 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 py-3 backdrop-blur-md shadow-lg"
 >
 	<!-- תוכן נגיש לקוראי מסך -->
 	<ul class="sr-only">

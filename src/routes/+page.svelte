@@ -241,23 +241,23 @@
 			<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
 				{recentQa.topic}
 			</span>
-			<span class="text-xs font-bold text-gray-700">פורסם {recentQa.answerDate.split('-').reverse().join('.')}</span>
+			<a
+				href="/qa"
+				class="text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
+			>
+				לכל השאלות והתשובות →
+			</a>
 		</div>
-		<h4 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">שאלה — {recentQa.asker}</h4>
+		<div class="flex items-baseline gap-3 flex-wrap mb-2">
+			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">שאלה — {recentQa.asker}</h4>
+			<span class="text-xs font-bold text-gray-600">· פורסם {recentQa.answerDate.split('-').reverse().join('.')}</span>
+		</div>
 		<p class="text-gray-800 leading-relaxed mb-4 line-clamp-3">{recentQa.question}</p>
 		<div class="border-t border-indigo-300/40 pt-4">
 			<h5 class="text-sm font-black text-indigo-700 mb-2">
 				תשובת {recentQa.answeredBy}
 			</h5>
 			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{recentQa.answer}</p>
-		</div>
-		<div class="mt-5 text-center">
-			<a
-				href="/qa"
-				class="inline-block text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
-			>
-				לכל השאלות והתשובות →
-			</a>
 		</div>
 
 		<a
