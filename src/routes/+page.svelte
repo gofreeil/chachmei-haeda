@@ -196,7 +196,11 @@
 			אל כלל הפעולות של חכמי העדה ←
 		</a>
 	</div>
-	<hr class="mt-2 border-t-2 border-amber-400/40" />
+	<div class="mt-2 flex items-center gap-3" aria-hidden="true">
+		<div class="h-1.5 flex-1 rounded-full bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"></div>
+		<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]">❦</span>
+		<div class="h-1.5 flex-1 rounded-full bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"></div>
+	</div>
 </section>
 
 {#if latestArticle}
