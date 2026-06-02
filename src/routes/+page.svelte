@@ -174,22 +174,20 @@
 
 
 <section class="mb-10">
-	<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
-		<div class="text-right">
-			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
-				הפעילות שלנו
-			</h3>
-		</div>
+	<header class="text-center mb-5">
+		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
+			הפעילות שלנו
+		</h3>
 		<a
 			href="/activity"
-			class="text-sm font-bold text-cyan-300 hover:text-cyan-200 transition-colors"
+			class="mt-1 inline-block text-sm font-bold text-cyan-300 hover:text-cyan-200 transition-colors"
 		>
-			כל הפעילות ←
+			לכל הפעילות ←
 		</a>
 	</header>
 
 	{#if embedVideoUrl}
-		<div class="mb-6 rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
+		<div class="mb-6 mx-auto max-w-xl md:max-w-2xl rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
 			<div class="relative w-full" style="padding-top: 56.25%">
 				<iframe
 					src={embedVideoUrl}
