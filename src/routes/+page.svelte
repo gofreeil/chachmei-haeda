@@ -40,8 +40,8 @@
 			bg: 'bg-gradient-to-br from-slate-600 via-slate-800 to-slate-900',
 			border: 'border-slate-300',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(15,23,42,0.6),inset_0_2px_0_rgba(255,255,255,0.18)]',
-			text: 'text-white',
-			descText: 'text-slate-200',
+			titleColor: '#ffffff',
+			descColor: '#e2e8f0',
 			hover: 'hover:from-slate-500 hover:via-slate-700 hover:to-slate-800 hover:border-slate-100'
 		},
 		{
@@ -53,8 +53,8 @@
 			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
 			border: 'border-white',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(100,116,139,0.55),inset_0_2px_0_rgba(255,255,255,0.9)]',
-			text: 'text-slate-900',
-			descText: 'text-slate-800',
+			titleColor: '#0f172a',
+			descColor: '#1e293b',
 			hover: 'hover:from-gray-100 hover:via-slate-200 hover:to-gray-300 hover:border-slate-100'
 		},
 		{
@@ -66,8 +66,8 @@
 			bg: 'bg-gradient-to-br from-sky-200/60 via-cyan-100/50 to-blue-200/60 backdrop-blur-md',
 			border: 'border-sky-200',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(56,189,248,0.45),inset_0_2px_0_rgba(255,255,255,0.85)]',
-			text: 'text-sky-950',
-			descText: 'text-sky-900',
+			titleColor: '#082f49',
+			descColor: '#0c4a6e',
 			hover: 'hover:from-sky-300/70 hover:via-cyan-200/60 hover:to-blue-300/70 hover:border-white'
 		},
 		{
@@ -79,8 +79,8 @@
 			bg: 'bg-gradient-to-br from-amber-700 via-amber-800 to-yellow-900',
 			border: 'border-amber-300',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(120,53,15,0.55),inset_0_2px_0_rgba(255,237,178,0.25)]',
-			text: 'text-amber-50',
-			descText: 'text-amber-100',
+			titleColor: '#ffffff',
+			descColor: '#fef3c7',
 			hover: 'hover:from-amber-600 hover:via-amber-700 hover:to-yellow-800 hover:border-amber-100'
 		}
 	];
@@ -133,8 +133,8 @@
 				class="block rounded-2xl border-4 {h.border} {h.bg} {h.hover} {h.shadow} transition-all p-4 md:p-6 text-center hover:scale-[1.04] hover:-translate-y-1 ring-1 ring-black/20"
 			>
 				<div class="text-4xl md:text-5xl mb-2 md:mb-3 drop-shadow-lg">{h.icon}</div>
-				<h4 class="text-base md:text-xl font-black {h.text} mb-1 md:mb-2 drop-shadow-sm">{h.title}</h4>
-				<p class="text-xs md:text-sm {h.descText} leading-snug font-bold">{h.desc}</p>
+				<h4 class="text-base md:text-xl font-black mb-1 md:mb-2 drop-shadow-sm" style="color: {h.titleColor} !important">{h.title}</h4>
+				<p class="text-xs md:text-sm leading-snug font-bold" style="color: {h.descColor} !important">{h.desc}</p>
 			</a>
 		{/each}
 	</div>
