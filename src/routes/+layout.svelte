@@ -37,12 +37,11 @@
 		<RightAdBanner />
 		<main id="main-content" tabindex="-1" class="main-content">
 			{@render children()}
+			<div class="mt-2">
+				<EthicalCodeBanner />
+			</div>
 		</main>
 		<AdsSidebar approvedAds={[]} />
-	</div>
-
-	<div class="max-w-7xl w-full mx-auto px-4 mt-2">
-		<EthicalCodeBanner />
 	</div>
 
 	<Footer />

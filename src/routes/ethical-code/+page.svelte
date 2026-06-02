@@ -2,15 +2,16 @@
 	<title>הקוד האתי UECC — חכמי העדה</title>
 </svelte:head>
 
-<article class="prose-rtl max-w-none py-8 px-2 md:px-4">
-	<header class="text-center mb-10">
-		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-5xl font-black text-transparent">
-			UECC — Universal Ethical Common Code
+<article class="prose-rtl max-w-none py-6 px-2 md:px-4">
+	<header class="text-center mb-6">
+		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-xl md:text-3xl font-black text-transparent">
+			הקוד האתי המוסרי העולמי
 		</h1>
-		<p class="mt-3 text-gray-300 text-lg">לכבוד מֶלֶךְ יָחִיד אֵ'ל חַי הָעוֹלָמִים</p>
+		<p class="mt-1 text-blue-300 text-sm md:text-base font-bold" dir="ltr">UECC — Universal Ethical Common Code</p>
+		<p class="mt-2 text-gray-300 text-sm md:text-base">לכבוד מֶלֶךְ יָחִיד אֵ'ל חַי הָעוֹלָמִים</p>
 	</header>
 
-	<section class="space-y-5 text-gray-200 leading-relaxed text-base md:text-lg">
+	<section class="space-y-3 text-gray-200 leading-snug text-xs md:text-sm">
 		<p>
 			<strong class="text-blue-300">UECC</strong> – זוהי הָאֲמָנָה הַמּוּסָרִית הַכְּלָל-עוֹלָמִית אשר קיבלה
 			האנושות במעמד הר סיני, והמחייבת את כל עם ישראל ואת כל בני נוח.
@@ -30,7 +31,7 @@
 
 		<p>על פי התלמוד והזוהר וההלכה אין לעשות עסקים עם מי שאין לו תורה ויראת שמים.</p>
 
-		<h2 class="text-2xl md:text-3xl font-bold text-yellow-300 mt-10">החלק המרכזי שבאֲמָנָה</h2>
+		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">החלק המרכזי שבאֲמָנָה</h2>
 
 		<blockquote class="border-r-4 border-yellow-400 pr-4 italic text-gray-300">
 			הציווי האלוקי {'{דברים יב כח}'}: "שְׁמֹר וְשָׁמַעְתָּ אֵת כָּל הַדְּבָרִים הָאֵלֶּה אֲשֶׁר אָנֹכִי
@@ -53,7 +54,7 @@
 			מרוויחים ולא ניזוקים.
 		</p>
 
-		<h2 class="text-2xl md:text-3xl font-bold text-yellow-300 mt-10">החלק היישומי</h2>
+		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">החלק היישומי</h2>
 
 		<p>
 			על כל מעביד לדאוג לזכויות העובדים השכירים שלו, ולקדם את העובד כמה שיכול. כמו כן על העובד לדאוג
@@ -66,7 +67,7 @@
 			התגלה בורא עולם לכל האנושות באמצעות עם ישראל.
 		</p>
 
-		<h3 class="text-xl md:text-2xl font-bold text-blue-300 mt-8">מי מקבל על עצמו את האמנה?</h3>
+		<h3 class="text-sm md:text-base font-bold text-blue-300 mt-6">מי מקבל על עצמו את האמנה?</h3>
 		<ul class="list-disc pr-6 space-y-2">
 			<li>אנשי עסקים המבקשים לעבוד על פי האמנה המוסרית — יקבלו על עצמם את שבע מצוות בני נוח.</li>
 			<li>מעסיקים, יצרנים ונותני שירות — יתחייבו ליישם את האמנה כלפי העובדים.</li>
@@ -84,7 +85,7 @@
 			יראת אלוהי'ם. במידה שכן יש סבירות גבוהה שהוא יישמר מכל גזל והונאה.
 		</p>
 
-		<h2 class="text-2xl md:text-3xl font-bold text-yellow-300 mt-12">שבע מצוות בני נח</h2>
+		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-8">שבע מצוות בני נח</h2>
 
 		<p>
 			הָאֲמָנָה הַמּוּסָרִית הַכְּלָל-עוֹלָמִית מיוסדת על שבע מצוות בני נח המהווים שבעה כללי יסוד עולמיים.
@@ -92,9 +93,9 @@
 			ובניו. לכן המושג 'שבע מצוות בני נח' כוונתו לכלל האנושות.
 		</p>
 
-		<div class="rounded-xl border border-white/10 bg-white/5 p-5 my-6">
-			<p class="text-sm text-gray-400 mb-2">גמרא בבלי מסכת סנהדרין נו ע"א-ע"ב:</p>
-			<p class="italic text-gray-200">
+		<div class="rounded-xl border border-white/10 bg-white/5 p-3 md:p-4 my-4">
+			<p class="text-xs text-gray-400 mb-1.5">גמרא בבלי מסכת סנהדרין נו ע"א-ע"ב:</p>
+			<p class="italic text-gray-200 text-xs md:text-sm leading-snug">
 				"תָּנוּ רַבָּנָן: שֶׁבַע מִצְווֹת נִצְטַוּוּ בְּנֵי נֹחַ: דִּינִין. וּבִרְכַּת הַשֵּׁם. וַעֲבוֹדַת
 				אֱלִילִים. וְגִלּוּי עֲרָיוֹת. וּשְׁפִיכוּת דָּמִים. וְגָזֵל. וְאֵיבָר מִן הַחַי."
 			</p>
@@ -110,40 +111,40 @@
 				{ n: 'ו', title: 'כיבוד בעלי החיים — איסור אבר מן החי', body: 'איסור אכילת אבר או תלישת אבר מבעל חיים בעודנו חי. מצווה זו מחייבת אותנו לא להיות אדישים לצערם של בעלי חיים — ומגבירה את חובתנו להיות ערים לצערו של אדם אחר.', img: '/images/425738cfb4e7e3542b6ae9a64e4f5ed4060d807af4cd440dad202f87 (1).jpg' },
 				{ n: 'ז', title: 'הקמת מערכת משפט צדק — מינוי דיינים', body: 'חובה על כל אומה להקים בתחומה בתי משפט אמת השווים לכל האוכלוסיה, ולמנות שופטים ישרים הצמודים לשבע מצוות בני נח. הסמכות לענוש את העוברים על המצוות. איסור חמור על אומות בני נח לשרות במקום בו אין מערכת משפט כזו.', img: '/images/7262c95d28eb13b988331fd0f3903273eee17bec96ad1b22378e0bb3 (1).jpg' }
 			] as m}
-				<div class="rounded-xl border border-blue-500/20 bg-blue-900/10 p-5 flex flex-col md:flex-row md:items-center gap-4">
+				<div class="rounded-xl border border-blue-500/20 bg-blue-900/10 p-3 md:p-4 flex flex-col md:flex-row md:items-center gap-3">
 					<div class="flex-1 min-w-0">
-						<h4 class="text-lg md:text-xl font-bold text-blue-300">
-							<span class="text-2xl text-yellow-400 ml-2">{m.n}.</span>{m.title}
+						<h4 class="text-sm md:text-base font-bold text-blue-300">
+							<span class="text-base text-yellow-400 ml-2">{m.n}.</span>{m.title}
 						</h4>
-						<p class="mt-2 text-gray-300 leading-relaxed">{m.body}</p>
+						<p class="mt-1.5 text-gray-300 leading-snug text-xs md:text-sm">{m.body}</p>
 					</div>
-					<img src={m.img} alt={m.title} loading="lazy" class="w-full md:w-56 lg:w-64 h-auto max-h-48 object-contain rounded-lg flex-shrink-0" />
+					<img src={m.img} alt={m.title} loading="lazy" class="w-full md:w-44 lg:w-52 h-auto max-h-36 object-contain rounded-lg flex-shrink-0" />
 				</div>
 			{/each}
 		</div>
 
-		<div class="rounded-xl border border-red-500/30 bg-red-900/10 p-5 mt-8">
-			<h4 class="text-lg font-bold text-red-300">שלוש מצוות שייהרג ולא יעבור:</h4>
-			<p class="mt-2 text-gray-300">איסור עבודה זרה • איסור שפיכות דמים • איסור גילוי עריות</p>
+		<div class="rounded-xl border border-red-500/30 bg-red-900/10 p-3 md:p-4 mt-6">
+			<h4 class="text-sm md:text-base font-bold text-red-300">שלוש מצוות שייהרג ולא יעבור:</h4>
+			<p class="mt-1 text-gray-300 text-xs md:text-sm">איסור עבודה זרה • איסור שפיכות דמים • איסור גילוי עריות</p>
 		</div>
 
-		<p class="text-center text-lg md:text-xl text-yellow-200 mt-10 font-bold">
+		<p class="text-center text-sm md:text-base text-yellow-200 mt-6 font-bold">
 			לקיים את שבע המצוות ולהכין את העולם לקראת עידן חדש בו לא יהיו מלחמות, רעב, קנאה ותחרות —
 			זהו עידן הגאולה.
 		</p>
 
-		<p class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent mt-6">
+		<p class="text-center text-lg md:text-2xl font-black bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent mt-4">
 			תִּקּוּן עוֹלָם בְּמַלְכוּת שַׁדַּ׳י
 		</p>
 	</section>
 
-	<footer class="mt-12 border-t border-white/10 pt-6 text-center">
-		<p class="text-gray-400 mb-4">
+	<footer class="mt-8 border-t border-white/10 pt-4 text-center">
+		<p class="text-gray-400 mb-3 text-xs md:text-sm">
 			מקורות: רמב"ם הלכות מלכים פרקים ח-י • תלמוד בבלי מסכת סנהדרין נו
 		</p>
 		<a
 			href="/signatories"
-			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold hover:scale-105 transition-transform"
+			class="inline-block px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold text-sm hover:scale-105 transition-transform"
 		>
 			רשימת החתומים →
 		</a>
