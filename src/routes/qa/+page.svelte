@@ -82,7 +82,7 @@
 
 	<div class="mt-8 text-center">
 		<a
-			href="/#ask-form"
+			href="/ask"
 			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base hover:scale-105 transition-transform shadow"
 		>
 			🕮 שאל את חכמי העדה →

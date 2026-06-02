@@ -31,27 +31,6 @@
 		'הודעה': '📣'
 	};
 
-	let askName = $state('');
-	let askEmail = $state('');
-	let askTopic = $state('הלכה');
-	let askQuestion = $state('');
-
-	const askTopics = [
-		'הלכה',
-		'מוסר עסקי',
-		'חושן משפט / ממונות',
-		'שלום בית ומשפחה',
-		'שבע מצוות בני נח',
-		'אחר'
-	];
-
-	function handleAskSubmit(e: Event) {
-		e.preventDefault();
-		const subject = `שאלה לבית הדין — ${askTopic}`;
-		const body = `שם: ${askName}\nדוא"ל למענה: ${askEmail}\nנושא: ${askTopic}\n\nשאלה:\n${askQuestion}`;
-		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-	}
-
 	const sections = [
 		{
 			href: '/request-hearing',
@@ -208,7 +187,7 @@
 				לכל השאלות והתשובות →
 			</a>
 			<a
-				href="#ask-form"
+				href="/ask"
 				class="inline-block px-5 py-2.5 rounded-xl bg-white/10 border border-indigo-400/40 text-gray-900 font-bold text-sm hover:bg-white/20 transition-colors text-center"
 			>
 				שאל שאלה חדשה
@@ -217,75 +196,28 @@
 	</article>
 </section>
 
-<section id="ask-form" class="mb-10">
-	<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-6 md:p-8 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
-		<header class="text-center mb-6">
-			<div class="text-5xl mb-3">🕮</div>
-			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent">
-				שאל את חכמי העדה
-			</h3>
-			<p class="mt-2 text-gray-300 text-sm md:text-base max-w-2xl mx-auto">
-				יש לך שאלה בהלכה, במוסר עסקי, או בעניין שלום בית? כתוב לרבני בית הדין — התשובה תינתן בכתב לדוא״ל שתציין ותתפרסם כאן באתר ללא פרטים אישיים
-			</p>
-		</header>
-		<form onsubmit={handleAskSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
-			<div>
-				<label class="block text-sm font-bold text-indigo-200 mb-1.5" for="ask-name">שם</label>
-				<input
-					id="ask-name"
-					type="text"
-					bind:value={askName}
-					required
-					placeholder="שמך המלא"
-					class="w-full px-3 py-2.5 rounded-lg bg-black/30 border border-white/15 text-white placeholder-gray-500 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-colors"
-				/>
+<section class="mb-10">
+	<a
+		href="/ask"
+		class="block rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-5 md:p-6 shadow-[0_0_25px_rgba(99,102,241,0.15)] hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
+	>
+		<div class="flex items-center justify-between gap-4 flex-wrap">
+			<div class="flex items-center gap-4 flex-1 min-w-0">
+				<div class="text-4xl md:text-5xl flex-shrink-0">🕮</div>
+				<div class="text-right min-w-0">
+					<h3 class="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+						שאל את חכמי העדה
+					</h3>
+					<p class="mt-1 text-gray-800 text-sm md:text-base font-bold">
+						יש לך שאלה בהלכה, במוסר עסקי או בעניין שלום בית? לחץ כאן לפתיחת טופס השאלה
+					</p>
+				</div>
 			</div>
-			<div>
-				<label class="block text-sm font-bold text-indigo-200 mb-1.5" for="ask-email">דוא״ל למענה</label>
-				<input
-					id="ask-email"
-					type="email"
-					bind:value={askEmail}
-					required
-					placeholder="name@example.com"
-					dir="ltr"
-					class="w-full px-3 py-2.5 rounded-lg bg-black/30 border border-white/15 text-white placeholder-gray-500 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-colors text-right"
-				/>
-			</div>
-			<div class="md:col-span-2">
-				<label class="block text-sm font-bold text-indigo-200 mb-1.5" for="ask-topic">נושא השאלה</label>
-				<select
-					id="ask-topic"
-					bind:value={askTopic}
-					class="w-full px-3 py-2.5 rounded-lg bg-black/30 border border-white/15 text-white focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-colors"
-				>
-					{#each askTopics as topic}
-						<option class="bg-gray-900" value={topic}>{topic}</option>
-					{/each}
-				</select>
-			</div>
-			<div class="md:col-span-2">
-				<label class="block text-sm font-bold text-indigo-200 mb-1.5" for="ask-question">השאלה</label>
-				<textarea
-					id="ask-question"
-					bind:value={askQuestion}
-					required
-					rows="5"
-					placeholder="פרט את השאלה ככל האפשר — הקשר, רקע, מה כבר ניסית..."
-					class="w-full px-3 py-2.5 rounded-lg bg-black/30 border border-white/15 text-white placeholder-gray-500 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 transition-colors resize-y"
-				></textarea>
-			</div>
-			<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-				<p class="text-xs text-gray-400 max-w-md">השאלה תישלח לרבני בית הדין במייל. שאלות בעלות עניין ציבורי עשויות להופיע בעמוד פסקי הדין (בלי פרטים מזהים).</p>
-				<button
-					type="submit"
-					class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all whitespace-nowrap"
-				>
-					🕮 שלח שאלה לבית הדין
-				</button>
-			</div>
-		</form>
-	</div>
+			<span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base group-hover:scale-105 transition-transform shadow flex-shrink-0">
+				🕮 שאל עכשיו ←
+			</span>
+		</div>
+	</a>
 </section>
 
 <section class="mb-10">
@@ -351,11 +283,9 @@
 			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
 				{latestArticle.title}
 			</h2>
-			<p class="text-sm text-blue-300 mb-5">מאת: {latestArticle.author}</p>
-			<div class="space-y-4 text-gray-200 leading-relaxed text-base md:text-lg whitespace-pre-line">
-				{latestArticle.body}
-			</div>
-			<div class="mt-6 pt-5 border-t border-blue-400/20 flex items-center justify-end gap-3 flex-wrap">
+			<p class="text-sm text-blue-300 mb-2">מאת: {latestArticle.author}</p>
+			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
+			<div class="mt-3 pt-3 border-t border-blue-400/20 flex items-center justify-end gap-3 flex-wrap">
 				<a
 					href="/articles/{latestArticle.slug}"
 					class="text-blue-300 font-bold text-sm hover:text-blue-200 transition-colors"
@@ -373,30 +303,32 @@
 		class="block group rounded-xl -m-2 p-2 hover:bg-yellow-500/5 transition-colors"
 		title="לדף הקוד האתי UECC"
 	>
-		<div class="mb-5 overflow-hidden rounded-xl border border-yellow-500/30">
+		<div class="flex items-start gap-4 md:gap-5">
 			<img
 				src="/images/Copilot_20260602_125425.png"
 				alt="הקוד האתי UECC"
-				class="w-full h-auto object-cover"
+				class="flex-shrink-0 w-20 h-20 md:w-28 md:h-28 rounded-xl object-cover border border-yellow-500/30 shadow"
 				loading="lazy"
 			/>
+			<div class="flex-1 min-w-0">
+				<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
+					<h3 class="text-xl md:text-2xl font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
+						יתרונות הקיום של הקוד המוסרי
+					</h3>
+					<span class="text-sm font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
+						לדף הקוד האתי ←
+					</span>
+				</div>
+				<ul class="space-y-2 md:space-y-3 text-gray-200">
+					{#each benefits as b}
+						<li class="flex items-start gap-3">
+							<span class="text-yellow-400 mt-1">✓</span>
+							<span>{b}</span>
+						</li>
+					{/each}
+				</ul>
+			</div>
 		</div>
-		<div class="flex items-center justify-between gap-3 flex-wrap mb-4">
-			<h3 class="text-2xl font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
-				יתרונות הקיום של הקוד המוסרי
-			</h3>
-			<span class="text-sm font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
-				לדף הקוד האתי ←
-			</span>
-		</div>
-		<ul class="space-y-3 text-gray-200">
-			{#each benefits as b}
-				<li class="flex items-start gap-3">
-					<span class="text-yellow-400 mt-1">✓</span>
-					<span>{b}</span>
-				</li>
-			{/each}
-		</ul>
 	</a>
 
 	<div class="mt-8 rounded-2xl border-2 border-yellow-400/60 bg-gradient-to-br from-yellow-500/15 via-amber-500/10 to-yellow-600/15 p-6 md:p-8 text-center shadow-[0_0_30px_rgba(234,179,8,0.15)]">
