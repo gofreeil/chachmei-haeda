@@ -1,4 +1,6 @@
 <script lang="ts">
+	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
+
 	const rulingSteps = [
 		{
 			num: 1,
@@ -41,6 +43,16 @@
 			כך נראה הליך בוררות אצלנו — ארבעה שלבים פשוטים מהחתימה ועד החזרת האחווה
 		</p>
 	</header>
+
+	<section class="mb-8">
+		<header class="text-center mb-5">
+			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+				📅 לוח דיונים — בחר תאריך פנוי
+			</h2>
+			<p class="mt-2 text-gray-600 text-sm md:text-base font-bold">לחץ על תאריך פנוי בירוק כדי לפתוח בקשה לאותו יום</p>
+		</header>
+		<LiveCalendar />
+	</section>
 
 	<section class="mb-8">
 		<header class="text-center mb-5">
