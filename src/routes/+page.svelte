@@ -170,10 +170,10 @@
 <section class="mb-10">
 	<header class="text-center mb-4">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent">
-			📡 חדשות
+			חדשות
 		</h3>
 		<p class="mt-1 text-xs md:text-sm font-bold text-gray-700">
-			מתעדכן אוטומטית ממאגר החדשות המשותף
+			הפעילות של חכמי העדה לקידום שלום בארץ ושאר חדשות
 		</p>
 	</header>
 
@@ -198,17 +198,15 @@
 
 {#if latestArticle}
 	<section class="mb-10">
-		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
-			<div class="text-right">
-				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-					מאמר חכמי העדה
-				</h3>
-				<p class="mt-2 text-gray-400 text-sm md:text-base">
-					הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
-				</p>
-			</div>
-			<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
-				ארכיון המאמרים ←
+		<header class="text-center mb-5">
+			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+				מאמר חכמי העדה
+			</h3>
+			<p class="mt-2 text-gray-400 text-sm md:text-base">
+				הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
+			</p>
+			<a href="/articles" class="mt-1 inline-block text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
+				לכלל המאמרים ←
 			</a>
 		</header>
 		<article
@@ -270,23 +268,16 @@
 
 		<a
 			href="/ask"
-			class="mt-5 block rounded-xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-4 md:p-5 hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
+			class="mt-4 flex items-center gap-3 rounded-xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-3 hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
 		>
-			<div class="flex items-center justify-between gap-4 flex-wrap">
-				<div class="flex items-center gap-4 flex-1 min-w-0">
-					<div class="text-4xl md:text-5xl flex-shrink-0">🕮</div>
-					<div class="text-right min-w-0">
-						<h3 class="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-							שאל את חכמי העדה
-						</h3>
-						<p class="mt-1 text-gray-800 text-sm md:text-base font-bold">
-							יש לך שאלה בהלכה, במוסר עסקי או בעניין שלום בית? לחץ כאן לפתיחת טופס השאלה
-						</p>
-					</div>
-				</div>
-				<span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base group-hover:scale-105 transition-transform shadow flex-shrink-0">
-					🕮 שאל עכשיו ←
-				</span>
+			<div class="text-2xl md:text-3xl flex-shrink-0">🕮</div>
+			<div class="text-right min-w-0 flex-1">
+				<h3 class="text-base md:text-lg font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent leading-tight">
+					שאל את חכמי העדה
+				</h3>
+				<p class="text-gray-800 text-xs md:text-sm font-bold leading-snug">
+					יש לך שאלה בהלכה, במוסר עסקי או בעניין שלום בית? לחץ כאן לפתיחת טופס השאלה
+				</p>
 			</div>
 		</a>
 	</article>
