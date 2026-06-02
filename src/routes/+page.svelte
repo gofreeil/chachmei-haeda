@@ -3,6 +3,9 @@
 	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
 	import { activity, type ActivityItem } from '$lib/data/activity';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
+	import { latestAnswer } from '$lib/data/qa';
+
+	const recentQa = latestAnswer();
 
 	let allArticles = $state<Article[]>(staticArticles);
 	let allActivity = $state<ActivityItem[]>(activity);
@@ -176,6 +179,45 @@
 </section>
 
 <section class="mb-10">
+	<header class="text-center mb-5">
+		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+			🕮 התשובה האחרונה של בית הדין
+		</h3>
+		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">המענה הטרי ביותר שפרסמו רבני בית הדין</p>
+	</header>
+	<article class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 max-w-3xl mx-auto shadow-[0_0_25px_rgba(99,102,241,0.12)]">
+		<div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+			<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
+				{recentQa.topic}
+			</span>
+			<span class="text-xs font-bold text-gray-700">פורסם {recentQa.answerDate.split('-').reverse().join('.')}</span>
+		</div>
+		<h4 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">שאלה — {recentQa.asker}</h4>
+		<p class="text-gray-800 leading-relaxed mb-4 line-clamp-3">{recentQa.question}</p>
+		<div class="border-t border-indigo-300/40 pt-4">
+			<h5 class="text-sm font-black text-indigo-700 mb-2">
+				תשובת {recentQa.answeredBy}
+			</h5>
+			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{recentQa.answer}</p>
+		</div>
+		<div class="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+			<a
+				href="/qa"
+				class="inline-block px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm hover:scale-105 transition-transform shadow text-center"
+			>
+				לכל השאלות והתשובות →
+			</a>
+			<a
+				href="#ask-form"
+				class="inline-block px-5 py-2.5 rounded-xl bg-white/10 border border-indigo-400/40 text-gray-900 font-bold text-sm hover:bg-white/20 transition-colors text-center"
+			>
+				שאל שאלה חדשה
+			</a>
+		</div>
+	</article>
+</section>
+
+<section id="ask-form" class="mb-10">
 	<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-6 md:p-8 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
 		<header class="text-center mb-6">
 			<div class="text-5xl mb-3">🕮</div>
@@ -183,7 +225,7 @@
 				שאל את חכמי העדה
 			</h3>
 			<p class="mt-2 text-gray-300 text-sm md:text-base max-w-2xl mx-auto">
-				יש לך שאלה בהלכה, במוסר עסקי, או בעניין שלום בית? כתוב לרבני בית הדין — התשובה תינתן בכתב לדוא״ל שתציין
+				יש לך שאלה בהלכה, במוסר עסקי, או בעניין שלום בית? כתוב לרבני בית הדין — התשובה תינתן בכתב לדוא״ל שתציין ותתפרסם כאן באתר ללא פרטים אישיים
 			</p>
 		</header>
 		<form onsubmit={handleAskSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
@@ -252,7 +294,6 @@
 			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
 				📡 הפעילות שלנו
 			</h3>
-			<p class="mt-2 text-gray-400 text-sm md:text-base">סרטונים, מאמרים והודעות שחכמי בית הדין מפרסמים</p>
 		</div>
 		<a
 			href="/activity"
@@ -327,15 +368,28 @@
 {/if}
 
 <section class="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-6 md:p-8 mb-10">
-	<h3 class="text-2xl font-bold text-yellow-300 mb-4">יתרונות הקיום של הקוד המוסרי</h3>
-	<ul class="space-y-3 text-gray-200">
-		{#each benefits as b}
-			<li class="flex items-start gap-3">
-				<span class="text-yellow-400 mt-1">✓</span>
-				<span>{b}</span>
-			</li>
-		{/each}
-	</ul>
+	<a
+		href="/ethical-code"
+		class="block group rounded-xl -m-2 p-2 hover:bg-yellow-500/5 transition-colors"
+		title="לדף הקוד האתי UECC"
+	>
+		<div class="flex items-center justify-between gap-3 flex-wrap mb-4">
+			<h3 class="text-2xl font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
+				יתרונות הקיום של הקוד המוסרי
+			</h3>
+			<span class="text-sm font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
+				לדף הקוד האתי ←
+			</span>
+		</div>
+		<ul class="space-y-3 text-gray-200">
+			{#each benefits as b}
+				<li class="flex items-start gap-3">
+					<span class="text-yellow-400 mt-1">✓</span>
+					<span>{b}</span>
+				</li>
+			{/each}
+		</ul>
+	</a>
 
 	<div class="mt-8 rounded-2xl border-2 border-yellow-400/60 bg-gradient-to-br from-yellow-500/15 via-amber-500/10 to-yellow-600/15 p-6 md:p-8 text-center shadow-[0_0_30px_rgba(234,179,8,0.15)]">
 		<h4 class="text-xl md:text-2xl font-black text-yellow-200 mb-2">

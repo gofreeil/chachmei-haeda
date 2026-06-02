@@ -232,25 +232,27 @@
 			type="button"
 			onclick={prevMonth}
 			disabled={!canGoPrev()}
-			class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white text-lg font-bold"
+			class="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600/80 hover:bg-blue-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-base font-bold shadow"
 			aria-label="חודש קודם"
 		>
-			→
+			<span>→</span>
+			<span>החודש הקודם</span>
 		</button>
 		<div class="text-center">
-			<h3 class="text-xl md:text-2xl font-black text-white leading-tight">{monthLabel}</h3>
-			<p class="text-[11px] md:text-xs text-blue-200/90 mt-0.5 font-semibold tracking-wide">{gregRangeLabel}</p>
-			<p class="text-xs text-blue-300 mt-1">
+			<h3 class="text-xl md:text-2xl font-black text-gray-900 leading-tight">{monthLabel}</h3>
+			<p class="text-xs md:text-sm text-gray-800 mt-0.5 font-bold tracking-wide">{gregRangeLabel}</p>
+			<p class="text-sm text-blue-700 mt-1 font-bold">
 				{availableCount} תאריכים פנויים החודש
 			</p>
 		</div>
 		<button
 			type="button"
 			onclick={nextMonth}
-			class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-lg font-bold"
+			class="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600/80 hover:bg-blue-600 text-white text-base font-bold shadow"
 			aria-label="חודש הבא"
 		>
-			←
+			<span>החודש הבא</span>
+			<span>←</span>
 		</button>
 	</header>
 
