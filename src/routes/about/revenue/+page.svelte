@@ -56,7 +56,7 @@
 			הדיינים העומדים בבתי הפיוס
 		</h2>
 
-		<ul class="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-center list-none">
+		<ul class="mt-6 grid grid-cols-2 gap-4 text-center list-none max-w-2xl mx-auto">
 			{#each rabbis as r (r.id)}
 				<li class="flex flex-col items-center gap-2 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10">
 					<div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
