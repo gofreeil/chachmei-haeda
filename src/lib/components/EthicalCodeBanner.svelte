@@ -18,7 +18,7 @@
 			<img
 				src="/images/Copilot_20260602_125425.png"
 				alt="הקוד האתי UECC"
-				class="flex-shrink-0 w-28 h-28 md:w-44 md:h-44 rounded-xl object-contain border-2 border-amber-700/40 shadow"
+				class="flex-shrink-0 w-24 h-24 md:w-36 md:h-36 rounded-xl object-contain border-2 border-amber-700/40 shadow"
 				loading="lazy"
 			/>
 			<div class="flex-1 min-w-0">
