@@ -10,6 +10,7 @@
 	const ARTICLES_KEY = 'chachmei-custom-articles';
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
 	const CASES_KEY = 'chachmei-cases';
+	const HOME_VIDEO_KEY = 'chachmei-home-video-url';
 
 	let isLoggedIn = $state(false);
 	let passwordInput = $state('');
@@ -41,6 +42,44 @@
 	let vidUrl = $state('');
 	let vidNotice = $state('');
 
+	// ───────────── סרטון דף הבית ─────────────
+	let homeVideoUrl = $state('');
+	let homeVideoNotice = $state('');
+
+	function toEmbedUrl(url: string): string {
+		if (!url) return '';
+		const t = url.trim();
+		let m = t.match(/youtu\.be\/([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		m = t.match(/[?&]v=([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		m = t.match(/youtube\.com\/embed\/([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		m = t.match(/youtube\.com\/shorts\/([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		return t;
+	}
+
+	function saveHomeVideo(e: Event) {
+		e.preventDefault();
+		const trimmed = homeVideoUrl.trim();
+		try {
+			localStorage.setItem(HOME_VIDEO_KEY, trimmed);
+		} catch {}
+		homeVideoNotice = trimmed ? '✅ הסרטון נשמר ויופיע בדף הבית' : '✅ הסרטון הוסר מדף הבית';
+		setTimeout(() => (homeVideoNotice = ''), 4000);
+	}
+
+	function clearHomeVideo() {
+		if (!confirm('להסיר את הסרטון מדף הבית?')) return;
+		homeVideoUrl = '';
+		try {
+			localStorage.removeItem(HOME_VIDEO_KEY);
+		} catch {}
+		homeVideoNotice = '✅ הסרטון הוסר מדף הבית';
+		setTimeout(() => (homeVideoNotice = ''), 4000);
+	}
+
 	onMount(() => {
 		try {
 			if (sessionStorage.getItem(SESSION_KEY) === 'ok') {
@@ -58,6 +97,8 @@
 			if (Array.isArray(v)) customActivity = v;
 			const c = JSON.parse(localStorage.getItem(CASES_KEY) || '[]');
 			if (Array.isArray(c)) pendingCases = c;
+			const hv = localStorage.getItem(HOME_VIDEO_KEY);
+			if (hv) homeVideoUrl = hv;
 		} catch {}
 	}
 
@@ -439,6 +480,71 @@
 			</div>
 		{:else if activeTab === 'videos'}
 			<div class="space-y-6">
+				<!-- סרטון בדף הבית -->
+				<div class="rounded-2xl border-2 border-cyan-500/40 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 p-5 md:p-6">
+					<h2 class="text-xl font-black text-cyan-200 mb-2">🎥 סרטון יוטיוב בדף הבית</h2>
+					<p class="text-sm text-gray-300 mb-4">
+						הסרטון יוצג מתחת לכותרת "📡 הפעילות שלנו" בדף הבית. ניתן להזין קישור רגיל מיוטיוב — הוא יומר אוטומטית להטמעה.
+					</p>
+					<form onsubmit={saveHomeVideo} class="space-y-3">
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="home-vid-url">קישור ליוטיוב</label>
+							<input
+								id="home-vid-url"
+								type="url"
+								bind:value={homeVideoUrl}
+								dir="ltr"
+								placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-cyan-400 focus:outline-none text-right"
+							/>
+							<p class="text-xs text-gray-500 mt-1">
+								תומך בפורמטים: youtube.com/watch?v=… , youtu.be/… , youtube.com/embed/… , youtube.com/shorts/…
+							</p>
+						</div>
+
+						{#if homeVideoUrl.trim()}
+							<div class="rounded-lg border border-white/10 bg-black/30 p-3">
+								<p class="text-xs font-bold text-gray-400 mb-2">תצוגה מקדימה:</p>
+								<div class="relative w-full max-w-md mx-auto" style="padding-top: 56.25%; max-width: 28rem;">
+									<iframe
+										src={toEmbedUrl(homeVideoUrl)}
+										title="תצוגה מקדימה"
+										class="absolute inset-0 w-full h-full rounded"
+										frameborder="0"
+										allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
+										allowfullscreen
+									></iframe>
+								</div>
+								<p class="text-xs text-gray-500 mt-2 break-all" dir="ltr">{toEmbedUrl(homeVideoUrl)}</p>
+							</div>
+						{/if}
+
+						{#if homeVideoNotice}
+							<p class="text-sm font-bold {homeVideoNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">
+								{homeVideoNotice}
+							</p>
+						{/if}
+
+						<div class="flex gap-2 flex-wrap">
+							<button
+								type="submit"
+								class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-black hover:opacity-90 transition-opacity"
+							>
+								שמור
+							</button>
+							{#if homeVideoUrl.trim()}
+								<button
+									type="button"
+									onclick={clearHomeVideo}
+									class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 font-bold"
+								>
+									הסר סרטון
+								</button>
+							{/if}
+						</div>
+					</form>
+				</div>
+
 				<!-- טופס הוספה -->
 				<div class="rounded-2xl border border-teal-500/30 bg-teal-500/5 p-5 md:p-6">
 					<h2 class="text-xl font-black text-teal-200 mb-4">➕ הוספת סרטון או הודעה</h2>

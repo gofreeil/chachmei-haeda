@@ -8,6 +8,27 @@
 
 	let allArticles = $state<Article[]>(staticArticles);
 	let allActivity = $state<ActivityItem[]>(activity);
+	let homeVideoUrl = $state<string>('');
+
+	function toEmbedUrl(url: string): string {
+		if (!url) return '';
+		const t = url.trim();
+		// youtu.be/ID
+		let m = t.match(/youtu\.be\/([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		// youtube.com/watch?v=ID
+		m = t.match(/[?&]v=([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		// already embed
+		m = t.match(/youtube\.com\/embed\/([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		// shorts/ID
+		m = t.match(/youtube\.com\/shorts\/([\w-]{6,})/);
+		if (m) return `https://www.youtube.com/embed/${m[1]}`;
+		return t;
+	}
+
+	let embedVideoUrl = $derived(toEmbedUrl(homeVideoUrl));
 
 	onMount(() => {
 		try {
@@ -15,6 +36,8 @@
 			if (Array.isArray(customArt)) allArticles = [...customArt, ...staticArticles];
 			const customAct = JSON.parse(localStorage.getItem('chachmei-custom-activity') || '[]');
 			if (Array.isArray(customAct)) allActivity = [...customAct, ...activity];
+			const savedVid = localStorage.getItem('chachmei-home-video-url');
+			if (savedVid) homeVideoUrl = savedVid;
 		} catch {}
 	});
 
@@ -165,6 +188,23 @@
 			כל הפעילות ←
 		</a>
 	</header>
+
+	{#if embedVideoUrl}
+		<div class="mb-6 rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
+			<div class="relative w-full" style="padding-top: 56.25%">
+				<iframe
+					src={embedVideoUrl}
+					title="סרטון בית הדין"
+					class="absolute inset-0 w-full h-full"
+					frameborder="0"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+					referrerpolicy="strict-origin-when-cross-origin"
+					allowfullscreen
+				></iframe>
+			</div>
+		</div>
+	{/if}
+
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
 		{#each recentActivity as a}
 			<a
@@ -186,6 +226,47 @@
 		{/each}
 	</div>
 </section>
+
+{#if latestArticle}
+	<section class="mb-10">
+		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
+			<div class="text-right">
+				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+					📖 מאמר חכמי העדה
+				</h3>
+				<p class="mt-2 text-gray-400 text-sm md:text-base">
+					הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
+				</p>
+			</div>
+			<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
+				ארכיון המאמרים ←
+			</a>
+		</header>
+		<article
+			class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(59,130,246,0.10)]"
+		>
+			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
+				<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
+					🆕 חדש
+				</span>
+				<span class="text-xs text-gray-400">{latestArticle.date}</span>
+			</div>
+			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
+				{latestArticle.title}
+			</h2>
+			<p class="text-sm text-blue-300 mb-2">מאת: {latestArticle.author}</p>
+			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
+			<div class="mt-3 pt-3 border-t border-blue-400/20 flex items-center justify-end gap-3 flex-wrap">
+				<a
+					href="/articles/{latestArticle.slug}"
+					class="text-blue-300 font-bold text-sm hover:text-blue-200 transition-colors"
+				>
+					פתח במסך נפרד ←
+				</a>
+			</div>
+		</article>
+	</section>
+{/if}
 
 <section class="mb-10">
 	<header class="text-center mb-5">
@@ -242,70 +323,29 @@
 	</article>
 </section>
 
-{#if latestArticle}
-	<section class="mb-10">
-		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
-			<div class="text-right">
-				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-					📖 מאמר חכמי העדה
-				</h3>
-				<p class="mt-2 text-gray-400 text-sm md:text-base">
-					הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
-				</p>
-			</div>
-			<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
-				ארכיון המאמרים ←
-			</a>
-		</header>
-		<article
-			class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(59,130,246,0.10)]"
-		>
-			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
-				<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
-					🆕 חדש
-				</span>
-				<span class="text-xs text-gray-400">{latestArticle.date}</span>
-			</div>
-			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
-				{latestArticle.title}
-			</h2>
-			<p class="text-sm text-blue-300 mb-2">מאת: {latestArticle.author}</p>
-			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
-			<div class="mt-3 pt-3 border-t border-blue-400/20 flex items-center justify-end gap-3 flex-wrap">
-				<a
-					href="/articles/{latestArticle.slug}"
-					class="text-blue-300 font-bold text-sm hover:text-blue-200 transition-colors"
-				>
-					פתח במסך נפרד ←
-				</a>
-			</div>
-		</article>
-	</section>
-{/if}
-
-<section class="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-3 md:p-4 mb-6">
+<section class="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-4 md:p-6 mb-6">
 	<a
 		href="/ethical-code"
 		class="block group rounded-xl -m-1 p-1 hover:bg-yellow-500/5 transition-colors"
 		title="לדף הקוד האתי UECC"
 	>
-		<div class="flex items-start gap-3">
+		<div class="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
 			<img
 				src="/images/Copilot_20260602_125425.png"
 				alt="הקוד האתי UECC"
-				class="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-lg object-cover border border-yellow-500/30 shadow"
+				class="flex-shrink-0 w-40 h-40 md:w-56 md:h-56 rounded-xl object-cover border-2 border-yellow-500/40 shadow-lg"
 				loading="lazy"
 			/>
-			<div class="flex-1 min-w-0">
-				<div class="flex items-center justify-between gap-2 flex-wrap mb-1">
-					<h3 class="text-base md:text-lg font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
+			<div class="flex-1 min-w-0 w-full">
+				<div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+					<h3 class="text-lg md:text-2xl font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
 						יתרונות הקיום של הקוד המוסרי
 					</h3>
-					<span class="text-xs font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
+					<span class="text-xs md:text-sm font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
 						לדף הקוד האתי ←
 					</span>
 				</div>
-				<ul class="space-y-0.5 text-gray-200 text-xs md:text-sm leading-snug">
+				<ul class="space-y-1 text-gray-200 text-sm md:text-base leading-snug">
 					{#each benefits as b}
 						<li class="flex items-start gap-2">
 							<span class="text-yellow-400">✓</span>
@@ -317,11 +357,11 @@
 		</div>
 	</a>
 
-	<div class="mt-3 rounded-xl border-2 border-yellow-400/60 bg-gradient-to-br from-yellow-500/15 via-amber-500/10 to-yellow-600/15 p-3 md:p-4 text-center shadow-[0_0_20px_rgba(234,179,8,0.12)]">
+	<div class="mt-5 pt-4 border-t border-yellow-500/30 text-center">
 		<h4 class="text-base md:text-lg font-black text-yellow-200 mb-1">
 			הצטרף עוד היום לחתומים על הקוד האתי
 		</h4>
-		<p class="text-gray-200 leading-snug text-xs md:text-sm max-w-2xl mx-auto mb-2">
+		<p class="text-gray-200 leading-snug text-xs md:text-sm max-w-2xl mx-auto mb-3">
 			הצטרפותך מחזקת את מעגל היושר והאמון — קבל על עצמך את שבע מצוות בני נח והיה חלק מתיקון עולם.
 		</p>
 		<div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
