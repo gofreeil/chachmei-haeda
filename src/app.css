@@ -251,6 +251,36 @@ select option:checked {
 .hover\:text-yellow-100:hover { color: #78350f !important; }
 .hover\:text-yellow-200:hover { color: #854d0e !important; }
 
+/* כיתובי "אינדיגו/סגול/כחול" בהירים (200-400) שתוכננו לרקע כהה —
+   על רקע קרם הם בלתי קריאים. הכהייה לגוונים כהים מאותה משפחה. */
+.text-indigo-100, .text-indigo-200, .text-indigo-300 { color: #3730a3 !important; }
+.text-indigo-400 { color: #4338ca !important; }
+.text-purple-100, .text-purple-200, .text-purple-300 { color: #6b21a8 !important; }
+.text-purple-400 { color: #7e22ce !important; }
+.text-blue-100, .text-blue-200, .text-blue-300 { color: #1e40af !important; }
+.text-blue-400 { color: #1d4ed8 !important; }
+.text-cyan-100, .text-cyan-200, .text-cyan-300 { color: #155e75 !important; }
+.text-cyan-400 { color: #0e7490 !important; }
+.text-teal-100, .text-teal-200, .text-teal-300 { color: #115e59 !important; }
+.text-teal-400 { color: #0f766e !important; }
+.text-green-100, .text-green-200, .text-green-300 { color: #166534 !important; }
+.text-green-400 { color: #15803d !important; }
+.text-red-100, .text-red-200, .text-red-300 { color: #991b1b !important; }
+.text-pink-100, .text-pink-200, .text-pink-300 { color: #9d174d !important; }
+.text-orange-100, .text-orange-200, .text-orange-300 { color: #9a3412 !important; }
+
+.hover\:text-blue-200:hover, .hover\:text-blue-300:hover { color: #1e40af !important; }
+.hover\:text-cyan-200:hover, .hover\:text-cyan-300:hover { color: #155e75 !important; }
+.hover\:text-purple-200:hover, .hover\:text-purple-300:hover { color: #6b21a8 !important; }
+
+/* gradient text (bg-clip-text + text-transparent) — נקודות הגרדיאנט הבהירות נטמעות ברקע הקרם.
+   החלפה לסולידי כהה כדי שייראה. */
+.bg-clip-text.text-transparent {
+    background: none !important;
+    -webkit-text-fill-color: #3730a3 !important;
+    color: #3730a3 !important;
+}
+
 /* select <option> — נשאר עם רקע לבן וטקסט כהה (זה כבר היה תקין) */
 
 /* התאמת ה-select עצמו (לא ה-option) במוד בהיר */
@@ -364,6 +394,17 @@ main .pb-8  { padding-bottom: 1.25rem !important; }
 main .gap-8 { gap: 1.25rem !important; }
 main .gap-6 { gap: 1rem !important; }
 main .gap-5 { gap: 0.85rem !important; }
+main .gap-4 { gap: 0.6rem !important; }
+main .gap-3 { gap: 0.45rem !important; }
+
+/* פדינג פנימי של מסגרות גדולות — לצמצם בלי לבטל לגמרי */
+main .p-8 { padding: 1.25rem !important; }
+main .p-6 { padding: 1rem !important; }
+main .p-5 { padding: 0.85rem !important; }
+@media (min-width: 768px) {
+    main .md\:p-8 { padding: 1.4rem !important; }
+    main .md\:p-6 { padding: 1.1rem !important; }
+}
 
 @media (min-width: 768px) {
     main .md\:gap-8 { gap: 1.25rem !important; }
