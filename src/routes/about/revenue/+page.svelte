@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 
 	let rabbis = $state<Rabbi[]>(defaultRabbis);
 
@@ -33,7 +34,7 @@
 		</p>
 
 		<blockquote class="mt-6 py-2" style="text-align: center;">
-			<p class="text-lg md:text-xl text-amber-200 leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; text-align: center;">
+			<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; text-align: center; color: #92400e;">
 				שנאמר: "פָּתֹחַ תִּפְתַּח אֶת יָדְךָ לוֹ וְהַעֲבֵט תַּעֲבִיטֶנּוּ דֵּי מַחְסֹרוֹ אֲשֶׁר יֶחְסַר לוֹ"
 			</p>
 			<footer class="mt-2 text-sm text-gray-400" style="text-align: center;">(דברים ט"ו, ח)</footer>
@@ -48,6 +49,10 @@
 		<p class="mt-4 text-lg md:text-xl font-bold text-white" style="text-align: center;">
 			בכפוף לחכמת התורה!
 		</p>
+	</div>
+
+	<div class="mt-10">
+		<HeichalotGrid />
 	</div>
 
 	<!-- הדיינים -->
