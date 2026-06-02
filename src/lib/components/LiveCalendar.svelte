@@ -79,7 +79,7 @@
 
 	type Cell = {
 		date: string;
-		day: number;
+		day: string;
 		gregLabel: string;
 		isToday: boolean;
 		isPast: boolean;
@@ -95,7 +95,7 @@
 	function emptyCell(): Cell {
 		return {
 			date: '',
-			day: 0,
+			day: '',
 			gregLabel: '',
 			isToday: false,
 			isPast: false,
@@ -126,7 +126,7 @@
 			const dow = d.getDay();
 			cells.push({
 				date: ds,
-				day: hebDay(d),
+				day: numToGematria(hebDay(d)),
 				gregLabel: `${d.getDate()}.${d.getMonth() + 1}`,
 				isToday: ds === todayStr,
 				isPast: ds < todayStr,

@@ -1,8 +1,27 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
-	import { activity } from '$lib/data/activity';
+	import { activity, type ActivityItem } from '$lib/data/activity';
+	import { articles as staticArticles, type Article } from '$lib/data/articles';
 
-	const recentActivity = activity.slice(0, 3);
+	let allArticles = $state<Article[]>(staticArticles);
+	let allActivity = $state<ActivityItem[]>(activity);
+
+	onMount(() => {
+		try {
+			const customArt = JSON.parse(localStorage.getItem('chachmei-custom-articles') || '[]');
+			if (Array.isArray(customArt)) allArticles = [...customArt, ...staticArticles];
+			const customAct = JSON.parse(localStorage.getItem('chachmei-custom-activity') || '[]');
+			if (Array.isArray(customAct)) allActivity = [...customAct, ...activity];
+		} catch {}
+	});
+
+	let latestArticle = $derived(
+		[...allArticles].sort((a, b) => b.date.localeCompare(a.date))[0]
+	);
+	let recentActivity = $derived(
+		[...allActivity].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
+	);
 	const activityKindIcons: Record<string, string> = {
 		'סרטון': '🎬',
 		'מאמר': '📝',
@@ -133,6 +152,47 @@
 	</header>
 	<LiveCalendar />
 </section>
+
+{#if latestArticle}
+	<section class="mb-10">
+		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
+			<div class="text-right">
+				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+					📖 המאמר האחרון
+				</h3>
+				<p class="mt-2 text-gray-400 text-sm md:text-base">המאמר החדש ביותר שאושר על ידי שלושה רבנים</p>
+			</div>
+			<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
+				ארכיון המאמרים ←
+			</a>
+		</header>
+		<a
+			href="/articles/{latestArticle.slug}"
+			class="block rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 hover:border-blue-400/70 hover:from-blue-500/15 hover:to-purple-500/15 transition-all shadow-[0_0_30px_rgba(59,130,246,0.10)]"
+		>
+			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
+				<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
+					🆕 חדש
+				</span>
+				<span class="text-xs text-gray-400">{latestArticle.date}</span>
+			</div>
+			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
+				{latestArticle.title}
+			</h2>
+			<p class="text-sm text-blue-300 mb-4">מאת: {latestArticle.author}</p>
+			<p class="text-gray-200 leading-relaxed md:text-lg">{latestArticle.excerpt}</p>
+			<div class="mt-5 flex items-center justify-between gap-3 flex-wrap">
+				<div class="flex items-center gap-2 flex-wrap">
+					<span class="text-xs text-green-400 font-bold">✓ אושר על ידי {latestArticle.approvedBy.length} רבנים</span>
+					{#each latestArticle.approvedBy as r}
+						<span class="text-xs px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/30 text-green-300">{r}</span>
+					{/each}
+				</div>
+				<span class="text-blue-300 font-bold text-sm">קרא את המאמר המלא ←</span>
+			</div>
+		</a>
+	</section>
+{/if}
 
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0 pb-10">
 	{#each sections as s}
