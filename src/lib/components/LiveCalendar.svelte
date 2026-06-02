@@ -265,14 +265,14 @@
 	<div class="grid grid-cols-7 gap-1">
 		{#each grid as c}
 			{#if c.isEmpty}
-				<div class="aspect-square rounded-lg bg-transparent"></div>
+				<div class="aspect-[3/2] rounded-lg bg-transparent"></div>
 			{:else if isAvailable(c)}
 				<a
 					href={`/request-hearing?date=${c.date}`}
 					onmouseenter={(e) => onCellEnter(c, e)}
 					onmousemove={onCellMove}
 					onmouseleave={onCellLeave}
-					class="cal-cell available aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold border border-green-300 bg-green-500/45 text-white hover:bg-green-500/65 hover:border-green-200 hover:scale-105 transition-all relative
+					class="cal-cell available aspect-[3/2] rounded-lg flex flex-col items-center justify-center text-sm font-bold border border-green-300 bg-green-500/45 text-white hover:bg-green-500/65 hover:border-green-200 hover:scale-105 transition-all relative
 						{c.event ? 'ring-1 ring-' + (c.event.kind === 'לאומי' ? 'blue' : c.event.kind === 'מועד' ? 'orange' : 'gray') + '-400/60' : ''}
 						{c.isToday ? 'ring-2 ring-blue-300' : ''}"
 				>
@@ -291,7 +291,7 @@
 					onmouseenter={(e) => onCellEnter(c, e)}
 					onmousemove={onCellMove}
 					onmouseleave={onCellLeave}
-					class="aspect-square rounded-lg flex flex-col items-center justify-center text-sm font-bold cursor-not-allowed border
+					class="aspect-[3/2] rounded-lg flex flex-col items-center justify-center text-sm font-bold cursor-not-allowed border
 						{c.isBooked
 							? 'border-red-300 bg-red-500/55 text-white'
 							: c.event?.blocking
