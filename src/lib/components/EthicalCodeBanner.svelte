@@ -58,7 +58,8 @@
 			</a>
 			<a
 				href="/signatories"
-				class="inline-block px-3 py-1.5 rounded-lg bg-amber-900/10 hover:bg-amber-900/20 text-amber-900 font-bold text-sm transition-colors"
+				class="inline-block px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 font-black text-sm border-2 border-amber-800/50 shadow-md hover:scale-105 hover:shadow-[0_0_15px_rgba(234,88,12,0.5)] hover:from-amber-500 hover:to-red-400 transition-all"
+				style="color: #fff8e7 !important; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
 			>
 				רשימת החתומים →
 			</a>
