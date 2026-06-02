@@ -141,10 +141,10 @@
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
 		{#each rulingSteps as step}
 			<div class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right">
-				<div class="absolute top-4 left-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+				<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
 					{step.num}
 				</div>
-				<div class="text-4xl mb-3">{step.icon}</div>
+				<div class="text-4xl mb-3 mr-14">{step.icon}</div>
 				<h4 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h4>
 				<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
 			</div>
@@ -161,49 +161,6 @@
 	</header>
 	<LiveCalendar />
 </section>
-
-{#if latestArticle}
-	<section class="mb-10">
-		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
-			<div class="text-right">
-				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-					📖 מאמר חכמי העדה
-				</h3>
-				<p class="mt-2 text-gray-400 text-sm md:text-base">
-					הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
-				</p>
-			</div>
-			<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
-				ארכיון המאמרים ←
-			</a>
-		</header>
-		<a
-			href="/articles/{latestArticle.slug}"
-			class="block rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 hover:border-blue-400/70 hover:from-blue-500/15 hover:to-purple-500/15 transition-all shadow-[0_0_30px_rgba(59,130,246,0.10)]"
-		>
-			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
-				<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
-					🆕 חדש
-				</span>
-				<span class="text-xs text-gray-400">{latestArticle.date}</span>
-			</div>
-			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
-				{latestArticle.title}
-			</h2>
-			<p class="text-sm text-blue-300 mb-4">מאת: {latestArticle.author}</p>
-			<p class="text-gray-200 leading-relaxed md:text-lg">{latestArticle.excerpt}</p>
-			<div class="mt-5 flex items-center justify-between gap-3 flex-wrap">
-				<div class="flex items-center gap-2 flex-wrap">
-					<span class="text-xs text-green-400 font-bold">✓ אושר על ידי {latestArticle.approvedBy.length} רבנים</span>
-					{#each latestArticle.approvedBy as r}
-						<span class="text-xs px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/30 text-green-300">{r}</span>
-					{/each}
-				</div>
-				<span class="text-blue-300 font-bold text-sm">קרא את המאמר המלא ←</span>
-			</div>
-		</a>
-	</section>
-{/if}
 
 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0 pb-10">
 	{#each sections as s}
@@ -325,6 +282,49 @@
 		{/each}
 	</div>
 </section>
+
+{#if latestArticle}
+	<section class="mb-10">
+		<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
+			<div class="text-right">
+				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+					📖 מאמר חכמי העדה
+				</h3>
+				<p class="mt-2 text-gray-400 text-sm md:text-base">
+					הועלה ב-{latestArticle.date} · מאת {latestArticle.author}
+				</p>
+			</div>
+			<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
+				ארכיון המאמרים ←
+			</a>
+		</header>
+		<article
+			class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(59,130,246,0.10)]"
+		>
+			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
+				<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
+					🆕 חדש
+				</span>
+				<span class="text-xs text-gray-400">{latestArticle.date}</span>
+			</div>
+			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
+				{latestArticle.title}
+			</h2>
+			<p class="text-sm text-blue-300 mb-5">מאת: {latestArticle.author}</p>
+			<div class="space-y-4 text-gray-200 leading-relaxed text-base md:text-lg whitespace-pre-line">
+				{latestArticle.body}
+			</div>
+			<div class="mt-6 pt-5 border-t border-blue-400/20 flex items-center justify-end gap-3 flex-wrap">
+				<a
+					href="/articles/{latestArticle.slug}"
+					class="text-blue-300 font-bold text-sm hover:text-blue-200 transition-colors"
+				>
+					פתח במסך נפרד ←
+				</a>
+			</div>
+		</article>
+	</section>
+{/if}
 
 <section class="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-6 md:p-8 mb-10">
 	<h3 class="text-2xl font-bold text-yellow-300 mb-4">יתרונות הקיום של הקוד המוסרי</h3>

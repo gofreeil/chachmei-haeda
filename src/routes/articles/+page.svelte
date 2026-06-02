@@ -42,12 +42,6 @@
 				</div>
 				<p class="mt-1 text-sm text-blue-300">מאת: {latest.author}</p>
 				<p class="mt-3 text-gray-300 leading-relaxed">{latest.excerpt}</p>
-				<div class="mt-4 flex items-center gap-2 flex-wrap">
-					<span class="text-xs text-green-400">✓ אושר על ידי {latest.approvedBy.length} רבנים</span>
-					{#each latest.approvedBy as r}
-						<span class="text-xs px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-300">{r}</span>
-					{/each}
-				</div>
 			</a>
 		</div>
 	{/if}
@@ -68,12 +62,6 @@
 					</div>
 					<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
 					<p class="mt-3 text-gray-300 leading-relaxed">{a.excerpt}</p>
-					<div class="mt-4 flex items-center gap-2 flex-wrap">
-						<span class="text-xs text-green-400">✓ אושר על ידי {a.approvedBy.length} רבנים</span>
-						{#each a.approvedBy as r}
-							<span class="text-xs px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-300">{r}</span>
-						{/each}
-					</div>
 				</a>
 			{/each}
 		</div>

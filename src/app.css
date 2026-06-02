@@ -41,6 +41,9 @@ html {
        תמיכה: Chrome 90+, Firefox 81+, Safari 16+ (~99% ב-2026). */
     overflow-x: clip;
     max-width: 100vw;
+    /* בסיס מוגדל קלות — 1rem = 17.5px במקום 16px ברירת המחדל.
+       ההגדלה משפיעה על כל מחלקות Tailwind text-* באתר, פרט להדר ולפוטר שמוגדרים בפיקסלים מוחלטים בהמשך. */
+    font-size: 17.5px;
 }
 
 body {
@@ -50,7 +53,7 @@ body {
     background-color: var(--bg-cream);
     color: var(--text-primary);
     direction: rtl;
-    font-size: 16.5px;
+    font-size: 18px;
     /* clip במקום hidden — כדי שלא ניצור scroll container על body ולא נשבור sticky.
        overflow:hidden + position:relative על body גרם ל-html להיות הסקרול הראשי
        אך ה-sticky יחושב יחסית ל-body שאינו גולל → ההדר היה זז עם הדף. */
@@ -262,3 +265,41 @@ textarea {
 }
 
 /* "header-glow" השתמש ב-radial gradient כחול — שומרים, זה אקסנט יפה */
+
+/* ============================================================
+   ===== ההדר והפוטר נשארים בגודל המקורי =====
+   ה-html font-size הוגדל ל-17.5px כדי שכל מחלקות text-* יגדלו
+   באתר. כאן מצמידים את ההדר והפוטר חזרה לגדלים המקוריים בפיקסלים מוחלטים.
+   ============================================================ */
+header, footer {
+    font-size: 16.5px;
+}
+
+/* גדלים מוחלטים של Tailwind (כשהבסיס היה 1rem = 16px) — נאלצים על ההדר והפוטר */
+header .text-xs,   footer .text-xs   { font-size: 12px !important; }
+header .text-sm,   footer .text-sm   { font-size: 14px !important; }
+header .text-base, footer .text-base { font-size: 16px !important; }
+header .text-lg,   footer .text-lg   { font-size: 18px !important; }
+header .text-xl,   footer .text-xl   { font-size: 20px !important; }
+header .text-2xl,  footer .text-2xl  { font-size: 24px !important; }
+header .text-3xl,  footer .text-3xl  { font-size: 30px !important; }
+header .text-4xl,  footer .text-4xl  { font-size: 36px !important; }
+header .text-5xl,  footer .text-5xl  { font-size: 48px !important; }
+
+@media (min-width: 640px) {
+    header .sm\:text-xs,   footer .sm\:text-xs   { font-size: 12px !important; }
+    header .sm\:text-sm,   footer .sm\:text-sm   { font-size: 14px !important; }
+    header .sm\:text-base, footer .sm\:text-base { font-size: 16px !important; }
+    header .sm\:text-lg,   footer .sm\:text-lg   { font-size: 18px !important; }
+    header .sm\:text-xl,   footer .sm\:text-xl   { font-size: 20px !important; }
+}
+
+@media (min-width: 768px) {
+    header .md\:text-xs,   footer .md\:text-xs   { font-size: 12px !important; }
+    header .md\:text-sm,   footer .md\:text-sm   { font-size: 14px !important; }
+    header .md\:text-base, footer .md\:text-base { font-size: 16px !important; }
+    header .md\:text-lg,   footer .md\:text-lg   { font-size: 18px !important; }
+    header .md\:text-xl,   footer .md\:text-xl   { font-size: 20px !important; }
+    header .md\:text-2xl,  footer .md\:text-2xl  { font-size: 24px !important; }
+    header .md\:text-3xl,  footer .md\:text-3xl  { font-size: 30px !important; }
+}

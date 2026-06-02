@@ -44,15 +44,7 @@
 		</div>
 
 		<footer class="mt-10 border-t border-white/10 pt-6">
-			<p class="text-sm text-green-400 mb-2">✓ מאמר זה אושר על ידי {a.approvedBy.length} רבנים:</p>
-			<div class="flex flex-wrap gap-2">
-				{#each a.approvedBy as r}
-					<span class="px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30 text-green-300 text-sm">
-						{r}
-					</span>
-				{/each}
-			</div>
-			<p class="mt-6 text-xs text-gray-500 italic">
+			<p class="text-xs text-gray-500 italic">
 				על פי מדיניות חכמי העדה, לא ניתן להגיב למאמרים. ניתן לפנות לרב המחבר דרך טופס יצירת קשר.
 			</p>
 		</footer>
