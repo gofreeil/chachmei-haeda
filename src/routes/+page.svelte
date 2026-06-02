@@ -222,7 +222,7 @@
 
 {#if latestArticle}
 	<section class="mb-10">
-		<header class="text-center mb-5">
+		<header class="text-right mb-5">
 			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				כותרת מהיכל הרוח
 			</h3>
@@ -253,7 +253,7 @@
 {/if}
 
 <section class="mb-10">
-	<header class="text-center mb-5">
+	<header class="text-right mb-5">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
 			🕮 תשובות חכמי העדה
 		</h3>
