@@ -161,7 +161,7 @@
 
 
 <section class="mb-10">
-	<div class="mb-4 flex items-center gap-3" aria-hidden="true">
+	<div class="mb-8 flex items-center gap-3" aria-hidden="true">
 		<div
 			class="h-2.5 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
 			style="clip-path: polygon(0% 38%, 0% 62%, 75% 62%, 100% 100%, 100% 0%, 75% 38%);"
@@ -207,7 +207,7 @@
 			אל כלל הפעולות של חכמי העדה ←
 		</a>
 	</div>
-	<div class="mt-2 flex items-center gap-3" aria-hidden="true">
+	<div class="mt-2 mb-6 flex items-center gap-3" aria-hidden="true">
 		<div
 			class="h-2.5 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
 			style="clip-path: polygon(0% 38%, 0% 62%, 75% 62%, 100% 100%, 100% 0%, 75% 38%);"
@@ -307,7 +307,7 @@
 	</article>
 </section>
 
-<div class="mt-6 mb-2 flex items-center gap-3" aria-hidden="true">
+<div class="mt-6 mb-6 flex items-center gap-3" aria-hidden="true">
 	<div
 		class="h-2.5 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
 		style="clip-path: polygon(0% 38%, 0% 62%, 75% 62%, 100% 100%, 100% 0%, 75% 38%);"
