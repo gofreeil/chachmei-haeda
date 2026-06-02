@@ -37,18 +37,49 @@
 			icon: '⚖️',
 			title: 'בקשת דיון',
 			desc: 'פתיחת תיק חדש לבוררות ושלום על פי דין תורה'
-		},
-		{
-			href: '/hearings',
-			icon: '🎥',
-			title: 'דיוני זום',
-			desc: 'דיונים מתוכננים ושהתקיימו — קישורי השתתפות'
-		},
+		}
+	];
+
+	const heichalim = [
 		{
 			href: '/rulings',
-			icon: '📋',
-			title: 'ארכיון פסקי הדין',
-			desc: 'סיכומי דיון והכרעות פסוקות בכתב'
+			icon: '⚖️',
+			title: 'היכל המשפט',
+			desc: 'פסקי דין, הכרעות ובוררות על פי דין תורה',
+			gradient: 'from-blue-500/20 to-indigo-500/20',
+			border: 'border-blue-400/40',
+			text: 'text-blue-200',
+			hover: 'hover:from-blue-500/30 hover:to-indigo-500/30 hover:border-blue-300/70'
+		},
+		{
+			href: '/request-hearing',
+			icon: '🕊️',
+			title: 'היכל השלום',
+			desc: 'גישור ופישור — השכנת שלום בין אדם לחברו',
+			gradient: 'from-emerald-500/20 to-teal-500/20',
+			border: 'border-emerald-400/40',
+			text: 'text-emerald-200',
+			hover: 'hover:from-emerald-500/30 hover:to-teal-500/30 hover:border-emerald-300/70'
+		},
+		{
+			href: '/articles',
+			icon: '🕮',
+			title: 'היכל הרוח',
+			desc: 'מאמרים, תשובות ולימוד תורה ומוסר',
+			gradient: 'from-purple-500/20 to-fuchsia-500/20',
+			border: 'border-purple-400/40',
+			text: 'text-purple-200',
+			hover: 'hover:from-purple-500/30 hover:to-fuchsia-500/30 hover:border-purple-300/70'
+		},
+		{
+			href: '/activity',
+			icon: '🛠️',
+			title: 'היכל המעשה',
+			desc: 'פעילות, פרויקטים וקריאות לתיקון עולם',
+			gradient: 'from-amber-500/20 to-orange-500/20',
+			border: 'border-amber-400/40',
+			text: 'text-amber-200',
+			hover: 'hover:from-amber-500/30 hover:to-orange-500/30 hover:border-amber-300/70'
 		}
 	];
 
@@ -111,6 +142,27 @@
 		פלטפורמה לפתרון מחלוקות בין אדם לחברו, מאמרי רבנים מאושרים, ודיוני זום עם סיכומי הכרעה כתובים — הכל
 		תחת הקוד האתי הכלל-עולמי <span class="text-blue-700 font-black">UECC</span>.
 	</p>
+</section>
+
+<section class="mb-10">
+	<header class="text-center mb-6">
+		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
+			🏛️ ארבעת ההיכלים
+		</h3>
+		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">משפט · שלום · רוח · מעשה</p>
+	</header>
+	<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+		{#each heichalim as h}
+			<a
+				href={h.href}
+				class="block rounded-2xl border-2 {h.border} bg-gradient-to-br {h.gradient} {h.hover} transition-all p-4 md:p-6 text-center shadow-lg hover:scale-[1.03] hover:shadow-2xl"
+			>
+				<div class="text-4xl md:text-5xl mb-2 md:mb-3">{h.icon}</div>
+				<h4 class="text-base md:text-xl font-black {h.text} mb-1 md:mb-2">{h.title}</h4>
+				<p class="text-xs md:text-sm text-gray-200 leading-snug font-medium">{h.desc}</p>
+			</a>
+		{/each}
+	</div>
 </section>
 
 <section class="mb-10">

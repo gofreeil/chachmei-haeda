@@ -25,7 +25,6 @@
 
     let showLangDropdown = $state(false);
     let showNavMenu = $state(false);
-    let onlineUsers = $state(1);
 
     const navItems = [
         { href: '/', label: 'בית', icon: '🏠' },
@@ -38,15 +37,6 @@
         { href: '/articles', label: 'מאמרי רבנים', icon: '📚' },
     ];
 
-    async function pingServer() {
-        try {
-            const res = await fetch('/api/ping', { method: 'POST' });
-            if (res.ok) {
-                const data = await res.json();
-                onlineUsers = data.count;
-            }
-        } catch { /* ignore */ }
-    }
     let tooltipX = $state(0);
     let tooltipY = $state(0);
     let showProfileTooltip = $state(false);
@@ -109,12 +99,8 @@
             if (saved) locale.set(saved);
         } catch {}
 
-        pingServer();
-        const usersInterval = setInterval(pingServer, 30000);
-
         document.addEventListener("click", handleClickOutside);
         return () => {
-            clearInterval(usersInterval);
             document.removeEventListener("click", handleClickOutside);
         };
     });
@@ -470,17 +456,6 @@
             </div>
             {#if true}
                 <div class="flex items-center gap-4">
-                    <!-- מספר גולשים -->
-                    <div
-                        class="flex items-center gap-2 bg-blue-900/30 px-3 py-2 rounded-lg border border-blue-500/30 online-counter"
-                        aria-label="{onlineUsers} משתמשים מחוברים כעת"
-                        role="status"
-                    >
-                        <span class="text-green-400 text-xl" aria-hidden="true">●</span>
-                        <span class="text-white text-sm font-bold" aria-hidden="true">{onlineUsers}</span>
-                        <span class="text-gray-300 text-sm" aria-hidden="true">{tFn("connected")}</span>
-                    </div>
-
                     {#if currentUser}
                         {@const userName = currentUser.username ?? "U"}
                         <div class="flex items-center gap-3">
@@ -564,21 +539,6 @@
 
     :global(.animate-pulse-slow) {
         animation: pulse-slow 11s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes blink-every-2min {
-        0%,
-        0.83%,
-        100% {
-            opacity: 1;
-        }
-        0.415% {
-            opacity: 0.3;
-        }
-    }
-
-    :global(.online-counter) {
-        animation: blink-every-2min 120s ease-in-out infinite;
     }
 
     :global(.logo-link) {
