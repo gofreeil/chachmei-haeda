@@ -36,40 +36,52 @@
 			icon: '⚖️',
 			title: 'היכל המשפט',
 			desc: 'פסקי דין, הכרעות ובוררות על פי דין תורה',
-			gradient: 'from-blue-500/20 to-indigo-500/20',
-			border: 'border-blue-400/40',
-			text: 'text-blue-200',
-			hover: 'hover:from-blue-500/30 hover:to-indigo-500/30 hover:border-blue-300/70'
-		},
-		{
-			href: '/request-hearing',
-			icon: '🕊️',
-			title: 'היכל השלום',
-			desc: 'גישור ופישור — השכנת שלום בין אדם לחברו',
-			gradient: 'from-emerald-500/20 to-teal-500/20',
-			border: 'border-emerald-400/40',
-			text: 'text-emerald-200',
-			hover: 'hover:from-emerald-500/30 hover:to-teal-500/30 hover:border-emerald-300/70'
+			material: 'iron',
+			bg: 'bg-gradient-to-br from-slate-600 via-slate-800 to-slate-900',
+			border: 'border-slate-300',
+			shadow: 'shadow-[0_8px_24px_-4px_rgba(15,23,42,0.6),inset_0_2px_0_rgba(255,255,255,0.18)]',
+			text: 'text-white',
+			descText: 'text-slate-200',
+			hover: 'hover:from-slate-500 hover:via-slate-700 hover:to-slate-800 hover:border-slate-100'
 		},
 		{
 			href: '/articles',
 			icon: '🕮',
 			title: 'היכל הרוח',
 			desc: 'מאמרים, תשובות ולימוד תורה ומוסר',
-			gradient: 'from-purple-500/20 to-fuchsia-500/20',
-			border: 'border-purple-400/40',
-			text: 'text-purple-200',
-			hover: 'hover:from-purple-500/30 hover:to-fuchsia-500/30 hover:border-purple-300/70'
+			material: 'wood',
+			bg: 'bg-gradient-to-br from-amber-700 via-amber-800 to-yellow-900',
+			border: 'border-amber-300',
+			shadow: 'shadow-[0_8px_24px_-4px_rgba(120,53,15,0.55),inset_0_2px_0_rgba(255,237,178,0.25)]',
+			text: 'text-amber-50',
+			descText: 'text-amber-100',
+			hover: 'hover:from-amber-600 hover:via-amber-700 hover:to-yellow-800 hover:border-amber-100'
+		},
+		{
+			href: '/request-hearing',
+			icon: '🕊️',
+			title: 'היכל השלום',
+			desc: 'גישור ופישור — השכנת שלום בין אדם לחברו',
+			material: 'glass',
+			bg: 'bg-gradient-to-br from-sky-200/60 via-cyan-100/50 to-blue-200/60 backdrop-blur-md',
+			border: 'border-sky-200',
+			shadow: 'shadow-[0_8px_24px_-4px_rgba(56,189,248,0.45),inset_0_2px_0_rgba(255,255,255,0.85)]',
+			text: 'text-sky-950',
+			descText: 'text-sky-900',
+			hover: 'hover:from-sky-300/70 hover:via-cyan-200/60 hover:to-blue-300/70 hover:border-white'
 		},
 		{
 			href: '/activity',
 			icon: '🛠️',
 			title: 'היכל המעשה',
 			desc: 'פעילות, פרויקטים וקריאות לתיקון עולם',
-			gradient: 'from-amber-500/20 to-orange-500/20',
-			border: 'border-amber-400/40',
-			text: 'text-amber-200',
-			hover: 'hover:from-amber-500/30 hover:to-orange-500/30 hover:border-amber-300/70'
+			material: 'silver',
+			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
+			border: 'border-white',
+			shadow: 'shadow-[0_8px_24px_-4px_rgba(100,116,139,0.55),inset_0_2px_0_rgba(255,255,255,0.9)]',
+			text: 'text-slate-900',
+			descText: 'text-slate-800',
+			hover: 'hover:from-gray-100 hover:via-slate-200 hover:to-gray-300 hover:border-slate-100'
 		}
 	];
 
@@ -110,7 +122,7 @@
 <section class="mb-10">
 	<header class="text-center mb-6">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
-			🏛️ ארבעת ההיכלים
+			🏛️ ארבעת ההיכלות
 		</h3>
 		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">משפט · שלום · רוח · מעשה</p>
 	</header>
@@ -118,11 +130,11 @@
 		{#each heichalim as h}
 			<a
 				href={h.href}
-				class="block rounded-2xl border-2 {h.border} bg-gradient-to-br {h.gradient} {h.hover} transition-all p-4 md:p-6 text-center shadow-lg hover:scale-[1.03] hover:shadow-2xl"
+				class="block rounded-2xl border-4 {h.border} {h.bg} {h.hover} {h.shadow} transition-all p-4 md:p-6 text-center hover:scale-[1.04] hover:-translate-y-1 ring-1 ring-black/20"
 			>
-				<div class="text-4xl md:text-5xl mb-2 md:mb-3">{h.icon}</div>
-				<h4 class="text-base md:text-xl font-black {h.text} mb-1 md:mb-2">{h.title}</h4>
-				<p class="text-xs md:text-sm text-gray-200 leading-snug font-medium">{h.desc}</p>
+				<div class="text-4xl md:text-5xl mb-2 md:mb-3 drop-shadow-lg">{h.icon}</div>
+				<h4 class="text-base md:text-xl font-black {h.text} mb-1 md:mb-2 drop-shadow-sm">{h.title}</h4>
+				<p class="text-xs md:text-sm {h.descText} leading-snug font-bold">{h.desc}</p>
 			</a>
 		{/each}
 	</div>
@@ -151,45 +163,37 @@
 			</h5>
 			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{recentQa.answer}</p>
 		</div>
-		<div class="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+		<div class="mt-5 text-center">
 			<a
 				href="/qa"
-				class="inline-block px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm hover:scale-105 transition-transform shadow text-center"
+				class="inline-block text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
 			>
 				לכל השאלות והתשובות →
 			</a>
-			<a
-				href="/ask"
-				class="inline-block px-5 py-2.5 rounded-xl bg-white/10 border border-indigo-400/40 text-gray-900 font-bold text-sm hover:bg-white/20 transition-colors text-center"
-			>
-				שאל שאלה חדשה
-			</a>
 		</div>
-	</article>
-</section>
 
-<section class="mb-10">
-	<a
-		href="/ask"
-		class="block rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-5 md:p-6 shadow-[0_0_25px_rgba(99,102,241,0.15)] hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
-	>
-		<div class="flex items-center justify-between gap-4 flex-wrap">
-			<div class="flex items-center gap-4 flex-1 min-w-0">
-				<div class="text-4xl md:text-5xl flex-shrink-0">🕮</div>
-				<div class="text-right min-w-0">
-					<h3 class="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-						שאל את חכמי העדה
-					</h3>
-					<p class="mt-1 text-gray-800 text-sm md:text-base font-bold">
-						יש לך שאלה בהלכה, במוסר עסקי או בעניין שלום בית? לחץ כאן לפתיחת טופס השאלה
-					</p>
+		<a
+			href="/ask"
+			class="mt-5 block rounded-xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-4 md:p-5 hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
+		>
+			<div class="flex items-center justify-between gap-4 flex-wrap">
+				<div class="flex items-center gap-4 flex-1 min-w-0">
+					<div class="text-4xl md:text-5xl flex-shrink-0">🕮</div>
+					<div class="text-right min-w-0">
+						<h3 class="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+							שאל את חכמי העדה
+						</h3>
+						<p class="mt-1 text-gray-800 text-sm md:text-base font-bold">
+							יש לך שאלה בהלכה, במוסר עסקי או בעניין שלום בית? לחץ כאן לפתיחת טופס השאלה
+						</p>
+					</div>
 				</div>
+				<span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base group-hover:scale-105 transition-transform shadow flex-shrink-0">
+					🕮 שאל עכשיו ←
+				</span>
 			</div>
-			<span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base group-hover:scale-105 transition-transform shadow flex-shrink-0">
-				🕮 שאל עכשיו ←
-			</span>
-		</div>
-	</a>
+		</a>
+	</article>
 </section>
 
 <section class="mb-10">
