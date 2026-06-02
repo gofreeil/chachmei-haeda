@@ -335,9 +335,9 @@
                 <div class="relative group">
                     <a
                         href="/"
-                        class="logo-link flex h-28 w-28 items-center justify-center rounded-xl shadow-lg"
+                        class="logo-link flex h-16 w-16 items-center justify-center rounded-xl"
                     >
-                        <div class="h-16 w-16 rounded-full overflow-hidden">
+                        <div class="h-14 w-14 rounded-full overflow-hidden">
                             <img
                                 src="/images/chachmei-logo.png"
                                 alt="חכמי העדה"

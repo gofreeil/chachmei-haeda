@@ -124,10 +124,10 @@
 			/>
 		</div>
 	</div>
-	<p class="mt-4 text-gray-300 text-lg md:text-xl">בית דין לבוררות ושלום על פי דין תורה</p>
-	<p class="mt-2 text-gray-400 text-sm md:text-base max-w-2xl mx-auto">
+	<p class="mt-4 text-gray-900 text-xl md:text-2xl font-extrabold">בית דין לבוררות ושלום על פי דין תורה</p>
+	<p class="mt-3 text-gray-800 text-base md:text-lg font-bold max-w-2xl mx-auto">
 		פלטפורמה לפתרון מחלוקות בין אדם לחברו, מאמרי רבנים מאושרים, ודיוני זום עם סיכומי הכרעה כתובים — הכל
-		תחת הקוד האתי הכלל-עולמי <span class="text-blue-300 font-bold">UECC</span>.
+		תחת הקוד האתי הכלל-עולמי <span class="text-blue-700 font-black">UECC</span>.
 	</p>
 </section>
 
