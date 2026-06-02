@@ -181,7 +181,7 @@
 </script>
 
 <header
-    class="sticky top-0 z-50 border-b-2 md:border-b-4 border-blue-600 shadow-lg backdrop-blur-lg"
+    class="site-header sticky top-0 z-50 border-b-2 md:border-b-4 border-blue-600 shadow-lg backdrop-blur-lg"
     style="background: linear-gradient(to bottom, rgba(248, 238, 203, 0.95) 0%, rgba(240, 227, 184, 0.92) 66%, rgba(240, 227, 184, 0.1) 100%);"
 >
     <div class="relative mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">

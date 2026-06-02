@@ -271,35 +271,35 @@ textarea {
    ה-html font-size הוגדל ל-17.5px כדי שכל מחלקות text-* יגדלו
    באתר. כאן מצמידים את ההדר והפוטר חזרה לגדלים המקוריים בפיקסלים מוחלטים.
    ============================================================ */
-header, footer {
+.site-header, .site-footer {
     font-size: 16.5px;
 }
 
 /* גדלים מוחלטים של Tailwind (כשהבסיס היה 1rem = 16px) — נאלצים על ההדר והפוטר */
-header .text-xs,   footer .text-xs   { font-size: 12px !important; }
-header .text-sm,   footer .text-sm   { font-size: 14px !important; }
-header .text-base, footer .text-base { font-size: 16px !important; }
-header .text-lg,   footer .text-lg   { font-size: 18px !important; }
-header .text-xl,   footer .text-xl   { font-size: 20px !important; }
-header .text-2xl,  footer .text-2xl  { font-size: 24px !important; }
-header .text-3xl,  footer .text-3xl  { font-size: 30px !important; }
-header .text-4xl,  footer .text-4xl  { font-size: 36px !important; }
-header .text-5xl,  footer .text-5xl  { font-size: 48px !important; }
+.site-header .text-xs,   .site-footer .text-xs   { font-size: 12px !important; }
+.site-header .text-sm,   .site-footer .text-sm   { font-size: 14px !important; }
+.site-header .text-base, .site-footer .text-base { font-size: 16px !important; }
+.site-header .text-lg,   .site-footer .text-lg   { font-size: 18px !important; }
+.site-header .text-xl,   .site-footer .text-xl   { font-size: 20px !important; }
+.site-header .text-2xl,  .site-footer .text-2xl  { font-size: 24px !important; }
+.site-header .text-3xl,  .site-footer .text-3xl  { font-size: 30px !important; }
+.site-header .text-4xl,  .site-footer .text-4xl  { font-size: 36px !important; }
+.site-header .text-5xl,  .site-footer .text-5xl  { font-size: 48px !important; }
 
 @media (min-width: 640px) {
-    header .sm\:text-xs,   footer .sm\:text-xs   { font-size: 12px !important; }
-    header .sm\:text-sm,   footer .sm\:text-sm   { font-size: 14px !important; }
-    header .sm\:text-base, footer .sm\:text-base { font-size: 16px !important; }
-    header .sm\:text-lg,   footer .sm\:text-lg   { font-size: 18px !important; }
-    header .sm\:text-xl,   footer .sm\:text-xl   { font-size: 20px !important; }
+    .site-header .sm\:text-xs,   .site-footer .sm\:text-xs   { font-size: 12px !important; }
+    .site-header .sm\:text-sm,   .site-footer .sm\:text-sm   { font-size: 14px !important; }
+    .site-header .sm\:text-base, .site-footer .sm\:text-base { font-size: 16px !important; }
+    .site-header .sm\:text-lg,   .site-footer .sm\:text-lg   { font-size: 18px !important; }
+    .site-header .sm\:text-xl,   .site-footer .sm\:text-xl   { font-size: 20px !important; }
 }
 
 @media (min-width: 768px) {
-    header .md\:text-xs,   footer .md\:text-xs   { font-size: 12px !important; }
-    header .md\:text-sm,   footer .md\:text-sm   { font-size: 14px !important; }
-    header .md\:text-base, footer .md\:text-base { font-size: 16px !important; }
-    header .md\:text-lg,   footer .md\:text-lg   { font-size: 18px !important; }
-    header .md\:text-xl,   footer .md\:text-xl   { font-size: 20px !important; }
-    header .md\:text-2xl,  footer .md\:text-2xl  { font-size: 24px !important; }
-    header .md\:text-3xl,  footer .md\:text-3xl  { font-size: 30px !important; }
+    .site-header .md\:text-xs,   .site-footer .md\:text-xs   { font-size: 12px !important; }
+    .site-header .md\:text-sm,   .site-footer .md\:text-sm   { font-size: 14px !important; }
+    .site-header .md\:text-base, .site-footer .md\:text-base { font-size: 16px !important; }
+    .site-header .md\:text-lg,   .site-footer .md\:text-lg   { font-size: 18px !important; }
+    .site-header .md\:text-xl,   .site-footer .md\:text-xl   { font-size: 20px !important; }
+    .site-header .md\:text-2xl,  .site-footer .md\:text-2xl  { font-size: 24px !important; }
+    .site-header .md\:text-3xl,  .site-footer .md\:text-3xl  { font-size: 30px !important; }
 }

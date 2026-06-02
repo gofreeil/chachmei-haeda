@@ -140,7 +140,8 @@
 			});
 		}
 
-		while (cells.length < 42) cells.push(emptyCell());
+		const rowsNeeded = Math.ceil(cells.length / 7);
+		while (cells.length < rowsNeeded * 7) cells.push(emptyCell());
 		return cells;
 	});
 
