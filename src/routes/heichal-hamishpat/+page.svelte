@@ -219,6 +219,16 @@
 		</a>
 	</div>
 
+	<section class="mb-8">
+		<header class="text-center mb-5">
+			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+				📅 לוח דיונים — בחר תאריך פנוי
+			</h2>
+			<p class="mt-2 text-gray-600 text-sm md:text-base font-bold">לחץ על תאריך פנוי בירוק כדי לפתוח בקשה לאותו יום</p>
+		</header>
+		<LiveCalendar />
+	</section>
+
 	<!-- ───────────── התיקים שלי + ארכיון וידאו ───────────── -->
 	<section class="mb-8">
 		<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
@@ -328,15 +338,5 @@
 				</div>
 			{/if}
 		</div>
-	</section>
-
-	<section class="mb-8">
-		<header class="text-center mb-5">
-			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-				📅 לוח דיונים — בחר תאריך פנוי
-			</h2>
-			<p class="mt-2 text-gray-600 text-sm md:text-base font-bold">לחץ על תאריך פנוי בירוק כדי לפתוח בקשה לאותו יום</p>
-		</header>
-		<LiveCalendar />
 	</section>
 </section>
