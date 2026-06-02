@@ -42,7 +42,7 @@
 
 	const heichalim = [
 		{
-			href: '/rulings',
+			href: '/heichal-hamishpat',
 			icon: '⚖️',
 			title: 'היכל המשפט',
 			desc: 'פסקי דין, הכרעות ובוררות על פי דין תורה',
@@ -80,33 +80,6 @@
 			border: 'border-amber-400/40',
 			text: 'text-amber-200',
 			hover: 'hover:from-amber-500/30 hover:to-orange-500/30 hover:border-amber-300/70'
-		}
-	];
-
-	const rulingSteps = [
-		{
-			num: 1,
-			icon: '✍️',
-			title: 'חתימה על אמנת המוסר',
-			desc: 'הצדדים חותמים על הקוד האתי הכלל-עולמי UECC ומקבלים על עצמם את כללי הבוררות'
-		},
-		{
-			num: 2,
-			icon: '📅',
-			title: 'תיאום תאריך לשני הצדדים',
-			desc: 'מתאמים תאריך דיון שמתאים לכל בעלי הדין דרך לוח הדיונים באתר'
-		},
-		{
-			num: 3,
-			icon: '🎥',
-			title: 'אישור בית הדין ופתיחת הדיון',
-			desc: 'בית הדין מאשר את הבקשה ומתחילים את ההליך במפגש וירטואלי בזום'
-		},
-		{
-			num: 4,
-			icon: '🕊️',
-			title: 'פסק דין חתום וצוות משכין שלום',
-			desc: 'הצדדים מקבלים פסק דין חתום, ולאחריו צוות משכין שלום מלווה ביישום ההכרעה ובחזרת האחווה'
 		}
 	];
 
@@ -161,27 +134,6 @@
 				<h4 class="text-base md:text-xl font-black {h.text} mb-1 md:mb-2">{h.title}</h4>
 				<p class="text-xs md:text-sm text-gray-200 leading-snug font-medium">{h.desc}</p>
 			</a>
-		{/each}
-	</div>
-</section>
-
-<section class="mb-10">
-	<header class="text-center mb-6">
-		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-			⚖️ כיצד קובעים דין
-		</h3>
-		<p class="mt-2 text-gray-400 text-sm md:text-base">ארבעה שלבים פשוטים לפתיחת תיק בוררות והכרעה</p>
-	</header>
-	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-		{#each rulingSteps as step}
-			<div class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right">
-				<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
-					{step.num}
-				</div>
-				<div class="text-4xl mb-3 mr-14">{step.icon}</div>
-				<h4 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h4>
-				<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
-			</div>
 		{/each}
 	</div>
 </section>
