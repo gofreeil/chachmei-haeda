@@ -185,7 +185,7 @@
 		</h3>
 		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">המענה הטרי ביותר שפרסמו רבני בית הדין</p>
 	</header>
-	<article class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 max-w-3xl mx-auto shadow-[0_0_25px_rgba(99,102,241,0.12)]">
+	<article class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
 		<div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
 			<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
 				{recentQa.topic}
@@ -373,6 +373,14 @@
 		class="block group rounded-xl -m-2 p-2 hover:bg-yellow-500/5 transition-colors"
 		title="לדף הקוד האתי UECC"
 	>
+		<div class="mb-5 overflow-hidden rounded-xl border border-yellow-500/30">
+			<img
+				src="/images/Copilot_20260602_125425.png"
+				alt="הקוד האתי UECC"
+				class="w-full h-auto object-cover"
+				loading="lazy"
+			/>
+		</div>
 		<div class="flex items-center justify-between gap-3 flex-wrap mb-4">
 			<h3 class="text-2xl font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors">
 				יתרונות הקיום של הקוד המוסרי
