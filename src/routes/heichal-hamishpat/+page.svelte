@@ -231,7 +231,7 @@
 
 	<!-- ───────────── התיקים שלי + ארכיון וידאו ───────────── -->
 	<section class="mb-8">
-		<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
+		<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 shadow-[0_0_25px_rgba(99,102,241,0.12)] {isRegistered ? 'p-5 md:p-7' : 'p-3 md:p-4'}">
 			{#if isRegistered}
 				<header class="flex items-end justify-between gap-3 flex-wrap mb-5">
 					<div class="text-right">
@@ -288,53 +288,32 @@
 					{/if}
 				</div>
 			{:else}
-				<header class="text-center mb-5">
-					<div class="text-5xl mb-3">🔒</div>
-					<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
-						התיקים שלי · ארכיון וידאו
-					</h2>
-					<p class="mt-3 text-gray-700 text-base md:text-lg font-bold max-w-2xl mx-auto">
-						לאחר רישום ופתיחת תיק בבית הדין — תוכל לעיין כאן בסיכום ההליך, הקלטות הוידאו ופסק הדין החתום של התיקים שלך
-					</p>
-				</header>
-
-				<!-- תצוגה מקדימה מטושטשת -->
-				<div class="relative mb-5">
-					<div class="space-y-3 pointer-events-none select-none blur-[6px] opacity-60" aria-hidden="true">
-						{#each myCases as c}
-							<div class="rounded-xl border border-indigo-400/30 bg-white/10 p-4">
-								<div class="flex items-center justify-between gap-2 mb-2">
-									<span class="px-2.5 py-1 rounded-full text-xs font-black {statusColor(c.status)}">{c.status}</span>
-									<span class="text-xs font-bold text-gray-700">{c.hearingDate}</span>
-								</div>
-								<h3 class="text-base font-extrabold text-gray-900 mb-1">{c.caseName}</h3>
-								<p class="text-sm text-gray-800 line-clamp-2">{c.summary}</p>
-							</div>
-						{/each}
-					</div>
-					<div class="absolute inset-0 flex items-center justify-center">
-						<div class="text-center">
-							<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/30 border border-yellow-500/60 text-yellow-800 text-xs font-black mb-3">
-								👁️ תצוגה מקדימה
-							</div>
-							<p class="text-gray-900 font-bold text-sm md:text-base">תוכן זה זמין רק למשתמשים רשומים</p>
+				<div class="flex items-center justify-between gap-3 flex-wrap">
+					<div class="flex items-center gap-3 min-w-0 flex-1">
+						<div class="text-2xl flex-shrink-0">🔒</div>
+						<div class="min-w-0">
+							<h2 class="text-base md:text-lg font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent leading-tight">
+								התיקים שלי · ארכיון וידאו
+							</h2>
+							<p class="text-xs md:text-sm text-gray-700 font-bold leading-snug">
+								לרשומים בלבד — סיכומי הליך, הקלטות ופסקי דין חתומים
+							</p>
 						</div>
 					</div>
-				</div>
-
-				<div class="flex flex-col sm:flex-row gap-3 justify-center">
-					<a
-						href="/profile"
-						class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base hover:scale-105 transition-transform shadow text-center"
-					>
-						✍️ הירשם וצור חשבון
-					</a>
-					<a
-						href="/request-hearing"
-						class="inline-block px-6 py-3 rounded-xl bg-white/10 border border-indigo-400/40 text-gray-900 font-bold text-base hover:bg-white/20 transition-colors text-center"
-					>
-						פתח תיק חדש
-					</a>
+					<div class="flex gap-2 flex-shrink-0">
+						<a
+							href="/profile"
+							class="inline-block px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xs md:text-sm hover:scale-105 transition-transform shadow"
+						>
+							✍️ הירשם
+						</a>
+						<a
+							href="/request-hearing"
+							class="inline-block px-3 py-1.5 rounded-lg bg-white/10 border border-indigo-400/40 text-gray-900 font-bold text-xs md:text-sm hover:bg-white/20 transition-colors"
+						>
+							פתח תיק
+						</a>
+					</div>
 				</div>
 			{/if}
 		</div>
