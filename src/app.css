@@ -18,18 +18,18 @@
 
     --color-primary: #2563eb;
     --color-primary-light: #60a5fa;
-    --color-bg-dark: #faf6ec;
+    --color-bg-dark: #f0e3b8;
 }
 
 :root {
     --header-height: 90px;
-    /* מוד בהיר - רקע בצבע שמנת */
-    --bg-deep: #faf6ec;
-    --bg-cream: #faf6ec;
-    --bg-cream-soft: #f5efe0;
-    --bg-cream-card: #fffdf7;
-    --bg-cream-darker: #ede4d0;
-    --border-soft: #e0d5be;
+    /* מוד בהיר - רקע בצבע שמנת עשיר */
+    --bg-deep: #f0e3b8;
+    --bg-cream: #f0e3b8;
+    --bg-cream-soft: #ead9a4;
+    --bg-cream-card: #f8eecb;
+    --bg-cream-darker: #e0cd91;
+    --border-soft: #d4be7f;
     --text-primary: #1a1a1a;
     --text-secondary: #374151;
     --text-muted: #6b7280;
