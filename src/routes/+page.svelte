@@ -49,13 +49,13 @@
 			icon: '🕮',
 			title: 'היכל הרוח',
 			desc: 'מאמרים, תשובות ולימוד תורה ומוסר',
-			material: 'wood',
-			bg: 'bg-gradient-to-br from-amber-700 via-amber-800 to-yellow-900',
-			border: 'border-amber-300',
-			shadow: 'shadow-[0_8px_24px_-4px_rgba(120,53,15,0.55),inset_0_2px_0_rgba(255,237,178,0.25)]',
-			text: 'text-amber-50',
-			descText: 'text-amber-100',
-			hover: 'hover:from-amber-600 hover:via-amber-700 hover:to-yellow-800 hover:border-amber-100'
+			material: 'silver',
+			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
+			border: 'border-white',
+			shadow: 'shadow-[0_8px_24px_-4px_rgba(100,116,139,0.55),inset_0_2px_0_rgba(255,255,255,0.9)]',
+			text: 'text-slate-900',
+			descText: 'text-slate-800',
+			hover: 'hover:from-gray-100 hover:via-slate-200 hover:to-gray-300 hover:border-slate-100'
 		},
 		{
 			href: '/request-hearing',
@@ -75,13 +75,13 @@
 			icon: '🛠️',
 			title: 'היכל המעשה',
 			desc: 'פעילות, פרויקטים וקריאות לתיקון עולם',
-			material: 'silver',
-			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
-			border: 'border-white',
-			shadow: 'shadow-[0_8px_24px_-4px_rgba(100,116,139,0.55),inset_0_2px_0_rgba(255,255,255,0.9)]',
-			text: 'text-slate-900',
-			descText: 'text-slate-800',
-			hover: 'hover:from-gray-100 hover:via-slate-200 hover:to-gray-300 hover:border-slate-100'
+			material: 'wood',
+			bg: 'bg-gradient-to-br from-amber-700 via-amber-800 to-yellow-900',
+			border: 'border-amber-300',
+			shadow: 'shadow-[0_8px_24px_-4px_rgba(120,53,15,0.55),inset_0_2px_0_rgba(255,237,178,0.25)]',
+			text: 'text-amber-50',
+			descText: 'text-amber-100',
+			hover: 'hover:from-amber-600 hover:via-amber-700 hover:to-yellow-800 hover:border-amber-100'
 		}
 	];
 
@@ -142,6 +142,42 @@
 
 
 <section class="mb-10">
+	<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
+		<div class="text-right">
+			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
+				📡 הפעילות שלנו
+			</h3>
+		</div>
+		<a
+			href="/activity"
+			class="text-sm font-bold text-cyan-300 hover:text-cyan-200 transition-colors"
+		>
+			כל הפעילות ←
+		</a>
+	</header>
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+		{#each recentActivity as a}
+			<a
+				href="/activity#{a.slug}"
+				class="block rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/8 to-cyan-500/8 hover:border-teal-400/50 hover:from-teal-500/15 hover:to-cyan-500/15 transition-all p-5 text-right group"
+			>
+				<div class="flex items-center justify-between gap-2 mb-3">
+					<span class="text-xs font-bold px-2.5 py-1 rounded-full border border-teal-400/40 bg-teal-500/15 text-teal-200">
+						{activityKindIcons[a.kind] ?? ''} {a.kind}
+					</span>
+					<span class="text-xs text-gray-500">{a.date}</span>
+				</div>
+				<h4 class="text-base md:text-lg font-bold text-white group-hover:text-cyan-200 transition-colors leading-snug">
+					{a.title}
+				</h4>
+				<p class="mt-2 text-sm text-gray-400 leading-relaxed line-clamp-3">{a.excerpt}</p>
+				<p class="mt-3 text-xs text-cyan-300">מאת: {a.author}</p>
+			</a>
+		{/each}
+	</div>
+</section>
+
+<section class="mb-10">
 	<header class="text-center mb-5">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
 			🕮 תשובות חכמי העדה
@@ -194,42 +230,6 @@
 			</div>
 		</a>
 	</article>
-</section>
-
-<section class="mb-10">
-	<header class="flex items-end justify-between mb-5 gap-3 flex-wrap">
-		<div class="text-right">
-			<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
-				📡 הפעילות שלנו
-			</h3>
-		</div>
-		<a
-			href="/activity"
-			class="text-sm font-bold text-cyan-300 hover:text-cyan-200 transition-colors"
-		>
-			כל הפעילות ←
-		</a>
-	</header>
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-		{#each recentActivity as a}
-			<a
-				href="/activity#{a.slug}"
-				class="block rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/8 to-cyan-500/8 hover:border-teal-400/50 hover:from-teal-500/15 hover:to-cyan-500/15 transition-all p-5 text-right group"
-			>
-				<div class="flex items-center justify-between gap-2 mb-3">
-					<span class="text-xs font-bold px-2.5 py-1 rounded-full border border-teal-400/40 bg-teal-500/15 text-teal-200">
-						{activityKindIcons[a.kind] ?? ''} {a.kind}
-					</span>
-					<span class="text-xs text-gray-500">{a.date}</span>
-				</div>
-				<h4 class="text-base md:text-lg font-bold text-white group-hover:text-cyan-200 transition-colors leading-snug">
-					{a.title}
-				</h4>
-				<p class="mt-2 text-sm text-gray-400 leading-relaxed line-clamp-3">{a.excerpt}</p>
-				<p class="mt-3 text-xs text-cyan-300">מאת: {a.author}</p>
-			</a>
-		{/each}
-	</div>
 </section>
 
 {#if latestArticle}
