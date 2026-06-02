@@ -132,10 +132,6 @@
 			לקיים את שבע המצוות ולהכין את העולם לקראת עידן חדש בו לא יהיו מלחמות, רעב, קנאה ותחרות —
 			זהו עידן הגאולה.
 		</p>
-
-		<p class="text-center text-lg md:text-2xl font-black bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent mt-4">
-			תִּקּוּן עוֹלָם בְּמַלְכוּת שַׁדַּ׳י
-		</p>
 	</section>
 
 	<footer class="mt-8 border-t border-white/10 pt-4 text-center">
