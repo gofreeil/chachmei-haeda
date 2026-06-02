@@ -17,7 +17,7 @@
 			href: '/request-hearing',
 			icon: '🕊️',
 			title: 'היכל השלום',
-			desc: 'גישור ופישור — השכנת שלום בין אדם לחברו',
+			desc: 'גישור ופישור — השכנת שלום בין אדם לחברו ובין איש לאשתו',
 			bg: 'bg-gradient-to-br from-sky-200/60 via-cyan-100/50 to-blue-200/60 backdrop-blur-md',
 			border: 'border-sky-200',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(56,189,248,0.45),inset_0_2px_0_rgba(255,255,255,0.85)]',
