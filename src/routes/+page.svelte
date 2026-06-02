@@ -30,15 +30,6 @@
 		'הודעה': '📣'
 	};
 
-	const sections = [
-		{
-			href: '/request-hearing',
-			icon: '⚖️',
-			title: 'בקשת דיון',
-			desc: 'פתיחת תיק חדש לבוררות ושלום על פי דין תורה'
-		}
-	];
-
 	const heichalim = [
 		{
 			href: '/heichal-hamishpat',
@@ -137,18 +128,6 @@
 	</div>
 </section>
 
-<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 md:px-0 pb-10">
-	{#each sections as s}
-		<a
-			href={s.href}
-			class="block rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-blue-400/50 transition-all p-5 text-right group"
-		>
-			<div class="text-4xl mb-3">{s.icon}</div>
-			<h3 class="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">{s.title}</h3>
-			<p class="mt-2 text-sm text-gray-400 leading-relaxed">{s.desc}</p>
-		</a>
-	{/each}
-</section>
 
 <section class="mb-10">
 	<header class="text-center mb-5">
