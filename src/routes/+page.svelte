@@ -262,10 +262,10 @@
 
 		<a
 			href="/ask"
-			class="mt-4 flex items-center gap-3 rounded-xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-3 hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
+			class="mt-4 flex items-center justify-center gap-3 rounded-xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-3 hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
 		>
 			<div class="text-2xl md:text-3xl flex-shrink-0">🕮</div>
-			<div class="text-right min-w-0 flex-1">
+			<div class="text-center min-w-0">
 				<h3 class="text-base md:text-lg font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent leading-tight">
 					שאל את חכמי העדה
 				</h3>

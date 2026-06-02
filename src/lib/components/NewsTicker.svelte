@@ -68,7 +68,7 @@
 
 <section
 	aria-label="חדשות"
-	class="news-ticker-container border-y border-amber-300/40 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 py-3 backdrop-blur-md shadow-lg"
+	class="news-ticker-container border-y border-indigo-300/50 bg-[linear-gradient(to_right,#e9d5ff_0%,#ddd6fe_25%,#c7d2fe_50%,#ddd6fe_75%,#e9d5ff_100%)] py-3 backdrop-blur-md shadow-lg"
 >
 	<!-- תוכן נגיש לקוראי מסך -->
 	<ul class="sr-only">
@@ -103,24 +103,24 @@
 					<div class="flex items-center gap-14 h-full">
 						<div class="flex flex-col justify-center text-center">
 							{#if item.local}
-								<span class="text-[10px] font-bold text-amber-300 mb-0.5 tracking-wide">חכמי העדה</span>
+								<span class="text-[10px] font-bold text-indigo-700 mb-0.5 tracking-wide">חכמי העדה</span>
 							{/if}
 							{#if item.sourceUrl}
 								<a
 									href={item.sourceUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									class="text-lg md:text-xl font-bold text-amber-100 hover:text-amber-300 transition-colors"
+									class="text-lg md:text-xl font-extrabold text-indigo-900 hover:text-indigo-700 transition-colors"
 								>{item.line1}</a>
 							{:else}
-								<span class="text-lg md:text-xl font-bold text-amber-100">{item.line1}</span>
+								<span class="text-lg md:text-xl font-extrabold text-indigo-900">{item.line1}</span>
 							{/if}
 							{#if item.line2}
-								<span class="text-sm md:text-base font-medium text-amber-200/90">{item.line2}</span>
+								<span class="text-sm md:text-base font-bold text-slate-700">{item.line2}</span>
 							{/if}
 						</div>
 						<!-- מפריד -->
-						<div class="h-10 w-px bg-gradient-to-b from-transparent via-amber-400/60 to-transparent"></div>
+						<div class="h-10 w-px bg-gradient-to-b from-transparent via-purple-500/60 to-transparent"></div>
 					</div>
 				{/each}
 			</div>
