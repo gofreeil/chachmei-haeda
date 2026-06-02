@@ -1,3 +1,22 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+
+	let rabbis = $state<Rabbi[]>(defaultRabbis);
+
+	onMount(() => {
+		try {
+			const raw = localStorage.getItem(RABBIS_STORAGE_KEY);
+			if (raw) {
+				const saved = JSON.parse(raw);
+				if (Array.isArray(saved) && saved.every((r) => typeof r?.name === 'string')) {
+					rabbis = saved as Rabbi[];
+				}
+			}
+		} catch {}
+	});
+</script>
+
 <svelte:head>
 	<title>אודותנו — חכמי העדה</title>
 	<meta name="description" content="חובת החברה לסייע לכל אדם נצרך — בגופו, בנפשו ובממונו" />
@@ -37,20 +56,20 @@
 			הדיינים העומדים בבתי הפיוס
 		</h2>
 
-		<ul class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-right list-none">
-			{#each [
-				'הרב דניאל סטבסקי',
-				'הרב רועי זאגא',
-				'הרב אריה ליפו',
-				'הרב בועז מלט',
-				'הרב יעקב יוסף וונדר',
-				'הרב שמואל מורנו',
-				'הרב נדב סופי',
-				'הרב מאיר הלוי'
-			] as rabbi}
-				<li class="flex items-center gap-3 rounded-lg bg-white/5 border border-amber-400/20 px-4 py-3 transition-colors hover:bg-white/10">
-					<span class="text-amber-300 text-lg" aria-hidden="true">✦</span>
-					<span class="text-base md:text-lg text-white font-semibold">{rabbi}</span>
+		<ul class="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-center list-none">
+			{#each rabbis as r (r.id)}
+				<li class="flex flex-col items-center gap-2 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10">
+					<div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
+						{#if r.photo}
+							<img src={r.photo} alt={r.name} class="w-full h-full object-cover" loading="lazy" />
+						{:else}
+							<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
+								<circle cx="32" cy="24" r="12" />
+								<path d="M12 60c0-11 9-20 20-20s20 9 20 20v4H12v-4z" />
+							</svg>
+						{/if}
+					</div>
+					<span class="text-sm md:text-base text-white font-semibold leading-tight">{r.name}</span>
 				</li>
 			{/each}
 		</ul>

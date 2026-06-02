@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
+	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
 
 	// 🔑 סיסמת אדמין — לשנות כאן ידנית. מי שיודע את הסיסמה יכול להיכנס.
 	const ADMIN_PASSWORD = 'chachmei2026';
@@ -24,12 +25,19 @@
 	let isLoggedIn = $state(false);
 	let passwordInput = $state('');
 	let loginError = $state('');
-	let activeTab = $state<'articles' | 'videos' | 'news' | 'dates'>('articles');
+	let activeTab = $state<'articles' | 'videos' | 'news' | 'dates' | 'rabbis'>('articles');
 
 	let customArticles = $state<Article[]>([]);
 	let customActivity = $state<ActivityItem[]>([]);
 	let customNews = $state<NewsItem[]>([]);
 	let pendingCases = $state<any[]>([]);
+	let rabbis = $state<Rabbi[]>([...defaultRabbis]);
+
+	// ───────────── טופס דיינים ─────────────
+	let rabbiName = $state('');
+	let rabbiPhotoUrl = $state('');
+	let rabbiNotice = $state('');
+	let editingRabbiId = $state<string | null>(null);
 
 	// ───────────── טופס חדשות ─────────────
 	let newsTitle = $state('');
@@ -117,7 +125,126 @@
 			if (Array.isArray(c)) pendingCases = c;
 			const hv = localStorage.getItem(HOME_VIDEO_KEY);
 			if (hv) homeVideoUrl = hv;
+			const r = localStorage.getItem(RABBIS_STORAGE_KEY);
+			if (r) {
+				const parsed = JSON.parse(r);
+				if (Array.isArray(parsed) && parsed.every((x) => typeof x?.name === 'string')) {
+					rabbis = parsed as Rabbi[];
+				}
+			}
 		} catch {}
+	}
+
+	function persistRabbis() {
+		try {
+			localStorage.setItem(RABBIS_STORAGE_KEY, JSON.stringify(rabbis));
+		} catch {}
+	}
+
+	function genRabbiId(): string {
+		return 'r-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1000).toString(36);
+	}
+
+	async function fileToDataUrl(file: File, maxSize = 400): Promise<string> {
+		const dataUrl: string = await new Promise((resolve, reject) => {
+			const fr = new FileReader();
+			fr.onload = () => resolve(String(fr.result));
+			fr.onerror = () => reject(fr.error);
+			fr.readAsDataURL(file);
+		});
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.onload = () => {
+				const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+				const w = Math.round(img.width * scale);
+				const h = Math.round(img.height * scale);
+				const c = document.createElement('canvas');
+				c.width = w;
+				c.height = h;
+				const ctx = c.getContext('2d');
+				if (!ctx) return reject(new Error('no ctx'));
+				ctx.drawImage(img, 0, 0, w, h);
+				resolve(c.toDataURL('image/jpeg', 0.85));
+			};
+			img.onerror = () => reject(new Error('image load failed'));
+			img.src = dataUrl;
+		});
+	}
+
+	async function onRabbiPhotoFile(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+		try {
+			rabbiPhotoUrl = await fileToDataUrl(file);
+		} catch {
+			rabbiNotice = '⚠️ נכשלה טעינת התמונה';
+		}
+	}
+
+	function submitRabbi(e: Event) {
+		e.preventDefault();
+		const name = rabbiName.trim();
+		if (!name) {
+			rabbiNotice = '⚠️ יש למלא שם';
+			return;
+		}
+		const photo = rabbiPhotoUrl.trim() || undefined;
+		if (editingRabbiId) {
+			rabbis = rabbis.map((x) => (x.id === editingRabbiId ? { ...x, name, photo } : x));
+			rabbiNotice = '✅ הדיין עודכן';
+		} else {
+			rabbis = [...rabbis, { id: genRabbiId(), name, photo }];
+			rabbiNotice = '✅ הדיין נוסף';
+		}
+		persistRabbis();
+		rabbiName = '';
+		rabbiPhotoUrl = '';
+		editingRabbiId = null;
+		setTimeout(() => (rabbiNotice = ''), 4000);
+	}
+
+	function editRabbi(r: Rabbi) {
+		editingRabbiId = r.id;
+		rabbiName = r.name;
+		rabbiPhotoUrl = r.photo || '';
+		rabbiNotice = '';
+	}
+
+	function cancelEditRabbi() {
+		editingRabbiId = null;
+		rabbiName = '';
+		rabbiPhotoUrl = '';
+		rabbiNotice = '';
+	}
+
+	function deleteRabbi(id: string) {
+		if (!confirm('למחוק את הדיין?')) return;
+		rabbis = rabbis.filter((x) => x.id !== id);
+		persistRabbis();
+		if (editingRabbiId === id) cancelEditRabbi();
+	}
+
+	function removeRabbiPhoto(id: string) {
+		rabbis = rabbis.map((x) => (x.id === id ? { ...x, photo: undefined } : x));
+		persistRabbis();
+	}
+
+	function moveRabbi(id: string, direction: -1 | 1) {
+		const i = rabbis.findIndex((x) => x.id === id);
+		const j = i + direction;
+		if (i < 0 || j < 0 || j >= rabbis.length) return;
+		const next = [...rabbis];
+		[next[i], next[j]] = [next[j], next[i]];
+		rabbis = next;
+		persistRabbis();
+	}
+
+	function resetRabbisToDefault() {
+		if (!confirm('לאפס לרשימת ברירת המחדל? (תמונות שהעלית יימחקו)')) return;
+		rabbis = [...defaultRabbis];
+		persistRabbis();
+		cancelEditRabbi();
 	}
 
 	function handleLogin(e: Event) {
@@ -407,6 +534,16 @@
 						{pendingApprovalCount}
 					</span>
 				{/if}
+			</button>
+			<button
+				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'rabbis'}
+				class:text-white={activeTab === 'rabbis'}
+				class:text-gray-400={activeTab !== 'rabbis'}
+				class:hover:text-gray-200={activeTab !== 'rabbis'}
+				onclick={() => (activeTab = 'rabbis')}
+			>
+				👤 דיינים
 			</button>
 		</div>
 
@@ -830,6 +967,170 @@
 									>
 										מחק
 									</button>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			</div>
+		{:else if activeTab === 'rabbis'}
+			<div class="space-y-6">
+				<!-- הסבר -->
+				<div class="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 p-5 md:p-6">
+					<h2 class="text-xl font-black text-amber-200 mb-2">👤 ניהול דיינים</h2>
+					<p class="text-sm text-gray-300 leading-relaxed">
+						הרשימה והתמונות מופיעות בדף <strong class="text-amber-300">"אודותנו"</strong>. אם לא מועלת תמונה לדיין, מוצגת דמות אנונימית כברירת מחדל.
+					</p>
+				</div>
+
+				<!-- טופס הוספה/עריכה -->
+				<div class="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5 md:p-6">
+					<h2 class="text-xl font-black text-amber-200 mb-4">
+						{editingRabbiId ? '✏️ עריכת דיין' : '➕ הוספת דיין חדש'}
+					</h2>
+					<form onsubmit={submitRabbi} class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-name">שם *</label>
+							<input
+								id="rab-name"
+								type="text"
+								bind:value={rabbiName}
+								placeholder="הרב פלוני אלמוני"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-amber-400 focus:outline-none"
+							/>
+						</div>
+
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-photo-file">תמונה (העלאה)</label>
+							<input
+								id="rab-photo-file"
+								type="file"
+								accept="image/*"
+								onchange={onRabbiPhotoFile}
+								class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-amber-500/30 file:text-amber-100 file:font-bold hover:file:bg-amber-500/40"
+							/>
+							<p class="text-xs text-gray-500 mt-1">התמונה תקטן אוטומטית ותישמר בדפדפן</p>
+						</div>
+
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-photo-url">או הדבק קישור</label>
+							<input
+								id="rab-photo-url"
+								type="text"
+								bind:value={rabbiPhotoUrl}
+								dir="ltr"
+								placeholder="https://… או data:image/…"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-amber-400 focus:outline-none text-right"
+							/>
+						</div>
+
+						{#if rabbiPhotoUrl}
+							<div class="md:col-span-2 flex items-center gap-3">
+								<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-amber-400/40 bg-black/30">
+									<img src={rabbiPhotoUrl} alt="תצוגה מקדימה" class="w-full h-full object-cover" />
+								</div>
+								<button
+									type="button"
+									onclick={() => (rabbiPhotoUrl = '')}
+									class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold"
+								>
+									הסר תמונה
+								</button>
+							</div>
+						{/if}
+
+						{#if rabbiNotice}
+							<p class="md:col-span-2 text-sm font-bold {rabbiNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">
+								{rabbiNotice}
+							</p>
+						{/if}
+
+						<div class="md:col-span-2 flex gap-2 flex-wrap">
+							<button
+								type="submit"
+								class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-900 font-black hover:opacity-90 transition-opacity"
+							>
+								{editingRabbiId ? 'שמור שינויים' : 'הוסף דיין'}
+							</button>
+							{#if editingRabbiId}
+								<button
+									type="button"
+									onclick={cancelEditRabbi}
+									class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold"
+								>
+									ביטול
+								</button>
+							{/if}
+						</div>
+					</form>
+				</div>
+
+				<!-- רשימת דיינים -->
+				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
+					<div class="flex items-center justify-between gap-3 flex-wrap mb-4">
+						<h2 class="text-xl font-black text-white">📋 דיינים ({rabbis.length})</h2>
+						<button
+							type="button"
+							onclick={resetRabbisToDefault}
+							class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-bold"
+						>
+							אפס לברירת מחדל
+						</button>
+					</div>
+					{#if rabbis.length === 0}
+						<p class="text-gray-400 text-sm">אין דיינים. הוסף דיין חדש בטופס למעלה.</p>
+					{:else}
+						<div class="grid grid-cols-1 gap-2">
+							{#each rabbis as r, i (r.id)}
+								<div class="flex items-center gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
+									<div class="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
+										{#if r.photo}
+											<img src={r.photo} alt={r.name} class="w-full h-full object-cover" />
+										{:else}
+											<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
+												<circle cx="32" cy="24" r="12" />
+												<path d="M12 60c0-11 9-20 20-20s20 9 20 20v4H12v-4z" />
+											</svg>
+										{/if}
+									</div>
+									<div class="min-w-0 flex-1">
+										<div class="font-bold text-white text-sm">{r.name}</div>
+										<div class="text-xs text-gray-500">{r.photo ? 'יש תמונה' : 'דמות אנונימית'}</div>
+									</div>
+									<div class="flex items-center gap-1 flex-shrink-0">
+										<button
+											type="button"
+											onclick={() => moveRabbi(r.id, -1)}
+											disabled={i === 0}
+											class="px-2 py-1 rounded bg-white/5 hover:bg-white/15 text-gray-200 text-xs font-bold disabled:opacity-30"
+											title="הזז למעלה"
+										>↑</button>
+										<button
+											type="button"
+											onclick={() => moveRabbi(r.id, 1)}
+											disabled={i === rabbis.length - 1}
+											class="px-2 py-1 rounded bg-white/5 hover:bg-white/15 text-gray-200 text-xs font-bold disabled:opacity-30"
+											title="הזז למטה"
+										>↓</button>
+										{#if r.photo}
+											<button
+												type="button"
+												onclick={() => removeRabbiPhoto(r.id)}
+												class="px-2 py-1 rounded bg-yellow-500/15 hover:bg-yellow-500/25 text-yellow-200 text-xs font-bold"
+												title="הסר תמונה"
+											>🖼️✕</button>
+										{/if}
+										<button
+											type="button"
+											onclick={() => editRabbi(r)}
+											class="px-3 py-1.5 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold"
+										>ערוך</button>
+										<button
+											type="button"
+											onclick={() => deleteRabbi(r.id)}
+											class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold"
+										>מחק</button>
+									</div>
 								</div>
 							{/each}
 						</div>
