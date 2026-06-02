@@ -4,10 +4,10 @@
 
 <article class="prose-rtl max-w-none py-6 px-2 md:px-4">
 	<header class="text-center mb-6">
-		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-xl md:text-3xl font-black text-transparent">
+		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl md:text-4xl font-black text-transparent">
 			הקוד האתי המוסרי העולמי
 		</h1>
-		<p class="mt-1 text-blue-300 text-sm md:text-base font-bold" dir="ltr">UECC — Universal Ethical Common Code</p>
+		<p class="mt-2 text-blue-300 text-base md:text-xl font-bold text-center" dir="ltr" style="text-align:center">UECC — Universal Ethical Common Code</p>
 		<p class="mt-2 text-gray-300 text-sm md:text-base">לכבוד מֶלֶךְ יָחִיד אֵ'ל חַי הָעוֹלָמִים</p>
 	</header>
 
