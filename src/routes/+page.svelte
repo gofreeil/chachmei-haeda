@@ -102,7 +102,7 @@
 		<p class="mt-2 text-base md:text-lg font-black text-amber-900 drop-shadow-[0_1px_1px_rgba(120,53,15,0.25)]">
 			הפעילות של חכמי העדה לקידום שלום בארץ ושאר חדשות
 		</p>
-		<div class="mt-2 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
+		<div class="mt-2 mx-auto h-0.5 w-80 md:w-[28rem] bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 	</header>
 
 	<NewsTicker />
