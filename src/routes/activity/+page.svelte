@@ -68,21 +68,21 @@
 	<div class="space-y-4">
 		{#each filtered as a (a.slug)}
 			<article
-				class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-5 md:p-6"
+				class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-4 md:p-5"
 			>
 				<div class="flex items-start justify-between gap-3 flex-wrap mb-2">
 					<div class="flex items-center gap-2">
 						<span
-							class="text-xs font-bold px-2.5 py-1 rounded-full border {kindStyles[a.kind]}"
+							class="text-[11px] font-bold px-2 py-0.5 rounded-full border {kindStyles[a.kind]}"
 						>
 							{kindIcons[a.kind]} {a.kind}
 						</span>
-						<span class="text-xs text-gray-500">{a.date}</span>
+						<span class="text-[11px] text-gray-500">{a.date}</span>
 					</div>
-					<span class="text-sm text-indigo-300">מאת: {a.author}</span>
+					<span class="text-xs text-indigo-300">מאת: {a.author}</span>
 				</div>
-				<h2 class="text-xl md:text-2xl font-bold text-white">{a.title}</h2>
-				<p class="mt-2 text-gray-300 leading-relaxed">{a.excerpt}</p>
+				<h2 class="text-base md:text-lg font-bold text-white">{a.title}</h2>
+				<p class="mt-2 text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
 
 				{#if a.imageUrl}
 					<div class="mt-4 rounded-xl overflow-hidden border border-white/10 bg-black/30">
@@ -104,7 +104,7 @@
 				{/if}
 
 				{#if a.body}
-					<p class="mt-4 text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+					<p class="mt-4 text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
 				{/if}
 
 				{#if a.sourceUrl}
@@ -112,7 +112,7 @@
 						href={a.sourceUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="mt-4 inline-block text-sm text-indigo-300 hover:text-indigo-200 underline"
+						class="mt-4 inline-block text-xs text-indigo-300 hover:text-indigo-200 underline"
 						dir="ltr"
 					>
 						🔗 למקור
