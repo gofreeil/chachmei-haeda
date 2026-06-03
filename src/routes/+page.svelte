@@ -150,15 +150,15 @@
 {#if latestArticle}
 	<section class="mb-10">
 		<header class="mb-5">
-			<div class="flex items-center justify-center gap-2">
+			<div class="flex items-center justify-center gap-1">
 				<img
 					src="/images/olive-branch.png"
 					alt=""
 					aria-hidden="true"
-					class="olive-branch olive-branch-left h-12 md:h-16 w-auto select-none"
+					class="olive-branch olive-branch-left h-7 md:h-9 w-auto select-none"
 				/>
 				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
-				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
+				<h3 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
 					מהיכל הרוח
 				</h3>
 				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
@@ -166,9 +166,10 @@
 					src="/images/olive-branch.png"
 					alt=""
 					aria-hidden="true"
-					class="olive-branch olive-branch-right h-12 md:h-16 w-auto select-none"
+					class="olive-branch olive-branch-right h-7 md:h-9 w-auto select-none"
 				/>
 			</div>
+			<div class="mt-1 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 			<h4 class="mt-2 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				📜 מאמר מחכמי העדה
 			</h4>
@@ -231,14 +232,14 @@
 
 		<a
 			href="/ask"
-			class="mt-4 flex items-center justify-center gap-3 rounded-xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-3 hover:from-indigo-500/25 hover:to-blue-500/25 hover:border-indigo-400/70 hover:scale-[1.01] transition-all group"
+			class="ask-cta mt-4 flex items-center justify-center gap-3 rounded-xl border-2 p-3 transition-all group"
 		>
-			<div class="text-2xl md:text-3xl flex-shrink-0">🕮</div>
+			<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">🕮</div>
 			<div class="text-center min-w-0">
-				<h3 class="text-base md:text-lg font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent leading-tight">
+				<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
 					שאל את חכמי העדה
 				</h3>
-				<p class="text-gray-800 text-xs md:text-sm font-bold leading-snug">
+				<p class="ask-cta-text text-xs md:text-sm font-bold leading-snug">
 					יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי - פנה אל החכמים ותענה בהקדם האפשרי
 				</p>
 			</div>
@@ -265,10 +266,31 @@
 		object-fit: contain;
 		object-position: center;
 		--olive-flip: 1;
-		transform: scaleX(var(--olive-flip)) translateY(-0.375rem);
+		transform: translateY(0.5rem) scaleX(var(--olive-flip)) scaleY(-1);
 	}
 	.olive-branch-right {
 		--olive-flip: -1;
+	}
+
+	:global(.ask-cta) {
+		background-image: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%) !important;
+		border-color: #c7d2fe !important;
+		box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.45), 0 4px 10px -4px rgba(79, 70, 229, 0.35) !important;
+	}
+	:global(.ask-cta:hover) {
+		background-image: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #1d4ed8 100%) !important;
+		box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6), 0 6px 12px -4px rgba(79, 70, 229, 0.5) !important;
+		transform: scale(1.02);
+	}
+	:global(.ask-cta .ask-cta-title),
+	:global(.ask-cta .ask-cta-text) {
+		color: #ffffff !important;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+		-webkit-text-fill-color: #ffffff !important;
+		background: none !important;
+	}
+	:global(.ask-cta .ask-cta-emoji) {
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
 	}
 </style>
 
