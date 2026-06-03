@@ -37,7 +37,7 @@
 		<RightAdBanner />
 		<main id="main-content" tabindex="-1" class="main-content">
 			{@render children()}
-			<div class="mt-2">
+			<div class="mt-2 max-w-3xl mx-auto px-4">
 				<EthicalCodeBanner />
 			</div>
 		</main>

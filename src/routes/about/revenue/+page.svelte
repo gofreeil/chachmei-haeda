@@ -56,15 +56,15 @@
 	</div>
 
 	<!-- הדיינים -->
-	<div class="mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10" style="text-align: center;">
-		<h2 class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent">
+	<div class="mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
+		<h2 class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent text-center mb-6">
 			הדיינים העומדים בבתי הפיוס
 		</h2>
 
-		<ul class="mt-6 grid grid-cols-2 gap-4 text-center list-none max-w-2xl mx-auto">
+		<ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 list-none">
 			{#each rabbis as r (r.id)}
-				<li class="flex flex-col items-center gap-2 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10">
-					<div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
+				<li class="flex items-center gap-3 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10">
+					<div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
 						{#if r.photo}
 							<img src={r.photo} alt={r.name} class="w-full h-full object-cover" loading="lazy" />
 						{:else}
@@ -74,23 +74,34 @@
 							</svg>
 						{/if}
 					</div>
-					<span class="text-sm md:text-base text-white font-semibold leading-tight">{r.name}</span>
+					<div class="min-w-0 flex-1 text-right">
+						<div class="text-sm md:text-base text-white font-semibold leading-tight">{r.name}</div>
+						{#if r.title}
+							<div class="text-xs md:text-sm text-amber-200 font-bold leading-tight mt-0.5">{r.title}</div>
+						{/if}
+						{#if r.nickname}
+							<div class="text-xs text-amber-300 italic leading-tight mt-0.5">"{r.nickname}"</div>
+						{/if}
+						{#if r.city}
+							<div class="text-xs text-gray-300 leading-tight mt-0.5">📍 {r.city}</div>
+						{/if}
+					</div>
 				</li>
 			{/each}
 		</ul>
 	</div>
 
-	<!-- באנר קריאה לאחדות -->
+	<!-- באנר קריאה להצטרפות -->
 	<div class="mt-10 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/15 backdrop-blur-sm shadow-xl p-6 md:p-10" style="text-align: center;">
 		<h2 class="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-xl md:text-2xl font-black text-transparent mb-4">
-			🤝 קריאה לאחדות
+			🤝 קריאה להצטרפות
 		</h2>
 		<p class="text-base md:text-lg text-gray-100 leading-relaxed font-semibold" style="text-align: center;">
 			חכמי העדה קוראים לכלל הפלגים בישראל להצטרף אלינו לדיונים, הכרעות הלכתיות,
-			קידום חברה מתוקנת יותר על פי <span class="text-amber-200 font-black">"ואהבת לרעך כמוך"</span>,
+			קידום חברה מתוקנת יותר על פי <span class="text-orange-700 font-black">"ואהבת לרעך כמוך"</span>,
 			וקידום אחדות בין כל חכמי ישראל היראים והנאמנים לתורת משה ולעמו ישראל.
 		</p>
-		<div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
+		<div class="mt-6 flex justify-center">
 			<a
 				href="mailto:freedomhasbegun@gmail.com?subject=%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94&body=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94.%0A%0A%D7%A9%D7%9D%20%D7%9E%D7%9C%D7%90%3A%20%0A%D7%AA%D7%A4%D7%A7%D7%99%D7%93%2F%D7%AA%D7%95%D7%90%D7%A8%3A%20%0A%D7%A4%D7%9C%D7%92%2F%D7%A7%D7%94%D7%99%D7%9C%D7%94%3A%20%0A%D7%A2%D7%99%D7%A8%3A%20%0A%D7%98%D7%9C%D7%A4%D7%95%D7%9F%3A%20%0A"
 				class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 font-black text-base border-2 border-amber-700/40 shadow-md hover:scale-105 hover:shadow-[0_0_20px_rgba(234,88,12,0.5)] transition-all"
@@ -98,13 +109,6 @@
 			>
 				<span>✉️</span>
 				<span>צור קשר באימייל</span>
-			</a>
-			<a
-				href="mailto:freedomhasbegun@gmail.com"
-				class="text-sm md:text-base font-bold text-amber-200 hover:text-amber-100 underline decoration-amber-400/60 underline-offset-4 transition-colors"
-				dir="ltr"
-			>
-				freedomhasbegun@gmail.com
 			</a>
 		</div>
 	</div>

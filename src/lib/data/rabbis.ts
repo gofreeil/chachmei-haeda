@@ -2,6 +2,9 @@ export type Rabbi = {
 	id: string;
 	name: string;
 	photo?: string;
+	title?: string;
+	nickname?: string;
+	city?: string;
 };
 
 export const defaultRabbis: Rabbi[] = [

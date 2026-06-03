@@ -37,6 +37,9 @@
 
 	// ───────────── טופס דיינים ─────────────
 	let rabbiName = $state('');
+	let rabbiTitle = $state('');
+	let rabbiNickname = $state('');
+	let rabbiCity = $state('');
 	let rabbiPhotoUrl = $state('');
 	let rabbiNotice = $state('');
 	let editingRabbiId = $state<string | null>(null);
@@ -197,15 +200,21 @@
 			return;
 		}
 		const photo = rabbiPhotoUrl.trim() || undefined;
+		const title = rabbiTitle.trim() || undefined;
+		const nickname = rabbiNickname.trim() || undefined;
+		const city = rabbiCity.trim() || undefined;
 		if (editingRabbiId) {
-			rabbis = rabbis.map((x) => (x.id === editingRabbiId ? { ...x, name, photo } : x));
+			rabbis = rabbis.map((x) => (x.id === editingRabbiId ? { ...x, name, photo, title, nickname, city } : x));
 			rabbiNotice = '✅ הדיין עודכן';
 		} else {
-			rabbis = [...rabbis, { id: genRabbiId(), name, photo }];
+			rabbis = [...rabbis, { id: genRabbiId(), name, photo, title, nickname, city }];
 			rabbiNotice = '✅ הדיין נוסף';
 		}
 		persistRabbis();
 		rabbiName = '';
+		rabbiTitle = '';
+		rabbiNickname = '';
+		rabbiCity = '';
 		rabbiPhotoUrl = '';
 		editingRabbiId = null;
 		setTimeout(() => (rabbiNotice = ''), 4000);
@@ -214,6 +223,9 @@
 	function editRabbi(r: Rabbi) {
 		editingRabbiId = r.id;
 		rabbiName = r.name;
+		rabbiTitle = r.title || '';
+		rabbiNickname = r.nickname || '';
+		rabbiCity = r.city || '';
 		rabbiPhotoUrl = r.photo || '';
 		rabbiNotice = '';
 	}
@@ -221,6 +233,9 @@
 	function cancelEditRabbi() {
 		editingRabbiId = null;
 		rabbiName = '';
+		rabbiTitle = '';
+		rabbiNickname = '';
+		rabbiCity = '';
 		rabbiPhotoUrl = '';
 		rabbiNotice = '';
 	}
@@ -1021,6 +1036,39 @@
 						</div>
 
 						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-title">תואר</label>
+							<input
+								id="rab-title"
+								type="text"
+								bind:value={rabbiTitle}
+								placeholder="ראש ישיבה, אב בית דין…"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-amber-400 focus:outline-none"
+							/>
+						</div>
+
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-nickname">כינוי</label>
+							<input
+								id="rab-nickname"
+								type="text"
+								bind:value={rabbiNickname}
+								placeholder="כינוי או שם מוכר"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-amber-400 focus:outline-none"
+							/>
+						</div>
+
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-city">עיר מגורים</label>
+							<input
+								id="rab-city"
+								type="text"
+								bind:value={rabbiCity}
+								placeholder="ירושלים, בני ברק…"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-amber-400 focus:outline-none"
+							/>
+						</div>
+
+						<div>
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-photo-file">תמונה (העלאה)</label>
 							<input
 								id="rab-photo-file"
@@ -1115,7 +1163,14 @@
 									</div>
 									<div class="min-w-0 flex-1">
 										<div class="font-bold text-white text-sm">{r.name}</div>
-										<div class="text-xs text-gray-500">{r.photo ? 'יש תמונה' : 'דמות אנונימית'}</div>
+										{#if r.title || r.nickname || r.city}
+											<div class="text-xs text-gray-300 mt-0.5 flex flex-wrap gap-x-2">
+												{#if r.title}<span>{r.title}</span>{/if}
+												{#if r.nickname}<span class="italic">"{r.nickname}"</span>{/if}
+												{#if r.city}<span>📍 {r.city}</span>{/if}
+											</div>
+										{/if}
+										<div class="text-xs text-gray-500 mt-0.5">{r.photo ? '🖼️ יש תמונה' : '○ דמות אנונימית'}</div>
 									</div>
 									<div class="flex items-center gap-1 flex-shrink-0">
 										<button
