@@ -13,6 +13,8 @@
 	const NEWS_KEY = 'chachmei-custom-news';
 	const CASES_KEY = 'chachmei-cases';
 	const HOME_VIDEO_KEY = 'chachmei-home-video-url';
+	const HOME_VIDEO_TITLE_KEY = 'chachmei-home-video-title';
+	const DEFAULT_HOME_VIDEO_TITLE = 'חכמי עדת ישראל פועלים להעלות שבטים אבודים לארץ';
 
 	type NewsItem = {
 		id: string;
@@ -68,6 +70,7 @@
 
 	// ───────────── סרטון דף הבית ─────────────
 	let homeVideoUrl = $state('');
+	let homeVideoTitle = $state(DEFAULT_HOME_VIDEO_TITLE);
 	let homeVideoNotice = $state('');
 
 	function toEmbedUrl(url: string): string {
@@ -87,10 +90,12 @@
 	function saveHomeVideo(e: Event) {
 		e.preventDefault();
 		const trimmed = homeVideoUrl.trim();
+		const trimmedTitle = homeVideoTitle.trim();
 		try {
 			localStorage.setItem(HOME_VIDEO_KEY, trimmed);
+			localStorage.setItem(HOME_VIDEO_TITLE_KEY, trimmedTitle);
 		} catch {}
-		homeVideoNotice = trimmed ? '✅ הסרטון נשמר ויופיע בדף הבית' : '✅ הסרטון הוסר מדף הבית';
+		homeVideoNotice = trimmed ? '✅ הסרטון והכותרת נשמרו ויופיעו בדף הבית' : '✅ הסרטון הוסר מדף הבית';
 		setTimeout(() => (homeVideoNotice = ''), 4000);
 	}
 
@@ -125,6 +130,8 @@
 			if (Array.isArray(c)) pendingCases = c;
 			const hv = localStorage.getItem(HOME_VIDEO_KEY);
 			if (hv) homeVideoUrl = hv;
+			const hvt = localStorage.getItem(HOME_VIDEO_TITLE_KEY);
+			if (hvt !== null) homeVideoTitle = hvt;
 			const r = localStorage.getItem(RABBIS_STORAGE_KEY);
 			if (r) {
 				const parsed = JSON.parse(r);
@@ -685,6 +692,19 @@
 						הסרטון יוצג מתחת לכותרת "📡 הפעילות שלנו" בדף הבית. ניתן להזין קישור רגיל מיוטיוב — הוא יומר אוטומטית להטמעה.
 					</p>
 					<form onsubmit={saveHomeVideo} class="space-y-3">
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="home-vid-title">כותרת מעל הסרטון</label>
+							<input
+								id="home-vid-title"
+								type="text"
+								bind:value={homeVideoTitle}
+								placeholder="לדוגמה: חכמי עדת ישראל פועלים להעלות שבטים אבודים לארץ"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-cyan-400 focus:outline-none text-right"
+							/>
+							<p class="text-xs text-gray-500 mt-1">
+								הכותרת תוצג מעל הסרטון בדף הבית. השאר ריק כדי להסתיר.
+							</p>
+						</div>
 						<div>
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="home-vid-url">קישור ליוטיוב</label>
 							<input

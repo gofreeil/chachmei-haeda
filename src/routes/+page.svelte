@@ -9,7 +9,9 @@
 
 	let allArticles = $state<Article[]>(staticArticles);
 	const DEFAULT_HOME_VIDEO = 'https://youtu.be/9ioV_PeaqWE?si=WN00o8ByG65ZOvQ4';
+	const DEFAULT_HOME_VIDEO_TITLE = 'חכמי עדת ישראל פועלים להעלות שבטים אבודים לארץ';
 	let homeVideoUrl = $state<string>(DEFAULT_HOME_VIDEO);
+	let homeVideoTitle = $state<string>(DEFAULT_HOME_VIDEO_TITLE);
 
 	function toEmbedUrl(url: string): string {
 		if (!url) return '';
@@ -37,6 +39,8 @@
 			if (Array.isArray(customArt)) allArticles = [...customArt, ...staticArticles];
 			const savedVid = localStorage.getItem('chachmei-home-video-url');
 			if (savedVid !== null) homeVideoUrl = savedVid;
+			const savedTitle = localStorage.getItem('chachmei-home-video-title');
+			if (savedTitle !== null) homeVideoTitle = savedTitle;
 		} catch {}
 	});
 
@@ -100,17 +104,24 @@
 	<NewsTicker />
 
 	{#if embedVideoUrl}
-		<div class="mt-6 mx-auto max-w-xl md:max-w-2xl rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
-			<div class="relative w-full" style="padding-top: 56.25%">
-				<iframe
-					src={embedVideoUrl}
-					title="סרטון בית הדין"
-					class="absolute inset-0 w-full h-full"
-					frameborder="0"
-					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-					referrerpolicy="strict-origin-when-cross-origin"
-					allowfullscreen
-				></iframe>
+		<div class="mt-6 mx-auto max-w-xl md:max-w-2xl">
+			{#if homeVideoTitle.trim()}
+				<h4 class="text-center text-lg md:text-xl font-black text-amber-800 mb-3 leading-snug">
+					{homeVideoTitle}
+				</h4>
+			{/if}
+			<div class="rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
+				<div class="relative w-full" style="padding-top: 56.25%">
+					<iframe
+						src={embedVideoUrl}
+						title={homeVideoTitle || 'סרטון בית הדין'}
+						class="absolute inset-0 w-full h-full"
+						frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						referrerpolicy="strict-origin-when-cross-origin"
+						allowfullscreen
+					></iframe>
+				</div>
 			</div>
 		</div>
 	{/if}
