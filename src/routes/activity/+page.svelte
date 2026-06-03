@@ -91,7 +91,7 @@
 				{/if}
 
 				{#if a.videoUrl}
-					<div class="mt-4 rounded-xl overflow-hidden border border-white/10 aspect-video bg-black">
+					<div class="mt-4 rounded-xl overflow-hidden border border-white/10 aspect-video bg-black max-w-md mx-auto">
 						<iframe
 							src={a.videoUrl}
 							title={a.title}
