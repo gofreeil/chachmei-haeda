@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { activity as staticActivity, type ActivityKind, type ActivityItem } from '$lib/data/activity';
+	import FancyHeading from '$lib/components/FancyHeading.svelte';
 
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
 
@@ -43,9 +44,11 @@
 
 <section class="py-8">
 	<header class="text-center mb-8">
-		<h1 class="bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-			היכל המעשה
-		</h1>
+		<FancyHeading>
+			<h1 class="bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
+				היכל המעשה
+			</h1>
+		</FancyHeading>
 		<p class="mt-3 text-gray-300 max-w-2xl mx-auto">
 			סרטונים, מאמרים והודעות שחכמי בית הדין מפרסמים
 		</p>

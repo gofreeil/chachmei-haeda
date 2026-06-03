@@ -4,6 +4,7 @@
 	import { latestAnswer } from '$lib/data/qa';
 	import NewsTicker from '$lib/components/NewsTicker.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
+	import FancyHeading from '$lib/components/FancyHeading.svelte';
 
 	const recentQa = latestAnswer();
 
@@ -93,9 +94,11 @@
 		></div>
 	</div>
 	<header class="text-center mb-4">
-		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent">
-			חדשות מהיכל המעשה
-		</h3>
+		<FancyHeading>
+			<h3 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent whitespace-nowrap">
+				חדשות מהיכל המעשה
+			</h3>
+		</FancyHeading>
 		<p class="mt-2 text-base md:text-lg font-black text-amber-900 drop-shadow-[0_1px_1px_rgba(120,53,15,0.25)]">
 			הפעילות של חכמי העדה לקידום שלום בארץ ושאר חדשות
 		</p>

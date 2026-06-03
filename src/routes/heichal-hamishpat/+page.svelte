@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
+	import FancyHeading from '$lib/components/FancyHeading.svelte';
 
 	let isRegistered = $state(false);
 	let userName = $state('');
@@ -115,9 +116,11 @@
 <section class="py-8">
 	<header class="text-center mb-6">
 		<div class="text-5xl mb-3">🏛️</div>
-		<h1 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-			היכל המשפט
-		</h1>
+		<FancyHeading>
+			<h1 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent whitespace-nowrap">
+				היכל המשפט
+			</h1>
+		</FancyHeading>
 		<p class="mt-3 text-gray-700 text-base md:text-lg font-bold max-w-2xl mx-auto">
 			כך נראה הליך בוררות אצלנו - ארבעה שלבים פשוטים מהחתימה ועד החזרת האחווה
 		</p>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import FancyHeading from '$lib/components/FancyHeading.svelte';
 
 	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
 
@@ -210,9 +211,11 @@
 
 <section class="py-8 max-w-3xl mx-auto px-3">
 	<header class="text-center mb-8">
-		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-			בקשת דיון
-		</h1>
+		<FancyHeading>
+			<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
+				בקשת דיון
+			</h1>
+		</FancyHeading>
 		<p class="mt-3 text-gray-300">פתיחת תיק חדש לבוררות ושלום על פי דין תורה</p>
 	</header>
 

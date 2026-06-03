@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
+	import FancyHeading from '$lib/components/FancyHeading.svelte';
 
 	let allArticles = $state<Article[]>(staticArticles);
 
@@ -22,9 +23,11 @@
 
 <section class="py-8">
 	<header class="text-center mb-8">
-		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-			ארכיון מאמרי רבנים
-		</h1>
+		<FancyHeading>
+			<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
+				ארכיון מאמרי רבנים
+			</h1>
+		</FancyHeading>
 		<p class="mt-3 text-gray-300">כל מאמר אושר על ידי שלושה רבנים לפחות</p>
 		<p class="mt-1 text-sm text-gray-500">המאמר האחרון מוצג בדף הבית; כל הקודמים מופיעים כאן</p>
 	</header>
