@@ -84,12 +84,12 @@
 	<div class="mb-8 flex items-center gap-3" aria-hidden="true">
 		<div
 			class="h-3 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
-			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+			style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
 		></div>
 		<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]">❦</span>
 		<div
 			class="h-3 flex-1 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
-			style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
 		></div>
 	</div>
 	<header class="text-center mb-4">
@@ -137,12 +137,12 @@
 	<div class="mt-2 mb-6 flex items-center gap-3" aria-hidden="true">
 		<div
 			class="h-3 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
-			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+			style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
 		></div>
 		<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]">❦</span>
 		<div
 			class="h-3 flex-1 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
-			style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
 		></div>
 	</div>
 </section>
