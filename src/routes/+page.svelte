@@ -93,7 +93,7 @@
 			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
 		></div>
 	</div>
-	<header class="text-center mb-4">
+	<header class="text-center mb-8">
 		<FancyHeading noLine>
 			<h3 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent whitespace-nowrap">
 				חדשות מהיכל המעשה
