@@ -92,7 +92,7 @@
 
 		<div class="mt-8 pt-6 border-t border-amber-400/30 text-right space-y-4">
 			<p class="text-base md:text-lg text-gray-100 leading-loose">
-				<strong class="text-amber-200">חכמי העדה</strong> — אנו אוסף של דיינים ומורי הוראה בישראל מכלל הארץ, התאגדנו לקיים את מצוות התורה
+				אנו אוסף של דיינים ומורי הוראה בישראל מכלל הארץ, התאגדנו לקיים את מצוות התורה
 			</p>
 			<blockquote class="py-2 text-center">
 				<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
