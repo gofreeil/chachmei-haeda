@@ -12,6 +12,12 @@
 			const custom = JSON.parse(localStorage.getItem('chachmei-custom-articles') || '[]');
 			if (Array.isArray(custom)) allArticles = [...custom, ...staticArticles];
 		} catch {}
+		// אם הגיעו עם ?q=... מקישור לתגית - אכלוס שדה החיפוש
+		try {
+			const params = new URLSearchParams(window.location.search);
+			const q = params.get('q');
+			if (q) searchQuery = q;
+		} catch {}
 	});
 
 	let sorted = $derived([...allArticles].sort((a, b) => b.date.localeCompare(a.date)));
@@ -20,10 +26,11 @@
 
 	// תוצאות חיפוש משולבות
 	const articleMatches = $derived.by(() => {
-		const q = searchQuery.trim().toLowerCase();
+		const q = searchQuery.trim().replace(/^#+/, '').toLowerCase();
 		if (!q) return [] as Article[];
 		return sorted.filter((a) => {
-			const hay = `${a.title} ${a.author} ${a.excerpt} ${a.body}`.toLowerCase();
+			const tagsStr = (a.tags ?? []).join(' ');
+			const hay = `${a.title} ${a.author} ${a.excerpt} ${a.body} ${tagsStr}`.toLowerCase();
 			return hay.includes(q);
 		});
 	});
@@ -126,6 +133,19 @@
 							</div>
 							<p class="mt-1 text-xs text-blue-300">מאת: {@html highlight(a.author, searchQuery)}</p>
 							<p class="mt-2 text-sm text-gray-300 leading-relaxed">{@html highlight(snippet(a.excerpt, searchQuery, 180), searchQuery)}</p>
+							{#if a.tags && a.tags.length > 0}
+								<div class="mt-3 flex flex-wrap gap-1.5">
+									{#each a.tags as tag}
+										<button
+											type="button"
+											onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
+											class="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-400/40 text-blue-100 text-[11px] font-bold hover:bg-blue-500/40 transition-colors"
+										>
+											#{tag}
+										</button>
+									{/each}
+								</div>
+							{/if}
 						</a>
 					{/each}
 				</div>
@@ -173,6 +193,19 @@
 					</div>
 					<p class="mt-1 text-sm text-blue-300">מאת: {latest.author}</p>
 					<p class="mt-3 text-gray-300 leading-relaxed">{latest.excerpt}</p>
+					{#if latest.tags && latest.tags.length > 0}
+						<div class="mt-3 flex flex-wrap gap-1.5">
+							{#each latest.tags as tag}
+								<button
+									type="button"
+									onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
+									class="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-400/40 text-blue-100 text-[11px] font-bold hover:bg-blue-500/40 transition-colors"
+								>
+									#{tag}
+								</button>
+							{/each}
+						</div>
+					{/if}
 				</a>
 			</div>
 		{/if}
@@ -193,6 +226,19 @@
 						</div>
 						<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
 						<p class="mt-3 text-gray-300 leading-relaxed">{a.excerpt}</p>
+						{#if a.tags && a.tags.length > 0}
+							<div class="mt-3 flex flex-wrap gap-1.5">
+								{#each a.tags as tag}
+									<button
+										type="button"
+										onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
+										class="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-400/40 text-blue-100 text-[11px] font-bold hover:bg-blue-500/40 transition-colors"
+									>
+										#{tag}
+									</button>
+								{/each}
+							</div>
+						{/if}
 					</a>
 				{/each}
 			</div>

@@ -230,7 +230,7 @@
 
 	<!-- כותרת קבוצת הבאנרים -->
 	<h2 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 bg-clip-text text-transparent mb-4 mt-4">
-		📞 צור קשר
+		צור קשר
 	</h2>
 
 	<!-- באנר "יש לך ידיעה?" -->

@@ -37,6 +37,18 @@
 			<div class="mt-3 text-sm text-gray-400">
 				מאת: <span class="text-blue-300">{a.author}</span> • {a.date}
 			</div>
+			{#if a.tags && a.tags.length > 0}
+				<div class="mt-3 flex flex-wrap gap-1.5">
+					{#each a.tags as tag}
+						<a
+							href="/articles?q=%23{encodeURIComponent(tag)}"
+							class="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-400/40 text-blue-100 text-xs font-bold hover:bg-blue-500/40 transition-colors"
+						>
+							#{tag}
+						</a>
+					{/each}
+				</div>
+			{/if}
 		</header>
 
 		<div class="space-y-4 text-gray-200 leading-relaxed text-base md:text-lg whitespace-pre-line">

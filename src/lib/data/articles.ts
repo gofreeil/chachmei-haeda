@@ -6,6 +6,7 @@ export interface Article {
 	excerpt: string;
 	body: string;
 	approvedBy: string[]; // שמות 3 הרבנים שאישרו
+	tags?: string[];      // תגיות לאיתור (#שבטאפרים, #גיור וכו')
 }
 
 export const articles: Article[] = [

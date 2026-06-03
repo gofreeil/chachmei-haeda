@@ -59,7 +59,16 @@
 	let artApprover1 = $state('');
 	let artApprover2 = $state('');
 	let artApprover3 = $state('');
+	let artTags = $state('');
 	let artNotice = $state('');
+
+	// ניתוח שורת תגיות חופשית: "#שבטאפרים #גיור" / "שבטאפרים, גיור" / "שבטאפרים גיור"
+	function parseTags(raw: string): string[] {
+		return raw
+			.split(/[\s,،;]+/)
+			.map((t) => t.trim().replace(/^#+/, '').trim())
+			.filter((t) => t.length > 0);
+	}
 
 	// ───────────── טופס סרטון/הודעה/כתבה ─────────────
 	let vidKind = $state<'סרטון' | 'הודעה' | 'כתבה'>('סרטון');
@@ -314,6 +323,7 @@
 			artNotice = '⚠️ נדרשים לפחות 3 רבנים מאשרים';
 			return;
 		}
+		const tags = parseTags(artTags);
 		const newArt: Article = {
 			slug: slugify(artTitle) + '-' + Math.floor(Math.random() * 1000),
 			title: artTitle.trim(),
@@ -321,7 +331,8 @@
 			date: artDate || new Date().toISOString().slice(0, 10),
 			excerpt: artExcerpt.trim(),
 			body: artBody.trim(),
-			approvedBy
+			approvedBy,
+			...(tags.length > 0 ? { tags } : {})
 		};
 		customArticles = [newArt, ...customArticles];
 		try {
@@ -335,6 +346,7 @@
 		artApprover1 = '';
 		artApprover2 = '';
 		artApprover3 = '';
+		artTags = '';
 		artNotice = '✅ המאמר נוסף בהצלחה - מופיע מיד בדף הבית';
 		setTimeout(() => (artNotice = ''), 4000);
 	}
@@ -662,6 +674,29 @@
 							></textarea>
 						</div>
 
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="art-tags">
+								🏷️ תגיות (לאיתור קל בחיפוש)
+							</label>
+							<input
+								id="art-tags"
+								type="text"
+								bind:value={artTags}
+								placeholder="#שבטאפרים #גיור #עשרתהשבטים #שבטיםאבודים"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
+							/>
+							<p class="mt-1 text-xs text-gray-500">הפרד תגיות ברווח, פסיק או #. סימן ה-# אינו חובה.</p>
+							{#if artTags.trim()}
+								<div class="mt-2 flex flex-wrap gap-1.5">
+									{#each parseTags(artTags) as tag}
+										<span class="px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-200 text-xs font-bold">
+											#{tag}
+										</span>
+									{/each}
+								</div>
+							{/if}
+						</div>
+
 						{#if artNotice}
 							<p class="md:col-span-2 text-sm font-bold {artNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">
 								{artNotice}
@@ -688,9 +723,18 @@
 						<div class="space-y-2">
 							{#each customArticles as a}
 								<div class="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
-									<div class="min-w-0">
+									<div class="min-w-0 flex-1">
 										<div class="font-bold text-white text-sm">{a.title}</div>
 										<div class="text-xs text-gray-400">{a.author} • {a.date}</div>
+										{#if a.tags && a.tags.length > 0}
+											<div class="mt-1.5 flex flex-wrap gap-1">
+												{#each a.tags as tag}
+													<span class="px-1.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-200 text-[10px] font-bold">
+														#{tag}
+													</span>
+												{/each}
+											</div>
+										{/if}
 									</div>
 									<button
 										onclick={() => deleteCustomArticle(a.slug)}
