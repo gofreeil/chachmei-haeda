@@ -104,7 +104,7 @@
 	<NewsTicker />
 
 	{#if embedVideoUrl}
-		<div class="mt-6 mx-auto max-w-xl md:max-w-2xl">
+		<div class="mt-10 mx-auto max-w-xl md:max-w-2xl">
 			{#if homeVideoTitle.trim()}
 				<h4 class="text-center text-lg md:text-xl font-black text-amber-800 mb-3 leading-snug">
 					{homeVideoTitle}
