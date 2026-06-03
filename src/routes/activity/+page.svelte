@@ -85,7 +85,7 @@
 				</div>
 
 				<!-- כותרת ממורכזת -->
-				<h2 class="text-base md:text-lg font-bold text-white text-center mb-4">{a.title}</h2>
+				<h2 class="text-base md:text-lg font-bold text-white text-center mb-6 md:mb-8">{a.title}</h2>
 
 				<!-- תוכן: טקסט מימין, מדיה משמאל -->
 				{#if hasMedia}

@@ -21,7 +21,7 @@ export const activity: ActivityItem[] = [
 		author: 'יהב אנטר',
 		date: '2026-02-01',
 		excerpt: 'בשנים האחרונות קהילות ברחבי העולם: מאפריקה ועד דרום אמריקה, מביעות עניין גובר בקשר היסטורי לשבטי ישראל.',
-		videoUrl: 'https://www.youtube.com/embed/AE9mcu5t_aA?start=9',
+		videoUrl: 'https://www.youtube-nocookie.com/embed/AE9mcu5t_aA?start=9&rel=0',
 		sourceUrl: 'https://israel365news.com/video/meet-a-returning-member-of-the-lost-tribe-of-ephraim/',
 		body: `הציצו אל אחד מהמסעות האישית של חיפוש שורשים, וחיבור רוחני עמוק ליהדות על מנת להשתלב מחדש בעם היהודי.
 
