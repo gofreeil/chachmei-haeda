@@ -97,7 +97,103 @@
 		</p>
 	</header>
 
-	<!-- באנר "פדיון קרקעות" -->
+	<div class="flex flex-wrap gap-2 justify-center mb-6">
+		{#each ['הכל', 'סרטון', 'מאמר', 'הודעה', 'כתבה'] as f}
+			<button
+				type="button"
+				onclick={() => (filter = f as typeof filter)}
+				class="px-4 py-1.5 rounded-full text-sm font-bold border transition-colors {filter === f
+					? 'bg-indigo-500/40 border-indigo-300 text-white'
+					: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
+			>
+				{f}
+			</button>
+		{/each}
+	</div>
+
+	<div class="space-y-4">
+		{#each filtered as a (a.slug)}
+			{@const hasMedia = !!(a.videoUrl || a.imageUrl)}
+			<article
+				class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-4 md:p-5"
+			>
+				<!-- שורה עליונה: סוג ותאריך מימין, מחבר משמאל -->
+				<div class="flex items-start justify-between gap-3 flex-wrap mb-3">
+					<div class="flex items-center gap-2">
+						<span
+							class="text-[11px] font-bold px-2 py-0.5 rounded-full border {kindStyles[a.kind]}"
+						>
+							{kindIcons[a.kind]} {a.kind}
+						</span>
+						<span class="text-[11px] text-gray-500">{a.date}</span>
+					</div>
+					<span class="text-xs text-indigo-300">מאת: {a.author}</span>
+				</div>
+
+				<!-- כותרת ממורכזת -->
+				<h2 class="text-base md:text-lg font-bold text-white text-center mb-6 md:mb-8">{a.title}</h2>
+
+				<!-- תוכן: טקסט מימין, מדיה משמאל -->
+				{#if hasMedia}
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
+						<!-- ימין: טקסט -->
+						<div class="space-y-3 md:order-1">
+							<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
+							{#if a.body}
+								<p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+							{/if}
+						</div>
+
+						<!-- שמאל: מדיה -->
+						<div class="space-y-3 md:order-2">
+							{#if a.imageUrl}
+								<div class="rounded-xl overflow-hidden border border-white/10 bg-black/30">
+									<img src={a.imageUrl} alt={a.title} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
+								</div>
+							{/if}
+							{#if a.videoUrl}
+								<div class="rounded-xl overflow-hidden border border-white/10 aspect-video bg-black">
+									<iframe
+										src={a.videoUrl}
+										title={a.title}
+										class="w-full h-full"
+										frameborder="0"
+										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+										allowfullscreen
+									></iframe>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{:else}
+					<!-- ללא מדיה: טקסט בלבד -->
+					<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
+					{#if a.body}
+						<p class="mt-3 text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+					{/if}
+				{/if}
+
+				<!-- קישור למקור מתחת להכל -->
+				{#if a.sourceUrl}
+					<div class="mt-5 pt-4 border-t border-white/10 text-center">
+						<a
+							href={a.sourceUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-block text-xs text-indigo-300 hover:text-indigo-200 underline break-all"
+						>
+							🔗 לכתבה המלאה
+						</a>
+					</div>
+				{/if}
+			</article>
+		{/each}
+	</div>
+
+	{#if filtered.length === 0}
+		<p class="text-center text-gray-400 py-12">אין פריטים בקטגוריה זו</p>
+	{/if}
+
 	<div class="mb-4 max-w-3xl mx-auto">
 		<button
 			type="button"
@@ -378,103 +474,6 @@
 			</div>
 		{/if}
 	</div>
-
-	<div class="flex flex-wrap gap-2 justify-center mb-6">
-		{#each ['הכל', 'סרטון', 'מאמר', 'הודעה', 'כתבה'] as f}
-			<button
-				type="button"
-				onclick={() => (filter = f as typeof filter)}
-				class="px-4 py-1.5 rounded-full text-sm font-bold border transition-colors {filter === f
-					? 'bg-indigo-500/40 border-indigo-300 text-white'
-					: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
-			>
-				{f}
-			</button>
-		{/each}
-	</div>
-
-	<div class="space-y-4">
-		{#each filtered as a (a.slug)}
-			{@const hasMedia = !!(a.videoUrl || a.imageUrl)}
-			<article
-				class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-4 md:p-5"
-			>
-				<!-- שורה עליונה: סוג ותאריך מימין, מחבר משמאל -->
-				<div class="flex items-start justify-between gap-3 flex-wrap mb-3">
-					<div class="flex items-center gap-2">
-						<span
-							class="text-[11px] font-bold px-2 py-0.5 rounded-full border {kindStyles[a.kind]}"
-						>
-							{kindIcons[a.kind]} {a.kind}
-						</span>
-						<span class="text-[11px] text-gray-500">{a.date}</span>
-					</div>
-					<span class="text-xs text-indigo-300">מאת: {a.author}</span>
-				</div>
-
-				<!-- כותרת ממורכזת -->
-				<h2 class="text-base md:text-lg font-bold text-white text-center mb-6 md:mb-8">{a.title}</h2>
-
-				<!-- תוכן: טקסט מימין, מדיה משמאל -->
-				{#if hasMedia}
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
-						<!-- ימין: טקסט -->
-						<div class="space-y-3 md:order-1">
-							<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
-							{#if a.body}
-								<p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
-							{/if}
-						</div>
-
-						<!-- שמאל: מדיה -->
-						<div class="space-y-3 md:order-2">
-							{#if a.imageUrl}
-								<div class="rounded-xl overflow-hidden border border-white/10 bg-black/30">
-									<img src={a.imageUrl} alt={a.title} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
-								</div>
-							{/if}
-							{#if a.videoUrl}
-								<div class="rounded-xl overflow-hidden border border-white/10 aspect-video bg-black">
-									<iframe
-										src={a.videoUrl}
-										title={a.title}
-										class="w-full h-full"
-										frameborder="0"
-										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-										allowfullscreen
-									></iframe>
-								</div>
-							{/if}
-						</div>
-					</div>
-				{:else}
-					<!-- ללא מדיה: טקסט בלבד -->
-					<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
-					{#if a.body}
-						<p class="mt-3 text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
-					{/if}
-				{/if}
-
-				<!-- קישור למקור מתחת להכל -->
-				{#if a.sourceUrl}
-					<div class="mt-5 pt-4 border-t border-white/10 text-center">
-						<a
-							href={a.sourceUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="inline-block text-xs text-indigo-300 hover:text-indigo-200 underline break-all"
-						>
-							🔗 לכתבה המלאה
-						</a>
-					</div>
-				{/if}
-			</article>
-		{/each}
-	</div>
-
-	{#if filtered.length === 0}
-		<p class="text-center text-gray-400 py-12">אין פריטים בקטגוריה זו</p>
-	{/if}
 </section>
 
 <style>
