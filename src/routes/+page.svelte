@@ -153,9 +153,9 @@
 			<h3 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				מהיכל הרוח
 			</h3>
-			<p class="mt-1 text-right text-sm md:text-base font-bold text-blue-300">
-				מאמר מחכמי העדה
-			</p>
+			<h4 class="mt-2 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+				📜 מאמר מחכמי העדה
+			</h4>
 		</header>
 		<article
 			class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(59,130,246,0.10)]"
