@@ -61,14 +61,16 @@
 	let artApprover3 = $state('');
 	let artNotice = $state('');
 
-	// ───────────── טופס סרטון/הודעה ─────────────
-	let vidKind = $state<'סרטון' | 'הודעה'>('סרטון');
+	// ───────────── טופס סרטון/הודעה/כתבה ─────────────
+	let vidKind = $state<'סרטון' | 'הודעה' | 'כתבה'>('סרטון');
 	let vidTitle = $state('');
 	let vidAuthor = $state('');
 	let vidDate = $state('');
 	let vidExcerpt = $state('');
 	let vidBody = $state('');
 	let vidUrl = $state('');
+	let vidImageUrl = $state('');
+	let vidSourceUrl = $state('');
 	let vidNotice = $state('');
 
 	// ───────────── סרטון דף הבית ─────────────
@@ -346,6 +348,17 @@
 	}
 
 	// ───────────── ניהול סרטונים/הודעות ─────────────
+	async function onActivityImageFile(e: Event) {
+		const input = e.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+		try {
+			vidImageUrl = await fileToDataUrl(file, 1200);
+		} catch {
+			vidNotice = '⚠️ נכשלה טעינת התמונה';
+		}
+	}
+
 	function submitActivity(e: Event) {
 		e.preventDefault();
 		if (!vidTitle.trim() || !vidAuthor.trim() || !vidExcerpt.trim()) {
@@ -356,6 +369,7 @@
 			vidNotice = '⚠️ חובה להזין קישור לסרטון';
 			return;
 		}
+		const embeddedVideo = vidUrl.trim() ? toEmbedUrl(vidUrl.trim()) : '';
 		const newItem: ActivityItem = {
 			slug: slugify(vidTitle) + '-' + Math.floor(Math.random() * 1000),
 			kind: vidKind,
@@ -364,7 +378,9 @@
 			date: vidDate || new Date().toISOString().slice(0, 10),
 			excerpt: vidExcerpt.trim(),
 			...(vidBody.trim() ? { body: vidBody.trim() } : {}),
-			...(vidUrl.trim() ? { videoUrl: vidUrl.trim() } : {})
+			...(embeddedVideo ? { videoUrl: embeddedVideo } : {}),
+			...(vidImageUrl.trim() ? { imageUrl: vidImageUrl.trim() } : {}),
+			...(vidSourceUrl.trim() ? { sourceUrl: vidSourceUrl.trim() } : {})
 		};
 		customActivity = [newItem, ...customActivity];
 		try {
@@ -376,6 +392,8 @@
 		vidExcerpt = '';
 		vidBody = '';
 		vidUrl = '';
+		vidImageUrl = '';
+		vidSourceUrl = '';
 		vidNotice = `✅ ה${vidKind} נוסף בהצלחה`;
 		setTimeout(() => (vidNotice = ''), 4000);
 	}
@@ -530,7 +548,7 @@
 				class:hover:text-gray-200={activeTab !== 'videos'}
 				onclick={() => (activeTab = 'videos')}
 			>
-				🎬 סרטונים והודעות
+				🎬 סרטונים / כתבות / הודעות
 			</button>
 			<button
 				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
@@ -780,7 +798,7 @@
 
 				<!-- טופס הוספה -->
 				<div class="rounded-2xl border border-teal-500/30 bg-teal-500/5 p-5 md:p-6">
-					<h2 class="text-xl font-black text-teal-200 mb-4">➕ הוספת סרטון או הודעה</h2>
+					<h2 class="text-xl font-black text-teal-200 mb-4">➕ הוספת סרטון / הודעה / כתבה</h2>
 					<form onsubmit={submitActivity} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-kind">סוג *</label>
@@ -791,6 +809,7 @@
 							>
 								<option class="bg-gray-900" value="סרטון">🎬 סרטון</option>
 								<option class="bg-gray-900" value="הודעה">📣 הודעה</option>
+								<option class="bg-gray-900" value="כתבה">📰 כתבה</option>
 							</select>
 						</div>
 						<div>
@@ -820,22 +839,75 @@
 								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none"
 							/>
 						</div>
-						{#if vidKind === 'סרטון'}
-							<div class="md:col-span-2">
-								<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-url">
-									קישור להטמעה (YouTube embed) *
-								</label>
-								<input
-									id="vid-url"
-									type="url"
-									bind:value={vidUrl}
-									dir="ltr"
-									placeholder="https://www.youtube.com/embed/XXXXXXXXXXX"
-									class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none text-right"
-								/>
-								<p class="text-xs text-gray-500 mt-1">להחליף watch?v= ב-embed/ בקישור היוטיוב</p>
+
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-url">
+								קישור לסרטון יוטיוב {vidKind === 'סרטון' ? '*' : '(אופציונלי)'}
+							</label>
+							<input
+								id="vid-url"
+								type="url"
+								bind:value={vidUrl}
+								dir="ltr"
+								placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none text-right"
+							/>
+							<p class="text-xs text-gray-500 mt-1">
+								תומך בפורמטים: youtube.com/watch?v=… , youtu.be/… , youtube.com/embed/… , youtube.com/shorts/… - הקישור יומר אוטומטית להטמעה
+							</p>
+						</div>
+
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-image-file">תמונה (העלאה)</label>
+							<input
+								id="vid-image-file"
+								type="file"
+								accept="image/*"
+								onchange={onActivityImageFile}
+								class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-teal-500/30 file:text-teal-100 file:font-bold hover:file:bg-teal-500/40"
+							/>
+							<p class="text-xs text-gray-500 mt-1">התמונה תקטן ותישמר בדפדפן</p>
+						</div>
+
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-image-url">או הדבק קישור לתמונה</label>
+							<input
+								id="vid-image-url"
+								type="text"
+								bind:value={vidImageUrl}
+								dir="ltr"
+								placeholder="https://… או data:image/…"
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none text-right"
+							/>
+						</div>
+
+						{#if vidImageUrl}
+							<div class="md:col-span-2 flex items-start gap-3">
+								<div class="rounded-lg overflow-hidden border-2 border-teal-400/40 bg-black/30 max-w-[200px]">
+									<img src={vidImageUrl} alt="תצוגה מקדימה" class="w-full h-auto object-contain" />
+								</div>
+								<button
+									type="button"
+									onclick={() => (vidImageUrl = '')}
+									class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold"
+								>
+									הסר תמונה
+								</button>
 							</div>
 						{/if}
+
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-source-url">קישור למקור / לכתבה המלאה (אופציונלי)</label>
+							<input
+								id="vid-source-url"
+								type="url"
+								bind:value={vidSourceUrl}
+								dir="ltr"
+								placeholder="https://..."
+								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none text-right"
+							/>
+						</div>
+
 						<div class="md:col-span-2">
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-excerpt">תקציר *</label>
 							<textarea
@@ -846,11 +918,11 @@
 							></textarea>
 						</div>
 						<div class="md:col-span-2">
-							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-body">תוכן נוסף (אופציונלי)</label>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-body">תוכן הכתבה / תוכן נוסף (אופציונלי)</label>
 							<textarea
 								id="vid-body"
 								bind:value={vidBody}
-								rows="4"
+								rows="6"
 								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none resize-y"
 							></textarea>
 						</div>

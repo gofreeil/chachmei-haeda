@@ -9,6 +9,8 @@ export interface ActivityItem {
 	excerpt: string;
 	body?: string;
 	videoUrl?: string;
+	imageUrl?: string;
+	sourceUrl?: string;
 }
 
 export const activity: ActivityItem[] = [

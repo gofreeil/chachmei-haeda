@@ -1,10 +1,26 @@
 <script lang="ts">
-	import { activity, type ActivityKind } from '$lib/data/activity';
+	import { onMount } from 'svelte';
+	import { activity as staticActivity, type ActivityKind, type ActivityItem } from '$lib/data/activity';
+
+	const ACTIVITY_KEY = 'chachmei-custom-activity';
 
 	let filter = $state<'הכל' | ActivityKind>('הכל');
+	let customActivity = $state<ActivityItem[]>([]);
+
+	onMount(() => {
+		try {
+			const raw = localStorage.getItem(ACTIVITY_KEY);
+			if (raw) {
+				const parsed = JSON.parse(raw);
+				if (Array.isArray(parsed)) customActivity = parsed;
+			}
+		} catch {}
+	});
+
+	const allItems = $derived([...customActivity, ...staticActivity]);
 
 	const filtered = $derived(
-		filter === 'הכל' ? activity : activity.filter((a) => a.kind === filter)
+		filter === 'הכל' ? allItems : allItems.filter((a) => a.kind === filter)
 	);
 
 	const kindStyles: Record<ActivityKind, string> = {
@@ -68,6 +84,12 @@
 				<h2 class="text-xl md:text-2xl font-bold text-white">{a.title}</h2>
 				<p class="mt-2 text-gray-300 leading-relaxed">{a.excerpt}</p>
 
+				{#if a.imageUrl}
+					<div class="mt-4 rounded-xl overflow-hidden border border-white/10 bg-black/30">
+						<img src={a.imageUrl} alt={a.title} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
+					</div>
+				{/if}
+
 				{#if a.videoUrl}
 					<div class="mt-4 rounded-xl overflow-hidden border border-white/10 aspect-video bg-black">
 						<iframe
@@ -83,6 +105,18 @@
 
 				{#if a.body}
 					<p class="mt-4 text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+				{/if}
+
+				{#if a.sourceUrl}
+					<a
+						href={a.sourceUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="mt-4 inline-block text-sm text-indigo-300 hover:text-indigo-200 underline"
+						dir="ltr"
+					>
+						🔗 למקור
+					</a>
 				{/if}
 			</article>
 		{/each}
