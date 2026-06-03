@@ -2,11 +2,14 @@
 	import { onMount } from 'svelte';
 	import { activity as staticActivity, type ActivityKind, type ActivityItem } from '$lib/data/activity';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
 
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
+	const PAGE_SIZE = 8;
 
 	let searchQuery = $state('');
 	let customActivity = $state<ActivityItem[]>([]);
+	let currentPage = $state(1);
 
 	// טופס "פדיון קרקעות"
 	let landOpen = $state(false);
@@ -72,6 +75,19 @@
 		});
 	});
 
+	// pagination
+	const totalPages = $derived(Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)));
+	const currentPageSafe = $derived(Math.min(currentPage, totalPages));
+	const pagedItems = $derived(
+		filtered.slice((currentPageSafe - 1) * PAGE_SIZE, currentPageSafe * PAGE_SIZE)
+	);
+
+	// איפוס לעמוד 1 כשהחיפוש משתנה
+	$effect(() => {
+		searchQuery;
+		currentPage = 1;
+	});
+
 	const kindStyles: Record<ActivityKind, string> = {
 		'סרטון': 'bg-red-500/15 border-red-400/40 text-red-200',
 		'מאמר': 'bg-blue-500/15 border-blue-400/40 text-blue-200',
@@ -131,7 +147,7 @@
 	</div>
 
 	<div class="space-y-4">
-		{#each filtered as a (a.slug)}
+		{#each pagedItems as a (a.slug)}
 			{@const hasMedia = !!(a.videoUrl || a.imageUrl)}
 			<article
 				class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-4 md:p-5"
@@ -213,6 +229,13 @@
 		<p class="text-center text-gray-700 py-12 font-medium">
 			{searchQuery ? `לא נמצאו תוצאות עבור "${searchQuery}"` : 'אין פריטים להצגה'}
 		</p>
+	{:else}
+		<Pagination
+			currentPage={currentPageSafe}
+			totalPages={totalPages}
+			color="indigo"
+			onPageChange={(p) => (currentPage = p)}
+		/>
 	{/if}
 
 	<!-- קו הפרדה מעל הבאנרים החדשים -->

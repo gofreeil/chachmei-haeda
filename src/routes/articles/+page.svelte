@@ -290,6 +290,13 @@
 					</a>
 				{/each}
 			</div>
+
+			<Pagination
+				currentPage={archivePageSafe}
+				totalPages={archiveTotalPages}
+				color="blue"
+				onPageChange={(p) => (archivePage = p)}
+			/>
 		{/if}
 
 		<div class="mt-10 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-5 text-center">
