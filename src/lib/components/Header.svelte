@@ -31,6 +31,8 @@
         { href: '/about/revenue', label: 'אודות', icon: 'ℹ️' },
         { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
         { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
+        { href: '/charter-index', label: 'אינדקס האמנה', icon: '📑' },
+        { href: '/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
         { href: '/request-hearing', label: 'בקשת דיון', icon: '⚖️' },
         { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
         { href: '/rulings', label: 'פסקי דין', icon: '📋' },
