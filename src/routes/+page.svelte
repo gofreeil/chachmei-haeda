@@ -150,22 +150,24 @@
 {#if latestArticle}
 	<section class="mb-10">
 		<header class="mb-5">
-			<div class="flex items-center justify-center gap-1.5">
-				<div
-					class="h-1 w-3 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700"
-					style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+			<div class="flex items-center justify-center gap-2">
+				<img
+					src="/images/olive-branch.png"
+					alt=""
 					aria-hidden="true"
-				></div>
+					class="olive-branch olive-branch-left h-12 md:h-14 w-auto select-none"
+				/>
 				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
 				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
 					מהיכל הרוח
 				</h3>
 				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
-				<div
-					class="h-1 w-3 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700"
-					style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+				<img
+					src="/images/olive-branch.png"
+					alt=""
 					aria-hidden="true"
-				></div>
+					class="olive-branch olive-branch-right h-12 md:h-14 w-auto select-none"
+				/>
 			</div>
 			<h4 class="mt-2 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				📜 מאמר מחכמי העדה
@@ -257,4 +259,17 @@
 		></div>
 	</div>
 </section>
+
+<style>
+	.olive-branch {
+		object-fit: contain;
+		object-position: center;
+	}
+	.olive-branch-right {
+		transform: rotate(90deg);
+	}
+	.olive-branch-left {
+		transform: rotate(-90deg);
+	}
+</style>
 
