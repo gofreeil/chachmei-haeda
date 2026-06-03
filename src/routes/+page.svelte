@@ -60,7 +60,7 @@
 	</h2>
 	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label="קרא עוד אודותנו">
 		<div class="mt-6 flex justify-center">
-			<div class="h-48 w-48 md:h-64 md:w-64 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">
+			<div class="h-40 w-40 md:h-56 md:w-56 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">
 				<img
 					src="/images/chachmei-logo.png"
 					alt="חכמי העדה"
