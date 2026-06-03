@@ -150,9 +150,23 @@
 {#if latestArticle}
 	<section class="mb-10">
 		<header class="mb-5">
-			<h3 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-				מהיכל הרוח
-			</h3>
+			<div class="flex items-center gap-3">
+				<div
+					class="h-2 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+					style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+					aria-hidden="true"
+				></div>
+				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
+				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
+					מהיכל הרוח
+				</h3>
+				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
+				<div
+					class="h-2 flex-1 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+					style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+					aria-hidden="true"
+				></div>
+			</div>
 			<h4 class="mt-2 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				📜 מאמר מחכמי העדה
 			</h4>
