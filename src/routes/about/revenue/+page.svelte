@@ -89,6 +89,24 @@
 				</li>
 			{/each}
 		</ul>
+
+		<div class="mt-8 pt-6 border-t border-amber-400/30 text-right space-y-4">
+			<p class="text-base md:text-lg text-gray-100 leading-loose">
+				<strong class="text-amber-200">חכמי העדה</strong> — אנו אוסף של דיינים ומורי הוראה בישראל מכלל הארץ, התאגדנו לקיים את מצוות התורה
+			</p>
+			<blockquote class="py-2 text-center">
+				<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
+					"שׁוֹפְטִים וְשֹׁטְרִים תִּתֶּן־לְךָ בְּכָל־שְׁעָרֶיךָ אֲשֶׁר ה' אֱלֹהֶיךָ נֹתֵן לְךָ לִשְׁבָטֶיךָ"
+				</p>
+				<footer class="mt-1 text-sm text-gray-400">(דברים ט"ז, יח)</footer>
+			</blockquote>
+			<p class="text-base md:text-lg text-gray-100 leading-loose font-semibold text-center">
+				מטרתנו לסייע ולקדם שלום בארץ.
+			</p>
+			<p class="text-base md:text-lg text-gray-100 leading-loose pt-2">
+				בנוסף, אנו רואים חשיבות רבה להחזיר לישראל את מושג <strong class="text-amber-200">חכמי העדה</strong> — מקום אחד הכלול מכלל הפלגים והזרמים הכשרים בישראל, לדון ולברר את ההלכות, להוציא פסקים בקונצנזוס המחייבים את כלל ישראל כקהילה אחת, לתקן תקנות ישראל כדי שיהיו כצאן שיש להם רועה.
+			</p>
+		</div>
 	</div>
 
 	<!-- באנר קריאה להצטרפות -->
