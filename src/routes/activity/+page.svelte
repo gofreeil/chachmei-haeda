@@ -5,7 +5,7 @@
 
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
 
-	let filter = $state<'הכל' | ActivityKind>('הכל');
+	let searchQuery = $state('');
 	let customActivity = $state<ActivityItem[]>([]);
 
 	// טופס "פדיון קרקעות"
@@ -63,9 +63,14 @@
 
 	const allItems = $derived([...customActivity, ...staticActivity]);
 
-	const filtered = $derived(
-		filter === 'הכל' ? allItems : allItems.filter((a) => a.kind === filter)
-	);
+	const filtered = $derived.by(() => {
+		const q = searchQuery.trim().toLowerCase();
+		if (!q) return allItems;
+		return allItems.filter((a) => {
+			const hay = `${a.title} ${a.excerpt ?? ''} ${a.body ?? ''} ${a.author ?? ''} ${a.kind}`.toLowerCase();
+			return hay.includes(q);
+		});
+	});
 
 	const kindStyles: Record<ActivityKind, string> = {
 		'סרטון': 'bg-red-500/15 border-red-400/40 text-red-200',
@@ -97,18 +102,32 @@
 		</p>
 	</header>
 
-	<div class="flex flex-wrap gap-2 justify-center mb-6">
-		{#each ['הכל', 'סרטון', 'מאמר', 'הודעה', 'כתבה'] as f}
-			<button
-				type="button"
-				onclick={() => (filter = f as typeof filter)}
-				class="px-4 py-1.5 rounded-full text-sm font-bold border transition-colors {filter === f
-					? 'bg-indigo-500/40 border-indigo-300 text-white'
-					: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
-			>
-				{f}
-			</button>
-		{/each}
+	<div class="mb-6 max-w-2xl mx-auto">
+		<div class="relative">
+			<span class="absolute inset-y-0 right-3 flex items-center text-indigo-700 text-lg pointer-events-none" aria-hidden="true">🔍</span>
+			<input
+				type="search"
+				bind:value={searchQuery}
+				placeholder="חיפוש בכותרות, תוכן, מחבר..."
+				aria-label="חיפוש בפעילות"
+				class="w-full pr-10 pl-10 py-2.5 rounded-full bg-white/80 border-2 border-indigo-300/60 text-gray-900 placeholder-gray-500 font-medium focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition-colors shadow-sm"
+			/>
+			{#if searchQuery}
+				<button
+					type="button"
+					onclick={() => (searchQuery = '')}
+					aria-label="נקה חיפוש"
+					class="absolute inset-y-0 left-2 flex items-center justify-center w-7 h-full text-gray-600 hover:text-gray-900"
+				>
+					✕
+				</button>
+			{/if}
+		</div>
+		{#if searchQuery}
+			<p class="mt-2 text-xs text-center text-gray-700 font-medium">
+				נמצאו {filtered.length} תוצאות עבור "{searchQuery}"
+			</p>
+		{/if}
 	</div>
 
 	<div class="space-y-4">
@@ -191,7 +210,9 @@
 	</div>
 
 	{#if filtered.length === 0}
-		<p class="text-center text-gray-400 py-12">אין פריטים בקטגוריה זו</p>
+		<p class="text-center text-gray-700 py-12 font-medium">
+			{searchQuery ? `לא נמצאו תוצאות עבור "${searchQuery}"` : 'אין פריטים להצגה'}
+		</p>
 	{/if}
 
 	<!-- קו הפרדה מעל הבאנרים החדשים -->
