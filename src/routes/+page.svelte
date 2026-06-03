@@ -58,17 +58,17 @@
 	<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent">
 		ברוכים הבאים לחכמי העדה
 	</h2>
-	<div class="mt-6 flex justify-center">
-		<div class="h-48 w-48 md:h-64 md:w-64 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30">
-			<img
-				src="/images/chachmei-logo.png"
-				alt="חכמי העדה"
-				class="w-full h-full object-contain scale-[1.15]"
-				style="image-rendering: -webkit-optimize-contrast;"
-			/>
-		</div>
-	</div>
 	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label="קרא עוד אודותנו">
+		<div class="mt-6 flex justify-center">
+			<div class="h-48 w-48 md:h-64 md:w-64 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">
+				<img
+					src="/images/chachmei-logo.png"
+					alt="חכמי העדה"
+					class="w-full h-full object-contain scale-[1.15]"
+					style="image-rendering: -webkit-optimize-contrast;"
+				/>
+			</div>
+		</div>
 		<p class="mt-4 text-gray-900 text-xl md:text-2xl font-extrabold group-hover:text-blue-700 transition-colors">בית דין לבוררות ושלום על פי תורת ישראל</p>
 		<p class="mt-3 text-gray-800 text-base md:text-lg font-bold max-w-2xl mx-auto group-hover:underline decoration-blue-400/60 underline-offset-4">
 			פלטפורמה לפתרון מחלוקות בין אדם לחברו בצדק ובאחווה, פרסום מאמרים מחכמי ישראל, קידום חברה מתוקנת על ידי התנהלות תחת הקוד האתי העולמי <span class="text-blue-700 font-black">UECC</span>.
