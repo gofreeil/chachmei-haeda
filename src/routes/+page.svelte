@@ -150,12 +150,8 @@
 {#if latestArticle}
 	<section class="mb-10">
 		<header class="mb-5">
-			<h3 class="text-center text-2xl md:text-3xl font-black">
-				<span aria-hidden="true" class="align-middle ml-1">📜</span>
-				<span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-					מהיכל הרוח
-				</span>
-				<span aria-hidden="true" class="align-middle mr-1">📜</span>
+			<h3 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+				מהיכל הרוח
 			</h3>
 			<p class="mt-1 text-right text-sm md:text-base font-bold text-blue-300">
 				מאמר מחכמי העדה
