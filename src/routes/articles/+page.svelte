@@ -10,7 +10,33 @@
 	let allArticles = $state<Article[]>(staticArticles);
 	let searchQuery = $state('');
 	let archivePage = $state(1);
+	let qaPage = $state(1);
 	let searchPage = $state(1);
+
+	function fmtDate(d: string): string {
+		const [y, m, day] = d.split('-');
+		return `${day}.${m}.${y}`;
+	}
+
+	function slowScrollTo(targetId: string) {
+		const el = document.getElementById(targetId);
+		if (!el) return;
+		const header = document.querySelector('.site-header') as HTMLElement | null;
+		const headerOffset = header ? header.getBoundingClientRect().height : 0;
+		const targetY = el.getBoundingClientRect().top + window.scrollY - headerOffset - 4;
+		const startY = window.scrollY;
+		const distance = targetY - startY;
+		if (Math.abs(distance) < 2) return;
+		const duration = Math.min(2400, Math.max(1000, Math.abs(distance) * 1.4));
+		const startTime = Date.now();
+		const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+		const handle = window.setInterval(() => {
+			const elapsed = Date.now() - startTime;
+			const t = Math.min(1, elapsed / duration);
+			window.scrollTo(0, startY + distance * easeInOutCubic(t));
+			if (t >= 1) window.clearInterval(handle);
+		}, 16);
+	}
 
 	onMount(() => {
 		try {
@@ -34,6 +60,14 @@
 	const archivePageSafe = $derived(Math.min(archivePage, archiveTotalPages));
 	const archivePaged = $derived(
 		archive.slice((archivePageSafe - 1) * PAGE_SIZE, archivePageSafe * PAGE_SIZE)
+	);
+
+	// שאלות-תשובות ממוינות ועם pagination
+	const qaSorted = $derived([...qa].sort((a, b) => b.answerDate.localeCompare(a.answerDate)));
+	const qaTotalPages = $derived(Math.max(1, Math.ceil(qaSorted.length / PAGE_SIZE)));
+	const qaPageSafe = $derived(Math.min(qaPage, qaTotalPages));
+	const qaPaged = $derived(
+		qaSorted.slice((qaPageSafe - 1) * PAGE_SIZE, qaPageSafe * PAGE_SIZE)
 	);
 
 	// תוצאות חיפוש משולבות
@@ -105,19 +139,35 @@
 </script>
 
 <svelte:head>
-	<title>ארכיון מאמרי רבנים - חכמי העדה</title>
+	<title>היכל הרוח - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8">
-	<header class="text-center mb-8">
+	<header class="text-center mb-6">
 		<FancyHeading>
 			<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
-				ארכיון מאמרי רבנים
+				היכל הרוח
 			</h1>
 		</FancyHeading>
-		<p class="mt-3 text-gray-300">כל מאמר אושר על ידי שלושה רבנים לפחות</p>
-		<p class="mt-1 text-sm text-gray-500">המאמר האחרון מוצג בדף הבית; כל הקודמים מופיעים כאן</p>
 	</header>
+
+	<!-- ניווט מהיר -->
+	<nav class="mb-6 flex flex-wrap justify-center gap-3" aria-label="ניווט בתוך העמוד">
+		<button
+			type="button"
+			onclick={() => slowScrollTo('sep-articles')}
+			class="px-5 py-2.5 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white font-black text-sm md:text-base border-2 border-blue-300 shadow-[0_4px_12px_rgba(37,99,235,0.45)] hover:scale-105 hover:shadow-[0_6px_18px_rgba(37,99,235,0.6)] transition-all"
+		>
+			📜 מאמרים
+		</button>
+		<button
+			type="button"
+			onclick={() => slowScrollTo('sep-qa')}
+			class="px-5 py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-700 text-white font-black text-sm md:text-base border-2 border-indigo-300 shadow-[0_4px_12px_rgba(79,70,229,0.45)] hover:scale-105 hover:shadow-[0_6px_18px_rgba(79,70,229,0.6)] transition-all"
+		>
+			🕮 שאלות ותשובות
+		</button>
+	</nav>
 
 	<!-- שורת חיפוש -->
 	<div class="mb-8 max-w-2xl mx-auto">
@@ -227,6 +277,22 @@
 			/>
 		{/if}
 	{:else}
+		<!-- ============ סקציית המאמרים ============ -->
+		<div id="sep-articles" class="scroll-mt-24 mt-2 mb-8 flex items-center gap-3 max-w-3xl mx-auto" aria-hidden="true">
+			<div
+				class="h-2 flex-1 bg-gradient-to-l from-transparent via-blue-500/70 to-blue-700 shadow-[0_1px_2px_rgba(30,64,175,0.35)]"
+				style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+			></div>
+			<span class="text-xl md:text-2xl text-blue-400 drop-shadow-[0_1px_1px_rgba(30,64,175,0.4)]">📜</span>
+			<div
+				class="h-2 flex-1 bg-gradient-to-r from-transparent via-blue-500/70 to-blue-700 shadow-[0_1px_2px_rgba(30,64,175,0.35)]"
+				style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+			></div>
+		</div>
+		<h2 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent mb-6">
+			מאמרים
+		</h2>
+
 		<!-- תצוגה רגילה (ללא חיפוש) -->
 		{#if latest}
 			<div class="mb-6">
@@ -299,11 +365,67 @@
 			/>
 		{/if}
 
-		<div class="mt-10 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-5 text-center">
-			<p class="text-yellow-200">
-				<strong>הערה:</strong> רק רבנים מורשים יכולים להוסיף מאמרים. כל מאמר טעון אישור שלושה רבנים לפחות
-				לפני פרסום.
-			</p>
+		<!-- ============ סקציית שאלות ותשובות ============ -->
+		<div id="sep-qa" class="scroll-mt-24 mt-14 mb-8 flex items-center gap-3 max-w-3xl mx-auto" aria-hidden="true">
+			<div
+				class="h-2 flex-1 bg-gradient-to-l from-transparent via-indigo-500/70 to-indigo-700 shadow-[0_1px_2px_rgba(79,70,229,0.35)]"
+				style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+			></div>
+			<span class="text-xl md:text-2xl text-indigo-400 drop-shadow-[0_1px_1px_rgba(79,70,229,0.4)]">🕮</span>
+			<div
+				class="h-2 flex-1 bg-gradient-to-r from-transparent via-indigo-500/70 to-indigo-700 shadow-[0_1px_2px_rgba(79,70,229,0.35)]"
+				style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+			></div>
+		</div>
+		<h2 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent mb-2">
+			שאלות ותשובות
+		</h2>
+		<p class="text-center text-gray-300 text-sm mb-6 max-w-2xl mx-auto">
+			תשובות רבני בית הדין לשאלות בהלכה, מוסר עסקי, שלום בית ושבע מצוות בני נח
+		</p>
+
+		{#if qaSorted.length === 0}
+			<p class="text-center text-gray-400 py-8">אין שאלות ותשובות להצגה.</p>
+		{:else}
+			<div class="space-y-5 max-w-3xl mx-auto">
+				{#each qaPaged as q (q.slug)}
+					<article
+						id={q.slug}
+						class="rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-6 scroll-mt-24"
+					>
+						<div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+							<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
+								{q.topic}
+							</span>
+							<span class="text-xs font-bold text-gray-300">נשאל {fmtDate(q.askDate)}</span>
+						</div>
+						<h3 class="text-lg md:text-xl font-extrabold text-white mb-2">שאלה - {q.asker}</h3>
+						<p class="text-gray-200 leading-relaxed mb-4">{q.question}</p>
+						<div class="border-t border-indigo-300/40 pt-4">
+							<h4 class="text-sm font-black text-indigo-300 mb-2">
+								תשובת {q.answeredBy} · {fmtDate(q.answerDate)}
+							</h4>
+							<p class="text-gray-100 leading-relaxed font-medium">{q.answer}</p>
+						</div>
+					</article>
+				{/each}
+			</div>
+
+			<Pagination
+				currentPage={qaPageSafe}
+				totalPages={qaTotalPages}
+				color="indigo"
+				onPageChange={(p) => (qaPage = p)}
+			/>
+		{/if}
+
+		<div class="mt-8 text-center">
+			<a
+				href="/ask"
+				class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base hover:scale-105 transition-transform shadow"
+			>
+				🕮 שאל את חכמי העדה ←
+			</a>
 		</div>
 	{/if}
 </section>
