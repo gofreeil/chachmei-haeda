@@ -96,7 +96,7 @@
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent">
 			חדשות מהיכל המעשה
 		</h3>
-		<p class="mt-1 text-xs md:text-sm font-bold text-gray-700">
+		<p class="mt-2 text-base md:text-lg font-black text-amber-900 drop-shadow-[0_1px_1px_rgba(120,53,15,0.25)]">
 			הפעילות של חכמי העדה לקידום שלום בארץ ושאר חדשות
 		</p>
 	</header>
