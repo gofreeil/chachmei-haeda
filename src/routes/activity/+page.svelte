@@ -67,10 +67,12 @@
 
 	<div class="space-y-4">
 		{#each filtered as a (a.slug)}
+			{@const hasMedia = !!(a.videoUrl || a.imageUrl)}
 			<article
 				class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-4 md:p-5"
 			>
-				<div class="flex items-start justify-between gap-3 flex-wrap mb-2">
+				<!-- שורה עליונה: סוג ותאריך מימין, מחבר משמאל -->
+				<div class="flex items-start justify-between gap-3 flex-wrap mb-3">
 					<div class="flex items-center gap-2">
 						<span
 							class="text-[11px] font-bold px-2 py-0.5 rounded-full border {kindStyles[a.kind]}"
@@ -81,42 +83,62 @@
 					</div>
 					<span class="text-xs text-indigo-300">מאת: {a.author}</span>
 				</div>
-				<h2 class="text-base md:text-lg font-bold text-white">{a.title}</h2>
-				<p class="mt-2 text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
 
-				{#if a.imageUrl}
-					<div class="mt-4 rounded-xl overflow-hidden border border-white/10 bg-black/30">
-						<img src={a.imageUrl} alt={a.title} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
+				<!-- כותרת ממורכזת -->
+				<h2 class="text-base md:text-lg font-bold text-white text-center mb-4">{a.title}</h2>
+
+				<!-- תוכן: טקסט מימין, מדיה משמאל -->
+				{#if hasMedia}
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
+						<!-- ימין: טקסט -->
+						<div class="space-y-3 md:order-1">
+							<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
+							{#if a.body}
+								<p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+							{/if}
+						</div>
+
+						<!-- שמאל: מדיה -->
+						<div class="space-y-3 md:order-2">
+							{#if a.imageUrl}
+								<div class="rounded-xl overflow-hidden border border-white/10 bg-black/30">
+									<img src={a.imageUrl} alt={a.title} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
+								</div>
+							{/if}
+							{#if a.videoUrl}
+								<div class="rounded-xl overflow-hidden border border-white/10 aspect-video bg-black">
+									<iframe
+										src={a.videoUrl}
+										title={a.title}
+										class="w-full h-full"
+										frameborder="0"
+										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+										allowfullscreen
+									></iframe>
+								</div>
+							{/if}
+						</div>
 					</div>
+				{:else}
+					<!-- ללא מדיה: טקסט בלבד -->
+					<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
+					{#if a.body}
+						<p class="mt-3 text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+					{/if}
 				{/if}
 
-				{#if a.videoUrl}
-					<div class="mt-4 rounded-xl overflow-hidden border border-white/10 aspect-video bg-black max-w-md mx-auto">
-						<iframe
-							src={a.videoUrl}
-							title={a.title}
-							class="w-full h-full"
-							frameborder="0"
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-							allowfullscreen
-						></iframe>
-					</div>
-				{/if}
-
-				{#if a.body}
-					<p class="mt-4 text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
-				{/if}
-
+				<!-- קישור למקור מתחת להכל -->
 				{#if a.sourceUrl}
-					<a
-						href={a.sourceUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						class="mt-4 inline-block text-xs text-indigo-300 hover:text-indigo-200 underline"
-						dir="ltr"
-					>
-						🔗 למקור
-					</a>
+					<div class="mt-5 pt-4 border-t border-white/10 text-center">
+						<a
+							href={a.sourceUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-block text-xs text-indigo-300 hover:text-indigo-200 underline break-all"
+						>
+							🔗 לכתבה המלאה
+						</a>
+					</div>
 				{/if}
 			</article>
 		{/each}
