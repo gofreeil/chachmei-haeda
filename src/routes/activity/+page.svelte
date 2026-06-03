@@ -25,7 +25,6 @@
 
 <section class="py-8">
 	<header class="text-center mb-8">
-		<div class="text-5xl mb-3">📡</div>
 		<h1 class="bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
 			הפעילות שלנו
 		</h1>
