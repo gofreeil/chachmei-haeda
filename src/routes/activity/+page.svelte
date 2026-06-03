@@ -194,6 +194,19 @@
 		<p class="text-center text-gray-400 py-12">אין פריטים בקטגוריה זו</p>
 	{/if}
 
+	<!-- קו הפרדה מעל הבאנרים החדשים -->
+	<div class="mt-10 mb-6 flex items-center gap-3 max-w-3xl mx-auto" aria-hidden="true">
+		<div
+			class="h-2 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+			style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+		></div>
+		<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]">❦</span>
+		<div
+			class="h-2 flex-1 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+		></div>
+	</div>
+
 	<div class="mb-4 max-w-3xl mx-auto">
 		<button
 			type="button"
@@ -473,6 +486,19 @@
 				</form>
 			</div>
 		{/if}
+	</div>
+
+	<!-- קו הפרדה מתחת לשלושת הבאנרים -->
+	<div class="mt-6 flex items-center gap-3 max-w-3xl mx-auto" aria-hidden="true">
+		<div
+			class="h-2 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+			style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+		></div>
+		<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]">❦</span>
+		<div
+			class="h-2 flex-1 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+		></div>
 	</div>
 </section>
 
