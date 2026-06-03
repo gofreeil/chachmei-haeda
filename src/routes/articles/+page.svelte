@@ -3,9 +3,14 @@
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { qa, type QaItem } from '$lib/data/qa';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import Pagination from '$lib/components/Pagination.svelte';
+
+	const PAGE_SIZE = 8;
 
 	let allArticles = $state<Article[]>(staticArticles);
 	let searchQuery = $state('');
+	let archivePage = $state(1);
+	let searchPage = $state(1);
 
 	onMount(() => {
 		try {
@@ -23,6 +28,13 @@
 	let sorted = $derived([...allArticles].sort((a, b) => b.date.localeCompare(a.date)));
 	let latest = $derived(sorted[0]);
 	let archive = $derived(sorted.slice(1));
+
+	// pagination לארכיון
+	const archiveTotalPages = $derived(Math.max(1, Math.ceil(archive.length / PAGE_SIZE)));
+	const archivePageSafe = $derived(Math.min(archivePage, archiveTotalPages));
+	const archivePaged = $derived(
+		archive.slice((archivePageSafe - 1) * PAGE_SIZE, archivePageSafe * PAGE_SIZE)
+	);
 
 	// תוצאות חיפוש משולבות
 	const articleMatches = $derived.by(() => {
@@ -45,6 +57,33 @@
 	});
 
 	const totalMatches = $derived(articleMatches.length + qaMatches.length);
+
+	// pagination לתוצאות חיפוש — איחוד מאמרים ושאלות-תשובות לעמוד אחיד
+	type SearchEntry = { kind: 'article'; item: Article } | { kind: 'qa'; item: QaItem };
+	const searchEntries = $derived.by<SearchEntry[]>(() => [
+		...articleMatches.map((item) => ({ kind: 'article' as const, item })),
+		...qaMatches.map((item) => ({ kind: 'qa' as const, item }))
+	]);
+	const searchTotalPages = $derived(Math.max(1, Math.ceil(searchEntries.length / PAGE_SIZE)));
+	const searchPageSafe = $derived(Math.min(searchPage, searchTotalPages));
+	const searchPagedArticles = $derived(
+		searchEntries
+			.slice((searchPageSafe - 1) * PAGE_SIZE, searchPageSafe * PAGE_SIZE)
+			.filter((e): e is { kind: 'article'; item: Article } => e.kind === 'article')
+			.map((e) => e.item)
+	);
+	const searchPagedQa = $derived(
+		searchEntries
+			.slice((searchPageSafe - 1) * PAGE_SIZE, searchPageSafe * PAGE_SIZE)
+			.filter((e): e is { kind: 'qa'; item: QaItem } => e.kind === 'qa')
+			.map((e) => e.item)
+	);
+
+	// איפוס עמוד החיפוש כשהמחרוזת משתנה
+	$effect(() => {
+		searchQuery;
+		searchPage = 1;
+	});
 
 	function highlight(text: string, q: string): string {
 		if (!q) return text;
@@ -118,11 +157,11 @@
 			<p class="text-center text-gray-400 py-12">לא נמצאו תוצאות עבור "{searchQuery}"</p>
 		{/if}
 
-		{#if articleMatches.length > 0}
+		{#if searchPagedArticles.length > 0}
 			<div class="mb-8">
 				<h3 class="text-sm font-black text-blue-300 mb-3">📜 מאמרים ({articleMatches.length})</h3>
 				<div class="space-y-3">
-					{#each articleMatches as a (a.slug)}
+					{#each searchPagedArticles as a (a.slug)}
 						<a
 							href="/articles/{a.slug}"
 							class="block rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:border-blue-400/70 transition-all p-5"
@@ -152,11 +191,11 @@
 			</div>
 		{/if}
 
-		{#if qaMatches.length > 0}
+		{#if searchPagedQa.length > 0}
 			<div class="mb-8">
 				<h3 class="text-sm font-black text-indigo-300 mb-3">🕮 שאלות ותשובות ({qaMatches.length})</h3>
 				<div class="space-y-3">
-					{#each qaMatches as item (item.slug)}
+					{#each searchPagedQa as item (item.slug)}
 						<a
 							href="/qa#{item.slug}"
 							class="block rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 hover:border-indigo-400/70 transition-all p-5"
@@ -177,6 +216,15 @@
 					{/each}
 				</div>
 			</div>
+		{/if}
+
+		{#if totalMatches > 0}
+			<Pagination
+				currentPage={searchPageSafe}
+				totalPages={searchTotalPages}
+				color="blue"
+				onPageChange={(p) => (searchPage = p)}
+			/>
 		{/if}
 	{:else}
 		<!-- תצוגה רגילה (ללא חיפוש) -->
@@ -211,9 +259,9 @@
 		{/if}
 
 		{#if archive.length > 0}
-			<div class="text-xs font-bold text-gray-400 mb-3 mt-8">📚 מאמרים קודמים</div>
+			<div class="text-xs font-bold text-gray-400 mb-3 mt-8">📚 מאמרים קודמים ({archive.length})</div>
 			<div class="space-y-4">
-				{#each archive as a}
+				{#each archivePaged as a}
 					<a
 						href="/articles/{a.slug}"
 						class="block rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-blue-400/50 transition-all p-5"
