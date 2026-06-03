@@ -155,7 +155,7 @@
 					src="/images/olive-branch.png"
 					alt=""
 					aria-hidden="true"
-					class="olive-branch olive-branch-left h-12 md:h-14 w-auto select-none"
+					class="olive-branch olive-branch-left h-16 md:h-20 w-auto select-none"
 				/>
 				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
 				<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
@@ -166,7 +166,7 @@
 					src="/images/olive-branch.png"
 					alt=""
 					aria-hidden="true"
-					class="olive-branch olive-branch-right h-12 md:h-14 w-auto select-none"
+					class="olive-branch olive-branch-right h-16 md:h-20 w-auto select-none"
 				/>
 			</div>
 			<h4 class="mt-2 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -266,10 +266,7 @@
 		object-position: center;
 	}
 	.olive-branch-right {
-		transform: rotate(90deg);
-	}
-	.olive-branch-left {
-		transform: rotate(-90deg);
+		transform: scaleX(-1);
 	}
 </style>
 
