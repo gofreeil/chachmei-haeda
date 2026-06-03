@@ -150,9 +150,9 @@
 {#if latestArticle}
 	<section class="mb-10">
 		<header class="mb-5">
-			<div class="flex items-center justify-center gap-3">
+			<div class="flex items-center justify-center gap-1.5">
 				<div
-					class="h-2 w-8 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+					class="h-1 w-3 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700"
 					style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
 					aria-hidden="true"
 				></div>
@@ -162,7 +162,7 @@
 				</h3>
 				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
 				<div
-					class="h-2 w-8 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+					class="h-1 w-3 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700"
 					style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
 					aria-hidden="true"
 				></div>
