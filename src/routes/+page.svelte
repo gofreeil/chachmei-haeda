@@ -102,6 +102,7 @@
 		<p class="mt-2 text-base md:text-lg font-black text-amber-900 drop-shadow-[0_1px_1px_rgba(120,53,15,0.25)]">
 			הפעילות של חכמי העדה לקידום שלום בארץ ושאר חדשות
 		</p>
+		<div class="mt-2 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 	</header>
 
 	<NewsTicker />
@@ -153,29 +154,15 @@
 {#if latestArticle}
 	<section class="mb-10">
 		<header class="mb-5">
-			<div class="flex items-center justify-center gap-1">
-				<img
-					src="/images/olive-branch.png"
-					alt=""
-					aria-hidden="true"
-					class="olive-branch olive-branch-left h-7 md:h-9 w-auto select-none"
-				/>
-				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
+			<FancyHeading>
 				<h3 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
 					מהיכל הרוח
 				</h3>
-				<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]" aria-hidden="true">❦</span>
-				<img
-					src="/images/olive-branch.png"
-					alt=""
-					aria-hidden="true"
-					class="olive-branch olive-branch-right h-7 md:h-9 w-auto select-none"
-				/>
-			</div>
-			<div class="mt-1 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
+			</FancyHeading>
 			<h4 class="mt-2 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				📜 מאמר מחכמי העדה
 			</h4>
+			<div class="mt-2 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 		</header>
 		<article
 			class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(59,130,246,0.10)]"
@@ -265,16 +252,6 @@
 </section>
 
 <style>
-	.olive-branch {
-		object-fit: contain;
-		object-position: center;
-		--olive-flip: 1;
-		transform: translateY(0.5rem) scaleX(var(--olive-flip)) scaleY(-1);
-	}
-	.olive-branch-right {
-		--olive-flip: -1;
-	}
-
 	:global(.ask-cta) {
 		background-image: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%) !important;
 		border-color: #c7d2fe !important;

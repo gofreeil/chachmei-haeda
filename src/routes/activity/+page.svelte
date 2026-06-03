@@ -52,6 +52,7 @@
 		<p class="mt-3 text-gray-300 max-w-2xl mx-auto">
 			סרטונים, מאמרים והודעות שחכמי בית הדין מפרסמים
 		</p>
+		<div class="mt-2 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 	</header>
 
 	<div class="flex flex-wrap gap-2 justify-center mb-6">
