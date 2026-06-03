@@ -217,7 +217,6 @@
 			</h1>
 		</FancyHeading>
 		<p class="mt-3 text-gray-300">פתיחת תיק חדש לבוררות ושלום על פי דין תורה</p>
-		<div class="mt-2 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 	</header>
 
 	{#if saved}

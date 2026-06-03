@@ -94,7 +94,7 @@
 		></div>
 	</div>
 	<header class="text-center mb-4">
-		<FancyHeading>
+		<FancyHeading noLine>
 			<h3 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent whitespace-nowrap">
 				חדשות מהיכל המעשה
 			</h3>
@@ -162,7 +162,6 @@
 			<h4 class="mt-2 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				📜 מאמר מחכמי העדה
 			</h4>
-			<div class="mt-2 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 		</header>
 		<article
 			class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(59,130,246,0.10)]"

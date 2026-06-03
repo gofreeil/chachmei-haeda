@@ -124,7 +124,6 @@
 		<p class="mt-3 text-gray-700 text-base md:text-lg font-bold max-w-2xl mx-auto">
 			כך נראה הליך בוררות אצלנו - ארבעה שלבים פשוטים מהחתימה ועד החזרת האחווה
 		</p>
-		<div class="mt-2 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 	</header>
 
 	<section class="mb-8">
