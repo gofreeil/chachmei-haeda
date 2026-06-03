@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-	<title>{a ? a.title : 'מאמר'} — חכמי העדה</title>
+	<title>{a ? a.title : 'מאמר'} - חכמי העדה</title>
 </svelte:head>
 
 <article class="py-8 max-w-3xl mx-auto">

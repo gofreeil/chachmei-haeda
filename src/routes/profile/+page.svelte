@@ -73,7 +73,7 @@
 						id: 'm-1',
 						from: 'מערכת חכמי העדה',
 						topic: 'ברוך הבא',
-						body: 'אזור אישי זה הוא הבית שלך — כאן תקבל הודעות מבית הדין, סטטוס התיקים שלך ופסקי דין רלוונטיים.',
+						body: 'אזור אישי זה הוא הבית שלך - כאן תקבל הודעות מבית הדין, סטטוס התיקים שלך ופסקי דין רלוונטיים.',
 						date: new Date().toISOString(),
 						read: false
 					}
@@ -159,7 +159,7 @@
 </script>
 
 <svelte:head>
-	<title>האזור האישי — חכמי העדה</title>
+	<title>האזור האישי - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-6 md:py-8 max-w-4xl mx-auto px-3">
@@ -186,7 +186,7 @@
 			</p>
 		</div>
 	{:else}
-		<!-- ───────────── Hero — תמונה+שם+סטטוס ───────────── -->
+		<!-- ───────────── Hero - תמונה+שם+סטטוס ───────────── -->
 		<div class="rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-indigo-900/20 p-5 md:p-6 mb-5">
 			<div class="flex items-center gap-4 md:gap-5">
 				<div class="h-16 w-16 md:h-20 md:w-20 flex-shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center font-black text-white text-3xl md:text-4xl shadow-lg ring-2 ring-purple-400/40">

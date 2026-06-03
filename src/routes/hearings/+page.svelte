@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>דיוני זום — חכמי העדה</title>
+	<title>דיוני זום - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8">
@@ -13,7 +13,7 @@
 		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
 			דיוני זום
 		</h1>
-		<p class="mt-3 text-gray-300">דיונים מתוכננים ושהתקיימו — קישורי השתתפות</p>
+		<p class="mt-3 text-gray-300">דיונים מתוכננים ושהתקיימו - קישורי השתתפות</p>
 	</header>
 
 	<h2 class="text-xl font-bold text-yellow-300 mb-4 mt-6">📅 דיונים מתוכננים</h2>

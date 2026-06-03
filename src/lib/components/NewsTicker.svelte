@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	// אותו מקור שאתר "קהילה בשכונה" משתמש בו — סנכרון חד-כיווני משם לכאן.
+	// אותו מקור שאתר "קהילה בשכונה" משתמש בו - סנכרון חד-כיווני משם לכאן.
 	const NATIONAL_NEWS_API = 'https://criticism.vercel.app/api/national-news';
 	const CUSTOM_NEWS_KEY = 'chachmei-custom-news';
 
@@ -16,7 +16,7 @@
 	// פריטי ברירת מחדל אם ה-API לא זמין ואין חדשות לוקאליות
 	const fallbackItems: NewsItem[] = [
 		{ line1: 'ברוכים הבאים לחכמי העדה', line2: 'בית דין לבוררות ושלום על פי תורת ישראל' },
-		{ line1: 'מסלול "משכין שלום" — ליווי לאחר פסק דין', line2: 'בית הדין משיק מסלול ליווי חדש' },
+		{ line1: 'מסלול "משכין שלום" - ליווי לאחר פסק דין', line2: 'בית הדין משיק מסלול ליווי חדש' },
 		{ line1: 'הקוד האתי UECC', line2: 'הצטרף לחותמים על הקוד המוסרי הכלל-עולמי' }
 	];
 
@@ -86,7 +86,7 @@
 	</button>
 
 	<div class="mx-auto max-w-7xl flex items-center px-4" aria-hidden="true">
-		<!-- תווית "חדשות" — בזהב/ענבר להתאמה לערכת הצבעים של האתר -->
+		<!-- תווית "חדשות" - בזהב/ענבר להתאמה לערכת הצבעים של האתר -->
 		<div
 			class="z-10 bg-gradient-to-br from-amber-400 to-yellow-600 px-5 py-3 rounded-lg text-base font-black text-gray-900 shadow-xl flex-shrink-0 ml-5 flex-col items-center justify-center border-2 border-amber-200 lg:flex hidden leading-tight"
 		>

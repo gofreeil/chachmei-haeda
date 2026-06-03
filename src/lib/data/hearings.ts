@@ -11,7 +11,7 @@ export interface Hearing {
 export const hearings: Hearing[] = [
 	{
 		id: 'h-2026-005',
-		caseName: 'תיק 005/2026 — סכסוך מסחרי בין שותפים',
+		caseName: 'תיק 005/2026 - סכסוך מסחרי בין שותפים',
 		dayanim: ['הרב יוסף כהן', 'הרב דוד אברהם', 'הרב משה לוי'],
 		zoomLink: 'https://zoom.us/j/000000001',
 		date: '2026-05-20',
@@ -20,7 +20,7 @@ export const hearings: Hearing[] = [
 	},
 	{
 		id: 'h-2026-004',
-		caseName: 'תיק 004/2026 — בירור הסכם שכירות',
+		caseName: 'תיק 004/2026 - בירור הסכם שכירות',
 		dayanim: ['הרב אהרן ישראלי', 'הרב יוסף כהן', 'הרב משה לוי'],
 		zoomLink: 'https://zoom.us/j/000000002',
 		date: '2026-05-15',
@@ -29,7 +29,7 @@ export const hearings: Hearing[] = [
 	},
 	{
 		id: 'h-2026-003',
-		caseName: 'תיק 003/2026 — הלנת שכר',
+		caseName: 'תיק 003/2026 - הלנת שכר',
 		dayanim: ['הרב דוד אברהם', 'הרב אהרן ישראלי', 'הרב יוסף כהן'],
 		zoomLink: 'https://zoom.us/j/000000003',
 		date: '2026-04-28',
@@ -52,7 +52,7 @@ export const rulings: Ruling[] = [
 	{
 		id: 'r-2026-003',
 		caseId: 'h-2026-003',
-		caseName: 'תיק 003/2026 — הלנת שכר',
+		caseName: 'תיק 003/2026 - הלנת שכר',
 		dayanim: ['הרב דוד אברהם', 'הרב אהרן ישראלי', 'הרב יוסף כהן'],
 		date: '2026-04-28',
 		summary:
@@ -63,7 +63,7 @@ export const rulings: Ruling[] = [
 	{
 		id: 'r-2026-002',
 		caseId: 'h-2026-002',
-		caseName: 'תיק 002/2026 — ערבות הלוואה',
+		caseName: 'תיק 002/2026 - ערבות הלוואה',
 		dayanim: ['הרב יוסף כהן', 'הרב משה לוי', 'הרב דוד אברהם'],
 		date: '2026-03-10',
 		summary:

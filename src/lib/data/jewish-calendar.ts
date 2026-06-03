@@ -1,4 +1,4 @@
-// לוח שנה יהודי ל-10 שנים קדימה — חגים, מועדים, וזמני כניסת שבת בירושלים.
+// לוח שנה יהודי ל-10 שנים קדימה - חגים, מועדים, וזמני כניסת שבת בירושלים.
 
 export type CalEventKind = 'יום-טוב' | 'חוה"מ' | 'צום' | 'מועד' | 'לאומי';
 export interface CalEvent {
@@ -95,7 +95,7 @@ function buildEventsCache(years: number): Map<string, CalEvent> {
 	return map;
 }
 
-// מטמון גלובלי לעשר שנים קדימה — נבנה פעם אחת בעת טעינת המודול.
+// מטמון גלובלי לעשר שנים קדימה - נבנה פעם אחת בעת טעינת המודול.
 export const calendarEvents: Map<string, CalEvent> = buildEventsCache(10);
 
 export function getEvent(dateStr: string): CalEvent | undefined {
@@ -106,7 +106,7 @@ export function getEvent(dateStr: string): CalEvent | undefined {
 
 const JERUSALEM_LAT = 31.7683;
 const JERUSALEM_LNG = 35.2137;
-const CANDLE_LIGHTING_OFFSET_MIN = 40; // מנהג ירושלים — 40 דקות לפני השקיעה
+const CANDLE_LIGHTING_OFFSET_MIN = 40; // מנהג ירושלים - 40 דקות לפני השקיעה
 
 function dayOfYear(d: Date): number {
 	const start = Date.UTC(d.getFullYear(), 0, 0);
@@ -167,7 +167,7 @@ export function shabbatEntryTime(d: Date): string | undefined {
 	return fmtTime(sunsetUTC + offset - CANDLE_LIGHTING_OFFSET_MIN);
 }
 
-// צאת השבת בשבת (לפי שקיעה + 40 דק' בערך — מנהג רוב הקהילות).
+// צאת השבת בשבת (לפי שקיעה + 40 דק' בערך - מנהג רוב הקהילות).
 export function shabbatExitTime(d: Date): string | undefined {
 	if (d.getDay() !== 6) return undefined;
 	const sunsetUTC = sunsetUTCMinutes(d, JERUSALEM_LAT, JERUSALEM_LNG);

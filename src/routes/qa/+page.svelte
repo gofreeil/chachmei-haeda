@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-	<title>שאלות ותשובות — חכמי העדה</title>
+	<title>שאלות ותשובות - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8">
@@ -65,7 +65,7 @@
 					</span>
 					<span class="text-xs font-bold text-gray-700">נשאל {fmtDate(q.askDate)}</span>
 				</div>
-				<h3 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">שאלה — {q.asker}</h3>
+				<h3 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">שאלה - {q.asker}</h3>
 				<p class="text-gray-800 leading-relaxed mb-4">{q.question}</p>
 				<div class="border-t border-indigo-300/40 pt-4">
 					<h4 class="text-sm font-black text-indigo-700 mb-2">

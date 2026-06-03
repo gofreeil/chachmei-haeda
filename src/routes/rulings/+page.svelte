@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>פסקי דין — חכמי העדה</title>
+	<title>פסקי דין - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8">

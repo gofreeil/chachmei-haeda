@@ -17,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>ארכיון מאמרי רבנים — חכמי העדה</title>
+	<title>ארכיון מאמרי רבנים - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8">

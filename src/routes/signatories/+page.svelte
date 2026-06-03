@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>חתומים על הקוד האתי — חכמי העדה</title>
+	<title>חתומים על הקוד האתי - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8">

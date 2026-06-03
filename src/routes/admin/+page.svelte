@@ -4,7 +4,7 @@
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
 
-	// 🔑 סיסמת אדמין — לשנות כאן ידנית. מי שיודע את הסיסמה יכול להיכנס.
+	// 🔑 סיסמת אדמין - לשנות כאן ידנית. מי שיודע את הסיסמה יכול להיכנס.
 	const ADMIN_PASSWORD = 'chachmei2026';
 
 	const SESSION_KEY = 'chachmei-admin-session';
@@ -333,7 +333,7 @@
 		artApprover1 = '';
 		artApprover2 = '';
 		artApprover3 = '';
-		artNotice = '✅ המאמר נוסף בהצלחה — מופיע מיד בדף הבית';
+		artNotice = '✅ המאמר נוסף בהצלחה - מופיע מיד בדף הבית';
 		setTimeout(() => (artNotice = ''), 4000);
 	}
 
@@ -409,7 +409,7 @@
 		newsTitle = '';
 		newsSummary = '';
 		newsSourceUrl = '';
-		newsNotice = '✅ החדשה נוספה — תופיע בטיקר בדף הבית (לוקאלית בלבד, לא בקהילה בשכונה)';
+		newsNotice = '✅ החדשה נוספה - תופיע בטיקר בדף הבית (לוקאלית בלבד, לא בקהילה בשכונה)';
 		setTimeout(() => (newsNotice = ''), 5000);
 	}
 
@@ -445,7 +445,7 @@
 </script>
 
 <svelte:head>
-	<title>פאנל ניהול — חכמי העדה</title>
+	<title>פאנל ניהול - חכמי העדה</title>
 </svelte:head>
 
 {#if !isLoggedIn}
@@ -487,7 +487,7 @@
 			</form>
 
 			<p class="mt-6 text-center text-xs text-gray-500">
-				הסיסמה ניתנת על ידי בעל האתר. אם אינך מזכיר בית דין —
+				הסיסמה ניתנת על ידי בעל האתר. אם אינך מזכיר בית דין -
 				<a href="/" class="text-blue-300 underline">חזרה לדף הבית</a>
 			</p>
 		</div>
@@ -500,7 +500,7 @@
 				<h1 class="bg-gradient-to-r from-purple-300 to-blue-300 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
 					🔧 פאנל ניהול
 				</h1>
-				<p class="mt-1 text-gray-400 text-sm">מזכיר בתי הדין — חכמי העדה</p>
+				<p class="mt-1 text-gray-400 text-sm">מזכיר בתי הדין - חכמי העדה</p>
 			</div>
 			<button
 				onclick={handleLogout}
@@ -688,11 +688,11 @@
 
 				<!-- מאמרי מערכת (לקריאה בלבד) -->
 				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-					<h2 class="text-base font-bold text-gray-300 mb-3">📦 מאמרי מערכת ({staticArticles.length}) — לקריאה בלבד</h2>
+					<h2 class="text-base font-bold text-gray-300 mb-3">📦 מאמרי מערכת ({staticArticles.length}) - לקריאה בלבד</h2>
 					<div class="space-y-1.5">
 						{#each staticArticles as a}
 							<div class="text-xs text-gray-400 border-b border-white/5 pb-1.5">
-								{a.title} <span class="text-gray-600">— {a.author}, {a.date}</span>
+								{a.title} <span class="text-gray-600">- {a.author}, {a.date}</span>
 							</div>
 						{/each}
 					</div>
@@ -704,7 +704,7 @@
 				<div class="rounded-2xl border-2 border-cyan-500/40 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 p-5 md:p-6">
 					<h2 class="text-xl font-black text-cyan-200 mb-2">🎥 סרטון יוטיוב בדף הבית</h2>
 					<p class="text-sm text-gray-300 mb-4">
-						הסרטון יוצג מתחת לכותרת "📡 הפעילות שלנו" בדף הבית. ניתן להזין קישור רגיל מיוטיוב — הוא יומר אוטומטית להטמעה.
+						הסרטון יוצג מתחת לכותרת "📡 הפעילות שלנו" בדף הבית. ניתן להזין קישור רגיל מיוטיוב - הוא יומר אוטומטית להטמעה.
 					</p>
 					<form onsubmit={saveHomeVideo} class="space-y-3">
 						<div>
@@ -902,13 +902,13 @@
 
 				<!-- פריטי מערכת -->
 				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-					<h2 class="text-base font-bold text-gray-300 mb-3">📦 פעילות מערכת ({staticActivity.length}) — לקריאה בלבד</h2>
+					<h2 class="text-base font-bold text-gray-300 mb-3">📦 פעילות מערכת ({staticActivity.length}) - לקריאה בלבד</h2>
 					<div class="space-y-1.5">
 						{#each staticActivity as v}
 							<div class="text-xs text-gray-400 border-b border-white/5 pb-1.5">
 								<span class="text-gray-500">[{v.kind}]</span>
 								{v.title}
-								<span class="text-gray-600">— {v.author}, {v.date}</span>
+								<span class="text-gray-600">- {v.author}, {v.date}</span>
 							</div>
 						{/each}
 					</div>
@@ -1241,7 +1241,7 @@
 										<div class="flex items-center gap-2 flex-wrap">
 											<span class="text-base font-black text-white">תיק #{c.id}</span>
 											{#if c.nickname}
-												<span class="text-sm text-gray-300">— {c.nickname}</span>
+												<span class="text-sm text-gray-300">- {c.nickname}</span>
 											{/if}
 										</div>
 										{#if c.subject}
@@ -1262,14 +1262,14 @@
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-3">
 									<div class="rounded-lg bg-black/20 p-3">
 										<div class="text-xs text-gray-500 mb-0.5">תובע</div>
-										<div class="text-white font-bold">{c.plaintiffName || '—'}</div>
+										<div class="text-white font-bold">{c.plaintiffName || '-'}</div>
 										{#if c.plaintiffPhone}
 											<div class="text-xs text-gray-400" dir="ltr">{c.plaintiffPhone}</div>
 										{/if}
 									</div>
 									<div class="rounded-lg bg-black/20 p-3">
 										<div class="text-xs text-gray-500 mb-0.5">נתבע</div>
-										<div class="text-white font-bold">{c.defendantName || '—'}</div>
+										<div class="text-white font-bold">{c.defendantName || '-'}</div>
 										{#if c.defendantPhone}
 											<div class="text-xs text-gray-400" dir="ltr">{c.defendantPhone}</div>
 										{/if}
@@ -1279,24 +1279,24 @@
 								<div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs mb-3">
 									<div class="rounded-lg bg-black/20 p-2 text-center">
 										<div class="text-gray-500">תאריך מוצע</div>
-										<div class="text-yellow-200 font-bold mt-0.5">{c.proposedDate || '—'}</div>
+										<div class="text-yellow-200 font-bold mt-0.5">{c.proposedDate || '-'}</div>
 									</div>
 									<div class="rounded-lg bg-black/20 p-2 text-center">
 										<div class="text-gray-500">תובע</div>
 										<div class="font-bold mt-0.5 {c.approvals?.plaintiff ? 'text-green-300' : 'text-gray-500'}">
-											{c.approvals?.plaintiff ? '✓' : '—'}
+											{c.approvals?.plaintiff ? '✓' : '-'}
 										</div>
 									</div>
 									<div class="rounded-lg bg-black/20 p-2 text-center">
 										<div class="text-gray-500">נתבע</div>
 										<div class="font-bold mt-0.5 {c.approvals?.defendant ? 'text-green-300' : 'text-gray-500'}">
-											{c.approvals?.defendant ? '✓' : '—'}
+											{c.approvals?.defendant ? '✓' : '-'}
 										</div>
 									</div>
 									<div class="rounded-lg bg-black/20 p-2 text-center">
 										<div class="text-gray-500">בית הדין</div>
 										<div class="font-bold mt-0.5 {c.approvals?.beitDin ? 'text-green-300' : 'text-gray-500'}">
-											{c.approvals?.beitDin ? '✓' : '—'}
+											{c.approvals?.beitDin ? '✓' : '-'}
 										</div>
 									</div>
 								</div>

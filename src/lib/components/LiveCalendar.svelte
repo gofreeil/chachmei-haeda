@@ -213,12 +213,12 @@
 		if (c.event) parts.push(c.event.name);
 		if (c.parsha) parts.push(`פרשת ${c.parsha}`);
 		if (c.shabbatEntry) parts.push(`כניסת שבת ${c.shabbatEntry}`);
-		if (c.isShabbat) parts.push('שבת — אין דיונים');
+		if (c.isShabbat) parts.push('שבת - אין דיונים');
 		if (c.isBooked) {
 			const h = bookedMap.get(c.date);
-			parts.push(h ? `תפוס — ${h.caseName} ${h.time}` : 'תפוס');
+			parts.push(h ? `תפוס - ${h.caseName} ${h.time}` : 'תפוס');
 		} else if (c.isPast) parts.push('תאריך עבר');
-		else if (isAvailable(c)) parts.push('פנוי — לחץ לקביעת דיון');
+		else if (isAvailable(c)) parts.push('פנוי - לחץ לקביעת דיון');
 		return parts.join(' · ');
 	}
 </script>
@@ -361,30 +361,30 @@
 		{#if hoveredCell.isBooked}
 			{@const h = bookedMap.get(hoveredCell.date)}
 			<p class="text-red-300">
-				<span class="font-bold">{hoveredCell.date}</span> —
+				<span class="font-bold">{hoveredCell.date}</span> -
 				{#if h}{h.caseName} בשעה {h.time}{:else}תפוס{/if}
 			</p>
 		{:else if hoveredCell.event}
 			<p class="text-orange-200">
-				<span class="font-bold">{hoveredCell.date}</span> — {hoveredCell.event.name}
+				<span class="font-bold">{hoveredCell.date}</span> - {hoveredCell.event.name}
 				{#if hoveredCell.event.blocking}<span class="text-red-300"> (אין דיונים)</span>{/if}
 				{#if hoveredCell.shabbatEntry}<span class="text-yellow-200"> · כניסת שבת {hoveredCell.shabbatEntry}</span>{/if}
 			</p>
 		{:else if hoveredCell.shabbatEntry}
 			<p class="text-yellow-200">
-				<span class="font-bold">{hoveredCell.date}</span> — ערב שבת, כניסת שבת {hoveredCell.shabbatEntry}
+				<span class="font-bold">{hoveredCell.date}</span> - ערב שבת, כניסת שבת {hoveredCell.shabbatEntry}
 			</p>
 		{:else if isAvailable(hoveredCell)}
 			<p class="text-green-300">
-				<span class="font-bold">{hoveredCell.date}</span> — פנוי, לחץ לקביעת דיון
+				<span class="font-bold">{hoveredCell.date}</span> - פנוי, לחץ לקביעת דיון
 			</p>
 		{:else if hoveredCell.isShabbat}
 			<p class="text-yellow-200">
-				<span class="font-bold">{hoveredCell.date}</span> — שבת קודש{#if hoveredCell.parsha}, פרשת {hoveredCell.parsha}{/if}
+				<span class="font-bold">{hoveredCell.date}</span> - שבת קודש{#if hoveredCell.parsha}, פרשת {hoveredCell.parsha}{/if}
 			</p>
 		{:else if hoveredCell.isPast}
 			<p class="text-gray-400">
-				<span class="font-bold">{hoveredCell.date}</span> — תאריך עבר
+				<span class="font-bold">{hoveredCell.date}</span> - תאריך עבר
 			</p>
 		{/if}
 	</div>

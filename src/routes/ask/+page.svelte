@@ -15,14 +15,14 @@
 
 	function handleAskSubmit(e: Event) {
 		e.preventDefault();
-		const subject = `שאלה לבית הדין — ${askTopic}`;
+		const subject = `שאלה לבית הדין - ${askTopic}`;
 		const body = `שם: ${askName}\nדוא"ל למענה: ${askEmail}\nנושא: ${askTopic}\n\nשאלה:\n${askQuestion}`;
 		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 </script>
 
 <svelte:head>
-	<title>שאל את חכמי העדה — חכמי העדה</title>
+	<title>שאל את חכמי העדה - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8">
@@ -33,7 +33,7 @@
 				שאל את חכמי העדה
 			</h2>
 			<p class="mt-3 text-gray-800 text-sm md:text-base font-bold max-w-2xl mx-auto">
-				יש לך שאלה בהלכה, במוסר עסקי, או בעניין שלום בית? כתוב לרבני בית הדין — התשובה תינתן בכתב לדוא״ל שתציין ותתפרסם כאן באתר ללא פרטים אישיים
+				יש לך שאלה בהלכה, במוסר עסקי, או בעניין שלום בית? כתוב לרבני בית הדין - התשובה תינתן בכתב לדוא״ל שתציין ותתפרסם כאן באתר ללא פרטים אישיים
 			</p>
 		</header>
 		<form onsubmit={handleAskSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -79,7 +79,7 @@
 					bind:value={askQuestion}
 					required
 					rows="6"
-					placeholder="פרט את השאלה ככל האפשר — הקשר, רקע, מה כבר ניסית..."
+					placeholder="פרט את השאלה ככל האפשר - הקשר, רקע, מה כבר ניסית..."
 					class="w-full px-3 py-2.5 rounded-lg bg-white/40 border border-indigo-300/40 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors resize-y"
 				></textarea>
 			</div>

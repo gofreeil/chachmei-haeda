@@ -205,7 +205,7 @@
 </script>
 
 <svelte:head>
-	<title>בקשת דיון — חכמי העדה</title>
+	<title>בקשת דיון - חכמי העדה</title>
 </svelte:head>
 
 <section class="py-8 max-w-3xl mx-auto px-3">
@@ -217,7 +217,7 @@
 	</header>
 
 	{#if saved}
-		<!-- ───────────── מצב לאחר שמירה — לוח אישורים ───────────── -->
+		<!-- ───────────── מצב לאחר שמירה - לוח אישורים ───────────── -->
 		<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-6 md:p-8">
 			<div class="flex items-center justify-between mb-4">
 				<h2 class="text-2xl font-bold text-blue-300">תיק #{caseId}</h2>
@@ -290,7 +290,7 @@
 				</div>
 			{:else}
 				<div class="mt-6 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-center text-sm text-yellow-200">
-					⏳ המועד עוד לא נקבע ביומן — ממתינים לאישור שאר הצדדים
+					⏳ המועד עוד לא נקבע ביומן - ממתינים לאישור שאר הצדדים
 				</div>
 			{/if}
 
@@ -306,7 +306,7 @@
 		<!-- ───────────── שלב חתימה: לפני נעילת התאריך ───────────── -->
 		<div class="rounded-2xl border-2 border-yellow-400/40 bg-yellow-500/5 p-6 md:p-8">
 			<div class="flex items-start justify-between gap-3 mb-2">
-				<h2 class="text-xl md:text-2xl font-bold text-yellow-200">🔑 שלב אחרון — חתימה על הקוד האתי</h2>
+				<h2 class="text-xl md:text-2xl font-bold text-yellow-200">🔑 שלב אחרון - חתימה על הקוד האתי</h2>
 				<button
 					type="button"
 					onclick={backToForm}
@@ -383,7 +383,7 @@
 			</div>
 		{:else}
 			<div class="mb-5 rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 text-center text-sm text-blue-200">
-				💡 מלא את הפרטים כטיוטה — חתימה על הקוד האתי תידרש רק בסוף, לפני נעילת התאריך.
+				💡 מלא את הפרטים כטיוטה - חתימה על הקוד האתי תידרש רק בסוף, לפני נעילת התאריך.
 			</div>
 		{/if}
 
@@ -427,7 +427,7 @@
 						<input
 							type="text"
 							bind:value={nickname}
-							placeholder="לדוגמה: מחלוקת שותפים — מאפיית הזית"
+							placeholder="לדוגמה: מחלוקת שותפים - מאפיית הזית"
 							class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
 						/>
 						<p class="text-xs text-gray-400 mt-2">כינוי פנימי בלבד, לזיהוי מהיר של התיק.</p>

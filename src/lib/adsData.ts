@@ -15,7 +15,7 @@ export const ads: Ad[] = [
     {
         id: 1,
         title: "קהילה בשכונה",
-        description: "האתר השכונתי המוביל — חיבור תושבים, גמ\"חים, חוגים ועוד",
+        description: "האתר השכונתי המוביל - חיבור תושבים, גמ\"חים, חוגים ועוד",
         cta: "כנס לקהילה השכונתית שלך",
         href: "https://community-il.vercel.app/",
         image: "/images/community-neighborhood.png",

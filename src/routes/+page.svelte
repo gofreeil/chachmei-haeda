@@ -51,7 +51,7 @@
 </script>
 
 <svelte:head>
-	<title>חכמי העדה — בית דין לבוררות ושלום על פי דין תורה</title>
+	<title>חכמי העדה - בית דין לבוררות ושלום על פי דין תורה</title>
 </svelte:head>
 
 <section class="py-10 text-center">
@@ -202,7 +202,7 @@
 			</a>
 		</div>
 		<div class="flex items-baseline gap-3 flex-wrap mb-2">
-			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">שאלה — {recentQa.asker}</h4>
+			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">שאלה - {recentQa.asker}</h4>
 			<span class="text-xs font-bold text-gray-600">· פורסם {recentQa.answerDate.split('-').reverse().join('.')}</span>
 		</div>
 		<p class="text-gray-800 leading-relaxed mb-4 line-clamp-3">{recentQa.question}</p>
@@ -223,7 +223,7 @@
 					שאל את חכמי העדה
 				</h3>
 				<p class="text-gray-800 text-xs md:text-sm font-bold leading-snug">
-					יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי — פנה אל החכמים ותענה בהקדם האפשרי
+					יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי - פנה אל החכמים ותענה בהקדם האפשרי
 				</p>
 			</div>
 		</a>

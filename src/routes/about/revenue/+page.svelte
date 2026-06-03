@@ -19,8 +19,8 @@
 </script>
 
 <svelte:head>
-	<title>אודותנו — חכמי העדה</title>
-	<meta name="description" content="חובת החברה לסייע לכל אדם נצרך — בגופו, בנפשו ובממונו" />
+	<title>אודותנו - חכמי העדה</title>
+	<meta name="description" content="חובת החברה לסייע לכל אדם נצרך - בגופו, בנפשו ובממונו" />
 </svelte:head>
 
 <section class="py-10 md:py-14 px-4 max-w-3xl mx-auto" dir="rtl" style="text-align: justify; text-justify: inter-word;">
@@ -41,10 +41,10 @@
 		</blockquote>
 
 		<p class="mt-8 text-base md:text-lg text-gray-200 leading-loose">
-			בפלטפורמה זו אנו דואגים לסייע לכל אדם שנקלע לסכסוך —
+			בפלטפורמה זו אנו דואגים לסייע לכל אדם שנקלע לסכסוך -
 			לעמוד על הצדק, למתן ולהשקיט את הצד התוקפני,
 			לשקף את הסכסוך מנקודת מבט חיצונית אובייקטיבית, ללא התערבות רגשית, לשני הצדדים,
-			ולהנגיש פתרון לסיום הסכסוך בדרך הכי צודקת ומתאימה לצדדים —
+			ולהנגיש פתרון לסיום הסכסוך בדרך הכי צודקת ומתאימה לצדדים -
 		</p>
 		<p class="mt-4 text-lg md:text-xl font-bold text-white" style="text-align: center;">
 			בכפוף לחכמת התורה!

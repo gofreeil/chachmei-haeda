@@ -19,7 +19,7 @@
 	const myCases: CaseFile[] = [
 		{
 			id: 'TIK-2026-014',
-			caseName: 'בוררות עסקית — שותפות מסעדה',
+			caseName: 'בוררות עסקית - שותפות מסעדה',
 			role: 'תובע',
 			status: 'הסתיים',
 			hearingDate: '2026-05-12',
@@ -30,7 +30,7 @@
 		},
 		{
 			id: 'TIK-2026-022',
-			caseName: 'שלום בית — תיווך משפחתי',
+			caseName: 'שלום בית - תיווך משפחתי',
 			role: 'מבקש',
 			status: 'ממתין לדיון',
 			hearingDate: '2026-06-18',
@@ -88,27 +88,27 @@
 </script>
 
 <svelte:head>
-	<title>היכל המשפט — חכמי העדה</title>
-	<meta name="description" content="היכל המשפט בחכמי העדה — פסקי דין, הכרעות ובוררות על פי דין תורה. לוח דיונים, פתיחת תיק וארכיון פסקי דין חתומים." />
+	<title>היכל המשפט - חכמי העדה</title>
+	<meta name="description" content="היכל המשפט בחכמי העדה - פסקי דין, הכרעות ובוררות על פי דין תורה. לוח דיונים, פתיחת תיק וארכיון פסקי דין חתומים." />
 
 	<!-- Open Graph / WhatsApp / Facebook -->
 	<meta property="og:type" content="website" />
-	<meta property="og:title" content="היכל המשפט — חכמי העדה" />
-	<meta property="og:description" content="פסקי דין, הכרעות ובוררות על פי דין תורה — בית הדין לבוררות ושלום של חכמי העדה. לוח דיונים, פתיחת תיק וארכיון פסקי דין חתומים." />
+	<meta property="og:title" content="היכל המשפט - חכמי העדה" />
+	<meta property="og:description" content="פסקי דין, הכרעות ובוררות על פי דין תורה - בית הדין לבוררות ושלום של חכמי העדה. לוח דיונים, פתיחת תיק וארכיון פסקי דין חתומים." />
 	<meta property="og:image" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
 	<meta property="og:image:secure_url" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
 	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="600" />
 	<meta property="og:image:height" content="600" />
-	<meta property="og:image:alt" content="לוגו חכמי העדה — היכל המשפט" />
+	<meta property="og:image:alt" content="לוגו חכמי העדה - היכל המשפט" />
 	<meta property="og:url" content="https://chachmim.vercel.app/heichal-hamishpat" />
 	<meta property="og:site_name" content="חכמי העדה" />
 	<meta property="og:locale" content="he_IL" />
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="היכל המשפט — חכמי העדה" />
-	<meta name="twitter:description" content="פסקי דין, הכרעות ובוררות על פי דין תורה — בית הדין לבוררות ושלום של חכמי העדה." />
+	<meta name="twitter:title" content="היכל המשפט - חכמי העדה" />
+	<meta name="twitter:description" content="פסקי דין, הכרעות ובוררות על פי דין תורה - בית הדין לבוררות ושלום של חכמי העדה." />
 	<meta name="twitter:image" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
 </svelte:head>
 
@@ -119,7 +119,7 @@
 			היכל המשפט
 		</h1>
 		<p class="mt-3 text-gray-700 text-base md:text-lg font-bold max-w-2xl mx-auto">
-			כך נראה הליך בוררות אצלנו — ארבעה שלבים פשוטים מהחתימה ועד החזרת האחווה
+			כך נראה הליך בוררות אצלנו - ארבעה שלבים פשוטים מהחתימה ועד החזרת האחווה
 		</p>
 	</header>
 
@@ -147,12 +147,12 @@
 	<section class="mb-8">
 		<header class="text-center mb-5">
 			<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-700 text-xs font-black mb-3">
-				🚧 הדגמה — מוקאפ
+				🚧 הדגמה - מוקאפ
 			</div>
 			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
 				🎥 חדר הדיון הוירטואלי
 			</h2>
-			<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">כאן יבוצעו המפגשים בזמן הדיון — מוקלט ושמור בארכיון</p>
+			<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">כאן יבוצעו המפגשים בזמן הדיון - מוקלט ושמור בארכיון</p>
 		</header>
 
 		<div class="relative rounded-2xl border-4 border-gray-800 bg-gradient-to-br from-gray-900 to-slate-900 p-3 md:p-5 shadow-2xl max-w-4xl mx-auto">
@@ -230,7 +230,7 @@
 
 	<div class="mb-8 rounded-2xl border-2 border-purple-400/40 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-5 md:p-6 text-center">
 		<p class="text-gray-800 text-base md:text-lg font-bold mb-3">
-			מוכן לפתוח תיק? התחל בשלב 1 — חתימה על אמנת המוסר ובחירת תאריך
+			מוכן לפתוח תיק? התחל בשלב 1 - חתימה על אמנת המוסר ובחירת תאריך
 		</p>
 		<a
 			href="/request-hearing"
@@ -243,7 +243,7 @@
 	<section class="mb-8">
 		<header class="text-center mb-5">
 			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-				📅 לוח דיונים — בחר תאריך פנוי
+				📅 לוח דיונים - בחר תאריך פנוי
 			</h2>
 			<p class="mt-2 text-gray-600 text-sm md:text-base font-bold">לחץ על תאריך פנוי בירוק כדי לפתוח בקשה לאותו יום</p>
 		</header>
@@ -288,7 +288,7 @@
 									</a>
 								{:else}
 									<span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-500 text-sm font-bold cursor-not-allowed">
-										🎥 הקלטה — תהיה זמינה אחרי הדיון
+										🎥 הקלטה - תהיה זמינה אחרי הדיון
 									</span>
 								{/if}
 								{#if c.rulingUrl}
@@ -297,7 +297,7 @@
 									</a>
 								{:else}
 									<span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-500 text-sm font-bold cursor-not-allowed">
-										📋 פסק דין — ממתין
+										📋 פסק דין - ממתין
 									</span>
 								{/if}
 							</div>
@@ -321,7 +321,7 @@
 					</div>
 				</header>
 
-				<!-- תצוגה מקדימה מטושטשת — קומפקטית -->
+				<!-- תצוגה מקדימה מטושטשת - קומפקטית -->
 				<div class="relative mb-3">
 					<div class="space-y-2 pointer-events-none select-none blur-[5px] opacity-55" aria-hidden="true">
 						{#each myCases.slice(0, 2) as c}
