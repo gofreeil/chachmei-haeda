@@ -1,4 +1,4 @@
-export type ActivityKind = 'סרטון' | 'מאמר' | 'הודעה';
+export type ActivityKind = 'סרטון' | 'מאמר' | 'הודעה' | 'כתבה';
 
 export interface ActivityItem {
 	slug: string;
@@ -14,9 +14,9 @@ export interface ActivityItem {
 export const activity: ActivityItem[] = [
 	{
 		slug: 'shivat-shvatim-avudim',
-		kind: 'סרטון',
+		kind: 'כתבה',
 		title: 'חכמי העדה: שיבת השבטים האבודים חוזרת למרכז הבמה',
-		author: 'חכמי העדה',
+		author: 'יהב אנטר',
 		date: '2026-02-01',
 		excerpt: 'תופעת שיבת השבטים האבודים מקבלת לאחרונה ביטוי חדש, עם פרסום סרטון המציג אדם הטוען למוצא משבט אפרים ומבקש לשוב ולהתחבר לעם ישראל.',
 		videoUrl: 'https://www.youtube.com/embed/AE9mcu5t_aA?start=9',

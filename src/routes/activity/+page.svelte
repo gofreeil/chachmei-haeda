@@ -10,12 +10,14 @@
 	const kindStyles: Record<ActivityKind, string> = {
 		'סרטון': 'bg-red-500/15 border-red-400/40 text-red-200',
 		'מאמר': 'bg-blue-500/15 border-blue-400/40 text-blue-200',
-		'הודעה': 'bg-amber-500/15 border-amber-400/40 text-amber-200'
+		'הודעה': 'bg-amber-500/15 border-amber-400/40 text-amber-200',
+		'כתבה': 'bg-emerald-500/15 border-emerald-400/40 text-emerald-200'
 	};
 	const kindIcons: Record<ActivityKind, string> = {
 		'סרטון': '🎬',
 		'מאמר': '📝',
-		'הודעה': '📣'
+		'הודעה': '📣',
+		'כתבה': '📰'
 	};
 </script>
 
@@ -34,7 +36,7 @@
 	</header>
 
 	<div class="flex flex-wrap gap-2 justify-center mb-6">
-		{#each ['הכל', 'סרטון', 'מאמר', 'הודעה'] as f}
+		{#each ['הכל', 'סרטון', 'מאמר', 'הודעה', 'כתבה'] as f}
 			<button
 				type="button"
 				onclick={() => (filter = f as typeof filter)}
