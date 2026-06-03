@@ -228,101 +228,94 @@
 		></div>
 	</div>
 
-	<div class="mb-4 max-w-3xl mx-auto">
+	<!-- כותרת קבוצת הבאנרים -->
+	<h2 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 bg-clip-text text-transparent mb-4 mt-4">
+		📞 צור קשר
+	</h2>
+
+	<!-- באנר "יש לך ידיעה?" -->
+	<div class="mb-8 max-w-3xl mx-auto">
 		<button
 			type="button"
-			onclick={() => (landOpen = !landOpen)}
-			class="land-cta w-full flex items-center justify-center gap-3 rounded-xl border-2 p-4 transition-all"
-			aria-expanded={landOpen}
-			aria-controls="land-form"
+			onclick={() => (tipOpen = !tipOpen)}
+			class="tip-cta w-full flex items-center justify-center gap-3 rounded-xl border-2 p-4 transition-all"
+			aria-expanded={tipOpen}
+			aria-controls="tip-form"
 		>
-			<div class="text-3xl md:text-4xl flex-shrink-0 land-cta-emoji">🌳</div>
+			<div class="text-3xl md:text-4xl flex-shrink-0 tip-cta-emoji">📨</div>
 			<div class="text-center min-w-0">
-				<h3 class="land-cta-title text-lg md:text-xl font-black leading-tight">
-					פדיון קרקעות
+				<h3 class="tip-cta-title text-lg md:text-xl font-black leading-tight">
+					יש לך ידיעה עבור חכמי העדה? צור קשר
 				</h3>
-				<p class="land-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
-					יש לך קרקע או דירה לפדיון עבור ידיים יהודיות? פנה אלינו
+				<p class="tip-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
+					שלח לנו פרטים והחכמים יחזרו אליך בהקדם
 				</p>
 			</div>
-			<div class="text-2xl flex-shrink-0 land-cta-arrow" aria-hidden="true">
-				{landOpen ? '▲' : '▼'}
+			<div class="text-2xl flex-shrink-0 tip-cta-arrow" aria-hidden="true">
+				{tipOpen ? '▲' : '▼'}
 			</div>
 		</button>
 
-		{#if landOpen}
+		{#if tipOpen}
 			<div
-				id="land-form"
-				class="mt-3 rounded-2xl border-2 border-emerald-400/60 bg-gradient-to-br from-emerald-100/90 via-green-100/85 to-emerald-100/90 p-5 md:p-6 shadow-[0_8px_25px_rgba(5,150,105,0.25)]"
+				id="tip-form"
+				class="mt-3 rounded-2xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-100/90 via-orange-100/85 to-amber-100/90 p-5 md:p-6 shadow-[0_8px_25px_rgba(180,83,9,0.25)]"
 			>
-				<form onsubmit={handleLandSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<form onsubmit={handleTipSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-name">שם</label>
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-name">שם</label>
 						<input
-							id="land-name"
+							id="tip-name"
 							type="text"
-							bind:value={landName}
+							bind:value={tipName}
 							required
 							placeholder="שמך המלא"
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-contact">פרטים לחזרה</label>
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-contact">פרטים לחזרה</label>
 						<input
-							id="land-contact"
+							id="tip-contact"
 							type="text"
-							bind:value={landContact}
+							bind:value={tipContact}
 							required
 							placeholder="טלפון או דוא״ל"
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
-						/>
-					</div>
-					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-asset-type">סוג הנכס</label>
-						<select
-							id="land-asset-type"
-							bind:value={landAssetType}
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
-						>
-							<option value="קרקע">קרקע</option>
-							<option value="דירה">דירה</option>
-							<option value="בית">בית</option>
-							<option value="מסחרי">נכס מסחרי</option>
-							<option value="אחר">אחר</option>
-						</select>
-					</div>
-					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-location">מיקום הנכס</label>
-						<input
-							id="land-location"
-							type="text"
-							bind:value={landLocation}
-							required
-							placeholder="עיר / יישוב / אזור"
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
 						/>
 					</div>
 					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-details">פרטים נוספים</label>
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-title">כותרת הידיעה</label>
+						<input
+							id="tip-title"
+							type="text"
+							bind:value={tipTitle}
+							required
+							placeholder="במשפט אחד - על מה הידיעה"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
+						/>
+					</div>
+					<div class="md:col-span-2">
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-content">תוכן הידיעה</label>
 						<textarea
-							id="land-details"
-							bind:value={landDetails}
-							rows="4"
-							placeholder="גודל, מצב הנכס, מחיר מבוקש, פרטי בעלות..."
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors resize-y"
+							id="tip-content"
+							bind:value={tipContent}
+							required
+							rows="5"
+							placeholder="פרט את הידיעה - מה קרה, מתי, היכן, מי המעורבים..."
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors resize-y"
 						></textarea>
 					</div>
 					<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-						<p class="text-xs text-emerald-900 max-w-md font-medium">
-							הפנייה תישלח לבית הדין. נחזור אליך לפי הפרטים שמסרת.
+						<p class="text-xs text-amber-900 max-w-md font-medium">
+							הידיעה תישלח במייל לבית הדין. נחזור אליך לפי הפרטים שמסרת.
 						</p>
 						<button
 							type="submit"
-							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(5,150,105,0.5)] transition-all whitespace-nowrap"
+							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(217,119,6,0.5)] transition-all whitespace-nowrap"
 							style="color:#fff !important; -webkit-text-fill-color:#fff !important;"
 						>
-							🌳 שלח פנייה
+							📨 שלח את הידיעה
 						</button>
 					</div>
 				</form>
@@ -419,89 +412,102 @@
 		{/if}
 	</div>
 
-	<!-- באנר "יש לך ידיעה?" -->
-	<div class="mb-8 max-w-3xl mx-auto">
+	<!-- באנר "פדיון קרקעות" -->
+	<div class="mb-4 max-w-3xl mx-auto">
 		<button
 			type="button"
-			onclick={() => (tipOpen = !tipOpen)}
-			class="tip-cta w-full flex items-center justify-center gap-3 rounded-xl border-2 p-4 transition-all"
-			aria-expanded={tipOpen}
-			aria-controls="tip-form"
+			onclick={() => (landOpen = !landOpen)}
+			class="land-cta w-full flex items-center justify-center gap-3 rounded-xl border-2 p-4 transition-all"
+			aria-expanded={landOpen}
+			aria-controls="land-form"
 		>
-			<div class="text-3xl md:text-4xl flex-shrink-0 tip-cta-emoji">📨</div>
+			<div class="text-3xl md:text-4xl flex-shrink-0 land-cta-emoji">🌳</div>
 			<div class="text-center min-w-0">
-				<h3 class="tip-cta-title text-lg md:text-xl font-black leading-tight">
-					יש לך ידיעה עבור חכמי העדה? צור קשר
+				<h3 class="land-cta-title text-lg md:text-xl font-black leading-tight">
+					פדיון קרקעות
 				</h3>
-				<p class="tip-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
-					שלח לנו פרטים והחכמים יחזרו אליך בהקדם
+				<p class="land-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
+					יש לך קרקע או דירה לפדיון עבור ידיים יהודיות? פנה אלינו
 				</p>
 			</div>
-			<div class="text-2xl flex-shrink-0 tip-cta-arrow" aria-hidden="true">
-				{tipOpen ? '▲' : '▼'}
+			<div class="text-2xl flex-shrink-0 land-cta-arrow" aria-hidden="true">
+				{landOpen ? '▲' : '▼'}
 			</div>
 		</button>
 
-		{#if tipOpen}
+		{#if landOpen}
 			<div
-				id="tip-form"
-				class="mt-3 rounded-2xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-100/90 via-orange-100/85 to-amber-100/90 p-5 md:p-6 shadow-[0_8px_25px_rgba(180,83,9,0.25)]"
+				id="land-form"
+				class="mt-3 rounded-2xl border-2 border-emerald-400/60 bg-gradient-to-br from-emerald-100/90 via-green-100/85 to-emerald-100/90 p-5 md:p-6 shadow-[0_8px_25px_rgba(5,150,105,0.25)]"
 			>
-				<form onsubmit={handleTipSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<form onsubmit={handleLandSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-name">שם</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-name">שם</label>
 						<input
-							id="tip-name"
+							id="land-name"
 							type="text"
-							bind:value={tipName}
+							bind:value={landName}
 							required
 							placeholder="שמך המלא"
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-contact">פרטים לחזרה</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-contact">פרטים לחזרה</label>
 						<input
-							id="tip-contact"
+							id="land-contact"
 							type="text"
-							bind:value={tipContact}
+							bind:value={landContact}
 							required
 							placeholder="טלפון או דוא״ל"
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
 						/>
 					</div>
-					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-title">כותרת הידיעה</label>
+					<div>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-asset-type">סוג הנכס</label>
+						<select
+							id="land-asset-type"
+							bind:value={landAssetType}
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
+						>
+							<option value="קרקע">קרקע</option>
+							<option value="דירה">דירה</option>
+							<option value="בית">בית</option>
+							<option value="מסחרי">נכס מסחרי</option>
+							<option value="אחר">אחר</option>
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-location">מיקום הנכס</label>
 						<input
-							id="tip-title"
+							id="land-location"
 							type="text"
-							bind:value={tipTitle}
+							bind:value={landLocation}
 							required
-							placeholder="במשפט אחד - על מה הידיעה"
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
+							placeholder="עיר / יישוב / אזור"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
 						/>
 					</div>
 					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-content">תוכן הידיעה</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-details">פרטים נוספים</label>
 						<textarea
-							id="tip-content"
-							bind:value={tipContent}
-							required
-							rows="5"
-							placeholder="פרט את הידיעה - מה קרה, מתי, היכן, מי המעורבים..."
-							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors resize-y"
+							id="land-details"
+							bind:value={landDetails}
+							rows="4"
+							placeholder="גודל, מצב הנכס, מחיר מבוקש, פרטי בעלות..."
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors resize-y"
 						></textarea>
 					</div>
 					<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-						<p class="text-xs text-amber-900 max-w-md font-medium">
-							הידיעה תישלח במייל לבית הדין. נחזור אליך לפי הפרטים שמסרת.
+						<p class="text-xs text-emerald-900 max-w-md font-medium">
+							הפנייה תישלח לבית הדין. נחזור אליך לפי הפרטים שמסרת.
 						</p>
 						<button
 							type="submit"
-							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(217,119,6,0.5)] transition-all whitespace-nowrap"
+							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(5,150,105,0.5)] transition-all whitespace-nowrap"
 							style="color:#fff !important; -webkit-text-fill-color:#fff !important;"
 						>
-							📨 שלח את הידיעה
+							🌳 שלח פנייה
 						</button>
 					</div>
 				</form>
