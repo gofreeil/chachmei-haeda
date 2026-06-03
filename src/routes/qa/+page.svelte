@@ -58,7 +58,7 @@
 
 	<div class="space-y-5 max-w-3xl mx-auto">
 		{#each filtered as q (q.slug)}
-			<article class="rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-6">
+			<article id={q.slug} class="rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-6 scroll-mt-24 target:ring-2 target:ring-indigo-500">
 				<div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
 					<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
 						{q.topic}
