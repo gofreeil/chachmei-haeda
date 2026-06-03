@@ -8,6 +8,35 @@
 	let filter = $state<'הכל' | ActivityKind>('הכל');
 	let customActivity = $state<ActivityItem[]>([]);
 
+	// טופס "פדיון קרקעות"
+	let landOpen = $state(false);
+	let landName = $state('');
+	let landContact = $state('');
+	let landAssetType = $state('קרקע');
+	let landLocation = $state('');
+	let landDetails = $state('');
+
+	function handleLandSubmit(e: Event) {
+		e.preventDefault();
+		const subject = `פדיון קרקעות - ${landAssetType} ב${landLocation}`;
+		const body = `שם: ${landName}\nפרטים לחזרה: ${landContact}\nסוג הנכס: ${landAssetType}\nמיקום: ${landLocation}\n\nפרטים נוספים:\n${landDetails}`;
+		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+	}
+
+	// טופס "עזרה וליווי לגיור"
+	let convOpen = $state(false);
+	let convName = $state('');
+	let convContact = $state('');
+	let convStatus = $state('');
+	let convDetails = $state('');
+
+	function handleConvSubmit(e: Event) {
+		e.preventDefault();
+		const subject = `בקשה ללווי גיור - ${convName}`;
+		const body = `שם: ${convName}\nפרטים לחזרה: ${convContact}\nמצב נוכחי / רקע: ${convStatus}\n\nכיצד נוכל לעזור:\n${convDetails}`;
+		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+	}
+
 	// טופס "יש לך ידיעה?"
 	let tipOpen = $state(false);
 	let tipName = $state('');
@@ -67,6 +96,198 @@
 			סרטונים, מאמרים והודעות שחכמי בית הדין מפרסמים
 		</p>
 	</header>
+
+	<!-- באנר "פדיון קרקעות" -->
+	<div class="mb-4 max-w-3xl mx-auto">
+		<button
+			type="button"
+			onclick={() => (landOpen = !landOpen)}
+			class="land-cta w-full flex items-center justify-center gap-3 rounded-xl border-2 p-4 transition-all"
+			aria-expanded={landOpen}
+			aria-controls="land-form"
+		>
+			<div class="text-3xl md:text-4xl flex-shrink-0 land-cta-emoji">🌳</div>
+			<div class="text-center min-w-0">
+				<h3 class="land-cta-title text-lg md:text-xl font-black leading-tight">
+					פדיון קרקעות
+				</h3>
+				<p class="land-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
+					יש לך קרקע או דירה לפדיון עבור ידיים יהודיות? פנה אלינו
+				</p>
+			</div>
+			<div class="text-2xl flex-shrink-0 land-cta-arrow" aria-hidden="true">
+				{landOpen ? '▲' : '▼'}
+			</div>
+		</button>
+
+		{#if landOpen}
+			<div
+				id="land-form"
+				class="mt-3 rounded-2xl border-2 border-emerald-400/60 bg-gradient-to-br from-emerald-100/90 via-green-100/85 to-emerald-100/90 p-5 md:p-6 shadow-[0_8px_25px_rgba(5,150,105,0.25)]"
+			>
+				<form onsubmit={handleLandSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-name">שם</label>
+						<input
+							id="land-name"
+							type="text"
+							bind:value={landName}
+							required
+							placeholder="שמך המלא"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-contact">פרטים לחזרה</label>
+						<input
+							id="land-contact"
+							type="text"
+							bind:value={landContact}
+							required
+							placeholder="טלפון או דוא״ל"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-asset-type">סוג הנכס</label>
+						<select
+							id="land-asset-type"
+							bind:value={landAssetType}
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
+						>
+							<option value="קרקע">קרקע</option>
+							<option value="דירה">דירה</option>
+							<option value="בית">בית</option>
+							<option value="מסחרי">נכס מסחרי</option>
+							<option value="אחר">אחר</option>
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-location">מיקום הנכס</label>
+						<input
+							id="land-location"
+							type="text"
+							bind:value={landLocation}
+							required
+							placeholder="עיר / יישוב / אזור"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
+						/>
+					</div>
+					<div class="md:col-span-2">
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-details">פרטים נוספים</label>
+						<textarea
+							id="land-details"
+							bind:value={landDetails}
+							rows="4"
+							placeholder="גודל, מצב הנכס, מחיר מבוקש, פרטי בעלות..."
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors resize-y"
+						></textarea>
+					</div>
+					<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+						<p class="text-xs text-emerald-900 max-w-md font-medium">
+							הפנייה תישלח לבית הדין. נחזור אליך לפי הפרטים שמסרת.
+						</p>
+						<button
+							type="submit"
+							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(5,150,105,0.5)] transition-all whitespace-nowrap"
+							style="color:#fff !important; -webkit-text-fill-color:#fff !important;"
+						>
+							🌳 שלח פנייה
+						</button>
+					</div>
+				</form>
+			</div>
+		{/if}
+	</div>
+
+	<!-- באנר "עזרה וליווי לגיור" -->
+	<div class="mb-4 max-w-3xl mx-auto">
+		<button
+			type="button"
+			onclick={() => (convOpen = !convOpen)}
+			class="conv-cta w-full flex items-center justify-center gap-3 rounded-xl border-2 p-4 transition-all"
+			aria-expanded={convOpen}
+			aria-controls="conv-form"
+		>
+			<div class="text-3xl md:text-4xl flex-shrink-0 conv-cta-emoji">✡️</div>
+			<div class="text-center min-w-0">
+				<h3 class="conv-cta-title text-lg md:text-xl font-black leading-tight">
+					עזרה וליווי לגיור
+				</h3>
+				<p class="conv-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
+					מבקש להצטרף לעם ישראל ולקבל ליווי וייעוץ? פנה כאן
+				</p>
+			</div>
+			<div class="text-2xl flex-shrink-0 conv-cta-arrow" aria-hidden="true">
+				{convOpen ? '▲' : '▼'}
+			</div>
+		</button>
+
+		{#if convOpen}
+			<div
+				id="conv-form"
+				class="mt-3 rounded-2xl border-2 border-sky-400/60 bg-gradient-to-br from-sky-100/90 via-blue-100/85 to-sky-100/90 p-5 md:p-6 shadow-[0_8px_25px_rgba(2,132,199,0.25)]"
+			>
+				<form onsubmit={handleConvSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-name">שם</label>
+						<input
+							id="conv-name"
+							type="text"
+							bind:value={convName}
+							required
+							placeholder="שמך המלא"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-contact">פרטים לחזרה</label>
+						<input
+							id="conv-contact"
+							type="text"
+							bind:value={convContact}
+							required
+							placeholder="טלפון או דוא״ל"
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors"
+						/>
+					</div>
+					<div class="md:col-span-2">
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-status">מצב נוכחי / רקע</label>
+						<input
+							id="conv-status"
+							type="text"
+							bind:value={convStatus}
+							placeholder="לדוגמה: בתחילת הדרך, באמצע תהליך, חבר משפחה רוצה להתגייר..."
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors"
+						/>
+					</div>
+					<div class="md:col-span-2">
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-details">כיצד נוכל לעזור</label>
+						<textarea
+							id="conv-details"
+							bind:value={convDetails}
+							required
+							rows="5"
+							placeholder="ספר על עצמך, על מה אתה מתלבט, באיזה ליווי אתה זקוק..."
+							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors resize-y"
+						></textarea>
+					</div>
+					<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+						<p class="text-xs text-sky-900 max-w-md font-medium">
+							הפנייה מטופלת בדיסקרטיות מלאה. רב מבית הדין יחזור אליך באופן אישי.
+						</p>
+						<button
+							type="submit"
+							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-700 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(2,132,199,0.5)] transition-all whitespace-nowrap"
+							style="color:#fff !important; -webkit-text-fill-color:#fff !important;"
+						>
+							✡️ שלח פנייה
+						</button>
+					</div>
+				</form>
+			</div>
+		{/if}
+	</div>
 
 	<!-- באנר "יש לך ידיעה?" -->
 	<div class="mb-8 max-w-3xl mx-auto">
@@ -257,6 +478,53 @@
 </section>
 
 <style>
+	/* === באנר "פדיון קרקעות" - ירוק === */
+	:global(.land-cta) {
+		background-image: linear-gradient(135deg, #047857 0%, #059669 50%, #16a34a 100%) !important;
+		border-color: #bbf7d0 !important;
+		box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.5), 0 4px 10px -4px rgba(22, 163, 74, 0.4) !important;
+	}
+	:global(.land-cta:hover) {
+		background-image: linear-gradient(135deg, #065f46 0%, #047857 50%, #15803d 100%) !important;
+		box-shadow: 0 15px 30px -5px rgba(5, 150, 105, 0.65), 0 6px 12px -4px rgba(22, 163, 74, 0.55) !important;
+		transform: scale(1.01);
+	}
+	:global(.land-cta .land-cta-title),
+	:global(.land-cta .land-cta-text),
+	:global(.land-cta .land-cta-arrow) {
+		color: #ffffff !important;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+		-webkit-text-fill-color: #ffffff !important;
+		background: none !important;
+	}
+	:global(.land-cta .land-cta-emoji) {
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+	}
+
+	/* === באנר "עזרה וליווי לגיור" - תכלת === */
+	:global(.conv-cta) {
+		background-image: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #1d4ed8 100%) !important;
+		border-color: #bae6fd !important;
+		box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.5), 0 4px 10px -4px rgba(29, 78, 216, 0.4) !important;
+	}
+	:global(.conv-cta:hover) {
+		background-image: linear-gradient(135deg, #075985 0%, #0369a1 50%, #1e40af 100%) !important;
+		box-shadow: 0 15px 30px -5px rgba(2, 132, 199, 0.65), 0 6px 12px -4px rgba(29, 78, 216, 0.55) !important;
+		transform: scale(1.01);
+	}
+	:global(.conv-cta .conv-cta-title),
+	:global(.conv-cta .conv-cta-text),
+	:global(.conv-cta .conv-cta-arrow) {
+		color: #ffffff !important;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+		-webkit-text-fill-color: #ffffff !important;
+		background: none !important;
+	}
+	:global(.conv-cta .conv-cta-emoji) {
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+	}
+
+	/* === באנר "יש לך ידיעה?" - ענבר === */
 	:global(.tip-cta) {
 		background-image: linear-gradient(135deg, #b45309 0%, #d97706 50%, #ea580c 100%) !important;
 		border-color: #fde68a !important;
