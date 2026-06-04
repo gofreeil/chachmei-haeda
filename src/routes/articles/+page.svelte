@@ -10,7 +10,8 @@
 
 	let allArticles = $state<Article[]>(staticArticles);
 	let searchQuery = $state('');
-	let itemsPage = $state(1);
+	// ברירת מחדל = העמוד החדש ביותר (האחרון). מספר גבוה ייחתך אוטומטית ל-itemsTotalPages.
+	let itemsPage = $state(Number.MAX_SAFE_INTEGER);
 	let searchPage = $state(1);
 
 	function fmtDate(d: string): string {
@@ -37,8 +38,9 @@
 
 	let sorted = $derived([...allArticles].sort((a, b) => b.date.localeCompare(a.date)));
 
-	// איחוד מאמרים ושאלות-תשובות לרשימה כרונולוגית אחת (חדש→ישן)
-	const entriesSorted = $derived.by<Entry[]>(() => {
+	// איחוד מאמרים ושאלות-תשובות בסדר עולה לפי תאריך (ישן→חדש)
+	// המספור: #1=הישן ביותר, #N=החדש ביותר. דף 1 מכיל את הפריטים הישנים, הדף האחרון את החדשים.
+	const entriesAsc = $derived.by<Entry[]>(() => {
 		const articleEntries: Entry[] = allArticles.map((a) => ({
 			type: 'article' as const,
 			date: a.date,
@@ -49,19 +51,22 @@
 			date: q.answerDate,
 			item: q
 		}));
-		return [...articleEntries, ...qaEntries].sort((a, b) => b.date.localeCompare(a.date));
+		return [...articleEntries, ...qaEntries].sort((a, b) => a.date.localeCompare(b.date));
 	});
 
-	// מספור סידורי לכל פריט (1=החדש ביותר)
+	// מספור סידורי כרונולוגי (1=הישן ביותר)
 	const entriesNumbered = $derived(
-		entriesSorted.map((e, i) => ({ ...e, number: i + 1 }))
+		entriesAsc.map((e, i) => ({ ...e, number: i + 1 }))
 	);
 
-	// pagination: פריט אחד לעמוד
+	// pagination — בתוך כל עמוד הסדר הפוך (חדש למעלה) כדי שהפריט המאוחר ביותר יוצג ראשון
 	const itemsTotalPages = $derived(Math.max(1, Math.ceil(entriesNumbered.length / ITEMS_PAGE_SIZE)));
 	const itemsPageSafe = $derived(Math.min(itemsPage, itemsTotalPages));
 	const itemsPaged = $derived(
-		entriesNumbered.slice((itemsPageSafe - 1) * ITEMS_PAGE_SIZE, itemsPageSafe * ITEMS_PAGE_SIZE)
+		entriesNumbered
+			.slice((itemsPageSafe - 1) * ITEMS_PAGE_SIZE, itemsPageSafe * ITEMS_PAGE_SIZE)
+			.slice()
+			.reverse()
 	);
 
 	// תוצאות חיפוש משולבות
