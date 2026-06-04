@@ -55,11 +55,6 @@
 			{a.body}
 		</div>
 
-		<footer class="mt-10 border-t border-white/10 pt-6">
-			<p class="text-xs text-gray-500 italic">
-				על פי מדיניות חכמי העדה, לא ניתן להגיב למאמרים. ניתן לפנות לרב המחבר דרך טופס יצירת קשר.
-			</p>
-		</footer>
 	{:else if notFound}
 		<div class="mt-8 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-6 text-center">
 			<div class="text-4xl mb-2">📭</div>
