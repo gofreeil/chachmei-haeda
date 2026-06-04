@@ -145,23 +145,10 @@
 		</FancyHeading>
 	</header>
 
-	<!-- ניווט מהיר -->
-	<nav class="mb-6 flex flex-wrap justify-center gap-3" aria-label="ניווט בתוך העמוד">
-		<button
-			type="button"
-			onclick={() => slowScrollTo('sep-articles')}
-			class="px-5 py-2.5 rounded-full bg-blue-500/25 text-blue-100 font-bold text-sm md:text-base border border-blue-400/50 hover:bg-blue-500/35 hover:border-blue-300/70 transition-colors"
-		>
-			📜 מאמרים
-		</button>
-		<button
-			type="button"
-			onclick={() => slowScrollTo('sep-qa')}
-			class="px-5 py-2.5 rounded-full bg-indigo-500/25 text-indigo-100 font-bold text-sm md:text-base border border-indigo-400/50 hover:bg-indigo-500/35 hover:border-indigo-300/70 transition-colors"
-		>
-			🕮 שאלות ותשובות
-		</button>
-	</nav>
+	<!-- כותרת משנה מאוחדת -->
+	<h2 class="text-center text-xl md:text-2xl font-black bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent mb-6">
+		📜 מאמרים ושאלות ותשובות 🕮
+	</h2>
 
 	<!-- שורת חיפוש -->
 	<div class="mb-8 max-w-2xl mx-auto">
@@ -275,118 +262,87 @@
 			/>
 		{/if}
 	{:else}
-		<!-- ============ סקציית המאמרים ============ -->
-		<div id="sep-articles" class="scroll-mt-24 mt-2 mb-8 flex items-center gap-3 max-w-3xl mx-auto" aria-hidden="true">
-			<div
-				class="h-2 flex-1 bg-gradient-to-l from-transparent via-blue-500/70 to-blue-700 shadow-[0_1px_2px_rgba(30,64,175,0.35)]"
-				style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
-			></div>
-			<span class="text-xl md:text-2xl text-blue-400 drop-shadow-[0_1px_1px_rgba(30,64,175,0.4)]">📜</span>
-			<div
-				class="h-2 flex-1 bg-gradient-to-r from-transparent via-blue-500/70 to-blue-700 shadow-[0_1px_2px_rgba(30,64,175,0.35)]"
-				style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
-			></div>
-		</div>
-		<h2 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent mb-6">
-			מאמרים
-		</h2>
-
-		<!-- תצוגה רגילה (ללא חיפוש) -->
-		<div class="space-y-4">
-			{#each articlesPaged as a (a.slug)}
-				<article
-					id={a.slug}
-					class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
-				>
-					<div class="flex items-center gap-3 mb-3">
-						<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/30 border-2 border-blue-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(37,99,235,0.35)]">
-							{a.number}
-						</span>
-						<span class="text-xs font-bold text-blue-200">מאמר {a.number} מתוך {articlesNumbered.length}</span>
-					</div>
-					<div class="flex items-start justify-between gap-3 flex-wrap">
-						<h2 class="text-xl md:text-2xl font-bold text-white">{a.title}</h2>
-						<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
-					</div>
-					<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
-					<p class="mt-3 text-gray-200 leading-relaxed font-medium">{a.excerpt}</p>
-					<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
-						{a.body}
-					</div>
-					{#if a.tags && a.tags.length > 0}
-						<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
-							{#each a.tags as tag}
+		<!-- רשימה מאוחדת: מאמרים ושאלות-תשובות לפי תאריך -->
+		{#if entriesNumbered.length === 0}
+			<p class="text-center text-gray-400 py-12">אין פריטים להצגה.</p>
+		{:else}
+			<div class="space-y-4">
+				{#each itemsPaged as entry (entry.type + ':' + entry.item.slug)}
+					{#if entry.type === 'article'}
+						{@const a = entry.item}
+						<article
+							id={a.slug}
+							class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
+						>
+							<div class="flex items-center gap-3 mb-3 flex-wrap">
+								<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/30 border-2 border-blue-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(37,99,235,0.35)]">
+									{entry.number}
+								</span>
+								<span class="text-xs font-bold text-blue-200">📜 מאמר · פריט {entry.number} מתוך {entriesNumbered.length}</span>
+							</div>
+							<div class="flex items-start justify-between gap-3 flex-wrap">
+								<h2 class="text-xl md:text-2xl font-bold text-white">{a.title}</h2>
+								<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
+							</div>
+							<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
+							<p class="mt-3 text-gray-200 leading-relaxed font-medium">{a.excerpt}</p>
+							<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
+								{a.body}
+							</div>
+							{#if a.tags && a.tags.length > 0}
+								<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
+									{#each a.tags as tag}
+										<button
+											type="button"
+											onclick={() => (searchQuery = '#' + tag)}
+											class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
+										>
+											#{tag}
+										</button>
+									{/each}
+								</div>
+							{/if}
+							<div class="mt-3 text-left">
+								<a href="/articles/{a.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
+									קישור ישיר ←
+								</a>
+							</div>
+						</article>
+					{:else}
+						{@const q = entry.item}
+						<article
+							id={q.slug}
+							class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
+						>
+							<div class="flex items-center gap-3 mb-3 flex-wrap">
+								<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-500/30 border-2 border-indigo-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(79,70,229,0.35)]">
+									{entry.number}
+								</span>
+								<span class="text-xs font-bold text-indigo-200">🕮 שאלה ותשובה · פריט {entry.number} מתוך {entriesNumbered.length}</span>
+							</div>
+							<div class="flex items-start justify-between gap-3 flex-wrap">
+								<h2 class="text-xl md:text-2xl font-bold text-white">שאלה - {q.asker}</h2>
+								<span class="text-xs text-gray-400 flex-shrink-0">{fmtDate(q.answerDate)}</span>
+							</div>
+							<p class="mt-1 text-sm text-indigo-300">נשאל {fmtDate(q.askDate)}</p>
+							<p class="mt-3 text-gray-200 leading-relaxed font-medium whitespace-pre-line">{q.question}</p>
+							<div class="mt-5 pt-4 border-t border-white/10">
+								<h4 class="text-sm md:text-base font-black text-indigo-300 mb-2">
+									תשובת {q.answeredBy} · {fmtDate(q.answerDate)}
+								</h4>
+								<p class="text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">{q.answer}</p>
+							</div>
+							<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
 								<button
 									type="button"
-									onclick={() => (searchQuery = '#' + tag)}
+									onclick={() => (searchQuery = q.topic)}
 									class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 								>
-									#{tag}
+									#{q.topic}
 								</button>
-							{/each}
-						</div>
+							</div>
+						</article>
 					{/if}
-					<div class="mt-3 text-left">
-						<a href="/articles/{a.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
-							קישור ישיר ←
-						</a>
-					</div>
-				</article>
-			{/each}
-		</div>
-
-		<Pagination
-			currentPage={articlesPageSafe}
-			totalPages={articlesTotalPages}
-			color="blue"
-			onPageChange={(p) => (articlesPage = p)}
-		/>
-
-		<!-- ============ סקציית שאלות ותשובות ============ -->
-		<div id="sep-qa" class="scroll-mt-24 mt-14 mb-8 flex items-center gap-3 max-w-3xl mx-auto" aria-hidden="true">
-			<div
-				class="h-2 flex-1 bg-gradient-to-l from-transparent via-indigo-500/70 to-indigo-700 shadow-[0_1px_2px_rgba(79,70,229,0.35)]"
-				style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
-			></div>
-			<span class="text-xl md:text-2xl text-indigo-400 drop-shadow-[0_1px_1px_rgba(79,70,229,0.4)]">🕮</span>
-			<div
-				class="h-2 flex-1 bg-gradient-to-r from-transparent via-indigo-500/70 to-indigo-700 shadow-[0_1px_2px_rgba(79,70,229,0.35)]"
-				style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
-			></div>
-		</div>
-		<h2 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-transparent mb-2">
-			שאלות ותשובות
-		</h2>
-		<p class="text-center text-gray-300 text-sm mb-6 max-w-2xl mx-auto">
-			תשובות רבני בית הדין לשאלות בהלכה, מוסר עסקי, שלום בית ושבע מצוות בני נח
-		</p>
-
-		{#if qaSorted.length === 0}
-			<p class="text-center text-gray-400 py-8">אין שאלות ותשובות להצגה.</p>
-		{:else}
-			<div class="space-y-5 max-w-3xl mx-auto">
-				{#each qaPaged as q (q.slug)}
-					<article
-						id={q.slug}
-						class="rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-6 scroll-mt-24"
-					>
-						<div class="flex items-center justify-end mb-3">
-							<span class="text-xs font-bold text-gray-300">נשאל {fmtDate(q.askDate)}</span>
-						</div>
-						<h3 class="text-lg md:text-xl font-extrabold text-white mb-2">שאלה - {q.asker}</h3>
-						<p class="text-gray-200 leading-relaxed mb-4">{q.question}</p>
-						<div class="border-t border-indigo-300/40 pt-4">
-							<h4 class="text-sm font-black text-indigo-300 mb-2">
-								תשובת {q.answeredBy} · {fmtDate(q.answerDate)}
-							</h4>
-							<p class="text-gray-100 leading-relaxed font-medium">{q.answer}</p>
-						</div>
-						<div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-2">
-							<span class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium">
-								#{q.topic}
-							</span>
-						</div>
-					</article>
 				{/each}
 			</div>
 
@@ -406,11 +362,10 @@
 			</a>
 
 			<Pagination
-				currentPage={qaPageSafe}
-				totalPages={qaTotalPages}
-				color="indigo"
-				label="השאלות ותשובות"
-				onPageChange={(p) => (qaPage = p)}
+				currentPage={itemsPageSafe}
+				totalPages={itemsTotalPages}
+				color="blue"
+				onPageChange={(p) => (itemsPage = p)}
 			/>
 		{/if}
 	{/if}
