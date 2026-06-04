@@ -129,7 +129,7 @@
 					לכלל הפעולות ←
 				</a>
 			</div>
-			<h2 class="text-2xl md:text-3xl font-black text-amber-900 leading-tight mb-3 drop-shadow-[0_1px_1px_rgba(120,53,15,0.2)]">
+			<h2 class="text-2xl md:text-3xl font-black text-amber-900 leading-tight mb-3 drop-shadow-[0_1px_1px_rgba(120,53,15,0.2)] text-center">
 				{recentActivity.title}
 			</h2>
 			{#if recentActivity.videoUrl || recentActivity.imageUrl}
