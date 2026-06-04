@@ -5,14 +5,12 @@
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 
-	const ARTICLES_PAGE_SIZE = 1; // מאמר אחד לעמוד
-	const QA_PAGE_SIZE = 3; // שלוש שאלות-תשובות לעמוד
+	const ITEMS_PAGE_SIZE = 1; // פריט אחד לעמוד (מאמר או שאלה-תשובה)
 	const SEARCH_PAGE_SIZE = 8;
 
 	let allArticles = $state<Article[]>(staticArticles);
 	let searchQuery = $state('');
-	let articlesPage = $state(1);
-	let qaPage = $state(1);
+	let itemsPage = $state(1);
 	let searchPage = $state(1);
 
 	function fmtDate(d: string): string {
@@ -20,25 +18,9 @@
 		return `${day}.${m}.${y}`;
 	}
 
-	function slowScrollTo(targetId: string) {
-		const el = document.getElementById(targetId);
-		if (!el) return;
-		const header = document.querySelector('.site-header') as HTMLElement | null;
-		const headerOffset = header ? header.getBoundingClientRect().height : 0;
-		const targetY = el.getBoundingClientRect().top + window.scrollY - headerOffset - 4;
-		const startY = window.scrollY;
-		const distance = targetY - startY;
-		if (Math.abs(distance) < 2) return;
-		const duration = Math.min(2400, Math.max(1000, Math.abs(distance) * 1.4));
-		const startTime = Date.now();
-		const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-		const handle = window.setInterval(() => {
-			const elapsed = Date.now() - startTime;
-			const t = Math.min(1, elapsed / duration);
-			window.scrollTo(0, startY + distance * easeInOutCubic(t));
-			if (t >= 1) window.clearInterval(handle);
-		}, 16);
-	}
+	type Entry =
+		| { type: 'article'; date: string; item: Article }
+		| { type: 'qa'; date: string; item: QaItem };
 
 	onMount(() => {
 		try {
@@ -55,24 +37,31 @@
 
 	let sorted = $derived([...allArticles].sort((a, b) => b.date.localeCompare(a.date)));
 
-	// כל המאמרים עם מספר סידורי (1=המאמר האחרון)
-	const articlesNumbered = $derived(
-		sorted.map((a, i) => ({ ...a, number: i + 1 }))
+	// איחוד מאמרים ושאלות-תשובות לרשימה כרונולוגית אחת (חדש→ישן)
+	const entriesSorted = $derived.by<Entry[]>(() => {
+		const articleEntries: Entry[] = allArticles.map((a) => ({
+			type: 'article' as const,
+			date: a.date,
+			item: a
+		}));
+		const qaEntries: Entry[] = qa.map((q) => ({
+			type: 'qa' as const,
+			date: q.answerDate,
+			item: q
+		}));
+		return [...articleEntries, ...qaEntries].sort((a, b) => b.date.localeCompare(a.date));
+	});
+
+	// מספור סידורי לכל פריט (1=החדש ביותר)
+	const entriesNumbered = $derived(
+		entriesSorted.map((e, i) => ({ ...e, number: i + 1 }))
 	);
 
-	// pagination למאמרים: מאמר אחד לעמוד
-	const articlesTotalPages = $derived(Math.max(1, Math.ceil(articlesNumbered.length / ARTICLES_PAGE_SIZE)));
-	const articlesPageSafe = $derived(Math.min(articlesPage, articlesTotalPages));
-	const articlesPaged = $derived(
-		articlesNumbered.slice((articlesPageSafe - 1) * ARTICLES_PAGE_SIZE, articlesPageSafe * ARTICLES_PAGE_SIZE)
-	);
-
-	// שאלות-תשובות ממוינות ועם pagination
-	const qaSorted = $derived([...qa].sort((a, b) => b.answerDate.localeCompare(a.answerDate)));
-	const qaTotalPages = $derived(Math.max(1, Math.ceil(qaSorted.length / QA_PAGE_SIZE)));
-	const qaPageSafe = $derived(Math.min(qaPage, qaTotalPages));
-	const qaPaged = $derived(
-		qaSorted.slice((qaPageSafe - 1) * QA_PAGE_SIZE, qaPageSafe * QA_PAGE_SIZE)
+	// pagination: פריט אחד לעמוד
+	const itemsTotalPages = $derived(Math.max(1, Math.ceil(entriesNumbered.length / ITEMS_PAGE_SIZE)));
+	const itemsPageSafe = $derived(Math.min(itemsPage, itemsTotalPages));
+	const itemsPaged = $derived(
+		entriesNumbered.slice((itemsPageSafe - 1) * ITEMS_PAGE_SIZE, itemsPageSafe * ITEMS_PAGE_SIZE)
 	);
 
 	// תוצאות חיפוש משולבות

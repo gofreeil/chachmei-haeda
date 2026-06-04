@@ -256,22 +256,24 @@
 			</h5>
 			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{recentQa.answer}</p>
 		</div>
-
-		<a
-			href="/ask"
-			class="ask-cta mt-4 flex items-center justify-center gap-3 rounded-xl border-2 p-3 transition-all group"
-		>
-			<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">🕮</div>
-			<div class="text-center min-w-0">
-				<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
-					שאל את חכמי העדה
-				</h3>
-				<p class="ask-cta-text text-xs md:text-sm font-bold leading-snug">
-					יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי - פנה אל החכמים ותענה בהקדם האפשרי
-				</p>
-			</div>
-		</a>
 	</article>
+</section>
+
+<section class="mb-10">
+	<a
+		href="/ask"
+		class="ask-cta flex items-center justify-center gap-3 rounded-2xl border-2 p-4 md:p-5 transition-all group"
+	>
+		<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">🕮</div>
+		<div class="text-center min-w-0">
+			<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
+				שאל את חכמי העדה
+			</h3>
+			<p class="ask-cta-text text-xs md:text-sm font-bold leading-snug">
+				יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי - פנה אל החכמים ותענה בהקדם האפשרי
+			</p>
+		</div>
+	</a>
 </section>
 
 <section class="mb-10">
