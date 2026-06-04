@@ -5,11 +5,13 @@
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 
-	const PAGE_SIZE = 8;
+	const ARTICLES_PAGE_SIZE = 1; // מאמר אחד לעמוד
+	const QA_PAGE_SIZE = 3; // שלוש שאלות-תשובות לעמוד
+	const SEARCH_PAGE_SIZE = 8;
 
 	let allArticles = $state<Article[]>(staticArticles);
 	let searchQuery = $state('');
-	let archivePage = $state(1);
+	let articlesPage = $state(1);
 	let qaPage = $state(1);
 	let searchPage = $state(1);
 
@@ -52,22 +54,25 @@
 	});
 
 	let sorted = $derived([...allArticles].sort((a, b) => b.date.localeCompare(a.date)));
-	let latest = $derived(sorted[0]);
-	let archive = $derived(sorted.slice(1));
 
-	// pagination לארכיון
-	const archiveTotalPages = $derived(Math.max(1, Math.ceil(archive.length / PAGE_SIZE)));
-	const archivePageSafe = $derived(Math.min(archivePage, archiveTotalPages));
-	const archivePaged = $derived(
-		archive.slice((archivePageSafe - 1) * PAGE_SIZE, archivePageSafe * PAGE_SIZE)
+	// כל המאמרים עם מספר סידורי (1=המאמר האחרון)
+	const articlesNumbered = $derived(
+		sorted.map((a, i) => ({ ...a, number: i + 1 }))
+	);
+
+	// pagination למאמרים: מאמר אחד לעמוד
+	const articlesTotalPages = $derived(Math.max(1, Math.ceil(articlesNumbered.length / ARTICLES_PAGE_SIZE)));
+	const articlesPageSafe = $derived(Math.min(articlesPage, articlesTotalPages));
+	const articlesPaged = $derived(
+		articlesNumbered.slice((articlesPageSafe - 1) * ARTICLES_PAGE_SIZE, articlesPageSafe * ARTICLES_PAGE_SIZE)
 	);
 
 	// שאלות-תשובות ממוינות ועם pagination
 	const qaSorted = $derived([...qa].sort((a, b) => b.answerDate.localeCompare(a.answerDate)));
-	const qaTotalPages = $derived(Math.max(1, Math.ceil(qaSorted.length / PAGE_SIZE)));
+	const qaTotalPages = $derived(Math.max(1, Math.ceil(qaSorted.length / QA_PAGE_SIZE)));
 	const qaPageSafe = $derived(Math.min(qaPage, qaTotalPages));
 	const qaPaged = $derived(
-		qaSorted.slice((qaPageSafe - 1) * PAGE_SIZE, qaPageSafe * PAGE_SIZE)
+		qaSorted.slice((qaPageSafe - 1) * QA_PAGE_SIZE, qaPageSafe * QA_PAGE_SIZE)
 	);
 
 	// תוצאות חיפוש משולבות
@@ -98,17 +103,17 @@
 		...articleMatches.map((item) => ({ kind: 'article' as const, item })),
 		...qaMatches.map((item) => ({ kind: 'qa' as const, item }))
 	]);
-	const searchTotalPages = $derived(Math.max(1, Math.ceil(searchEntries.length / PAGE_SIZE)));
+	const searchTotalPages = $derived(Math.max(1, Math.ceil(searchEntries.length / SEARCH_PAGE_SIZE)));
 	const searchPageSafe = $derived(Math.min(searchPage, searchTotalPages));
 	const searchPagedArticles = $derived(
 		searchEntries
-			.slice((searchPageSafe - 1) * PAGE_SIZE, searchPageSafe * PAGE_SIZE)
+			.slice((searchPageSafe - 1) * SEARCH_PAGE_SIZE, searchPageSafe * SEARCH_PAGE_SIZE)
 			.filter((e): e is { kind: 'article'; item: Article } => e.kind === 'article')
 			.map((e) => e.item)
 	);
 	const searchPagedQa = $derived(
 		searchEntries
-			.slice((searchPageSafe - 1) * PAGE_SIZE, searchPageSafe * PAGE_SIZE)
+			.slice((searchPageSafe - 1) * SEARCH_PAGE_SIZE, searchPageSafe * SEARCH_PAGE_SIZE)
 			.filter((e): e is { kind: 'qa'; item: QaItem } => e.kind === 'qa')
 			.map((e) => e.item)
 	);
@@ -298,24 +303,30 @@
 		</h2>
 
 		<!-- תצוגה רגילה (ללא חיפוש) -->
-		{#if latest}
-			<div class="mb-6">
+		<div class="space-y-4">
+			{#each articlesPaged as a (a.slug)}
 				<article
-					id={latest.slug}
+					id={a.slug}
 					class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
 				>
+					<div class="flex items-center gap-3 mb-3">
+						<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/30 border-2 border-blue-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(37,99,235,0.35)]">
+							{a.number}
+						</span>
+						<span class="text-xs font-bold text-blue-200">מאמר {a.number} מתוך {articlesNumbered.length}</span>
+					</div>
 					<div class="flex items-start justify-between gap-3 flex-wrap">
-						<h2 class="text-xl md:text-2xl font-bold text-white">{latest.title}</h2>
-						<span class="text-xs text-gray-400 flex-shrink-0">{latest.date}</span>
+						<h2 class="text-xl md:text-2xl font-bold text-white">{a.title}</h2>
+						<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
 					</div>
-					<p class="mt-1 text-sm text-blue-300">מאת: {latest.author}</p>
-					<p class="mt-3 text-gray-200 leading-relaxed font-medium">{latest.excerpt}</p>
+					<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
+					<p class="mt-3 text-gray-200 leading-relaxed font-medium">{a.excerpt}</p>
 					<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
-						{latest.body}
+						{a.body}
 					</div>
-					{#if latest.tags && latest.tags.length > 0}
+					{#if a.tags && a.tags.length > 0}
 						<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
-							{#each latest.tags as tag}
+							{#each a.tags as tag}
 								<button
 									type="button"
 									onclick={() => (searchQuery = '#' + tag)}
@@ -327,62 +338,20 @@
 						</div>
 					{/if}
 					<div class="mt-3 text-left">
-						<a href="/articles/{latest.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
+						<a href="/articles/{a.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
 							קישור ישיר ←
 						</a>
 					</div>
 				</article>
-			</div>
-		{/if}
+			{/each}
+		</div>
 
-		{#if archive.length > 0}
-			<div class="text-xs font-bold text-gray-400 mb-3 mt-8">📚 מאמרים קודמים ({archive.length})</div>
-			<div class="space-y-4">
-				{#each archivePaged as a}
-					<article
-						id={a.slug}
-						class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-7 scroll-mt-24"
-					>
-						<div class="flex items-start justify-between gap-3 flex-wrap">
-							<h2 class="text-xl md:text-2xl font-bold text-white">
-								{a.title}
-							</h2>
-							<span class="text-xs text-gray-500 flex-shrink-0">{a.date}</span>
-						</div>
-						<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
-						<p class="mt-3 text-gray-200 leading-relaxed font-medium">{a.excerpt}</p>
-						<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
-							{a.body}
-						</div>
-						{#if a.tags && a.tags.length > 0}
-							<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
-								{#each a.tags as tag}
-									<button
-										type="button"
-										onclick={() => (searchQuery = '#' + tag)}
-										class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
-									>
-										#{tag}
-									</button>
-								{/each}
-							</div>
-						{/if}
-						<div class="mt-3 text-left">
-							<a href="/articles/{a.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
-								קישור ישיר ←
-							</a>
-						</div>
-					</article>
-				{/each}
-			</div>
-
-			<Pagination
-				currentPage={archivePageSafe}
-				totalPages={archiveTotalPages}
-				color="blue"
-				onPageChange={(p) => (archivePage = p)}
-			/>
-		{/if}
+		<Pagination
+			currentPage={articlesPageSafe}
+			totalPages={articlesTotalPages}
+			color="blue"
+			onPageChange={(p) => (articlesPage = p)}
+		/>
 
 		<!-- ============ סקציית שאלות ותשובות ============ -->
 		<div id="sep-qa" class="scroll-mt-24 mt-14 mb-8 flex items-center gap-3 max-w-3xl mx-auto" aria-hidden="true">
