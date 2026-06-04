@@ -103,8 +103,8 @@
 			</li>
 		</ul>
 	</nav>
-
-	<p class="text-center text-xs text-gray-400 font-medium mt-1">
-		עמוד {currentPage} מתוך {totalPages}
-	</p>
 {/if}
+
+<p class="text-center text-xs text-gray-400 font-medium mt-3 mb-2">
+	עמוד {currentPage} מתוך {totalPages}
+</p>

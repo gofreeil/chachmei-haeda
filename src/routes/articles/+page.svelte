@@ -156,14 +156,14 @@
 		<button
 			type="button"
 			onclick={() => slowScrollTo('sep-articles')}
-			class="px-5 py-2.5 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white font-black text-sm md:text-base border-2 border-blue-300 shadow-[0_4px_12px_rgba(37,99,235,0.45)] hover:scale-105 hover:shadow-[0_6px_18px_rgba(37,99,235,0.6)] transition-all"
+			class="px-5 py-2.5 rounded-full bg-blue-500/25 text-blue-100 font-bold text-sm md:text-base border border-blue-400/50 hover:bg-blue-500/35 hover:border-blue-300/70 transition-colors"
 		>
 			📜 מאמרים
 		</button>
 		<button
 			type="button"
 			onclick={() => slowScrollTo('sep-qa')}
-			class="px-5 py-2.5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-700 text-white font-black text-sm md:text-base border-2 border-indigo-300 shadow-[0_4px_12px_rgba(79,70,229,0.45)] hover:scale-105 hover:shadow-[0_6px_18px_rgba(79,70,229,0.6)] transition-all"
+			class="px-5 py-2.5 rounded-full bg-indigo-500/25 text-indigo-100 font-bold text-sm md:text-base border border-indigo-400/50 hover:bg-indigo-500/35 hover:border-indigo-300/70 transition-colors"
 		>
 			🕮 שאלות ותשובות
 		</button>
@@ -228,7 +228,7 @@
 										<button
 											type="button"
 											onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
-											class="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-400/40 text-blue-100 text-[11px] font-bold hover:bg-blue-500/40 transition-colors"
+											class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 										>
 											#{tag}
 										</button>
@@ -250,9 +250,8 @@
 							href="/qa#{item.slug}"
 							class="block rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 hover:border-indigo-400/70 transition-all p-5"
 						>
-							<div class="flex items-start justify-between gap-3 flex-wrap">
-								<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600/80 text-white">{item.topic}</span>
-								<span class="text-xs text-gray-400 flex-shrink-0">{item.answerDate}</span>
+							<div class="flex items-start justify-end mb-1">
+								<span class="text-xs text-gray-400">{item.answerDate}</span>
 							</div>
 							<p class="mt-2 text-sm font-bold text-white leading-snug">
 								<span class="text-indigo-300">שאלה:</span>
@@ -262,6 +261,11 @@
 								<span class="text-indigo-300 font-bold">תשובת {item.answeredBy}:</span>
 								{@html highlight(snippet(item.answer, searchQuery, 180), searchQuery)}
 							</p>
+							<div class="mt-3 flex flex-wrap gap-1.5">
+								<span class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium">
+									#{item.topic}
+								</span>
+							</div>
 						</a>
 					{/each}
 				</div>
@@ -313,7 +317,7 @@
 								<button
 									type="button"
 									onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
-									class="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-400/40 text-blue-100 text-[11px] font-bold hover:bg-blue-500/40 transition-colors"
+									class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 								>
 									#{tag}
 								</button>
@@ -346,7 +350,7 @@
 									<button
 										type="button"
 										onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
-										class="px-2 py-0.5 rounded-full bg-blue-500/25 border border-blue-400/40 text-blue-100 text-[11px] font-bold hover:bg-blue-500/40 transition-colors"
+										class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 									>
 										#{tag}
 									</button>
@@ -393,10 +397,7 @@
 						id={q.slug}
 						class="rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-6 scroll-mt-24"
 					>
-						<div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
-							<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
-								{q.topic}
-							</span>
+						<div class="flex items-center justify-end mb-3">
 							<span class="text-xs font-bold text-gray-300">נשאל {fmtDate(q.askDate)}</span>
 						</div>
 						<h3 class="text-lg md:text-xl font-extrabold text-white mb-2">שאלה - {q.asker}</h3>
@@ -406,6 +407,11 @@
 								תשובת {q.answeredBy} · {fmtDate(q.answerDate)}
 							</h4>
 							<p class="text-gray-100 leading-relaxed font-medium">{q.answer}</p>
+						</div>
+						<div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-2">
+							<span class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium">
+								#{q.topic}
+							</span>
 						</div>
 					</article>
 				{/each}
@@ -419,10 +425,10 @@
 			/>
 		{/if}
 
-		<div class="mt-8 text-center">
+		<div class="mt-10 text-center">
 			<a
 				href="/ask"
-				class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base hover:scale-105 transition-transform shadow"
+				class="inline-block px-10 py-5 md:px-14 md:py-6 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-xl md:text-2xl hover:scale-105 transition-transform shadow-[0_8px_24px_rgba(79,70,229,0.45)]"
 			>
 				🕮 שאל את חכמי העדה ←
 			</a>
