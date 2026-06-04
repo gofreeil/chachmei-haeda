@@ -26,17 +26,56 @@
     let showLangDropdown = $state(false);
     let showNavMenu = $state(false);
 
-    const navItems = [
-        { href: '/', label: 'בית', icon: '🏠' },
-        { href: '/about/revenue', label: 'אודות', icon: 'ℹ️' },
-        { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
-        { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
-        { href: '/charter-index', label: 'אינדקס האמנה', icon: '📑' },
-        { href: '/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
-        { href: '/request-hearing', label: 'בקשת דיון', icon: '⚖️' },
-        { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
-        { href: '/rulings', label: 'פסקי דין', icon: '📋' },
-        { href: '/articles', label: 'מאמרי רבנים', icon: '📚' },
+    const navGroups = [
+        {
+            title: 'בית ואודותנו',
+            items: [
+                { href: '/', label: 'בית', icon: '🏠' },
+                { href: '/about/revenue', label: 'אודות', icon: 'ℹ️' },
+            ],
+        },
+        {
+            title: 'ארבעת ההיכלות',
+            items: [
+                {
+                    href: '/heichal-hamishpat',
+                    label: 'היכל המשפט',
+                    icon: '⚖️',
+                    children: [
+                        { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
+                        { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
+                        { href: '/charter-index', label: 'אינדקס האמנה', icon: '📑' },
+                        { href: '/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
+                        { href: '/rulings', label: 'פסקי דין', icon: '📋' },
+                    ],
+                },
+                {
+                    href: '/request-hearing',
+                    label: 'היכל השלום',
+                    icon: '🕊️',
+                    children: [
+                        { href: '/request-hearing', label: 'בקשת דיון', icon: '⚖️' },
+                        { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
+                    ],
+                },
+                {
+                    href: '/activity',
+                    label: 'היכל המעשה',
+                    icon: '🛠️',
+                    children: [],
+                },
+                {
+                    href: '/articles',
+                    label: 'היכל הרוח',
+                    icon: '🕮',
+                    children: [
+                        { href: '/articles', label: 'מאמרי רבנים', icon: '📚' },
+                        { href: '/qa', label: 'שאלות ותשובות', icon: '💬' },
+                        { href: '/ask', label: 'שאל את חכמי העדה', icon: '❓' },
+                    ],
+                },
+            ],
+        },
     ];
 
     let tooltipX = $state(0);
@@ -223,20 +262,39 @@
                             </button>
                             {#if showNavMenu}
                                 <div
-                                    class="absolute left-0 z-[160] mt-2 w-56 rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-1"
+                                    class="absolute left-0 z-[160] mt-2 w-64 max-h-[80vh] overflow-y-auto rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-2"
                                     role="menu"
                                     aria-label="ניווט"
                                 >
-                                    {#each navItems as item}
-                                        <a
-                                            href={item.href}
-                                            role="menuitem"
-                                            class="flex items-center gap-3 px-4 py-2.5 text-right text-white hover:bg-white/10 transition-colors no-underline"
-                                            onclick={() => (showNavMenu = false)}
-                                        >
-                                            <span class="text-xl" aria-hidden="true">{item.icon}</span>
-                                            <span class="text-sm font-medium">{item.label}</span>
-                                        </a>
+                                    {#each navGroups as group, gi}
+                                        {#if gi > 0}
+                                            <div class="my-1 border-t border-white/10"></div>
+                                        {/if}
+                                        <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{group.title}</div>
+                                        {#each group.items as item}
+                                            <a
+                                                href={item.href}
+                                                role="menuitem"
+                                                class="flex items-center gap-3 px-4 py-2 text-right text-white hover:bg-white/10 transition-colors no-underline"
+                                                onclick={() => (showNavMenu = false)}
+                                            >
+                                                <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                                <span class="text-sm font-bold">{item.label}</span>
+                                            </a>
+                                            {#if item.children && item.children.length}
+                                                {#each item.children as child}
+                                                    <a
+                                                        href={child.href}
+                                                        role="menuitem"
+                                                        class="flex items-center gap-2.5 pr-10 pl-4 py-1.5 text-right text-gray-300 hover:bg-white/10 hover:text-white transition-colors no-underline border-r-2 border-white/10 mr-4"
+                                                        onclick={() => (showNavMenu = false)}
+                                                    >
+                                                        <span class="text-base" aria-hidden="true">{child.icon}</span>
+                                                        <span class="text-xs">{child.label}</span>
+                                                    </a>
+                                                {/each}
+                                            {/if}
+                                        {/each}
                                     {/each}
                                 </div>
                             {/if}
@@ -375,20 +433,39 @@
                     </button>
                     {#if showNavMenu}
                         <div
-                            class="absolute right-0 z-[160] mt-2 w-60 rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-1"
+                            class="absolute right-0 z-[160] mt-2 w-72 max-h-[80vh] overflow-y-auto rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-2"
                             role="menu"
                             aria-label="ניווט"
                         >
-                            {#each navItems as item}
-                                <a
-                                    href={item.href}
-                                    role="menuitem"
-                                    class="flex items-center gap-3 px-4 py-2.5 text-right text-white hover:bg-white/10 transition-colors no-underline"
-                                    onclick={() => (showNavMenu = false)}
-                                >
-                                    <span class="text-xl" aria-hidden="true">{item.icon}</span>
-                                    <span class="text-sm font-medium">{item.label}</span>
-                                </a>
+                            {#each navGroups as group, gi}
+                                {#if gi > 0}
+                                    <div class="my-1 border-t border-white/10"></div>
+                                {/if}
+                                <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{group.title}</div>
+                                {#each group.items as item}
+                                    <a
+                                        href={item.href}
+                                        role="menuitem"
+                                        class="flex items-center gap-3 px-4 py-2 text-right text-white hover:bg-white/10 transition-colors no-underline"
+                                        onclick={() => (showNavMenu = false)}
+                                    >
+                                        <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                        <span class="text-sm font-bold">{item.label}</span>
+                                    </a>
+                                    {#if item.children && item.children.length}
+                                        {#each item.children as child}
+                                            <a
+                                                href={child.href}
+                                                role="menuitem"
+                                                class="flex items-center gap-2.5 pr-10 pl-4 py-1.5 text-right text-gray-300 hover:bg-white/10 hover:text-white transition-colors no-underline border-r-2 border-white/10 mr-4"
+                                                onclick={() => (showNavMenu = false)}
+                                            >
+                                                <span class="text-base" aria-hidden="true">{child.icon}</span>
+                                                <span class="text-xs">{child.label}</span>
+                                            </a>
+                                        {/each}
+                                    {/if}
+                                {/each}
                             {/each}
                         </div>
                     {/if}
