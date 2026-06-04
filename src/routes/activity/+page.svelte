@@ -62,6 +62,12 @@
 				if (Array.isArray(parsed)) customActivity = parsed;
 			}
 		} catch {}
+		// אם הגיעו עם ?q=... מקישור לתגית - אכלוס שדה החיפוש
+		try {
+			const params = new URLSearchParams(window.location.search);
+			const q = params.get('q');
+			if (q) searchQuery = q;
+		} catch {}
 	});
 
 	const allItems = $derived([...customActivity, ...staticActivity]);
@@ -70,7 +76,8 @@
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return allItems;
 		return allItems.filter((a) => {
-			const hay = `${a.title} ${a.excerpt ?? ''} ${a.body ?? ''} ${a.author ?? ''} ${a.kind}`.toLowerCase();
+			const tagsStr = (a.tags ?? []).join(' ');
+			const hay = `${a.title} ${a.excerpt ?? ''} ${a.body ?? ''} ${a.author ?? ''} ${a.kind} ${tagsStr}`.toLowerCase();
 			return hay.includes(q);
 		});
 	});
@@ -219,6 +226,21 @@
 						>
 							🔗 לכתבה המלאה
 						</a>
+					</div>
+				{/if}
+
+				<!-- תגים -->
+				{#if a.tags && a.tags.length > 0}
+					<div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
+						{#each a.tags as tag}
+							<button
+								type="button"
+								onclick={() => (searchQuery = tag)}
+								class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
+							>
+								#{tag}
+							</button>
+						{/each}
 					</div>
 				{/if}
 			</article>

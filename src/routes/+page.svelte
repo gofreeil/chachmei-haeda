@@ -2,11 +2,13 @@
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { latestAnswer } from '$lib/data/qa';
+	import { latestActivity } from '$lib/data/activity';
 	import NewsTicker from '$lib/components/NewsTicker.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 
 	const recentQa = latestAnswer();
+	const recentActivity = latestActivity();
 
 	let allArticles = $state<Article[]>(staticArticles);
 	const DEFAULT_HOME_VIDEO = 'https://youtu.be/9ioV_PeaqWE?si=WN00o8ByG65ZOvQ4';
@@ -107,37 +109,71 @@
 
 	<NewsTicker />
 
-	{#if embedVideoUrl}
-		<div class="mt-10 mx-auto max-w-xl md:max-w-2xl">
-			{#if homeVideoTitle.trim()}
-				<h4 class="text-center text-lg md:text-xl font-black text-amber-800 mb-3 leading-snug">
-					{homeVideoTitle}
-				</h4>
-			{/if}
-			<div class="rounded-2xl overflow-hidden border-2 border-teal-400/30 bg-black shadow-[0_0_30px_rgba(20,184,166,0.18)]">
-				<div class="relative w-full" style="padding-top: 56.25%">
-					<iframe
-						src={embedVideoUrl}
-						title={homeVideoTitle || 'סרטון בית הדין'}
-						class="absolute inset-0 w-full h-full"
-						frameborder="0"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-						referrerpolicy="strict-origin-when-cross-origin"
-						allowfullscreen
-					></iframe>
-				</div>
-			</div>
-		</div>
-	{/if}
-
-	<div class="mt-8 flex justify-end">
-		<a
-			href="/activity"
-			class="text-sm md:text-base font-bold text-amber-700 hover:text-amber-900 transition-colors underline decoration-amber-400/60 underline-offset-4"
+	{#if recentActivity}
+		<article
+			class="mt-8 rounded-2xl border-2 border-amber-400/40 bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(217,119,6,0.12)]"
 		>
-			אל כלל הפעולות של חכמי העדה ←
-		</a>
-	</div>
+			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
+				<div class="text-right">
+					<div class="flex items-center gap-2 flex-wrap">
+						<span class="text-xs font-bold px-3 py-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200">
+							🆕 חדש
+						</span>
+						<span class="text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300/30 bg-amber-500/10 text-amber-100">
+							{recentActivity.kind}
+						</span>
+						<span class="text-xs text-gray-400">הועלה ב-{recentActivity.date} · מאת {recentActivity.author}</span>
+					</div>
+				</div>
+				<a href="/activity" class="text-sm font-bold text-amber-700 hover:text-amber-900 transition-colors">
+					לכלל הפעולות ←
+				</a>
+			</div>
+			<h2 class="text-2xl md:text-3xl font-black text-amber-900 leading-tight mb-3 drop-shadow-[0_1px_1px_rgba(120,53,15,0.2)]">
+				{recentActivity.title}
+			</h2>
+			{#if recentActivity.videoUrl || recentActivity.imageUrl}
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start mb-3">
+					<div class="md:order-1">
+						<p class="text-gray-800 leading-snug text-base md:text-lg font-medium">{recentActivity.excerpt}</p>
+					</div>
+					<div class="md:order-2">
+						{#if recentActivity.imageUrl}
+							<div class="rounded-xl overflow-hidden border border-amber-300/40 bg-black/20">
+								<img src={recentActivity.imageUrl} alt={recentActivity.title} class="w-full h-auto max-h-[320px] object-contain mx-auto" />
+							</div>
+						{/if}
+						{#if recentActivity.videoUrl}
+							<div class="rounded-xl overflow-hidden border border-amber-300/40 aspect-video bg-black">
+								<iframe
+									src={recentActivity.videoUrl}
+									title={recentActivity.title}
+									class="w-full h-full"
+									frameborder="0"
+									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+									allowfullscreen
+								></iframe>
+							</div>
+						{/if}
+					</div>
+				</div>
+			{:else}
+				<p class="text-gray-800 leading-snug text-base md:text-lg font-medium">{recentActivity.excerpt}</p>
+			{/if}
+			{#if recentActivity.tags && recentActivity.tags.length > 0}
+				<div class="mt-4 pt-3 border-t border-amber-300/30 flex flex-wrap gap-1.5">
+					{#each recentActivity.tags as tag}
+						<a
+							href="/activity?q={encodeURIComponent(tag)}"
+							class="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-900 text-[11px] font-medium hover:bg-amber-500/25 hover:border-amber-400/50 transition-colors"
+						>
+							#{tag}
+						</a>
+					{/each}
+				</div>
+			{/if}
+		</article>
+	{/if}
 	<div class="mt-2 mb-14 flex items-center gap-3" aria-hidden="true">
 		<div
 			class="h-2 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
