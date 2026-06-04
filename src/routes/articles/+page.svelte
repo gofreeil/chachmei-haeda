@@ -147,7 +147,7 @@
 
 	<!-- כותרת משנה מאוחדת -->
 	<h2 class="text-center text-xl md:text-2xl font-black bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent mb-6">
-		📜 מאמרים ושאלות ותשובות 🕮
+		📜 מאמרים שאלות ותשובות 🕮
 	</h2>
 
 	<!-- שורת חיפוש -->
