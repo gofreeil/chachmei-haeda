@@ -301,22 +301,25 @@
 		{#if latest}
 			<div class="mb-6">
 				<div class="text-xs font-bold text-blue-300 mb-2">🆕 מאמר אחרון (מוצג גם בדף הבית)</div>
-				<a
-					href="/articles/{latest.slug}"
-					class="block rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:border-blue-400/70 transition-all p-5"
+				<article
+					id={latest.slug}
+					class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
 				>
 					<div class="flex items-start justify-between gap-3 flex-wrap">
 						<h2 class="text-xl md:text-2xl font-bold text-white">{latest.title}</h2>
 						<span class="text-xs text-gray-400 flex-shrink-0">{latest.date}</span>
 					</div>
 					<p class="mt-1 text-sm text-blue-300">מאת: {latest.author}</p>
-					<p class="mt-3 text-gray-300 leading-relaxed">{latest.excerpt}</p>
+					<p class="mt-3 text-gray-200 leading-relaxed font-medium">{latest.excerpt}</p>
+					<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
+						{latest.body}
+					</div>
 					{#if latest.tags && latest.tags.length > 0}
-						<div class="mt-3 flex flex-wrap gap-1.5">
+						<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
 							{#each latest.tags as tag}
 								<button
 									type="button"
-									onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
+									onclick={() => (searchQuery = '#' + tag)}
 									class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 								>
 									#{tag}
@@ -324,7 +327,12 @@
 							{/each}
 						</div>
 					{/if}
-				</a>
+					<div class="mt-3 text-left">
+						<a href="/articles/{latest.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
+							קישור ישיר ←
+						</a>
+					</div>
+				</article>
 			</div>
 		{/if}
 
@@ -332,9 +340,9 @@
 			<div class="text-xs font-bold text-gray-400 mb-3 mt-8">📚 מאמרים קודמים ({archive.length})</div>
 			<div class="space-y-4">
 				{#each archivePaged as a}
-					<a
-						href="/articles/{a.slug}"
-						class="block rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-blue-400/50 transition-all p-5"
+					<article
+						id={a.slug}
+						class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-7 scroll-mt-24"
 					>
 						<div class="flex items-start justify-between gap-3 flex-wrap">
 							<h2 class="text-xl md:text-2xl font-bold text-white">
@@ -343,13 +351,16 @@
 							<span class="text-xs text-gray-500 flex-shrink-0">{a.date}</span>
 						</div>
 						<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
-						<p class="mt-3 text-gray-300 leading-relaxed">{a.excerpt}</p>
+						<p class="mt-3 text-gray-200 leading-relaxed font-medium">{a.excerpt}</p>
+						<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
+							{a.body}
+						</div>
 						{#if a.tags && a.tags.length > 0}
-							<div class="mt-3 flex flex-wrap gap-1.5">
+							<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
 								{#each a.tags as tag}
 									<button
 										type="button"
-										onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
+										onclick={() => (searchQuery = '#' + tag)}
 										class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 									>
 										#{tag}
@@ -357,7 +368,12 @@
 								{/each}
 							</div>
 						{/if}
-					</a>
+						<div class="mt-3 text-left">
+							<a href="/articles/{a.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
+								קישור ישיר ←
+							</a>
+						</div>
+					</article>
 				{/each}
 			</div>
 
