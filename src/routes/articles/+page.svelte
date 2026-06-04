@@ -5,7 +5,7 @@
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 
-	const ITEMS_PAGE_SIZE = 1; // פריט אחד לעמוד (מאמר או שאלה-תשובה)
+	const ITEMS_PAGE_SIZE = 3; // עד 3 פריטים לעמוד (כדי להכיל פריטים מרובים לאורך הסרגל הצדדי)
 	const SEARCH_PAGE_SIZE = 8;
 
 	let allArticles = $state<Article[]>(staticArticles);
