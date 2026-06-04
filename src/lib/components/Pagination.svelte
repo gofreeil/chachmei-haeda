@@ -4,9 +4,11 @@
 		totalPages: number;
 		onPageChange: (page: number) => void;
 		color?: 'blue' | 'indigo' | 'amber';
+		label?: string; // למשל "השאלות תשובות" — יעטוף ל"עמוד {label} מס' X"
 	}
 
-	let { currentPage, totalPages, onPageChange, color = 'blue' }: Props = $props();
+	let { currentPage, totalPages, onPageChange, color = 'blue', label }: Props = $props();
+	const hasNext = $derived(currentPage < totalPages);
 
 	const palette = {
 		blue: {
@@ -106,5 +108,9 @@
 {/if}
 
 <p class="text-center text-xs text-gray-400 font-medium mt-3 mb-2">
-	עמוד {currentPage} מתוך {totalPages}
+	{#if label}
+		עמוד {label} מס' {currentPage}{#if hasNext} — המשך לדף הבא{/if}
+	{:else}
+		עמוד {currentPage} מתוך {totalPages}
+	{/if}
 </p>

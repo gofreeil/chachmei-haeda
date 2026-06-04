@@ -420,6 +420,7 @@
 				currentPage={qaPageSafe}
 				totalPages={qaTotalPages}
 				color="indigo"
+				label="השאלות ותשובות"
 				onPageChange={(p) => (qaPage = p)}
 			/>
 		{/if}
