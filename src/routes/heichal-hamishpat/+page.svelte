@@ -60,6 +60,29 @@
 		return 'bg-amber-500/80 text-white';
 	}
 
+	function slowScrollToCalendar(e: MouseEvent) {
+		e.preventDefault();
+		const target = document.getElementById('calendar-section');
+		if (!target) return;
+		const header = document.querySelector('.site-header') as HTMLElement | null;
+		const headerH = header?.getBoundingClientRect().height ?? 0;
+		const targetY = target.getBoundingClientRect().top + window.scrollY - headerH - 16;
+		const startY = window.scrollY;
+		const distance = targetY - startY;
+		const duration = 2400;
+		const startTime = performance.now();
+		function easeInOutCubic(t: number) {
+			return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+		}
+		function step(now: number) {
+			const elapsed = now - startTime;
+			const t = Math.min(elapsed / duration, 1);
+			window.scrollTo(0, startY + distance * easeInOutCubic(t));
+			if (t < 1) requestAnimationFrame(step);
+		}
+		requestAnimationFrame(step);
+	}
+
 	const rulingSteps = [
 		{
 			num: 1,
@@ -135,14 +158,41 @@
 		</header>
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
 			{#each rulingSteps as step}
-				<div class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right">
-					<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
-						{step.num}
+				{#if step.num === 1}
+					<a
+						href="/charter-join"
+						class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right block hover:border-purple-400 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:scale-[1.02] transition-all cursor-pointer"
+					>
+						<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+							{step.num}
+						</div>
+						<div class="text-4xl mb-3 mr-14">{step.icon}</div>
+						<h3 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h3>
+						<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
+					</a>
+				{:else if step.num === 2}
+					<a
+						href="#calendar-section"
+						onclick={slowScrollToCalendar}
+						class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right block hover:border-purple-400 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:scale-[1.02] transition-all cursor-pointer"
+					>
+						<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+							{step.num}
+						</div>
+						<div class="text-4xl mb-3 mr-14">{step.icon}</div>
+						<h3 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h3>
+						<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
+					</a>
+				{:else}
+					<div class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right">
+						<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+							{step.num}
+						</div>
+						<div class="text-4xl mb-3 mr-14">{step.icon}</div>
+						<h3 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h3>
+						<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
 					</div>
-					<div class="text-4xl mb-3 mr-14">{step.icon}</div>
-					<h3 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h3>
-					<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
-				</div>
+				{/if}
 			{/each}
 		</div>
 	</section>
@@ -243,7 +293,19 @@
 		</a>
 	</div>
 
-	<section class="mb-8">
+	<div class="my-8 flex items-center gap-3" aria-hidden="true">
+		<div
+			class="h-2 flex-1 bg-gradient-to-l from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+			style="clip-path: polygon(0% 0%, 0% 100%, 100% 50%);"
+		></div>
+		<span class="text-xl md:text-2xl text-amber-700 drop-shadow-[0_1px_1px_rgba(120,53,15,0.4)]">❦</span>
+		<div
+			class="h-2 flex-1 bg-gradient-to-r from-transparent via-amber-500/70 to-amber-700 shadow-[0_1px_2px_rgba(120,53,15,0.35)]"
+			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
+		></div>
+	</div>
+
+	<section id="calendar-section" class="mb-8">
 		<header class="text-center mb-5">
 			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
 				📅 לוח דיונים - בחר תאריך פנוי
