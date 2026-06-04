@@ -433,6 +433,21 @@
 				{/each}
 			</div>
 
+			<a
+				href="/ask"
+				class="ask-cta mt-8 flex items-center justify-center gap-3 rounded-xl border-2 p-3 transition-all group max-w-3xl mx-auto"
+			>
+				<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">🕮</div>
+				<div class="text-center min-w-0">
+					<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
+						שאל את חכמי העדה
+					</h3>
+					<p class="ask-cta-text text-xs md:text-sm font-bold leading-snug">
+						יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי - פנה אל החכמים ותענה בהקדם האפשרי
+					</p>
+				</div>
+			</a>
+
 			<Pagination
 				currentPage={qaPageSafe}
 				totalPages={qaTotalPages}
@@ -440,14 +455,28 @@
 				onPageChange={(p) => (qaPage = p)}
 			/>
 		{/if}
-
-		<div class="mt-10 text-center">
-			<a
-				href="/ask"
-				class="inline-block px-10 py-5 md:px-14 md:py-6 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-xl md:text-2xl hover:scale-105 transition-transform shadow-[0_8px_24px_rgba(79,70,229,0.45)]"
-			>
-				🕮 שאל את חכמי העדה ←
-			</a>
-		</div>
 	{/if}
 </section>
+
+<style>
+	:global(.ask-cta) {
+		background-image: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%) !important;
+		border-color: #c7d2fe !important;
+		box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.45), 0 4px 10px -4px rgba(79, 70, 229, 0.35) !important;
+	}
+	:global(.ask-cta:hover) {
+		background-image: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #1d4ed8 100%) !important;
+		box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6), 0 6px 12px -4px rgba(79, 70, 229, 0.5) !important;
+		transform: scale(1.02);
+	}
+	:global(.ask-cta .ask-cta-title),
+	:global(.ask-cta .ask-cta-text) {
+		color: #ffffff !important;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+		-webkit-text-fill-color: #ffffff !important;
+		background: none !important;
+	}
+	:global(.ask-cta .ask-cta-emoji) {
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+	}
+</style>
