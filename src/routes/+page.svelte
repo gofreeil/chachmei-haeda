@@ -191,9 +191,11 @@
 	<section class="mb-10">
 		<header class="mb-5">
 			<FancyHeading>
-				<h3 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
-					מהיכל הרוח
-				</h3>
+				<a href="/articles" class="inline-block transition-transform hover:scale-105">
+					<h3 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
+						מהיכל הרוח
+					</h3>
+				</a>
 			</FancyHeading>
 			<h4 class="mt-6 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
 				📜 מאמר מחכמי העדה
