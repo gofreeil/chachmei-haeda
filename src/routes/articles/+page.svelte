@@ -300,7 +300,6 @@
 		<!-- תצוגה רגילה (ללא חיפוש) -->
 		{#if latest}
 			<div class="mb-6">
-				<div class="text-xs font-bold text-blue-300 mb-2">🆕 מאמר אחרון (מוצג גם בדף הבית)</div>
 				<article
 					id={latest.slug}
 					class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
