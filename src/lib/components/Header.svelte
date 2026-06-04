@@ -42,10 +42,6 @@
                     label: 'היכל המשפט',
                     icon: '⚖️',
                     children: [
-                        { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
-                        { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
-                        { href: '/charter-index', label: 'אינדקס האמנה', icon: '📑' },
-                        { href: '/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
                         { href: '/rulings', label: 'פסקי דין', icon: '📋' },
                     ],
                 },
@@ -62,7 +58,12 @@
                     href: '/activity',
                     label: 'היכל המעשה',
                     icon: '🛠️',
-                    children: [],
+                    children: [
+                        { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
+                        { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
+                        { href: '/charter-index', label: 'אינדקס האמנה', icon: '📑' },
+                        { href: '/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
+                    ],
                 },
                 {
                     href: '/articles',
