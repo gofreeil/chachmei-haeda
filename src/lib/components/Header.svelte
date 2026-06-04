@@ -42,6 +42,8 @@
                     label: 'היכל המשפט',
                     icon: '⚖️',
                     children: [
+                        { href: '/request-hearing', label: 'פתיחת תיק', icon: '📂' },
+                        { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
                         { href: '/rulings', label: 'פסקי דין', icon: '📋' },
                     ],
                 },
@@ -49,10 +51,7 @@
                     href: '/request-hearing',
                     label: 'היכל השלום',
                     icon: '🕊️',
-                    children: [
-                        { href: '/request-hearing', label: 'בקשת דיון', icon: '⚖️' },
-                        { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
-                    ],
+                    children: [],
                 },
                 {
                     href: '/activity',
