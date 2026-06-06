@@ -74,7 +74,7 @@
 		</div>
 		<p class="mt-4 text-gray-900 text-xl md:text-2xl font-extrabold group-hover:text-blue-700 transition-colors">בית דין לבוררות ושלום על פי תורת ישראל</p>
 		<p class="mt-3 text-gray-800 text-base md:text-lg font-bold max-w-2xl mx-auto group-hover:underline decoration-blue-400/60 underline-offset-4">
-			פלטפורמה לפתרון מחלוקות בין אדם לחברו בצדק ובאחווה, פרסום מאמרים מחכמי ישראל, קידום חברה מתוקנת על ידי התנהלות תחת הקוד האתי העולמי <span class="text-blue-700 font-black">UECC</span>.
+			פלטפורמה לפתרון מחלוקות בצדק ובאחווה, פרסום מאמרים מחכמי ישראל, קידום חברה מתוקנת המתנהלת בקוד האתי העולמי <span class="text-blue-700 font-black">UECC</span>.
 		</p>
 		<p class="mt-2 text-sm text-blue-700 font-bold opacity-80 group-hover:opacity-100">קרא עוד אודותנו ←</p>
 	</a>
