@@ -213,9 +213,6 @@
 						<span class="text-xs text-gray-400">הועלה ב-{latestArticle.date} · מאת {latestArticle.author}</span>
 					</div>
 				</div>
-				<a href="/articles" class="text-sm font-bold text-blue-300 hover:text-blue-200 transition-colors">
-					לכלל המאמרים ←
-				</a>
 			</div>
 			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
 				{latestArticle.title}
@@ -223,6 +220,14 @@
 			<p class="text-sm text-blue-300 mb-2">מאת: {latestArticle.author}</p>
 			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
 		</article>
+		<div class="mt-4 text-center">
+			<a
+				href="/articles"
+				class="inline-block text-sm md:text-base font-bold text-blue-700 hover:text-blue-900 transition-colors"
+			>
+				לכלל המאמרים והתשובות של חכמי העדה ←
+			</a>
+		</div>
 	</section>
 {/if}
 

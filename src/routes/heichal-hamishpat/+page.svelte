@@ -60,9 +60,9 @@
 		return 'bg-amber-500/80 text-white';
 	}
 
-	function slowScrollToCalendar(e: MouseEvent) {
+	function slowScrollTo(e: MouseEvent, targetId: string) {
 		e.preventDefault();
-		const target = document.getElementById('calendar-section');
+		const target = document.getElementById(targetId);
 		if (!target) return;
 		const header = document.querySelector('.site-header') as HTMLElement | null;
 		const headerH = header?.getBoundingClientRect().height ?? 0;
@@ -173,7 +173,20 @@
 				{:else if step.num === 2}
 					<a
 						href="#calendar-section"
-						onclick={slowScrollToCalendar}
+						onclick={(e) => slowScrollTo(e, 'calendar-section')}
+						class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right block hover:border-purple-400 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:scale-[1.02] transition-all cursor-pointer"
+					>
+						<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
+							{step.num}
+						</div>
+						<div class="text-4xl mb-3 mr-14">{step.icon}</div>
+						<h3 class="text-lg md:text-xl font-bold text-white mb-2">{step.title}</h3>
+						<p class="text-sm text-gray-300 leading-relaxed">{step.desc}</p>
+					</a>
+				{:else if step.num === 4}
+					<a
+						href="#my-cases"
+						onclick={(e) => slowScrollTo(e, 'my-cases')}
 						class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right block hover:border-purple-400 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:scale-[1.02] transition-all cursor-pointer"
 					>
 						<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
@@ -325,7 +338,7 @@
 	</section>
 
 	<!-- ───────────── התיקים שלי + ארכיון וידאו ───────────── -->
-	<section class="mb-8">
+	<section id="my-cases" class="mb-8">
 		<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 shadow-[0_0_25px_rgba(99,102,241,0.12)] {isRegistered ? 'p-5 md:p-7' : 'p-4 md:p-5'}">
 			{#if isRegistered}
 				<header class="flex items-end justify-between gap-3 flex-wrap mb-5">
