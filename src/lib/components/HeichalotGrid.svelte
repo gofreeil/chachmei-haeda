@@ -65,7 +65,7 @@
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
 			🏛️ ארבעת ההיכלות
 		</h3>
-		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">משפט וצדק <span class="text-amber-400 text-[10px] align-middle mx-0.5">◆</span> שלום ואחווה <span class="text-amber-600 text-[10px] align-middle mx-0.5">◆</span> הרוח <span class="text-amber-800 text-[10px] align-middle mx-0.5">◆</span> המעשה</p>
+		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">משפט וצדק <span class="text-[10px] align-middle mx-0.5 bg-gradient-to-br from-sky-300 via-blue-500 to-indigo-700 bg-clip-text text-transparent">◆</span> שלום ואחווה <span class="text-[10px] align-middle mx-0.5 bg-gradient-to-br from-sky-300 via-blue-500 to-indigo-700 bg-clip-text text-transparent">◆</span> הרוח <span class="text-[10px] align-middle mx-0.5 bg-gradient-to-br from-sky-300 via-blue-500 to-indigo-700 bg-clip-text text-transparent">◆</span> המעשה</p>
 	</header>
 	<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
 		{#each heichalim as h}

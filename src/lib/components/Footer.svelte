@@ -21,13 +21,13 @@
                 class="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
                 <div
-                    class="h-28 w-28 md:h-32 md:w-32 flex-shrink-0 hover:scale-105 transition-transform border-2 border-amber-500/50 shadow-lg"
-                    style="border-radius: 1.5rem; overflow: hidden;"
+                    class="flex-shrink-0 hover:scale-105 transition-transform border-2 border-amber-500/50 shadow-lg"
+                    style="border-radius: 1rem; overflow: hidden;"
                 >
                     <img
                         src="/images/yotzim-lecherut.png"
                         alt="יוצאים לחירות"
-                        class="h-full w-full object-cover block"
+                        class="h-16 md:h-20 w-auto block"
                     />
                 </div>
 
