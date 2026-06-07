@@ -197,7 +197,7 @@
 					</h3>
 				</a>
 			</FancyHeading>
-			<h4 class="mt-6 text-right text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+			<h4 class="mt-6 text-right text-lg md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent pr-3 md:pr-0">
 				📜 מאמר מחכמי העדה
 			</h4>
 		</header>
