@@ -206,9 +206,6 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs font-bold px-3 py-1 rounded-full border border-blue-400/40 bg-blue-500/15 text-blue-200">
-							🆕 חדש
-						</span>
 						<span class="text-xs text-gray-400">הועלה ב-{latestArticle.date} · מאת {latestArticle.author}</span>
 					</div>
 				</div>
