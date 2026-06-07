@@ -2,7 +2,7 @@ import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
 
 register('he', () => Promise.resolve({
     welcome: "חכמי העדה",
-    app_description: "בית דין לבוררות ושלום על פי דין תורה",
+    app_description: "בית דין לבוררות ושלום על פי תורת ישראל",
     hello: "שלום",
     greeting: "שלום,",
     logout: "התנתקות",
