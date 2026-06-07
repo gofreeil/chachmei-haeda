@@ -656,12 +656,6 @@
 		border-bottom: 5px solid transparent;
 		border-left: 6px solid rgba(255, 255, 255, 0.9);
 		filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.4));
-		animation: tabArrowNudge 2.4s ease-in-out infinite;
-	}
-
-	@keyframes tabArrowNudge {
-		0%, 100% { transform: translateX(0); opacity: 0.85; }
-		50%       { transform: translateX(3px); opacity: 1; }
 	}
 
 	.tab:hover {

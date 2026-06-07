@@ -112,7 +112,7 @@
 
 	{#if recentActivity}
 		<article
-			class="mt-8 rounded-2xl border-2 border-amber-400/40 bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-500/10 p-6 md:p-8 shadow-[0_0_30px_rgba(217,119,6,0.12)]"
+			class="mt-8 rounded-2xl border-2 border-amber-400/40 bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-500/10 p-3 md:p-8 shadow-[0_0_30px_rgba(217,119,6,0.12)]"
 		>
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
