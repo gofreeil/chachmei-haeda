@@ -125,9 +125,6 @@
 						<span class="text-xs text-gray-400">הועלה ב-{recentActivity.date} · מאת {recentActivity.author}</span>
 					</div>
 				</div>
-				<a href="/activity" class="text-sm font-bold text-amber-700 hover:text-amber-900 transition-colors">
-					לכלל הפעולות ←
-				</a>
 			</div>
 			<h2 class="text-2xl md:text-3xl font-black text-amber-900 leading-tight mb-3 drop-shadow-[0_1px_1px_rgba(120,53,15,0.2)] text-center">
 				{recentActivity.title}
@@ -173,6 +170,14 @@
 				</div>
 			{/if}
 		</article>
+		<div class="mt-4 text-left">
+			<a
+				href="/activity"
+				class="text-sm font-bold text-amber-700 hover:text-amber-900 transition-colors"
+			>
+				לכלל פעולות חכמי העדה ←
+			</a>
+		</div>
 	{/if}
 	<div class="mt-2 mb-14 flex items-center gap-3" aria-hidden="true">
 		<div
