@@ -11,7 +11,7 @@
 			היכל המעשה
 		</h1>
 	</FancyHeading>
-	<p class="mt-3 text-gray-300 max-w-2xl mx-auto">
+	<p class="mt-3 text-gray-300 max-w-2xl mx-auto text-center">
 		{subtitle}
 	</p>
 </header>
