@@ -248,12 +248,6 @@
 			<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
 				{recentQa.topic}
 			</span>
-			<a
-				href="/qa"
-				class="text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
-			>
-				לכל השאלות והתשובות →
-			</a>
 		</div>
 		<div class="flex items-baseline gap-3 flex-wrap mb-2">
 			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">שאלה - {recentQa.asker}</h4>
@@ -267,6 +261,14 @@
 			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{recentQa.answer}</p>
 		</div>
 	</article>
+	<div class="mt-4 text-left">
+		<a
+			href="/qa"
+			class="text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
+		>
+			לכל השאלות והתשובות של חכמי העדה ←
+		</a>
+	</div>
 </section>
 
 <section class="mb-10">
