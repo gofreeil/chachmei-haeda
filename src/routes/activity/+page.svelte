@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { activity as staticActivity, type ActivityKind, type ActivityItem } from '$lib/data/activity';
-	import FancyHeading from '$lib/components/FancyHeading.svelte';
-	import HeichalNav from '$lib/components/HeichalNav.svelte';
+	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
@@ -115,18 +114,7 @@
 </svelte:head>
 
 <section class="py-8">
-	<header class="text-center mb-8">
-		<FancyHeading>
-			<h1 class="bg-gradient-to-r from-indigo-300 to-purple-300 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
-				היכל המעשה
-			</h1>
-		</FancyHeading>
-		<p class="mt-3 text-gray-300 max-w-2xl mx-auto">
-			קריאות החכמים ותקנותיהם לצורך קידום ותיקון עולם במלכות שדי
-		</p>
-	</header>
-
-	<HeichalNav />
+	<HeichalHeader subtitle="קריאות החכמים ותקנותיהם לצורך קידום ותיקון עולם במלכות שדי" />
 
 	<div class="mb-6 max-w-2xl mx-auto">
 		<div class="relative">

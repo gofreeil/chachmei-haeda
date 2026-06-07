@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { signatories } from '$lib/data/signatories';
-	import HeichalNav from '$lib/components/HeichalNav.svelte';
+	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 </script>
 
 <svelte:head>
@@ -8,15 +8,7 @@
 </svelte:head>
 
 <section class="py-8">
-	<header class="text-center mb-8">
-		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-			חתומים על הקוד האתי
-		</h1>
-		<p class="mt-3 text-gray-300">רבנים, אנשי עסקים ופרטיים שקיבלו על עצמם את אמנת UECC</p>
-		<p class="mt-1 text-sm text-gray-500">סה"כ {signatories.length} חתומים</p>
-	</header>
-
-	<HeichalNav />
+	<HeichalHeader subtitle="רבנים, אנשי עסקים ופרטיים שקיבלו על עצמם את אמנת UECC ({signatories.length} חתומים)" />
 
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 		{#each signatories as s}

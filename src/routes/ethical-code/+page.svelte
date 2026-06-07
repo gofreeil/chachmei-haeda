@@ -1,21 +1,13 @@
 <script lang="ts">
-	import HeichalNav from '$lib/components/HeichalNav.svelte';
+	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 </script>
 
 <svelte:head>
 	<title>הקוד האתי UECC - חכמי העדה</title>
 </svelte:head>
 
-<article class="prose-rtl max-w-none py-6 px-2 md:px-4">
-	<header class="text-center mb-6">
-		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl md:text-4xl font-black text-transparent">
-			הקוד האתי המוסרי העולמי
-		</h1>
-		<p class="mt-2 text-blue-300 text-base md:text-xl font-bold text-center" dir="ltr" style="text-align:center">UECC - Universal Ethical Common Code</p>
-		<p class="mt-2 text-gray-300 text-sm md:text-base">לכבוד מֶלֶךְ יָחִיד אֵ'ל חַי הָעוֹלָמִים</p>
-	</header>
-
-	<HeichalNav />
+<article class="prose-rtl max-w-none py-8 px-2 md:px-4">
+	<HeichalHeader subtitle="אמנת UECC - הקוד האתי המוסרי הכלל-עולמי, לכבוד מלך יחיד אל חי העולמים" />
 
 	<section class="space-y-3 text-gray-200 leading-snug text-xs md:text-sm">
 		<p>
