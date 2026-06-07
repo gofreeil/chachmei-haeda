@@ -235,11 +235,6 @@
 		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">חכמי העדה עונים לשאלותך</p>
 	</header>
 	<article class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
-		<div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
-			<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
-				{recentQa.topic}
-			</span>
-		</div>
 		<div class="flex items-baseline gap-3 flex-wrap mb-2">
 			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">שאלה - {recentQa.asker}</h4>
 			<span class="text-xs font-bold text-gray-600">· פורסם {recentQa.answerDate.split('-').reverse().join('.')}</span>
