@@ -7,7 +7,7 @@
 </svelte:head>
 
 <article class="prose-rtl max-w-none py-8 px-2 md:px-4">
-	<HeichalHeader subtitle="אמנת UECC - הקוד האתי המוסרי הכלל-עולמי, לכבוד מלך יחיד אל חי העולמים" />
+	<HeichalHeader subtitle="אמנת UECC - הקוד האתי המוסרי הכלל-עולמי" />
 
 	<section class="space-y-3 text-gray-200 leading-snug text-xs md:text-sm">
 		<p>

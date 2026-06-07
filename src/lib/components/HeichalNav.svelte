@@ -20,14 +20,22 @@
 <nav aria-label="ניווט בהיכל המעשה" class="flex flex-wrap justify-center gap-2 mb-6">
 	{#each tabs as t}
 		{@const isActive = activeHref === t.href}
-		<a
-			href={t.href}
-			aria-current={isActive ? 'page' : undefined}
-			class="px-4 py-2 rounded-full font-bold text-sm transition-colors {isActive
-				? 'bg-indigo-600 text-white shadow-md'
-				: 'bg-white/70 text-indigo-900 border border-indigo-300 hover:bg-white'}"
-		>
-			{t.label}
-		</a>
+		{#if isActive}
+			<a
+				href={t.href}
+				aria-current="page"
+				class="px-4 py-2 rounded-full font-bold text-sm transition-colors bg-indigo-600 shadow-md"
+				style="color: #ffffff;"
+			>
+				{t.label}
+			</a>
+		{:else}
+			<a
+				href={t.href}
+				class="px-4 py-2 rounded-full font-bold text-sm transition-colors bg-white/70 text-indigo-900 border border-indigo-300 hover:bg-white"
+			>
+				{t.label}
+			</a>
+		{/if}
 	{/each}
 </nav>
