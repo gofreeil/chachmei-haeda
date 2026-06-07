@@ -59,16 +59,16 @@
             <!-- Center: Links -->
             <nav
                 aria-label="ניווט תחתון"
-                class="flex items-center gap-4 text-base md:text-lg text-gray-300 font-bold flex-wrap justify-center"
+                class="flex items-center gap-2 md:gap-4 text-xs md:text-lg text-gray-300 font-bold justify-center text-center"
             >
-                <a href="/about/legal" class="hover:text-white transition-colors">
+                <a href="/about/legal" class="hover:text-white transition-colors leading-tight">
                     <span class="md:hidden block">תנאי שימוש<br />הצהרת נגישות וכו'</span>
                     <span class="hidden md:inline-block whitespace-nowrap">תנאי שימוש, הצהרת נגישות וכו'</span>
                 </a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
+                <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors leading-tight" aria-label="צור קשר – שלח אימייל">{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="/about/advertise" class="hover:text-white transition-colors">פרסם אצלנו</a>
+                <a href="/about/advertise" class="hover:text-white transition-colors leading-tight">פרסם אצלנו</a>
             </nav>
 
             <!-- Left: Copyright -->
