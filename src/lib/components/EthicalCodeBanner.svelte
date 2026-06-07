@@ -8,7 +8,7 @@
 	];
 </script>
 
-<section class="rounded-2xl border border-amber-700/40 bg-amber-700/15 p-3 md:p-4 mb-4">
+<section class="rounded-2xl border border-amber-700/40 bg-amber-700/15 p-3 md:p-4 pb-2 md:pb-2 mb-4">
 	<a
 		href="/ethical-code"
 		class="group block rounded-xl -m-1 p-1 hover:bg-amber-700/10 transition-colors"
@@ -18,7 +18,7 @@
 			<img
 				src="/images/Copilot_20260602_125425.png"
 				alt="הקוד האתי UECC"
-				class="flex-shrink-0 w-32 h-32 md:w-52 md:h-52 rounded-xl object-contain border-2 border-amber-700/40 shadow relative z-10 -mb-10 md:-mb-16"
+				class="flex-shrink-0 w-32 h-32 md:w-52 md:h-52 rounded-xl object-contain border-2 border-amber-700/40 shadow relative z-10 -mb-4 md:-mb-6"
 				loading="lazy"
 			/>
 			<div class="flex-1 min-w-0">
