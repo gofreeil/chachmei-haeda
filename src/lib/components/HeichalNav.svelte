@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	const tabs = [
-		{ href: '/heichal-hamaaseh/activity', label: 'פעולות חכמי העדה' },
-		{ href: '/heichal-hamaaseh/ethical-code', label: 'הקוד האתי העולמי' },
-		{ href: '/heichal-hamaaseh/signatories', label: 'רשימת החתומים' },
+		{ href: '/heichal-hamaaseh/activity', labelKey: 'heichal_nav_tab_activity' },
+		{ href: '/heichal-hamaaseh/ethical-code', labelKey: 'heichal_nav_tab_ethical_code' },
+		{ href: '/heichal-hamaaseh/signatories', labelKey: 'heichal_nav_tab_signatories' },
 	];
 
 	const activeFor: Record<string, string> = {
@@ -17,7 +23,7 @@
 	let activeHref = $derived(activeFor[page.url.pathname] ?? '');
 </script>
 
-<nav aria-label="ניווט בהיכל המעשה" class="flex flex-wrap justify-center gap-2 mb-6">
+<nav aria-label={tFn('heichal_nav_aria_label')} class="flex flex-wrap justify-center gap-2 mb-6">
 	{#each tabs as t}
 		{@const isActive = activeHref === t.href}
 		{#if isActive}
@@ -27,14 +33,14 @@
 				class="px-4 py-2 rounded-full font-bold text-sm transition-colors bg-indigo-600 shadow-md"
 				style="color: #ffffff;"
 			>
-				{t.label}
+				{tFn(t.labelKey)}
 			</a>
 		{:else}
 			<a
 				href={t.href}
 				class="px-4 py-2 rounded-full font-bold text-sm transition-colors bg-white/70 text-indigo-900 border border-indigo-300 hover:bg-white"
 			>
-				{t.label}
+				{tFn(t.labelKey)}
 			</a>
 		{/if}
 	{/each}

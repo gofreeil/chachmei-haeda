@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { hearings, rulings } from '$lib/data/hearings';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => {
+		void _loc;
+		return get(t)(k);
+	};
 
 	type UserData = {
 		name: string;
@@ -71,9 +79,9 @@
 				messages = [
 					{
 						id: 'm-1',
-						from: 'מערכת חכמי העדה',
-						topic: 'ברוך הבא',
-						body: 'אזור אישי זה הוא הבית שלך - כאן תקבל הודעות מבית הדין, סטטוס התיקים שלך ופסקי דין רלוונטיים.',
+						from: tFn('profile_welcome_msg_from'),
+						topic: tFn('profile_welcome_msg_topic'),
+						body: tFn('profile_welcome_msg_body'),
 						date: new Date().toISOString(),
 						read: false
 					}
@@ -100,19 +108,19 @@
 	);
 
 	const tabs = $derived([
-		{ key: 'overview' as Tab, label: 'סקירה', icon: '🏠' },
-		{ key: 'messages' as Tab, label: `הודעות${unreadCount ? ` (${unreadCount})` : ''}`, icon: '✉️' },
-		{ key: 'cases' as Tab, label: 'התיקים שלי', icon: '📂' },
-		{ key: 'rulings' as Tab, label: 'פסקי הדין שלי', icon: '📋' },
-		{ key: 'profile' as Tab, label: 'פרטים אישיים', icon: '👤' }
+		{ key: 'overview' as Tab, label: tFn('profile_tab_overview'), icon: '🏠' },
+		{ key: 'messages' as Tab, label: `${tFn('profile_tab_messages')}${unreadCount ? ` (${unreadCount})` : ''}`, icon: '✉️' },
+		{ key: 'cases' as Tab, label: tFn('profile_tab_cases'), icon: '📂' },
+		{ key: 'rulings' as Tab, label: tFn('profile_tab_rulings'), icon: '📋' },
+		{ key: 'profile' as Tab, label: tFn('profile_tab_profile'), icon: '👤' }
 	]);
 
 	// סטטוס תיק לתצוגה
 	function caseStatus(c: CaseRecord): { label: string; color: string } {
 		const { plaintiff, defendant, beitDin } = c.approvals;
-		if (plaintiff && defendant && beitDin) return { label: '✓ נקבע ביומן', color: 'green' };
+		if (plaintiff && defendant && beitDin) return { label: `✓ ${tFn('profile_case_status_scheduled')}`, color: 'green' };
 		const approved = [plaintiff, defendant, beitDin].filter(Boolean).length;
-		return { label: `⏳ ${approved}/3 אישרו`, color: 'yellow' };
+		return { label: `⏳ ${approved}/3 ${tFn('profile_case_status_approved')}`, color: 'yellow' };
 	}
 
 	function markAllRead() {
@@ -159,30 +167,30 @@
 </script>
 
 <svelte:head>
-	<title>האזור האישי - חכמי העדה</title>
+	<title>{tFn('profile_page_title')}</title>
 </svelte:head>
 
 <section class="py-6 md:py-8 max-w-4xl mx-auto px-3">
 	{#if !isLoaded}
-		<div class="text-center py-16 text-gray-400">טוען...</div>
+		<div class="text-center py-16 text-gray-400">{tFn('profile_loading')}</div>
 	{:else if !isLoggedIn}
 		<!-- ───────────── לא רשום ───────────── -->
 		<div class="rounded-2xl border-2 border-yellow-400/40 bg-yellow-500/5 p-8 text-center">
 			<div class="text-5xl mb-3">🔒</div>
-			<h1 class="text-2xl font-bold text-yellow-200 mb-2">נדרשת הרשמה</h1>
+			<h1 class="text-2xl font-bold text-yellow-200 mb-2">{tFn('profile_signup_required')}</h1>
 			<p class="text-gray-300 mb-5 leading-relaxed">
-				כדי לגשת לאזור האישי שלך, עליך להירשם ולקבל על עצמך את הקוד האתי UECC.
+				{tFn('profile_signup_required_desc')}
 			</p>
 			<a
 				href="/request-hearing"
 				class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black hover:scale-105 transition-transform"
 			>
-				✍️ להרשמה
+				✍️ {tFn('profile_signup_cta')}
 			</a>
 			<p class="text-xs text-gray-500 mt-6">
-				💡 אחרי הרשמה במקום אחד, אתה מזוהה אוטומטית גם באתרי <a href="https://community-il.vercel.app/" class="text-blue-300 underline">קהילה בשכונה</a>,
-				<a href="https://criticism.vercel.app/" class="text-blue-300 underline">מבקר רשויות המדינה</a> ו-
-				<a href="https://purchasing-groups.vercel.app/" class="text-blue-300 underline">רכישות קבוצתיות</a>.
+				💡 {tFn('profile_cross_site_signup_prefix')} <a href="https://community-il.vercel.app/" class="text-blue-300 underline">{tFn('profile_site_community')}</a>,
+				<a href="https://criticism.vercel.app/" class="text-blue-300 underline">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
+				<a href="https://purchasing-groups.vercel.app/" class="text-blue-300 underline">{tFn('profile_site_purchasing')}</a>.
 			</p>
 		</div>
 	{:else}
@@ -196,12 +204,12 @@
 					<h1 class="text-xl md:text-2xl font-black text-white truncate">{user?.name}</h1>
 					<div class="flex flex-wrap gap-2 mt-2 text-xs">
 						{#if user?.uecc}
-							<span class="px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-300">✓ חתום על UECC</span>
+							<span class="px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-300">✓ {tFn('profile_signed_uecc')}</span>
 						{/if}
 						{#if user?.arbitration}
-							<span class="px-2.5 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300">⚖️ הסכמת בוררות</span>
+							<span class="px-2.5 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300">⚖️ {tFn('profile_arbitration_consent')}</span>
 						{/if}
-						<span class="px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-gray-300">📂 {cases.length} תיקים</span>
+						<span class="px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-gray-300">📂 {cases.length} {tFn('profile_cases_label')}</span>
 					</div>
 				</div>
 			</div>
@@ -233,9 +241,9 @@
 					class="text-right rounded-2xl border border-purple-500/20 bg-purple-900/10 hover:bg-purple-900/20 transition-colors p-5"
 				>
 					<div class="text-3xl mb-2">✉️</div>
-					<div class="font-bold text-white text-lg">הודעות</div>
+					<div class="font-bold text-white text-lg">{tFn('profile_card_messages')}</div>
 					<div class="text-sm text-gray-400 mt-1">
-						{messages.length} בסך הכל{unreadCount ? ` · ${unreadCount} לא נקראו` : ''}
+						{messages.length} {tFn('profile_messages_total')}{unreadCount ? ` · ${unreadCount} ${tFn('profile_messages_unread')}` : ''}
 					</div>
 				</button>
 				<button
@@ -243,33 +251,33 @@
 					class="text-right rounded-2xl border border-blue-500/20 bg-blue-900/10 hover:bg-blue-900/20 transition-colors p-5"
 				>
 					<div class="text-3xl mb-2">📂</div>
-					<div class="font-bold text-white text-lg">התיקים שלי</div>
-					<div class="text-sm text-gray-400 mt-1">{cases.length} תיקים פתוחים</div>
+					<div class="font-bold text-white text-lg">{tFn('profile_card_cases')}</div>
+					<div class="text-sm text-gray-400 mt-1">{cases.length} {tFn('profile_cases_open')}</div>
 				</button>
 				<button
 					onclick={() => (activeTab = 'rulings')}
 					class="text-right rounded-2xl border border-green-500/20 bg-green-900/10 hover:bg-green-900/20 transition-colors p-5"
 				>
 					<div class="text-3xl mb-2">📋</div>
-					<div class="font-bold text-white text-lg">פסקי הדין שלי</div>
-					<div class="text-sm text-gray-400 mt-1">{myRulings.length} פסקים · {myHearings.length} דיונים</div>
+					<div class="font-bold text-white text-lg">{tFn('profile_card_rulings')}</div>
+					<div class="text-sm text-gray-400 mt-1">{myRulings.length} {tFn('profile_rulings_count')} · {myHearings.length} {tFn('profile_hearings_count')}</div>
 				</button>
 				<button
 					onclick={() => (activeTab = 'profile')}
 					class="text-right rounded-2xl border border-amber-500/20 bg-amber-900/10 hover:bg-amber-900/20 transition-colors p-5"
 				>
 					<div class="text-3xl mb-2">👤</div>
-					<div class="font-bold text-white text-lg">פרטים אישיים</div>
-					<div class="text-sm text-gray-400 mt-1 truncate">{user?.phone || 'ללא טלפון'}</div>
+					<div class="font-bold text-white text-lg">{tFn('profile_card_profile')}</div>
+					<div class="text-sm text-gray-400 mt-1 truncate">{user?.phone || tFn('profile_no_phone')}</div>
 				</button>
 			</div>
 
 			<div class="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5 mt-5 text-sm text-gray-300">
-				🔗 <strong class="text-blue-300">סנכרון בין-אתרים:</strong> אזור אישי זה משותף לאתרי
-				<a href="https://community-il.vercel.app/" class="text-blue-300 underline hover:text-blue-200">קהילה בשכונה</a>,
-				<a href="https://criticism.vercel.app/" class="text-blue-300 underline hover:text-blue-200">מבקר רשויות המדינה</a> ו-
-				<a href="https://purchasing-groups.vercel.app/" class="text-blue-300 underline hover:text-blue-200">רכישות קבוצתיות</a>.
-				הפרופיל, ההודעות והתיקים מסונכרנים אוטומטית.
+				🔗 <strong class="text-blue-300">{tFn('profile_cross_site_sync_label')}</strong> {tFn('profile_cross_site_sync_prefix')}
+				<a href="https://community-il.vercel.app/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_community')}</a>,
+				<a href="https://criticism.vercel.app/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
+				<a href="https://purchasing-groups.vercel.app/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_purchasing')}</a>.
+				{tFn('profile_cross_site_sync_suffix')}
 			</div>
 		{/if}
 
@@ -277,15 +285,15 @@
 		{#if activeTab === 'messages'}
 			<div class="space-y-3">
 				<div class="flex items-center justify-between">
-					<h2 class="text-lg font-bold text-white">✉️ הודעות אישיות</h2>
+					<h2 class="text-lg font-bold text-white">✉️ {tFn('profile_personal_messages')}</h2>
 					{#if unreadCount > 0}
-						<button onclick={markAllRead} class="text-sm text-blue-300 hover:text-blue-200">סמן הכל כנקרא</button>
+						<button onclick={markAllRead} class="text-sm text-blue-300 hover:text-blue-200">{tFn('profile_mark_all_read')}</button>
 					{/if}
 				</div>
 				{#if messages.length === 0}
 					<div class="text-center py-12">
 						<div class="text-5xl mb-3">📭</div>
-						<p class="text-gray-400">אין הודעות עדיין</p>
+						<p class="text-gray-400">{tFn('profile_no_messages')}</p>
 					</div>
 				{:else}
 					{#each messages as msg}
@@ -308,7 +316,7 @@
 							</div>
 							<p class="text-gray-300 text-sm leading-relaxed bg-white/5 rounded-xl px-4 py-3">{msg.body}</p>
 							{#if !msg.read}
-								<span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200">חדש</span>
+								<span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200">{tFn('profile_msg_new_badge')}</span>
 							{/if}
 						</div>
 					{/each}
@@ -320,14 +328,14 @@
 		{#if activeTab === 'cases'}
 			<div class="space-y-3">
 				<div class="flex items-center justify-between">
-					<h2 class="text-lg font-bold text-white">📂 התיקים שלי</h2>
-					<a href="/request-hearing" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-bold">+ תיק חדש</a>
+					<h2 class="text-lg font-bold text-white">📂 {tFn('profile_my_cases')}</h2>
+					<a href="/request-hearing" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-bold">+ {tFn('profile_new_case')}</a>
 				</div>
 				{#if cases.length === 0}
 					<div class="text-center py-12">
 						<div class="text-5xl mb-3">📭</div>
-						<p class="text-gray-400">עוד לא פתחת תיקים</p>
-						<a href="/request-hearing" class="inline-block mt-4 px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold hover:scale-105 transition-transform">⚖️ פתח תיק ראשון</a>
+						<p class="text-gray-400">{tFn('profile_no_cases')}</p>
+						<a href="/request-hearing" class="inline-block mt-4 px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold hover:scale-105 transition-transform">⚖️ {tFn('profile_open_first_case')}</a>
 					</div>
 				{:else}
 					{#each cases as c}
@@ -336,7 +344,7 @@
 							<div class="flex items-start justify-between gap-2 flex-wrap mb-2">
 								<div class="flex-1 min-w-0">
 									<h3 class="font-bold text-white">{c.nickname || c.subject}</h3>
-									<p class="text-sm text-gray-400">תיק #{c.id} · {c.subject}</p>
+									<p class="text-sm text-gray-400">{tFn('profile_case_number')} #{c.id} · {c.subject}</p>
 								</div>
 								<span
 									class="text-xs px-2.5 py-1 rounded-full whitespace-nowrap {status.color === 'green'
@@ -347,10 +355,10 @@
 								</span>
 							</div>
 							<div class="grid grid-cols-2 gap-2 text-sm text-gray-300 mt-3">
-								<div><span class="text-gray-500">תובע:</span> {c.plaintiffName}</div>
-								<div><span class="text-gray-500">נתבע:</span> {c.defendantName}</div>
-								<div><span class="text-gray-500">תאריך מוצע:</span> {c.proposedDate}</div>
-								<div><span class="text-gray-500">נפתח:</span> {formatDate(c.createdAt)}</div>
+								<div><span class="text-gray-500">{tFn('profile_plaintiff')}:</span> {c.plaintiffName}</div>
+								<div><span class="text-gray-500">{tFn('profile_defendant')}:</span> {c.defendantName}</div>
+								<div><span class="text-gray-500">{tFn('profile_proposed_date')}:</span> {c.proposedDate}</div>
+								<div><span class="text-gray-500">{tFn('profile_opened')}:</span> {formatDate(c.createdAt)}</div>
 							</div>
 						</div>
 					{/each}
@@ -361,10 +369,10 @@
 		<!-- ───────────── טאב: פסקי דין ─────────────  -->
 		{#if activeTab === 'rulings'}
 			<div class="space-y-3">
-				<h2 class="text-lg font-bold text-white mb-2">📋 פסקי הדין והדיונים שלי</h2>
+				<h2 class="text-lg font-bold text-white mb-2">📋 {tFn('profile_my_rulings_hearings')}</h2>
 
 				{#if myHearings.length > 0}
-					<h3 class="text-sm font-bold text-blue-300 mt-3">🎥 דיונים מתוכננים</h3>
+					<h3 class="text-sm font-bold text-blue-300 mt-3">🎥 {tFn('profile_scheduled_hearings')}</h3>
 					{#each myHearings as h}
 						<div class="rounded-xl border border-white/10 bg-white/5 p-4">
 							<div class="flex items-start justify-between gap-2 flex-wrap">
@@ -372,18 +380,18 @@
 									<p class="font-bold text-white">{h.caseName}</p>
 									<p class="text-sm text-gray-400">{h.date} · {h.time}</p>
 								</div>
-								<a href={h.zoomLink} target="_blank" rel="noopener" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-200 font-bold hover:bg-blue-500/30">🎥 להצטרפות</a>
+								<a href={h.zoomLink} target="_blank" rel="noopener" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-200 font-bold hover:bg-blue-500/30">🎥 {tFn('profile_join_hearing')}</a>
 							</div>
 						</div>
 					{/each}
 				{/if}
 
 				{#if myRulings.length > 0}
-					<h3 class="text-sm font-bold text-green-300 mt-4">📋 פסקי דין סופיים</h3>
+					<h3 class="text-sm font-bold text-green-300 mt-4">📋 {tFn('profile_final_rulings')}</h3>
 					{#each myRulings as r}
 						<div class="rounded-xl border border-white/10 bg-white/5 p-4">
 							<p class="font-bold text-white">{r.caseName}</p>
-							<p class="text-sm text-gray-400 mt-1">{r.date} · סטטוס: {r.status}</p>
+							<p class="text-sm text-gray-400 mt-1">{r.date} · {tFn('profile_status')}: {r.status}</p>
 						</div>
 					{/each}
 				{/if}
@@ -391,7 +399,7 @@
 				{#if myHearings.length === 0 && myRulings.length === 0}
 					<div class="text-center py-12">
 						<div class="text-5xl mb-3">⚖️</div>
-						<p class="text-gray-400">אין דיונים או פסקי דין שלך עדיין</p>
+						<p class="text-gray-400">{tFn('profile_no_rulings_hearings')}</p>
 					</div>
 				{/if}
 			</div>
@@ -400,10 +408,10 @@
 		<!-- ───────────── טאב: פרטים אישיים ───────────── -->
 		{#if activeTab === 'profile'}
 			<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-				<h2 class="text-lg font-bold text-white mb-4">👤 פרטים אישיים</h2>
+				<h2 class="text-lg font-bold text-white mb-4">👤 {tFn('profile_personal_details')}</h2>
 				<div class="grid md:grid-cols-2 gap-4">
 					<label class="block">
-						<span class="text-sm font-bold text-gray-300">שם מלא</span>
+						<span class="text-sm font-bold text-gray-300">{tFn('profile_full_name')}</span>
 						<input
 							type="text"
 							bind:value={editName}
@@ -411,7 +419,7 @@
 						/>
 					</label>
 					<label class="block">
-						<span class="text-sm font-bold text-gray-300">טלפון</span>
+						<span class="text-sm font-bold text-gray-300">{tFn('profile_phone')}</span>
 						<input
 							type="tel"
 							bind:value={editPhone}
@@ -419,7 +427,7 @@
 						/>
 					</label>
 					<label class="block">
-						<span class="text-sm font-bold text-gray-300">אימייל</span>
+						<span class="text-sm font-bold text-gray-300">{tFn('profile_email')}</span>
 						<input
 							type="email"
 							bind:value={editEmail}
@@ -427,7 +435,7 @@
 						/>
 					</label>
 					<label class="block">
-						<span class="text-sm font-bold text-gray-300">עיר</span>
+						<span class="text-sm font-bold text-gray-300">{tFn('profile_city')}</span>
 						<input
 							type="text"
 							bind:value={editCity}
@@ -441,25 +449,25 @@
 						onclick={saveProfile}
 						class="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black hover:scale-[1.01] transition-transform"
 					>
-						💾 שמור שינויים
+						💾 {tFn('profile_save_changes')}
 					</button>
 					<button
 						onclick={logout}
 						class="px-5 py-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold border border-red-500/30 transition-colors"
 					>
-						🚪 התנתקות
+						🚪 {tFn('profile_logout')}
 					</button>
 				</div>
 
 				{#if savedNotice}
-					<div class="mt-3 text-sm text-green-300 text-center">✓ הפרטים נשמרו</div>
+					<div class="mt-3 text-sm text-green-300 text-center">✓ {tFn('profile_saved_notice')}</div>
 				{/if}
 
 				<div class="mt-6 pt-5 border-t border-white/10 text-sm text-gray-400">
-					<p class="mb-2"><strong class="text-gray-200">סטטוס הצהרות:</strong></p>
+					<p class="mb-2"><strong class="text-gray-200">{tFn('profile_declarations_status')}:</strong></p>
 					<ul class="space-y-1">
-						<li>{user?.uecc ? '✓' : '✗'} קוד אתי UECC ושבע מצוות בני נח</li>
-						<li>{user?.arbitration ? '✓' : '✗'} הסכמה לבוררות בית הדין</li>
+						<li>{user?.uecc ? '✓' : '✗'} {tFn('profile_decl_uecc')}</li>
+						<li>{user?.arbitration ? '✓' : '✗'} {tFn('profile_decl_arbitration')}</li>
 					</ul>
 				</div>
 			</div>

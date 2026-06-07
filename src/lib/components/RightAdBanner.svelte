@@ -1,5 +1,11 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { t, locale } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
+    let _loc = $state(get(locale));
+    $effect(() => locale.subscribe(l => (_loc = l)));
+    const tFn = (k: string) => { void _loc; return get(t)(k); };
 
     let currentGroup = $state(0);
     let totalSwaps = $state(0);
@@ -7,8 +13,6 @@
 
     const ads = [
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-orange-500/30",
             bgColor: "bg-orange-900/10",
             hoverBorder: "hover:border-orange-500",
@@ -18,8 +22,6 @@
             buttonColor: "bg-orange-600 hover:bg-orange-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-blue-500/30",
             bgColor: "bg-blue-900/10",
             hoverBorder: "hover:border-blue-500",
@@ -29,8 +31,6 @@
             buttonColor: "bg-blue-600 hover:bg-blue-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-green-500/30",
             bgColor: "bg-green-900/10",
             hoverBorder: "hover:border-green-500",
@@ -40,8 +40,6 @@
             buttonColor: "bg-green-600 hover:bg-green-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-amber-500/30",
             bgColor: "bg-amber-900/10",
             hoverBorder: "hover:border-amber-500",
@@ -51,8 +49,6 @@
             buttonColor: "bg-amber-600 hover:bg-amber-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-purple-500/30",
             bgColor: "bg-purple-900/10",
             hoverBorder: "hover:border-purple-500",
@@ -62,8 +58,6 @@
             buttonColor: "bg-purple-600 hover:bg-purple-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-red-500/30",
             bgColor: "bg-red-900/10",
             hoverBorder: "hover:border-red-500",
@@ -73,8 +67,6 @@
             buttonColor: "bg-red-600 hover:bg-red-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-indigo-500/30",
             bgColor: "bg-indigo-900/10",
             hoverBorder: "hover:border-indigo-500",
@@ -84,8 +76,6 @@
             buttonColor: "bg-indigo-600 hover:bg-indigo-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-teal-500/30",
             bgColor: "bg-teal-900/10",
             hoverBorder: "hover:border-teal-500",
@@ -95,8 +85,6 @@
             buttonColor: "bg-teal-600 hover:bg-teal-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-pink-500/30",
             bgColor: "bg-pink-900/10",
             hoverBorder: "hover:border-pink-500",
@@ -106,8 +94,6 @@
             buttonColor: "bg-pink-600 hover:bg-pink-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-yellow-500/30",
             bgColor: "bg-yellow-900/10",
             hoverBorder: "hover:border-yellow-500",
@@ -117,8 +103,6 @@
             buttonColor: "bg-yellow-600 hover:bg-yellow-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-emerald-500/30",
             bgColor: "bg-emerald-900/10",
             hoverBorder: "hover:border-emerald-500",
@@ -128,8 +112,6 @@
             buttonColor: "bg-emerald-600 hover:bg-emerald-500",
         },
         {
-            text: "מקום פרסום",
-            description: "יכול להיות שלך",
             borderColor: "border-fuchsia-500/30",
             bgColor: "bg-fuchsia-900/10",
             hoverBorder: "hover:border-fuchsia-500",
@@ -160,13 +142,13 @@
 
 <!-- RightAdBanner.svelte -->
 <aside
-    aria-label="פרסומות"
+    aria-label={tFn('right_ad_aside_label')}
     class="hidden xl:block w-36 flex-shrink-0 sticky top-4 h-fit pb-8 text-center"
 >
     <h4
         class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2 px-2"
     >
-        תוכן שיווקי
+        {tFn('right_ad_section_heading')}
     </h4>
     <div class="space-y-3">
         {#each displayedAds as ad, index}
@@ -199,12 +181,12 @@
                             <span
                                 class="text-2xl font-black {ad.textColor} {ad.hoverText} tracking-wider drop-shadow-sm"
                             >
-                                {ad.text} זה
+                                {tFn('right_ad_slot_headline')}
                             </span>
                             <span
                                 class="text-base font-bold {ad.textColor} {ad.hoverText} opacity-90 drop-shadow-sm"
                             >
-                                - {ad.description}
+                                - {tFn('right_ad_slot_subtext')}
                             </span>
                         </div>
                     </div>
@@ -213,7 +195,7 @@
                         href="/about/advertise"
                         class="mb-4 z-10 rounded-full {ad.buttonColor} px-5 py-2 text-sm font-bold text-white shadow-xl transition-transform hover:scale-105"
                     >
-                        לפרטים
+                        {tFn('right_ad_btn_details')}
                     </a>
                 </div>
             </div>

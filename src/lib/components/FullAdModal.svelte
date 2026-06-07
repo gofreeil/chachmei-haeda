@@ -2,6 +2,12 @@
     import { fade, scale } from "svelte/transition";
     import type { Ad } from "$lib/adsData";
     import { onMount } from "svelte";
+    import { t, locale } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
+    let _loc = $state(get(locale));
+    $effect(() => locale.subscribe(l => (_loc = l)));
+    const tFn = (k: string) => { void _loc; return get(t)(k); };
 
     let { ad, onClose }: { ad: Ad; onClose: () => void } = $props();
 
@@ -117,7 +123,7 @@
             bind:this={closeButton}
             class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
             onclick={onClose}
-            aria-label="סגור"
+            aria-label={tFn('ad_modal_close')}
         >
             <span aria-hidden="true">✕</span>
         </button>
@@ -151,7 +157,7 @@
                 href={ad.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="{ad.cta} – {ad.title} (נפתח בחלון חדש)"
+                aria-label="{ad.cta} – {ad.title} ({tFn('ad_modal_opens_in_new_window')})"
                 class="inline-block w-full py-4 px-8 rounded-2xl bg-gradient-to-r {ad.color} text-white font-black text-xl shadow-xl hover:scale-105 active:scale-95 transition-all shadow-blue-500/20"
             >
                 {ad.cta}

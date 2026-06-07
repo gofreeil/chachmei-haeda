@@ -1,140 +1,124 @@
 <script lang="ts">
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
+
+	const mitzvotKeys = [
+		{ n: 'eth_code_mitzvah_1_n', title: 'eth_code_mitzvah_1_title', body: 'eth_code_mitzvah_1_body', img: '/images/051bb5c2afa0f882cb69274d1d2762f43c07ec83a3762e6a52c0fe31 (1).jpg' },
+		{ n: 'eth_code_mitzvah_2_n', title: 'eth_code_mitzvah_2_title', body: 'eth_code_mitzvah_2_body', img: '/images/copyof_e9e782464b20dd1a78dc695f7f96d22bce0eaa7c3bd658140125d327.jpg' },
+		{ n: 'eth_code_mitzvah_3_n', title: 'eth_code_mitzvah_3_title', body: 'eth_code_mitzvah_3_body', img: '/images/66d586997b1916c727e39b860ac1aaf1adcd7e09858c1f9652d8474e (1).jpg' },
+		{ n: 'eth_code_mitzvah_4_n', title: 'eth_code_mitzvah_4_title', body: 'eth_code_mitzvah_4_body', img: '/images/06906e45572ea20efba61c33ca2e0ee71d5f04fcb36dd24907a8f3e5 (1).jpg' },
+		{ n: 'eth_code_mitzvah_5_n', title: 'eth_code_mitzvah_5_title', body: 'eth_code_mitzvah_5_body', img: '/images/598111f9fb5ce654ab97a14f7895e164e7bcce3dfca356213208dccd (1).jpg' },
+		{ n: 'eth_code_mitzvah_6_n', title: 'eth_code_mitzvah_6_title', body: 'eth_code_mitzvah_6_body', img: '/images/425738cfb4e7e3542b6ae9a64e4f5ed4060d807af4cd440dad202f87 (1).jpg' },
+		{ n: 'eth_code_mitzvah_7_n', title: 'eth_code_mitzvah_7_title', body: 'eth_code_mitzvah_7_body', img: '/images/7262c95d28eb13b988331fd0f3903273eee17bec96ad1b22378e0bb3 (1).jpg' }
+	];
 </script>
 
 <svelte:head>
-	<title>הקוד האתי UECC - חכמי העדה</title>
+	<title>{tFn('eth_code_page_title')}</title>
 </svelte:head>
 
 <article class="prose-rtl max-w-none py-8 px-2 md:px-4">
-	<HeichalHeader subtitle="אמנת UECC - הקוד האתי המוסרי הכלל-עולמי" />
+	<HeichalHeader subtitle={tFn('eth_code_header_subtitle')} />
 
 	<section class="space-y-3 text-gray-200 leading-snug text-xs md:text-sm">
 		<p>
-			<strong class="text-blue-300">UECC</strong> – זוהי הָאֲמָנָה הַמּוּסָרִית הַכְּלָל-עוֹלָמִית אשר קיבלה
-			האנושות במעמד הר סיני, והמחייבת את כל עם ישראל ואת כל בני נוח.
+			<strong class="text-blue-300">UECC</strong> – {tFn('eth_code_intro_p1')}
 		</p>
 
 		<p>
-			מקור הָאֲמָנָה הַמּוּסָרִית הכלל-עולמית הוא מאבות העולם. לאחר המבול העולמי בורא עולם כורת ברית עם
-			מייצג את האנושות ממשיך עולמו, נח בן למך, וכורת עמו ברית כוללת להמשך האנושות עם אמנה בעלת שבעה כללי
-			התנהגות כללים מוסריים, ובהם עקרונות היושר הכוללים את כל איסורי גזל על כל פרטיו: גניבה, עושק והונאת
-			דברים. עקרונות כלל-עולמיים אלו מיוסדים על יראת בורא עולם שברא את כל הבריות ומשגיח על כולם.
+			{tFn('eth_code_intro_p2')}
 		</p>
 
 		<blockquote class="border-r-4 border-blue-400 pr-4 italic text-gray-300">
-			אברהם אבינו הכריז {'{בראשית כ יא}'}: "וַיֹּאמֶר אַבְרָהָם: כִּי אָמַרְתִּי רַק אֵין יִרְאַת
-			אֱלֹהִי'ם בַּמָּקוֹם הַזֶּה וַהֲרָגוּנִי עַל דְּבַר אִשְׁתִּי".
+			{tFn('eth_code_quote_avraham')}
 		</blockquote>
 
-		<p>על פי התלמוד והזוהר וההלכה אין לעשות עסקים עם מי שאין לו תורה ויראת שמים.</p>
+		<p>{tFn('eth_code_talmud_zohar')}</p>
 
-		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">החלק המרכזי שבאֲמָנָה</h2>
+		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">{tFn('eth_code_h2_central')}</h2>
 
 		<blockquote class="border-r-4 border-yellow-400 pr-4 italic text-gray-300">
-			הציווי האלוקי {'{דברים יב כח}'}: "שְׁמֹר וְשָׁמַעְתָּ אֵת כָּל הַדְּבָרִים הָאֵלֶּה אֲשֶׁר אָנֹכִי
-			מְצַוֶּךָּ לְמַעַן יִיטַב לְךָ וּלְבָנֶיךָ אַחֲרֶיךָ עַד עוֹלָם כִּי תַעֲשֶׂה הַטּוֹב וְהַיָּשָׁר
-			בְּעֵינֵי ה' אֱלֹהֶי'ךָ".
+			{tFn('eth_code_quote_devarim')}
 		</blockquote>
 
 		<p>
-			<strong class="text-yellow-300">"הַיָּשָׁר"</strong> בעיני בורא עולם - הוא שאדם ישמור לקיים את דיבורו
-			תמיד, כפי הציווי האלוקי בתורה {'{דברים כג כד}'}: "מוֹצָא שְׂפָתֶיךָ תִּשְׁמֹר וְעָשִׂיתָ". על האדם
-			להקפיד להיות "תוכו כברו" {'{מסכת יומא עב ע"ב}'} בלי פער בין פנימיותו לחיצוניותו, "שלא ידבר אחד בפה
-			ואחד בלב" {'{מסכת בבא מציעא מט ע"א}'}. כל מה שאדם מוציא מפיו ומתחייב, עליו לקיים גם אם הוא עלול
-			להפסיד. על אחת כמה וכמה כאשר חותמים על חוזה, חייבים לעמוד בהתחייבויות ההסכם ולכבד את דיבורו ואת חתימת
-			ידו.
+			<strong class="text-yellow-300">"{tFn('eth_code_hayashar_word')}"</strong> {tFn('eth_code_hayashar_body')}
 		</p>
 
 		<p>
-			<strong class="text-yellow-300">"הַטּוֹב"</strong> בעיני בורא עולם - הוא שכל אחד ידאג לצרכים של זולתו
-			הקרוב והרחוק במידת היכולת שלו, ולדאוג לטוב של שותפיו. בכל עסקה, חייב האדם לוודא כי כל הצדדים יצאו
-			מרוויחים ולא ניזוקים.
+			<strong class="text-yellow-300">"{tFn('eth_code_hatov_word')}"</strong> {tFn('eth_code_hatov_body')}
 		</p>
 
-		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">החלק היישומי</h2>
+		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">{tFn('eth_code_h2_practical')}</h2>
 
 		<p>
-			על כל מעביד לדאוג לזכויות העובדים השכירים שלו, ולקדם את העובד כמה שיכול. כמו כן על העובד לדאוג
-			לנאמנות משרתו ועבודתו במקום העבודה ולדאוג לשיפור מקום העבודה.
+			{tFn('eth_code_practical_p1')}
 		</p>
 
 		<p>
-			השאיפה היא שהָאֲמָנָה הַמּוּסָרִית UECC תזכה להילמד בכל בית ספר לעסקים ובכל מקצוע פעיל. חשיבותה של
-			אֲמָנָה מּוּסָרִית כלל-עולמית לכל האנושית נובעת מהמקור המשותף לכל מוסר התנהגותי: מעמד הר סיני שבו
-			התגלה בורא עולם לכל האנושות באמצעות עם ישראל.
+			{tFn('eth_code_practical_p2')}
 		</p>
 
-		<h3 class="text-sm md:text-base font-bold text-blue-300 mt-6">מי מקבל על עצמו את האמנה?</h3>
+		<h3 class="text-sm md:text-base font-bold text-blue-300 mt-6">{tFn('eth_code_h3_who_accepts')}</h3>
 		<ul class="list-disc pr-6 space-y-2">
-			<li>אנשי עסקים המבקשים לעבוד על פי האמנה המוסרית - יקבלו על עצמם את שבע מצוות בני נוח.</li>
-			<li>מעסיקים, יצרנים ונותני שירות - יתחייבו ליישם את האמנה כלפי העובדים.</li>
-			<li>עובדים בכל המקצועות - יקבלו על עצמם את שבע מצוות בני נוח כלפי המעסיקים והלקוחות.</li>
-			<li>גברים ונשים - יקבלו את שבע מצוות בני נוח כלפי בני הזוג שלהם.</li>
+			<li>{tFn('eth_code_accepts_li_1')}</li>
+			<li>{tFn('eth_code_accepts_li_2')}</li>
+			<li>{tFn('eth_code_accepts_li_3')}</li>
+			<li>{tFn('eth_code_accepts_li_4')}</li>
 		</ul>
 
 		<p class="border-t border-white/10 pt-5 mt-8">
-			למעשה האמנה המוסרית העולמית <strong class="text-blue-300">UECC</strong> מגדירה את עקרונות ה"דרך הארץ"
-			על פי תורה ומצוות התורה בין בני אדם.
+			{tFn('eth_code_derech_eretz_p1')} <strong class="text-blue-300">UECC</strong> {tFn('eth_code_derech_eretz_p2')}
 		</p>
 
 		<p>
-			לכל אנשי העסקים, הדבר החשוב ביותר שעליו לדעת לפני קביעת כל התקשרות עסקית: האם לאדם העומד מולו יש
-			יראת אלוהי'ם. במידה שכן יש סבירות גבוהה שהוא יישמר מכל גזל והונאה.
+			{tFn('eth_code_business_yirah')}
 		</p>
 
-		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-8">שבע מצוות בני נח</h2>
+		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-8">{tFn('eth_code_h2_seven_mitzvot')}</h2>
 
 		<p>
-			הָאֲמָנָה הַמּוּסָרִית הַכְּלָל-עוֹלָמִית מיוסדת על שבע מצוות בני נח המהווים שבעה כללי יסוד עולמיים.
-			לפי מסורת חכמינו ז"ל, בשש מצוות נצטווה כבר אדם הראשון. ואילו המצווה השביעית, אבר מן החי, נצטוו נח
-			ובניו. לכן המושג 'שבע מצוות בני נח' כוונתו לכלל האנושות.
+			{tFn('eth_code_seven_mitzvot_intro')}
 		</p>
 
 		<div class="rounded-xl border border-white/10 bg-white/5 p-3 md:p-4 my-4">
-			<p class="text-xs text-gray-400 mb-1.5">גמרא בבלי מסכת סנהדרין נו ע"א-ע"ב:</p>
+			<p class="text-xs text-gray-400 mb-1.5">{tFn('eth_code_gemara_citation')}</p>
 			<p class="italic text-gray-200 text-xs md:text-sm leading-snug">
-				"תָּנוּ רַבָּנָן: שֶׁבַע מִצְווֹת נִצְטַוּוּ בְּנֵי נֹחַ: דִּינִין. וּבִרְכַּת הַשֵּׁם. וַעֲבוֹדַת
-				אֱלִילִים. וְגִלּוּי עֲרָיוֹת. וּשְׁפִיכוּת דָּמִים. וְגָזֵל. וְאֵיבָר מִן הַחַי."
+				{tFn('eth_code_gemara_text')}
 			</p>
 		</div>
 
 		<div class="space-y-4 mt-6">
-			{#each [
-				{ n: 'א', title: 'אמונה בא׳ל אחד - איסור עבודה זרה', body: 'על כל איש ואומה להאמין בקיומו של בורא העולם האחד והיחיד. הוא ברא את העולם ואת האדם, יודע את כל מעשי הנבראים ומשגיח עליהם ודן כל אדם לפי מעשיו. אסור להשתחוות או לעבוד לאלילים מכל סוג שהוא, וכן אסורה אמונה באל אחר או בכל ישות אחרת מברואי העולם.', img: '/images/051bb5c2afa0f882cb69274d1d2762f43c07ec83a3762e6a52c0fe31 (1).jpg' },
-				{ n: 'ב', title: 'כבוד הבורא - איסור ברכת השם', body: 'על האדם להעניק כבוד לבורא העולם שנתן לו את החיים. אסור לקלל את ה׳ או לכנותו בכינוי גנאי.', img: '/images/copyof_e9e782464b20dd1a78dc695f7f96d22bce0eaa7c3bd658140125d327.jpg' },
-				{ n: 'ג', title: 'כבוד האדם וחירותו - איסור שפיכות דמים', body: 'האדם נברא בצלם בוראו. חייו מתנת עליון שאין רשות ליטלה. איסור מוחלט על הריגת כל אדם, ולו גם עובר ברחם אימו. ההורג נפש אחת נחשב כאילו איבד עולם מלא.', img: '/images/66d586997b1916c727e39b860ac1aaf1adcd7e09858c1f9652d8474e (1).jpg' },
-				{ n: 'ד', title: 'כיבוד רכוש הזולת - איסור גזל', body: 'איסור מוחלט על גניבה וגזל, או כל סוג של הוצאת רכוש מרשותו של אדם בעורמה או בכוח, ובכל דרך לא חוקית. כולל איסור הלנת שכר ואיסור חטיפת אדם.', img: '/images/06906e45572ea20efba61c33ca2e0ee71d5f04fcb36dd24907a8f3e5 (1).jpg' },
-				{ n: 'ה', title: 'כיבוד מוסד המשפחה - איסור גילוי עריות', body: 'איסור קיום יחסים בין קרובי משפחה מדרגה ראשונה, בין אישה נשואה לגבר זר, בין זכרים, או עם בעלי חיים.', img: '/images/598111f9fb5ce654ab97a14f7895e164e7bcce3dfca356213208dccd (1).jpg' },
-				{ n: 'ו', title: 'כיבוד בעלי החיים - איסור אבר מן החי', body: 'איסור אכילת אבר או תלישת אבר מבעל חיים בעודנו חי. מצווה זו מחייבת אותנו לא להיות אדישים לצערם של בעלי חיים - ומגבירה את חובתנו להיות ערים לצערו של אדם אחר.', img: '/images/425738cfb4e7e3542b6ae9a64e4f5ed4060d807af4cd440dad202f87 (1).jpg' },
-				{ n: 'ז', title: 'הקמת מערכת משפט צדק - מינוי דיינים', body: 'חובה על כל אומה להקים בתחומה בתי משפט אמת השווים לכל האוכלוסיה, ולמנות שופטים ישרים הצמודים לשבע מצוות בני נח. הסמכות לענוש את העוברים על המצוות. איסור חמור על אומות בני נח לשרות במקום בו אין מערכת משפט כזו.', img: '/images/7262c95d28eb13b988331fd0f3903273eee17bec96ad1b22378e0bb3 (1).jpg' }
-			] as m}
+			{#each mitzvotKeys as m}
 				<div class="rounded-xl border border-blue-500/20 bg-blue-900/10 p-3 md:p-4 flex flex-col md:flex-row md:items-center gap-3">
 					<div class="flex-1 min-w-0">
 						<h4 class="text-sm md:text-base font-bold text-blue-300">
-							<span class="text-base text-yellow-400 ml-2">{m.n}.</span>{m.title}
+							<span class="text-base text-yellow-400 ml-2">{tFn(m.n)}.</span>{tFn(m.title)}
 						</h4>
-						<p class="mt-1.5 text-gray-300 leading-snug text-xs md:text-sm">{m.body}</p>
+						<p class="mt-1.5 text-gray-300 leading-snug text-xs md:text-sm">{tFn(m.body)}</p>
 					</div>
-					<img src={m.img} alt={m.title} loading="lazy" class="w-full md:w-44 lg:w-52 h-auto max-h-36 object-contain rounded-lg flex-shrink-0" />
+					<img src={m.img} alt={tFn(m.title)} loading="lazy" class="w-full md:w-44 lg:w-52 h-auto max-h-36 object-contain rounded-lg flex-shrink-0" />
 				</div>
 			{/each}
 		</div>
 
 		<div class="rounded-xl border border-red-500/30 bg-red-900/10 p-3 md:p-4 mt-6">
-			<h4 class="text-sm md:text-base font-bold text-red-300">שלוש מצוות שייהרג ולא יעבור:</h4>
-			<p class="mt-1 text-gray-300 text-xs md:text-sm">איסור עבודה זרה • איסור שפיכות דמים • איסור גילוי עריות</p>
+			<h4 class="text-sm md:text-base font-bold text-red-300">{tFn('eth_code_yehareg_title')}</h4>
+			<p class="mt-1 text-gray-300 text-xs md:text-sm">{tFn('eth_code_yehareg_body')}</p>
 		</div>
 
 		<p class="text-center text-sm md:text-base text-yellow-200 mt-6 font-bold">
-			לקיים את שבע המצוות ולהכין את העולם לקראת עידן חדש בו לא יהיו מלחמות, רעב, קנאה ותחרות -
-			זהו עידן הגאולה.
+			{tFn('eth_code_geulah_closing')}
 		</p>
 	</section>
 
 	<footer class="mt-8 border-t border-white/10 pt-4 text-center">
 		<p class="text-gray-400 text-xs md:text-sm">
-			מקורות: רמב"ם הלכות מלכים פרקים ח-י • תלמוד בבלי מסכת סנהדרין נו
+			{tFn('eth_code_sources_footer')}
 		</p>
 	</footer>
 </article>

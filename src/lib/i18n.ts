@@ -226,6 +226,21 @@ register('he', () => Promise.resolve({
     coordinator_submitting: "שולח...",
     coordinator_success: "✅ בקשתך נשלחה בהצלחה! צוות הניהול יצור איתך קשר בקרוב.",
     coordinator_error: "שגיאה בשליחת הבקשה. אנא נסה שוב.",
+
+    // EthicalCodeBanner
+    eth_banner_link_title: "לדף הקוד האתי UECC",
+    eth_banner_img_alt: "הקוד האתי UECC",
+    eth_banner_heading: "יתרונות הצטרפות לקוד האתי",
+    eth_banner_cta_to_code: "לקוד האתי העולמי ←",
+    eth_banner_benefit_1: "אמינות עסקית: שותפים יודעים שדבריך נשמרים בנאמנות",
+    eth_banner_benefit_2: "גישה לקהילת בעלי ברית מוסרית - שידוכים עסקיים ותעסוקתיים",
+    eth_banner_benefit_3: "הגנה משפטית פנים-קהילתית: פתרון מחלוקות מהיר וצודק לפני ערכאות",
+    eth_banner_benefit_4: "התחייבות הדדית: עובדים, מעסיקים ולקוחות מקבלים על עצמם את אותה אמנה",
+    eth_banner_benefit_5: "ברכת הבורא והשגחה מיוחדת על העוסקים ביושר ובאמת",
+    eth_banner_join_heading: "עוד לא הצטרפת? - הצטרף מיד לקבלת המוסר האלוקי",
+    eth_banner_join_text: "הצטרפותך מחזקת את מעגל היושר והאמון - קבל על עצמך את שבע מצוות בני נח והיה חלק מתיקון עולם.",
+    eth_banner_btn_sign: "✍️ חתום על הקוד",
+    eth_banner_btn_signatories: "רשימת החתומים →",
 }));
 
 register('en', () => Promise.resolve({

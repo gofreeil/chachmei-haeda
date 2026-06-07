@@ -28,50 +28,50 @@
 
     const navGroups = [
         {
-            title: 'בית ואודותנו',
+            titleKey: 'header_nav_group_home_about',
             items: [
-                { href: '/', label: 'בית', icon: '🏠' },
-                { href: '/about/revenue', label: 'אודות', icon: 'ℹ️' },
+                { href: '/', labelKey: 'header_nav_home', icon: '🏠' },
+                { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️' },
             ],
         },
         {
-            title: 'ארבעת ההיכלות',
+            titleKey: 'header_nav_group_four_heichalot',
             items: [
                 {
                     href: '/heichal-hamishpat',
-                    label: 'היכל המשפט',
+                    labelKey: 'header_nav_heichal_mishpat',
                     icon: '⚖️',
                     children: [
-                        { href: '/request-hearing', label: 'פתיחת תיק', icon: '📂' },
-                        { href: '/hearings', label: 'דיוני זום', icon: '🎥' },
-                        { href: '/rulings', label: 'פסקי דין', icon: '📋' },
+                        { href: '/request-hearing', labelKey: 'header_nav_open_case', icon: '📂' },
+                        { href: '/hearings', labelKey: 'header_nav_zoom_hearings', icon: '🎥' },
+                        { href: '/rulings', labelKey: 'header_nav_rulings', icon: '📋' },
                     ],
                 },
                 {
                     href: '/request-hearing',
-                    label: 'היכל השלום',
+                    labelKey: 'header_nav_heichal_shalom',
                     icon: '🕊️',
                     children: [],
                 },
                 {
                     href: '/heichal-hamaaseh/activity',
-                    label: 'היכל המעשה',
+                    labelKey: 'header_nav_heichal_maaseh',
                     icon: '🛠️',
                     children: [
-                        { href: '/heichal-hamaaseh/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
-                        { href: '/heichal-hamaaseh/signatories', label: 'חתומים על הקוד', icon: '✍️' },
-                        { href: '/charter-index', label: 'אינדקס האמנה', icon: '📑' },
-                        { href: '/heichal-hamaaseh/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
+                        { href: '/heichal-hamaaseh/ethical-code', labelKey: 'header_nav_ethical_code', icon: '📜' },
+                        { href: '/heichal-hamaaseh/signatories', labelKey: 'header_nav_signatories', icon: '✍️' },
+                        { href: '/charter-index', labelKey: 'header_nav_charter_index', icon: '📑' },
+                        { href: '/heichal-hamaaseh/charter-join', labelKey: 'header_nav_charter_join', icon: '🤝' },
                     ],
                 },
                 {
                     href: '/articles',
-                    label: 'היכל הרוח',
+                    labelKey: 'header_nav_heichal_ruach',
                     icon: '📚',
                     children: [
-                        { href: '/articles', label: 'מאמרי רבנים', icon: '📚' },
-                        { href: '/qa', label: 'שאלות ותשובות', icon: '💬' },
-                        { href: '/ask', label: 'שאל את חכמי העדה', icon: '❓' },
+                        { href: '/articles', labelKey: 'header_nav_rabbis_articles', icon: '📚' },
+                        { href: '/qa', labelKey: 'header_nav_qa', icon: '💬' },
+                        { href: '/ask', labelKey: 'header_nav_ask_chachmei', icon: '❓' },
                     ],
                 },
             ],
@@ -226,7 +226,7 @@
                             <div class="h-12 w-12 rounded-full overflow-hidden flex-shrink-0">
                                 <img
                                     src="/images/chachmei-logo.png"
-                                    alt="חכמי העדה"
+                                    alt={tFn('header_logo_alt')}
                                     class="w-full h-full object-cover scale-[1.5]"
                                 />
                             </div>
@@ -252,7 +252,7 @@
                             <button
                                 onclick={() => (showNavMenu = !showNavMenu)}
                                 class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                                aria-label="תפריט"
+                                aria-label={tFn('header_menu_aria')}
                                 aria-haspopup="menu"
                                 aria-expanded={showNavMenu}
                             >
@@ -264,13 +264,13 @@
                                 <div
                                     class="absolute left-0 z-[160] mt-2 w-64 max-h-[80vh] overflow-y-auto rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-2"
                                     role="menu"
-                                    aria-label="ניווט"
+                                    aria-label={tFn('header_nav_aria')}
                                 >
                                     {#each navGroups as group, gi}
                                         {#if gi > 0}
                                             <div class="my-1 border-t border-white/10"></div>
                                         {/if}
-                                        <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{group.title}</div>
+                                        <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{tFn(group.titleKey)}</div>
                                         {#each group.items as item}
                                             <a
                                                 href={item.href}
@@ -279,7 +279,7 @@
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 <span class="text-xl" aria-hidden="true">{item.icon}</span>
-                                                <span class="text-sm font-bold">{item.label}</span>
+                                                <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
                                             </a>
                                             {#if item.children && item.children.length}
                                                 {#each item.children as child}
@@ -290,7 +290,7 @@
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         <span class="text-base" aria-hidden="true">{child.icon}</span>
-                                                        <span class="text-xs">{child.label}</span>
+                                                        <span class="text-xs">{tFn(child.labelKey)}</span>
                                                     </a>
                                                 {/each}
                                             {/if}
@@ -305,7 +305,7 @@
                                 onclick={() => (showLangDropdown = !showLangDropdown)}
                                 onkeydown={handleLangKeydown}
                                 class="flex items-center justify-center w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
-                                aria-label="בחר שפה"
+                                aria-label={tFn('header_choose_lang_aria')}
                                 aria-haspopup="listbox"
                                 aria-expanded={showLangDropdown}
                             >
@@ -319,7 +319,7 @@
                                 <div
                                     class="absolute left-0 z-[160] mt-2 w-36 rounded-lg bg-[#0f172a] border border-white/10 shadow-xl"
                                     role="listbox"
-                                    aria-label="בחר שפה"
+                                    aria-label={tFn('header_choose_lang_aria')}
                                 >
                                     {#each languages as langOption}
                                         <button
@@ -338,7 +338,7 @@
                         </div>
 
                         {#if currentUser}
-                            <a href="/profile" class="relative group flex-shrink-0" aria-label="לאזור האישי – {currentUser.username ?? 'משתמש'}">
+                            <a href="/profile" class="relative group flex-shrink-0" aria-label="{tFn('header_profile_aria_user')} – {currentUser.username ?? tFn('header_user_fallback')}">
                                 {#if currentUser.avatar_url}
                                     <img
                                         src={currentUser.avatar_url}
@@ -355,7 +355,7 @@
                             <a
                                 href="/profile"
                                 class="relative group flex-shrink-0"
-                                aria-label="האזור האישי"
+                                aria-label={tFn('header_profile_area')}
                             >
                                 <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 rounded-full border-2 border-white/20 group-hover:border-purple-400 transition-all">
                                     <circle cx="20" cy="20" r="20" fill="#374151"/>
@@ -365,7 +365,7 @@
                                 <span class="absolute bottom-full right-1/2 translate-x-1/2 mb-2 hidden group-hover:block
                                              bg-gray-900 text-white text-[10px] font-bold rounded-lg px-2 py-1
                                              whitespace-nowrap border border-white/10 shadow-xl pointer-events-none">
-                                    האזור האישי
+                                    {tFn('header_profile_area')}
                                 </span>
                             </a>
                         {/if}
@@ -386,7 +386,7 @@
                         <div class="h-14 w-14 rounded-full overflow-hidden">
                             <img
                                 src="/images/chachmei-logo.png"
-                                alt="חכמי העדה"
+                                alt={tFn('header_logo_alt')}
                                 class="w-full h-full object-contain scale-[1.15]"
                                 style="image-rendering: -webkit-optimize-contrast;"
                             />
@@ -422,26 +422,26 @@
                     <button
                         class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-white transition-colors"
                         onclick={() => (showNavMenu = !showNavMenu)}
-                        aria-label="תפריט"
+                        aria-label={tFn('header_menu_aria')}
                         aria-haspopup="menu"
                         aria-expanded={showNavMenu}
                     >
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
                             <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
-                        <span class="font-bold">תפריט</span>
+                        <span class="font-bold">{tFn('header_menu_label')}</span>
                     </button>
                     {#if showNavMenu}
                         <div
                             class="absolute right-0 z-[160] mt-2 w-72 max-h-[80vh] overflow-y-auto rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-2"
                             role="menu"
-                            aria-label="ניווט"
+                            aria-label={tFn('header_nav_aria')}
                         >
                             {#each navGroups as group, gi}
                                 {#if gi > 0}
                                     <div class="my-1 border-t border-white/10"></div>
                                 {/if}
-                                <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{group.title}</div>
+                                <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{tFn(group.titleKey)}</div>
                                 {#each group.items as item}
                                     <a
                                         href={item.href}
@@ -450,7 +450,7 @@
                                         onclick={() => (showNavMenu = false)}
                                     >
                                         <span class="text-xl" aria-hidden="true">{item.icon}</span>
-                                        <span class="text-sm font-bold">{item.label}</span>
+                                        <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
                                     </a>
                                     {#if item.children && item.children.length}
                                         {#each item.children as child}
@@ -461,7 +461,7 @@
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 <span class="text-base" aria-hidden="true">{child.icon}</span>
-                                                <span class="text-xs">{child.label}</span>
+                                                <span class="text-xs">{tFn(child.labelKey)}</span>
                                             </a>
                                         {/each}
                                     {/if}
@@ -476,7 +476,7 @@
                         class="flex items-center rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-white transition-colors"
                         onclick={() => (showLangDropdown = !showLangDropdown)}
                         onkeydown={handleLangKeydown}
-                        aria-label="בחר שפה"
+                        aria-label={tFn('header_choose_lang_aria')}
                         aria-haspopup="listbox"
                         aria-expanded={showLangDropdown}
                     >
@@ -488,7 +488,7 @@
                             aria-hidden="true"
                         ></span>
                         {languages.find((l) => l.code === $locale || $locale?.startsWith(l.code))?.name ||
-                            'עברית'}
+                            tFn('header_lang_default')}
                         <svg
                             class="mr-1 h-4 w-4"
                             fill="none"
@@ -508,7 +508,7 @@
                         <div
                             class="absolute right-0 z-[160] mt-2 w-44 rounded-lg bg-[#0f172a] border border-white/10 shadow-xl"
                             role="listbox"
-                            aria-label="בחר שפה"
+                            aria-label={tFn('header_choose_lang_aria')}
                         >
                             {#each languages as langOption}
                                 <button
@@ -542,7 +542,7 @@
                             <a
                                 href="/profile"
                                 class="relative flex-shrink-0"
-                                aria-label="לאזור האישי – {userName}"
+                                aria-label="{tFn('header_profile_aria_user')} – {userName}"
                                 onmouseenter={() => showProfileTooltip = true}
                                 onmouseleave={() => showProfileTooltip = false}
                                 onmousemove={handleProfileMouseMove}
@@ -568,7 +568,7 @@
                         <a
                             href="/profile"
                             class="relative group flex-shrink-0"
-                            aria-label="האזור האישי"
+                            aria-label={tFn('header_profile_area')}
                         >
                             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 rounded-full border-2 border-white/20 group-hover:border-purple-400 transition-all">
                                 <circle cx="20" cy="20" r="20" fill="#374151"/>
@@ -578,7 +578,7 @@
                             <span class="absolute top-full right-1/2 translate-x-1/2 mt-2 hidden group-hover:block
                                          bg-gray-900 text-white text-sm font-bold rounded-lg px-3 py-1.5
                                          whitespace-nowrap border border-white/10 shadow-xl pointer-events-none z-50">
-                                האזור האישי
+                                {tFn('header_profile_area')}
                             </span>
                         </a>
                     {/if}
@@ -595,7 +595,7 @@
         style="left: {tooltipX}px; top: {tooltipY}px;"
     >
         <div class="bg-gray-900 text-white text-xs rounded-lg px-3 py-1.5 shadow-xl whitespace-nowrap border border-white/10">
-            👤 לפרופיל שלי
+            👤 {tFn('header_to_my_profile')}
         </div>
     </div>
 {/if}

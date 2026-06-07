@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { ads } from '$lib/adsData';
 	import { page } from '$app/state';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	let isAuthPage = $derived(
 		page.url.pathname === '/login' ||
@@ -144,7 +150,7 @@
 	<button
 		class="overlay"
 		onclick={() => open = false}
-		aria-label="סגור פרסומות"
+		aria-label={tFn('mobile_ads_drawer_close_ads_aria')}
 	></button>
 	{/if}
 
@@ -152,19 +158,19 @@
 	<div class="drawer" class:drawer-open={open}
 		role="dialog"
 		aria-modal="true"
-		aria-label="האזור האישי וההטבות מהקהילה הארצית"
+		aria-label={tFn('mobile_ads_drawer_dialog_aria')}
 		aria-hidden={!open}
 		ontouchstart={onDrawerTouchStart}
 		ontouchend={onDrawerTouchEnd}
 	>
 		<!-- כפתור התחברות / אזור אישי -->
 		<div class="section-title section-title-first">
-			האזור האישי
+			{tFn('mobile_ads_drawer_personal_area')}
 			<button
 				type="button"
 				class="close-btn"
 				onclick={() => open = false}
-				aria-label="סגור"
+				aria-label={tFn('mobile_ads_drawer_close_aria')}
 			>×</button>
 		</div>
 		<div class="auth-section">
@@ -211,13 +217,13 @@
 						<span class="text-white font-black text-base truncate">
 							{layoutUser.nickname || layoutUser.name || currentUser.username}
 						</span>
-						<span class="text-orange-400 text-xs font-bold">📩 הודעות אישיות</span>
-						<span class="text-gray-400 text-xs">לאזור האישי ←</span>
+						<span class="text-orange-400 text-xs font-bold">📩 {tFn('mobile_ads_drawer_personal_messages')}</span>
+						<span class="text-gray-400 text-xs">{tFn('mobile_ads_drawer_to_personal_area')}</span>
 					</div>
 
 					<!-- יתרה -->
 					<div class="flex-shrink-0 flex flex-col items-center gap-1 mr-auto">
-						<img src="/images/wallet.png" alt="ארנק" class="w-10 h-10 object-contain" />
+						<img src="/images/wallet.png" alt={tFn('mobile_ads_drawer_wallet_alt')} class="w-10 h-10 object-contain" />
 						<span class="text-green-400 text-xs font-black">{layoutUser.balance ?? 0}₪</span>
 					</div>
 
@@ -232,7 +238,7 @@
 				{/if}
 				<div class="profile-btn-text">
 					<span class="profile-btn-name">{currentUser.username}</span>
-					<span class="profile-btn-sub">לאזור האישי שלי ←</span>
+					<span class="profile-btn-sub">{tFn('mobile_ads_drawer_to_my_personal_area')}</span>
 				</div>
 			</a>
 			{:else}
@@ -248,8 +254,8 @@
 					<span class="login-icon">🔐</span>
 				</div>
 				<div class="login-btn-text">
-					<span class="login-btn-title">התחברות / הרשמה</span>
-					<span class="login-btn-sub">לאזור האישי שלך ←</span>
+					<span class="login-btn-title">{tFn('mobile_ads_drawer_login_register')}</span>
+					<span class="login-btn-sub">{tFn('mobile_ads_drawer_to_your_personal_area')}</span>
 				</div>
 			</a>
 			{/if}
@@ -258,7 +264,7 @@
 		<!-- רשימת פרסומות -->
 		<div class="ads-list">
 			<!-- כותרת הטבות (גוללת עם הרשימה, לא מוקפאת) -->
-			<div class="section-title section-title-benefits">הטבות ארציות <span class="title-gold">יוצאים לחירות</span></div>
+			<div class="section-title section-title-benefits">{tFn('mobile_ads_drawer_national_benefits')} <span class="title-gold">{tFn('mobile_ads_drawer_going_free')}</span></div>
 
 			{#each ads as ad (ad.id)}
 			<a
@@ -296,9 +302,9 @@
 		ontouchstart={onTabTouchStart}
 		ontouchmove={onTabTouchMove}
 		ontouchend={onTabTouchEnd}
-		aria-label="פתח הטבות לקהילה"
+		aria-label={tFn('mobile_ads_drawer_open_benefits_aria')}
 	>
-		<span class="tab-text">לאזור האישי ולהטבות</span>
+		<span class="tab-text">{tFn('mobile_ads_drawer_tab_text')}</span>
 	</button>
 	{/if}
 

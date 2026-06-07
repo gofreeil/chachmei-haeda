@@ -1,22 +1,31 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
+    import { t, locale } from "svelte-i18n";
+    import { get } from "svelte/store";
+
+    let _loc = $state(get(locale));
+    $effect(() => locale.subscribe((l) => (_loc = l)));
+    const tFn = (k: string) => {
+        void _loc;
+        return get(t)(k);
+    };
 
     const ads = [
         {
-            text: "מעוניינים לפרסם כאן? צרו קשר עוד היום!",
+            key: "mobile_text_ads_ad_1",
             color: "from-blue-600 to-purple-600",
         },
         {
-            text: "מבצע מיוחד לתושבי השכונה בחנות המכולת המרכזית",
+            key: "mobile_text_ads_ad_2",
             color: "from-green-600 to-emerald-600",
         },
         {
-            text: "חדש! שירות בייביסיטר קהילתי מסובסד בשעות הערב",
+            key: "mobile_text_ads_ad_3",
             color: "from-orange-600 to-red-600",
         },
         {
-            text: "הצטרפו לקבוצת הרכישה השכונתית וחסכו מאות שקלים",
+            key: "mobile_text_ads_ad_4",
             color: "from-purple-600 to-pink-600",
         },
     ];
@@ -47,7 +56,7 @@
                         currentIndex
                     ].color} bg-clip-text text-transparent px-4 truncate"
                 >
-                    {ads[currentIndex].text}
+                    {tFn(ads[currentIndex].key)}
                 </p>
             </div>
         {/key}

@@ -2,6 +2,11 @@
 	import { hearings } from '$lib/data/hearings';
 	import { getEvent, shabbatEntryTime, type CalEvent } from '$lib/data/jewish-calendar';
 	import { getParsha } from '$lib/data/parshiyot';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	const dayNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
 
@@ -211,14 +216,14 @@
 		if (c.isEmpty) return '';
 		const parts: string[] = [c.date];
 		if (c.event) parts.push(c.event.name);
-		if (c.parsha) parts.push(`פרשת ${c.parsha}`);
-		if (c.shabbatEntry) parts.push(`כניסת שבת ${c.shabbatEntry}`);
-		if (c.isShabbat) parts.push('שבת - אין דיונים');
+		if (c.parsha) parts.push(`${tFn('live_cal_parsha_prefix')} ${c.parsha}`);
+		if (c.shabbatEntry) parts.push(`${tFn('live_cal_shabbat_entry_prefix')} ${c.shabbatEntry}`);
+		if (c.isShabbat) parts.push(tFn('live_cal_shabbat_no_hearings'));
 		if (c.isBooked) {
 			const h = bookedMap.get(c.date);
-			parts.push(h ? `תפוס - ${h.caseName} ${h.time}` : 'תפוס');
-		} else if (c.isPast) parts.push('תאריך עבר');
-		else if (isAvailable(c)) parts.push('פנוי - לחץ לקביעת דיון');
+			parts.push(h ? `${tFn('live_cal_booked_label')} - ${h.caseName} ${h.time}` : tFn('live_cal_booked_label'));
+		} else if (c.isPast) parts.push(tFn('live_cal_past_date'));
+		else if (isAvailable(c)) parts.push(tFn('live_cal_available_click_to_book'));
 		return parts.join(' · ');
 	}
 </script>
@@ -233,25 +238,25 @@
 			onclick={prevMonth}
 			disabled={!canGoPrev()}
 			class="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600/80 hover:bg-blue-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-base font-bold shadow"
-			aria-label="חודש קודם"
+			aria-label={tFn('live_cal_prev_month_aria')}
 		>
 			<span>→</span>
-			<span>החודש הקודם</span>
+			<span>{tFn('live_cal_prev_month')}</span>
 		</button>
 		<div class="text-center">
 			<h3 class="text-xl md:text-2xl font-black text-gray-900 leading-tight">{monthLabel}</h3>
 			<p class="text-xs md:text-sm text-gray-800 mt-0.5 font-bold tracking-wide">{gregRangeLabel}</p>
 			<p class="text-sm text-blue-700 mt-1 font-bold">
-				{availableCount} תאריכים פנויים החודש
+				{availableCount} {tFn('live_cal_available_dates_this_month')}
 			</p>
 		</div>
 		<button
 			type="button"
 			onclick={nextMonth}
 			class="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600/80 hover:bg-blue-600 text-white text-base font-bold shadow"
-			aria-label="חודש הבא"
+			aria-label={tFn('live_cal_next_month_aria')}
 		>
-			<span>החודש הבא</span>
+			<span>{tFn('live_cal_next_month')}</span>
 			<span>←</span>
 		</button>
 	</header>
@@ -321,31 +326,31 @@
 		<div class="flex flex-wrap gap-x-5 gap-y-3 text-sm md:text-base font-bold text-white justify-center">
 			<span class="flex items-center gap-2">
 				<span class="w-5 h-5 rounded-md border-2 border-green-300 bg-green-400/70 shadow-[0_0_8px_rgba(74,222,128,0.6)]"></span>
-				פנוי
+				{tFn('live_cal_legend_available')}
 			</span>
 			<span class="flex items-center gap-2">
 				<span class="w-5 h-5 rounded-md border-2 border-red-300 bg-red-400/70 shadow-[0_0_8px_rgba(248,113,113,0.6)]"></span>
-				תפוס
+				{tFn('live_cal_legend_booked')}
 			</span>
 			<span class="flex items-center gap-2">
 				<span class="w-5 h-5 rounded-md border-2 border-yellow-300 bg-yellow-400/70 shadow-[0_0_8px_rgba(250,204,21,0.6)]"></span>
-				שבת
+				{tFn('live_cal_legend_shabbat')}
 			</span>
 			<span class="flex items-center gap-2">
 				<span class="w-5 h-5 rounded-md border-2 border-purple-300 bg-purple-400/70 shadow-[0_0_8px_rgba(192,132,252,0.6)]"></span>
-				חג
+				{tFn('live_cal_legend_holiday')}
 			</span>
 			<span class="flex items-center gap-2">
 				<span class="w-5 h-5 rounded-md border-2 border-orange-300 bg-orange-400/70 shadow-[0_0_8px_rgba(251,146,60,0.6)]"></span>
-				מועד
+				{tFn('live_cal_legend_moed')}
 			</span>
 			<span class="flex items-center gap-2">
 				<span class="w-5 h-5 rounded-md border-2 border-blue-300 bg-blue-400/70 shadow-[0_0_8px_rgba(96,165,250,0.6)]"></span>
-				לאומי
+				{tFn('live_cal_legend_national')}
 			</span>
 			<span class="flex items-center gap-2">
 				<span class="w-5 h-5 rounded-md ring-2 ring-blue-300 bg-transparent"></span>
-				היום
+				{tFn('live_cal_legend_today')}
 			</span>
 		</div>
 	</div>
@@ -362,29 +367,29 @@
 			{@const h = bookedMap.get(hoveredCell.date)}
 			<p class="text-red-300">
 				<span class="font-bold">{hoveredCell.date}</span> -
-				{#if h}{h.caseName} בשעה {h.time}{:else}תפוס{/if}
+				{#if h}{h.caseName} {tFn('live_cal_at_time')} {h.time}{:else}{tFn('live_cal_booked_label')}{/if}
 			</p>
 		{:else if hoveredCell.event}
 			<p class="text-orange-200">
 				<span class="font-bold">{hoveredCell.date}</span> - {hoveredCell.event.name}
-				{#if hoveredCell.event.blocking}<span class="text-red-300"> (אין דיונים)</span>{/if}
-				{#if hoveredCell.shabbatEntry}<span class="text-yellow-200"> · כניסת שבת {hoveredCell.shabbatEntry}</span>{/if}
+				{#if hoveredCell.event.blocking}<span class="text-red-300"> ({tFn('live_cal_no_hearings')})</span>{/if}
+				{#if hoveredCell.shabbatEntry}<span class="text-yellow-200"> · {tFn('live_cal_shabbat_entry_prefix')} {hoveredCell.shabbatEntry}</span>{/if}
 			</p>
 		{:else if hoveredCell.shabbatEntry}
 			<p class="text-yellow-200">
-				<span class="font-bold">{hoveredCell.date}</span> - ערב שבת, כניסת שבת {hoveredCell.shabbatEntry}
+				<span class="font-bold">{hoveredCell.date}</span> - {tFn('live_cal_erev_shabbat')}, {tFn('live_cal_shabbat_entry_prefix')} {hoveredCell.shabbatEntry}
 			</p>
 		{:else if isAvailable(hoveredCell)}
 			<p class="text-green-300">
-				<span class="font-bold">{hoveredCell.date}</span> - פנוי, לחץ לקביעת דיון
+				<span class="font-bold">{hoveredCell.date}</span> - {tFn('live_cal_available_click_to_book')}
 			</p>
 		{:else if hoveredCell.isShabbat}
 			<p class="text-yellow-200">
-				<span class="font-bold">{hoveredCell.date}</span> - שבת קודש{#if hoveredCell.parsha}, פרשת {hoveredCell.parsha}{/if}
+				<span class="font-bold">{hoveredCell.date}</span> - {tFn('live_cal_shabbat_kodesh')}{#if hoveredCell.parsha}, {tFn('live_cal_parsha_prefix')} {hoveredCell.parsha}{/if}
 			</p>
 		{:else if hoveredCell.isPast}
 			<p class="text-gray-400">
-				<span class="font-bold">{hoveredCell.date}</span> - תאריך עבר
+				<span class="font-bold">{hoveredCell.date}</span> - {tFn('live_cal_past_date')}
 			</p>
 		{/if}
 	</div>

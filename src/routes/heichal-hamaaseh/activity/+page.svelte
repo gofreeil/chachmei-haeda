@@ -3,6 +3,15 @@
 	import { activity as staticActivity, type ActivityKind, type ActivityItem } from '$lib/data/activity';
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => {
+		void _loc;
+		return get(t)(k);
+	};
 
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
 	const PAGE_SIZE = 8;
@@ -21,8 +30,8 @@
 
 	function handleLandSubmit(e: Event) {
 		e.preventDefault();
-		const subject = `פדיון קרקעות - ${landAssetType} ב${landLocation}`;
-		const body = `שם: ${landName}\nפרטים לחזרה: ${landContact}\nסוג הנכס: ${landAssetType}\nמיקום: ${landLocation}\n\nפרטים נוספים:\n${landDetails}`;
+		const subject = `${tFn('activity_email_land_subject_prefix')} - ${landAssetType} ${tFn('activity_email_land_subject_in')}${landLocation}`;
+		const body = `${tFn('activity_email_label_name')}: ${landName}\n${tFn('activity_email_label_contact')}: ${landContact}\n${tFn('activity_email_label_asset_type')}: ${landAssetType}\n${tFn('activity_email_label_location')}: ${landLocation}\n\n${tFn('activity_email_label_more_details')}:\n${landDetails}`;
 		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 
@@ -35,8 +44,8 @@
 
 	function handleConvSubmit(e: Event) {
 		e.preventDefault();
-		const subject = `בקשה ללווי גיור - ${convName}`;
-		const body = `שם: ${convName}\nפרטים לחזרה: ${convContact}\nמצב נוכחי / רקע: ${convStatus}\n\nכיצד נוכל לעזור:\n${convDetails}`;
+		const subject = `${tFn('activity_email_conv_subject_prefix')} - ${convName}`;
+		const body = `${tFn('activity_email_label_sender_name')}: ${convName}\n${tFn('activity_email_label_contact')}: ${convContact}\n${tFn('activity_email_label_current_status')}: ${convStatus}\n\n${tFn('activity_email_label_how_to_help')}:\n${convDetails}`;
 		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 
@@ -49,8 +58,8 @@
 
 	function handleTipSubmit(e: Event) {
 		e.preventDefault();
-		const subject = `ידיעה לחכמי העדה - ${tipTitle}`;
-		const body = `שם השולח: ${tipName}\nכותרת: ${tipTitle}\nפרטים לחזרה: ${tipContact}\n\nתוכן הידיעה:\n${tipContent}`;
+		const subject = `${tFn('activity_email_tip_subject_prefix')} - ${tipTitle}`;
+		const body = `${tFn('activity_email_label_sender_name')}: ${tipName}\n${tFn('activity_email_label_title')}: ${tipTitle}\n${tFn('activity_email_label_contact')}: ${tipContact}\n\n${tFn('activity_email_label_tip_content')}:\n${tipContent}`;
 		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 
@@ -107,14 +116,20 @@
 		'הודעה': '📣',
 		'כתבה': '📰'
 	};
+	const kindLabelKeys: Record<ActivityKind, string> = {
+		'סרטון': 'activity_kind_video',
+		'מאמר': 'activity_kind_article',
+		'הודעה': 'activity_kind_announcement',
+		'כתבה': 'activity_kind_press'
+	};
 </script>
 
 <svelte:head>
-	<title>היכל המעשה - חכמי העדה</title>
+	<title>{tFn('activity_page_title')}</title>
 </svelte:head>
 
 <section class="py-8">
-	<HeichalHeader subtitle="קריאות החכמים ותקנותיהם לצורך קידום ותיקון עולם במלכות שדי" />
+	<HeichalHeader subtitle={tFn('activity_header_subtitle')} />
 
 	<div class="mb-6 max-w-2xl mx-auto">
 		<div class="relative">
@@ -122,15 +137,15 @@
 			<input
 				type="search"
 				bind:value={searchQuery}
-				placeholder="חיפוש בכותרות, תוכן, מחבר..."
-				aria-label="חיפוש בפעילות"
+				placeholder={tFn('activity_search_placeholder')}
+				aria-label={tFn('activity_search_aria_label')}
 				class="w-full pr-10 pl-10 py-2.5 rounded-full bg-white/80 border-2 border-indigo-300/60 text-gray-900 placeholder-gray-500 font-medium focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition-colors shadow-sm"
 			/>
 			{#if searchQuery}
 				<button
 					type="button"
 					onclick={() => (searchQuery = '')}
-					aria-label="נקה חיפוש"
+					aria-label={tFn('activity_search_clear_aria')}
 					class="absolute inset-y-0 left-2 flex items-center justify-center w-7 h-full text-gray-600 hover:text-gray-900"
 				>
 					✕
@@ -139,7 +154,7 @@
 		</div>
 		{#if searchQuery}
 			<p class="mt-2 text-xs text-center text-gray-700 font-medium">
-				נמצאו {filtered.length} תוצאות עבור "{searchQuery}"
+				{tFn('activity_search_results_found')} {filtered.length} {tFn('activity_search_results_for')} "{searchQuery}"
 			</p>
 		{/if}
 	</div>
@@ -157,12 +172,12 @@
 							<span
 								class="text-[11px] font-bold px-2 py-0.5 rounded-full border {kindStyles[a.kind]}"
 							>
-								{kindIcons[a.kind]} {a.kind}
+								{kindIcons[a.kind]} {tFn(kindLabelKeys[a.kind])}
 							</span>
 						{/if}
 						<span class="text-[11px] text-gray-500">{a.date}</span>
 					</div>
-					<span class="text-xs text-indigo-300">מאת: {a.author}</span>
+					<span class="text-xs text-indigo-300">{tFn('activity_by_author')}: {a.author}</span>
 				</div>
 
 				<!-- כותרת ממורכזת -->
@@ -217,7 +232,7 @@
 							rel="noopener noreferrer"
 							class="inline-block text-xs text-indigo-300 hover:text-indigo-200 underline break-all"
 						>
-							🔗 לכתבה המלאה
+							🔗 {tFn('activity_full_article_link')}
 						</a>
 					</div>
 				{/if}
@@ -242,7 +257,7 @@
 
 	{#if filtered.length === 0}
 		<p class="text-center text-gray-700 py-12 font-medium">
-			{searchQuery ? `לא נמצאו תוצאות עבור "${searchQuery}"` : 'אין פריטים להצגה'}
+			{searchQuery ? `${tFn('activity_no_results_for')} "${searchQuery}"` : tFn('activity_no_items')}
 		</p>
 	{:else}
 		<Pagination
@@ -268,7 +283,7 @@
 
 	<!-- כותרת קבוצת הבאנרים -->
 	<h2 class="text-center text-2xl md:text-3xl font-black bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 bg-clip-text text-transparent mb-4 mt-4">
-		צור קשר
+		{tFn('activity_contact_us')}
 	</h2>
 
 	<!-- באנר "יש לך ידיעה?" -->
@@ -283,10 +298,10 @@
 			<div class="text-3xl md:text-4xl flex-shrink-0 tip-cta-emoji">📨</div>
 			<div class="text-center min-w-0">
 				<h3 class="tip-cta-title text-lg md:text-xl font-black leading-tight">
-					יש לך ידיעה עבור חכמי העדה? צור קשר
+					{tFn('activity_tip_cta_title')}
 				</h3>
 				<p class="tip-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
-					שלח לנו פרטים והחכמים יחזרו אליך בהקדם
+					{tFn('activity_tip_cta_text')}
 				</p>
 			</div>
 			<div class="text-2xl flex-shrink-0 tip-cta-arrow" aria-hidden="true">
@@ -301,59 +316,59 @@
 			>
 				<form onsubmit={handleTipSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-name">שם</label>
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-name">{tFn('activity_form_label_name')}</label>
 						<input
 							id="tip-name"
 							type="text"
 							bind:value={tipName}
 							required
-							placeholder="שמך המלא"
+							placeholder={tFn('activity_form_placeholder_full_name')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-contact">פרטים לחזרה</label>
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-contact">{tFn('activity_form_label_contact')}</label>
 						<input
 							id="tip-contact"
 							type="text"
 							bind:value={tipContact}
 							required
-							placeholder="טלפון או דוא״ל"
+							placeholder={tFn('activity_form_placeholder_phone_email')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
 						/>
 					</div>
 					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-title">כותרת הידיעה</label>
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-title">{tFn('activity_form_label_tip_title')}</label>
 						<input
 							id="tip-title"
 							type="text"
 							bind:value={tipTitle}
 							required
-							placeholder="במשפט אחד - על מה הידיעה"
+							placeholder={tFn('activity_form_placeholder_tip_title')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors"
 						/>
 					</div>
 					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-content">תוכן הידיעה</label>
+						<label class="block text-sm font-bold text-amber-900 mb-1.5" for="tip-content">{tFn('activity_form_label_tip_content')}</label>
 						<textarea
 							id="tip-content"
 							bind:value={tipContent}
 							required
 							rows="5"
-							placeholder="פרט את הידיעה - מה קרה, מתי, היכן, מי המעורבים..."
+							placeholder={tFn('activity_form_placeholder_tip_content')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-amber-400/50 text-gray-900 placeholder-gray-500 focus:border-amber-600 focus:outline-none focus:ring-1 focus:ring-amber-600 transition-colors resize-y"
 						></textarea>
 					</div>
 					<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
 						<p class="text-xs text-amber-900 max-w-md font-medium">
-							הידיעה תישלח במייל לבית הדין. נחזור אליך לפי הפרטים שמסרת.
+							{tFn('activity_tip_form_disclaimer')}
 						</p>
 						<button
 							type="submit"
 							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(217,119,6,0.5)] transition-all whitespace-nowrap"
 							style="color:#fff !important; -webkit-text-fill-color:#fff !important;"
 						>
-							📨 שלח את הידיעה
+							📨 {tFn('activity_tip_submit_btn')}
 						</button>
 					</div>
 				</form>
@@ -373,10 +388,10 @@
 			<div class="text-3xl md:text-4xl flex-shrink-0 conv-cta-emoji">✡️</div>
 			<div class="text-center min-w-0">
 				<h3 class="conv-cta-title text-lg md:text-xl font-black leading-tight">
-					עזרה וליווי לגיור
+					{tFn('activity_conv_cta_title')}
 				</h3>
 				<p class="conv-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
-					מבקש להצטרף לעם ישראל ולקבל ליווי וייעוץ? פנה כאן
+					{tFn('activity_conv_cta_text')}
 				</p>
 			</div>
 			<div class="text-2xl flex-shrink-0 conv-cta-arrow" aria-hidden="true">
@@ -391,58 +406,58 @@
 			>
 				<form onsubmit={handleConvSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-name">שם</label>
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-name">{tFn('activity_form_label_name')}</label>
 						<input
 							id="conv-name"
 							type="text"
 							bind:value={convName}
 							required
-							placeholder="שמך המלא"
+							placeholder={tFn('activity_form_placeholder_full_name')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-contact">פרטים לחזרה</label>
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-contact">{tFn('activity_form_label_contact')}</label>
 						<input
 							id="conv-contact"
 							type="text"
 							bind:value={convContact}
 							required
-							placeholder="טלפון או דוא״ל"
+							placeholder={tFn('activity_form_placeholder_phone_email')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors"
 						/>
 					</div>
 					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-status">מצב נוכחי / רקע</label>
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-status">{tFn('activity_form_label_conv_status')}</label>
 						<input
 							id="conv-status"
 							type="text"
 							bind:value={convStatus}
-							placeholder="לדוגמה: בתחילת הדרך, באמצע תהליך, חבר משפחה רוצה להתגייר..."
+							placeholder={tFn('activity_form_placeholder_conv_status')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors"
 						/>
 					</div>
 					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-details">כיצד נוכל לעזור</label>
+						<label class="block text-sm font-bold text-sky-900 mb-1.5" for="conv-details">{tFn('activity_form_label_conv_details')}</label>
 						<textarea
 							id="conv-details"
 							bind:value={convDetails}
 							required
 							rows="5"
-							placeholder="ספר על עצמך, על מה אתה מתלבט, באיזה ליווי אתה זקוק..."
+							placeholder={tFn('activity_form_placeholder_conv_details')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-sky-400/50 text-gray-900 placeholder-gray-500 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600 transition-colors resize-y"
 						></textarea>
 					</div>
 					<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
 						<p class="text-xs text-sky-900 max-w-md font-medium">
-							הפנייה מטופלת בדיסקרטיות מלאה. רב מבית הדין יחזור אליך באופן אישי.
+							{tFn('activity_conv_form_disclaimer')}
 						</p>
 						<button
 							type="submit"
 							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-700 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(2,132,199,0.5)] transition-all whitespace-nowrap"
 							style="color:#fff !important; -webkit-text-fill-color:#fff !important;"
 						>
-							✡️ שלח פנייה
+							✡️ {tFn('activity_conv_submit_btn')}
 						</button>
 					</div>
 				</form>
@@ -462,10 +477,10 @@
 			<div class="text-3xl md:text-4xl flex-shrink-0 land-cta-emoji">🌳</div>
 			<div class="text-center min-w-0">
 				<h3 class="land-cta-title text-lg md:text-xl font-black leading-tight">
-					פדיון קרקעות
+					{tFn('activity_land_cta_title')}
 				</h3>
 				<p class="land-cta-text text-xs md:text-sm font-bold leading-snug mt-1">
-					יש לך קרקע או דירה לפדיון עבור ידיים יהודיות? פנה אלינו
+					{tFn('activity_land_cta_text')}
 				</p>
 			</div>
 			<div class="text-2xl flex-shrink-0 land-cta-arrow" aria-hidden="true">
@@ -480,72 +495,72 @@
 			>
 				<form onsubmit={handleLandSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-name">שם</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-name">{tFn('activity_form_label_name')}</label>
 						<input
 							id="land-name"
 							type="text"
 							bind:value={landName}
 							required
-							placeholder="שמך המלא"
+							placeholder={tFn('activity_form_placeholder_full_name')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-contact">פרטים לחזרה</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-contact">{tFn('activity_form_label_contact')}</label>
 						<input
 							id="land-contact"
 							type="text"
 							bind:value={landContact}
 							required
-							placeholder="טלפון או דוא״ל"
+							placeholder={tFn('activity_form_placeholder_phone_email')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
 						/>
 					</div>
 					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-asset-type">סוג הנכס</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-asset-type">{tFn('activity_form_label_asset_type')}</label>
 						<select
 							id="land-asset-type"
 							bind:value={landAssetType}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
 						>
-							<option value="קרקע">קרקע</option>
-							<option value="דירה">דירה</option>
-							<option value="בית">בית</option>
-							<option value="מסחרי">נכס מסחרי</option>
-							<option value="אחר">אחר</option>
+							<option value="קרקע">{tFn('activity_asset_type_land')}</option>
+							<option value="דירה">{tFn('activity_asset_type_apartment')}</option>
+							<option value="בית">{tFn('activity_asset_type_house')}</option>
+							<option value="מסחרי">{tFn('activity_asset_type_commercial')}</option>
+							<option value="אחר">{tFn('activity_asset_type_other')}</option>
 						</select>
 					</div>
 					<div>
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-location">מיקום הנכס</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-location">{tFn('activity_form_label_land_location')}</label>
 						<input
 							id="land-location"
 							type="text"
 							bind:value={landLocation}
 							required
-							placeholder="עיר / יישוב / אזור"
+							placeholder={tFn('activity_form_placeholder_land_location')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors"
 						/>
 					</div>
 					<div class="md:col-span-2">
-						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-details">פרטים נוספים</label>
+						<label class="block text-sm font-bold text-emerald-900 mb-1.5" for="land-details">{tFn('activity_form_label_more_details')}</label>
 						<textarea
 							id="land-details"
 							bind:value={landDetails}
 							rows="4"
-							placeholder="גודל, מצב הנכס, מחיר מבוקש, פרטי בעלות..."
+							placeholder={tFn('activity_form_placeholder_land_details')}
 							class="w-full px-3 py-2.5 rounded-lg bg-white/70 border border-emerald-400/50 text-gray-900 placeholder-gray-500 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 transition-colors resize-y"
 						></textarea>
 					</div>
 					<div class="md:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-3">
 						<p class="text-xs text-emerald-900 max-w-md font-medium">
-							הפנייה תישלח לבית הדין. נחזור אליך לפי הפרטים שמסרת.
+							{tFn('activity_land_form_disclaimer')}
 						</p>
 						<button
 							type="submit"
 							class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(5,150,105,0.5)] transition-all whitespace-nowrap"
 							style="color:#fff !important; -webkit-text-fill-color:#fff !important;"
 						>
-							🌳 שלח פנייה
+							🌳 {tFn('activity_land_submit_btn')}
 						</button>
 					</div>
 				</form>

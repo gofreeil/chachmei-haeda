@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Article } from '$lib/data/articles';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	let { data } = $props();
 	let a = $state<Article | null>(data.article);
@@ -25,17 +31,17 @@
 </script>
 
 <svelte:head>
-	<title>{a ? a.title : 'מאמר'} - חכמי העדה</title>
+	<title>{a ? a.title : tFn('article_view_page_title_fallback')} - {tFn('article_view_site_name')}</title>
 </svelte:head>
 
 <article class="py-8 max-w-3xl mx-auto">
-	<a href="/articles" class="text-blue-300 hover:text-blue-200 text-sm">← חזרה לארכיון המאמרים</a>
+	<a href="/articles" class="text-blue-300 hover:text-blue-200 text-sm">← {tFn('article_view_back_to_archive')}</a>
 
 	{#if a}
 		<header class="mt-4 mb-8">
 			<h1 class="text-3xl md:text-4xl font-black text-white leading-tight">{a.title}</h1>
 			<div class="mt-3 text-sm text-gray-400">
-				מאת: <span class="text-blue-300">{a.author}</span> • {a.date}
+				{tFn('article_view_by_author')} <span class="text-blue-300">{a.author}</span> • {a.date}
 			</div>
 			{#if a.tags && a.tags.length > 0}
 				<div class="mt-3 flex flex-wrap gap-1.5">
@@ -58,10 +64,10 @@
 	{:else if notFound}
 		<div class="mt-8 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-6 text-center">
 			<div class="text-4xl mb-2">📭</div>
-			<p class="text-yellow-200 font-bold">המאמר לא נמצא</p>
-			<p class="text-sm text-gray-400 mt-2">ייתכן שהקישור שגוי או שהמאמר הוסר</p>
+			<p class="text-yellow-200 font-bold">{tFn('article_view_not_found_title')}</p>
+			<p class="text-sm text-gray-400 mt-2">{tFn('article_view_not_found_desc')}</p>
 		</div>
 	{:else}
-		<div class="mt-8 text-center text-gray-400 text-sm">טוען...</div>
+		<div class="mt-8 text-center text-gray-400 text-sm">{tFn('article_view_loading')}</div>
 	{/if}
 </article>

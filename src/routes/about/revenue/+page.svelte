@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	let rabbis = $state<Rabbi[]>(defaultRabbis);
 
@@ -19,35 +25,32 @@
 </script>
 
 <svelte:head>
-	<title>אודותנו - חכמי העדה</title>
-	<meta name="description" content="חובת החברה לסייע לכל אדם נצרך - בגופו, בנפשו ובממונו" />
+	<title>{tFn('about_page_title')}</title>
+	<meta name="description" content={tFn('about_meta_description')} />
 </svelte:head>
 
 <section class="py-10 md:py-14 px-4 max-w-3xl mx-auto" dir="rtl" style="text-align: justify; text-justify: inter-word;">
 	<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent text-center" style="text-align: center;">
-		אודותנו
+		{tFn('about_heading')}
 	</h1>
 
 	<div class="mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
 		<p class="text-xl md:text-2xl font-bold text-white leading-relaxed" style="text-align: center;">
-			חובת החברה לסייע לכל אדם נצרך, בגופו, בנפשו ובממונו
+			{tFn('about_mission_statement')}
 		</p>
 
 		<blockquote class="mt-6 py-2" style="text-align: center;">
 			<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; text-align: center; color: #92400e;">
-				שנאמר: "פָּתֹחַ תִּפְתַּח אֶת יָדְךָ לוֹ וְהַעֲבֵט תַּעֲבִיטֶנּוּ דֵּי מַחְסֹרוֹ אֲשֶׁר יֶחְסַר לוֹ"
+				{tFn('about_verse_devarim_15_8')}
 			</p>
-			<footer class="mt-2 text-sm text-gray-400" style="text-align: center;">(דברים ט"ו, ח)</footer>
+			<footer class="mt-2 text-sm text-gray-400" style="text-align: center;">{tFn('about_verse_devarim_15_8_source')}</footer>
 		</blockquote>
 
 		<p class="mt-8 text-base md:text-lg text-gray-200 leading-loose">
-			בפלטפורמה זו אנו דואגים לסייע לכל אדם שנקלע לסכסוך -
-			לעמוד על הצדק, למתן ולהשקיט את הצד התוקפני,
-			לשקף את הסכסוך מנקודת מבט חיצונית אובייקטיבית, ללא התערבות רגשית, לשני הצדדים,
-			ולהנגיש פתרון לסיום הסכסוך בדרך הכי צודקת ומתאימה לצדדים -
+			{tFn('about_platform_description')}
 		</p>
 		<p class="mt-4 text-lg md:text-xl font-bold text-white" style="text-align: center;">
-			בכפוף לחכמת התורה!
+			{tFn('about_subject_to_torah')}
 		</p>
 	</div>
 
@@ -58,7 +61,7 @@
 	<!-- הדיינים -->
 	<div class="mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
 		<h2 class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent text-center mb-6">
-			הדיינים העומדים בבתי הפיוס
+			{tFn('about_dayanim_heading')}
 		</h2>
 
 		<ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 list-none">
@@ -92,19 +95,19 @@
 
 		<div class="mt-8 pt-6 border-t border-amber-400/30 text-right space-y-4">
 			<p class="text-base md:text-lg text-gray-100 leading-loose">
-				אנו אוסף של דיינים ומורי הוראה בישראל מכלל הארץ, התאגדנו לקיים את מצוות התורה
+				{tFn('about_dayanim_collective_intro')}
 			</p>
 			<blockquote class="py-2 text-center">
 				<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
-					"שׁוֹפְטִים וְשֹׁטְרִים תִּתֶּן־לְךָ בְּכָל־שְׁעָרֶיךָ אֲשֶׁר ה' אֱלֹהֶיךָ נֹתֵן לְךָ לִשְׁבָטֶיךָ"
+					{tFn('about_verse_devarim_16_18')}
 				</p>
-				<footer class="mt-1 text-sm text-gray-400">(דברים ט"ז, יח)</footer>
+				<footer class="mt-1 text-sm text-gray-400">{tFn('about_verse_devarim_16_18_source')}</footer>
 			</blockquote>
 			<p class="text-base md:text-lg text-gray-100 leading-loose font-semibold text-center">
-				מטרתנו לסייע ולקדם שלום בארץ.
+				{tFn('about_purpose_peace')}
 			</p>
 			<p class="text-base md:text-lg text-gray-100 leading-loose pt-2">
-				בנוסף, אנו רואים חשיבות רבה להחזיר לישראל את מושג <strong class="text-orange-700">חכמי העדה</strong> - מקום אחד הכלול מכלל הפלגים והזרמים הכשרים בישראל, לדון ולברר את ההלכות, להוציא פסקים בקונצנזוס המחייבים את כלל ישראל כקהילה אחת, לתקן תקנות ישראל כדי שיהיו כצאן שיש להם רועה.
+				{@html tFn('about_chachmei_haeda_concept')}
 			</p>
 		</div>
 	</div>
@@ -112,12 +115,10 @@
 	<!-- באנר קריאה להצטרפות -->
 	<div class="mt-10 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/15 backdrop-blur-sm shadow-xl p-6 md:p-10" style="text-align: center;">
 		<h2 class="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-xl md:text-2xl font-black text-transparent mb-4">
-			🤝 קריאה להצטרפות
+			🤝 {tFn('about_join_call_heading')}
 		</h2>
 		<p class="text-base md:text-lg text-gray-100 leading-relaxed font-semibold" style="text-align: center;">
-			חכמי העדה קוראים לכלל הפלגים בישראל להצטרף אלינו לדיונים, הכרעות הלכתיות,
-			קידום חברה מתוקנת יותר על פי <span class="text-orange-700 font-black">"ואהבת לרעך כמוך"</span>,
-			וקידום אחדות בין כל חכמי ישראל היראים והנאמנים לתורת משה ולעמו ישראל.
+			{@html tFn('about_join_call_body')}
 		</p>
 		<div class="mt-6 flex justify-center">
 			<a
@@ -126,7 +127,7 @@
 				style="color: #fff8e7; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
 			>
 				<span>✉️</span>
-				<span>צור קשר באימייל</span>
+				<span>{tFn('about_contact_email_btn')}</span>
 			</a>
 		</div>
 	</div>

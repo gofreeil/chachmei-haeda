@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { addSignatory } from '$lib/services/charter-service';
 	import HeichalNav from '$lib/components/HeichalNav.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	let name = $state('');
 	let role = $state('');
@@ -15,11 +21,11 @@
 		e.preventDefault();
 		notice = '';
 		if (!name.trim()) {
-			notice = '⚠️ יש להזין שם מלא';
+			notice = '⚠️ ' + tFn('charter_join_validation_name_required');
 			return;
 		}
 		if (!accepted) {
-			notice = '⚠️ יש לאשר את האמנה לפני החתימה';
+			notice = '⚠️ ' + tFn('charter_join_validation_accept_required');
 			return;
 		}
 		addSignatory({
@@ -31,7 +37,7 @@
 			acceptedTerms: true
 		});
 		submitted = true;
-		notice = '✅ חתימתך נקלטה! שמך מופיע כעת באינדקס החתומים.';
+		notice = '✅ ' + tFn('charter_join_success_message');
 		// איפוס שדות
 		name = '';
 		role = '';
@@ -43,17 +49,17 @@
 </script>
 
 <svelte:head>
-	<title>הצטרפות לאמנה - חכמי העדה</title>
+	<title>{tFn('charter_join_page_title')}</title>
 </svelte:head>
 
 <section class="py-8 max-w-3xl mx-auto px-3">
 	<header class="text-center mb-6">
 		<div class="text-5xl mb-3">✍️</div>
 		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-			הצטרפות לאמנה
+			{tFn('charter_join_heading')}
 		</h1>
 		<p class="mt-3 text-gray-300 max-w-2xl mx-auto text-sm md:text-base">
-			אני מקבל/ת על עצמי את האמנה המוסרית של חכמי העדה ומבקש/ת להצטרף לחתומים עליה.
+			{tFn('charter_join_intro')}
 		</p>
 	</header>
 
@@ -61,54 +67,54 @@
 
 	<!-- מלל האמנה (יעודכן בהמשך) -->
 	<div class="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-yellow-500/5 p-5 md:p-7 mb-6">
-		<h2 class="text-xl font-black text-amber-200 mb-3">📜 מלל האמנה</h2>
+		<h2 class="text-xl font-black text-amber-200 mb-3">{tFn('charter_join_text_section_title')}</h2>
 		<div class="text-sm md:text-base text-gray-200 leading-relaxed space-y-3 text-right" dir="rtl">
 			<p class="italic text-gray-400">
-				[המלל המלא של האמנה ימולא כאן. עד אז – ניתן לקרוא את הקוד האתי המוסרי העולמי
-				<a href="/heichal-hamaaseh/ethical-code" class="text-amber-300 underline">בעמוד הקוד האתי</a>
-				ולחתום עליו כאמנת UECC.]
+				{tFn('charter_join_text_placeholder_prefix')}
+				<a href="/heichal-hamaaseh/ethical-code" class="text-amber-300 underline">{tFn('charter_join_text_placeholder_link')}</a>
+				{tFn('charter_join_text_placeholder_suffix')}
 			</p>
 		</div>
 	</div>
 
 	<!-- טופס חתימה -->
 	<form onsubmit={handleSubmit} class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-5 md:p-7 space-y-4">
-		<h2 class="text-xl font-black text-blue-200 mb-3">📝 פרטי החתימה</h2>
+		<h2 class="text-xl font-black text-blue-200 mb-3">{tFn('charter_join_form_title')}</h2>
 
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 			<div>
-				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-name">שם מלא *</label>
+				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-name">{tFn('charter_join_label_name')}</label>
 				<input
 					id="join-name"
 					type="text"
 					bind:value={name}
 					required
-					placeholder="ישראל ישראלי"
+					placeholder={tFn('charter_join_placeholder_name')}
 					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-role">תפקיד / עיסוק</label>
+				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-role">{tFn('charter_join_label_role')}</label>
 				<input
 					id="join-role"
 					type="text"
 					bind:value={role}
-					placeholder="איש עסקים, רב, יזם…"
+					placeholder={tFn('charter_join_placeholder_role')}
 					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-city">עיר מגורים</label>
+				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-city">{tFn('charter_join_label_city')}</label>
 				<input
 					id="join-city"
 					type="text"
 					bind:value={city}
-					placeholder="ירושלים, בני ברק…"
+					placeholder={tFn('charter_join_placeholder_city')}
 					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-phone">טלפון</label>
+				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-phone">{tFn('charter_join_label_phone')}</label>
 				<input
 					id="join-phone"
 					type="tel"
@@ -119,7 +125,7 @@
 				/>
 			</div>
 			<div class="md:col-span-2">
-				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-email">דוא"ל</label>
+				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-email">{tFn('charter_join_label_email')}</label>
 				<input
 					id="join-email"
 					type="email"
@@ -139,9 +145,7 @@
 				class="mt-1 w-5 h-5 accent-amber-500 flex-shrink-0"
 			/>
 			<span class="text-sm md:text-base text-amber-100">
-				<strong>הריני מצהיר/ה ומאשר/ת</strong> כי קראתי את האמנה במלואה,
-				מקבל/ת על עצמי את עקרונותיה,
-				ומתחייב/ת לפעול לפיה ביושר ובאמונה.
+				<strong>{tFn('charter_join_consent_strong')}</strong> {tFn('charter_join_consent_body')}
 			</span>
 		</label>
 
@@ -156,20 +160,20 @@
 				type="submit"
 				class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg hover:opacity-90 transition-opacity"
 			>
-				✍️ חתום ואשר
+				✍️ {tFn('charter_join_btn_submit')}
 			</button>
 			{#if submitted}
 				<a
 					href="/charter-index"
 					class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
 				>
-					← צפה באינדקס החתומים
+					← {tFn('charter_join_btn_view_index')}
 				</a>
 			{/if}
 		</div>
 
 		<p class="text-xs text-gray-500 mt-2">
-			פרטיך נשמרים מקומית כעת ויסונכרנו ל-CMS המרכזי בהמשך. שמך יופיע ברשימה הציבורית.
+			{tFn('charter_join_privacy_note')}
 		</p>
 	</form>
 </section>

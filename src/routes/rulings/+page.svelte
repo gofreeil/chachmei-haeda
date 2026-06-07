@@ -1,17 +1,22 @@
 <script lang="ts">
 	import { rulings } from '$lib/data/hearings';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 </script>
 
 <svelte:head>
-	<title>פסקי דין - חכמי העדה</title>
+	<title>{tFn('rulings_page_head_title')}</title>
 </svelte:head>
 
 <section class="py-8">
 	<header class="text-center mb-8">
 		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-			פסקי דין
+			{tFn('rulings_page_h1_title')}
 		</h1>
-		<p class="mt-3 text-gray-300">סיכומי דיון והכרעות פסוקות בכתב</p>
+		<p class="mt-3 text-gray-300">{tFn('rulings_page_subtitle')}</p>
 	</header>
 
 	<div class="space-y-5">
@@ -21,15 +26,15 @@
 					<h2 class="text-xl md:text-2xl font-bold text-white">{r.caseName}</h2>
 					<span class="text-sm text-gray-500">{r.date}</span>
 				</div>
-				<p class="text-sm text-blue-300 mb-4">הרכב דיינים: {r.dayanim.join(' • ')}</p>
+				<p class="text-sm text-blue-300 mb-4">{tFn('rulings_page_dayanim_panel')}: {r.dayanim.join(' • ')}</p>
 
 				<div class="space-y-4">
 					<div>
-						<h3 class="font-bold text-yellow-300 mb-1">סיכום הדיון:</h3>
+						<h3 class="font-bold text-yellow-300 mb-1">{tFn('rulings_page_summary_label')}</h3>
 						<p class="text-gray-200 leading-relaxed">{r.summary}</p>
 					</div>
 					<div class="rounded-xl border border-green-500/30 bg-green-900/10 p-4">
-						<h3 class="font-bold text-green-300 mb-1">הכרעה:</h3>
+						<h3 class="font-bold text-green-300 mb-1">{tFn('rulings_page_decision_label')}</h3>
 						<p class="text-gray-100 leading-relaxed">{r.decision}</p>
 					</div>
 				</div>
@@ -38,6 +43,6 @@
 	</div>
 
 	<div class="text-center mt-10 text-sm text-gray-500">
-		כל פסקי הדין ניתנים בהסכמת הצדדים מראש על פי דין תורה.
+		{tFn('rulings_page_footer_note')}
 	</div>
 </section>

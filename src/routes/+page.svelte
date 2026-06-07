@@ -6,15 +6,23 @@
 	import NewsTicker from '$lib/components/NewsTicker.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => {
+		void _loc;
+		return get(t)(k);
+	};
 
 	const recentQa = latestAnswer();
 	const recentActivity = latestActivity();
 
 	let allArticles = $state<Article[]>(staticArticles);
 	const DEFAULT_HOME_VIDEO = 'https://youtu.be/9ioV_PeaqWE?si=WN00o8ByG65ZOvQ4';
-	const DEFAULT_HOME_VIDEO_TITLE = 'חכמי עדת ישראל פועלים להעלות שבטים אבודים לארץ';
 	let homeVideoUrl = $state<string>(DEFAULT_HOME_VIDEO);
-	let homeVideoTitle = $state<string>(DEFAULT_HOME_VIDEO_TITLE);
+	let homeVideoTitle = $state<string>('');
 
 	function toEmbedUrl(url: string): string {
 		if (!url) return '';
@@ -54,28 +62,28 @@
 </script>
 
 <svelte:head>
-	<title>חכמי העדה - בית דין לבוררות ושלום על פי תורת ישראל</title>
+	<title>{tFn('home_page_title')}</title>
 </svelte:head>
 
 <section class="pt-4 pb-10 text-center">
 	<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl sm:text-4xl md:text-5xl font-black text-transparent inline-block pb-1">
-		ברוכים הבאים לחכמי העדה
+		{tFn('home_welcome_title')}
 	</h2>
-	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label="קרא עוד אודותנו">
+	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label={tFn('home_read_more_about_us_aria')}>
 		<div class="mt-2 md:mt-6 flex justify-center">
 			<div class="h-40 w-40 md:h-56 md:w-56 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">
 				<img
 					src="/images/chachmei-logo.png"
-					alt="חכמי העדה"
+					alt={tFn('home_logo_alt')}
 					class="w-full h-full object-contain scale-[1.15]"
 					style="image-rendering: -webkit-optimize-contrast;"
 				/>
 			</div>
 		</div>
 		<p class="mt-3 text-gray-800 text-base md:text-lg font-bold max-w-2xl mx-auto group-hover:underline decoration-blue-400/60 underline-offset-4">
-			פלטפורמה לפתרון מחלוקות בצדק ובאחווה, פרסום מאמרים מחכמי ישראל, קידום חברה מתוקנת המתנהלת בקוד האתי העולמי <span class="text-blue-700 font-black">UECC</span>.
+			{@html tFn('home_welcome_description')}
 		</p>
-		<p class="mt-2 text-sm text-blue-700 font-bold opacity-80 group-hover:opacity-100">קרא עוד אודותנו ←</p>
+		<p class="mt-2 text-sm text-blue-700 font-bold opacity-80 group-hover:opacity-100">{tFn('home_read_more_about_us_link')}</p>
 	</a>
 </section>
 
@@ -97,11 +105,11 @@
 	<header class="text-center mb-8">
 		<FancyHeading noLine>
 			<h3 class="text-xl sm:text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent whitespace-nowrap inline-block pb-1">
-				חדשות מהיכל המעשה
+				{tFn('home_news_section_title')}
 			</h3>
 		</FancyHeading>
 		<p class="mt-2 text-base md:text-lg font-black text-amber-900 drop-shadow-[0_1px_1px_rgba(120,53,15,0.25)]">
-			הפעילות של חכמי העדה לקידום שלום בארץ ושאר חדשות
+			{tFn('home_news_section_subtitle')}
 		</p>
 		<div class="mt-2 mx-auto h-0.5 w-80 md:w-[28rem] bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 	</header>
@@ -117,7 +125,7 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs text-gray-400">הועלה ב-{recentActivity.date} · מאת {recentActivity.author}</span>
+						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {recentActivity.date} · {tFn('home_by_author')} {recentActivity.author}</span>
 					</div>
 				</div>
 			</div>
@@ -170,7 +178,7 @@
 				href="/heichal-hamaaseh/activity"
 				class="text-sm font-bold text-amber-700 hover:text-amber-900 transition-colors"
 			>
-				לכלל פעולות חכמי העדה ←
+				{tFn('home_all_activities_link')}
 			</a>
 		</div>
 	{/if}
@@ -193,12 +201,12 @@
 			<FancyHeading>
 				<a href="/articles" class="inline-block transition-transform hover:scale-105">
 					<h3 class="text-2xl sm:text-3xl md:text-5xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap inline-block pb-1">
-						מהיכל הרוח
+						{tFn('home_heichal_haruach_title')}
 					</h3>
 				</a>
 			</FancyHeading>
 			<h4 class="mt-6 text-right text-lg md:text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent pr-3 md:pr-0">
-				📜 מאמר מחכמי העדה
+				{tFn('home_article_from_sages')}
 			</h4>
 		</header>
 		<article
@@ -207,14 +215,14 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs text-gray-400">הועלה ב-{latestArticle.date} · מאת {latestArticle.author}</span>
+						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {latestArticle.date} · {tFn('home_by_author')} {latestArticle.author}</span>
 					</div>
 				</div>
 			</div>
 			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
 				{latestArticle.title}
 			</h2>
-			<p class="text-sm text-blue-300 mb-2">מאת: {latestArticle.author}</p>
+			<p class="text-sm text-blue-300 mb-2">{tFn('home_by_author_colon')} {latestArticle.author}</p>
 			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
 		</article>
 	</section>
@@ -223,19 +231,19 @@
 <section class="mb-10">
 	<header class="text-right mb-5">
 		<h3 class="text-lg md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent pr-3 md:pr-0">
-			📚 תשובות חכמי העדה
+			{tFn('home_qa_section_title')}
 		</h3>
-		<p class="mt-2 text-gray-700 text-xs md:text-base font-bold pr-3 md:pr-0">חכמי העדה עונים לשאלותך</p>
+		<p class="mt-2 text-gray-700 text-xs md:text-base font-bold pr-3 md:pr-0">{tFn('home_qa_section_subtitle')}</p>
 	</header>
 	<article class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
 		<div class="flex items-baseline gap-3 flex-wrap mb-2">
-			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">שאלה - {recentQa.asker}</h4>
-			<span class="text-xs font-bold text-gray-600">· פורסם {recentQa.answerDate.split('-').reverse().join('.')}</span>
+			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">{tFn('home_question_label')} - {recentQa.asker}</h4>
+			<span class="text-xs font-bold text-gray-600">· {tFn('home_published_on')} {recentQa.answerDate.split('-').reverse().join('.')}</span>
 		</div>
 		<p class="text-gray-800 leading-relaxed mb-4 line-clamp-3">{recentQa.question}</p>
 		<div class="border-t border-indigo-300/40 pt-4">
 			<h5 class="text-sm font-black text-indigo-700 mb-2">
-				תשובת {recentQa.answeredBy}
+				{tFn('home_answer_by')} {recentQa.answeredBy}
 			</h5>
 			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{recentQa.answer}</p>
 		</div>
@@ -245,7 +253,7 @@
 			href="/qa"
 			class="text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
 		>
-			לכל השאלות והתשובות של חכמי העדה ←
+			{tFn('home_all_qa_link')}
 		</a>
 	</div>
 </section>
@@ -257,15 +265,15 @@
 	>
 		<img
 			src="/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif"
-			alt="חכמי העדה"
+			alt={tFn('home_logo_alt')}
 			class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 object-cover rounded-full ring-2 ring-white/80 shadow-lg"
 		/>
 		<div class="text-center min-w-0">
 			<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
-				שאל את חכמי העדה
+				{tFn('home_ask_cta_title')}
 			</h3>
 			<p class="ask-cta-text text-xs md:text-sm font-bold leading-snug">
-				יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי - פנה אל החכמים ותענה בהקדם האפשרי
+				{tFn('home_ask_cta_text')}
 			</p>
 		</div>
 	</a>
@@ -289,7 +297,7 @@
 			onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
 			class="inline-flex items-center gap-1 text-amber-900 font-bold text-sm hover:text-amber-700 transition-colors"
 		>
-			חזור לראש הדף ↑
+			{tFn('home_back_to_top')}
 		</button>
 	</div>
 </section>

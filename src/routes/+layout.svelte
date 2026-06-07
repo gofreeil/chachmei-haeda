@@ -12,8 +12,17 @@
 	import MobileAdPopup from "$lib/components/MobileAdPopup.svelte";
 	import { beforeNavigate } from "$app/navigation";
 	import { closeAdPopup } from "$lib/adPopupStore";
+	import { t, locale } from "svelte-i18n";
+	import { get } from "svelte/store";
 
 	let { children } = $props();
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => {
+		void _loc;
+		return get(t)(k);
+	};
 
 	beforeNavigate(() => {
 		closeAdPopup();
@@ -21,12 +30,12 @@
 </script>
 
 <svelte:head>
-	<title>חכמי העדה</title>
+	<title>{tFn('layout_page_title')}</title>
 	<link rel="icon" href="/favicon.png" type="image/png" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 </svelte:head>
 
-<a href="#main-content" class="skip-link">דלג לתוכן הראשי</a>
+<a href="#main-content" class="skip-link">{tFn('layout_skip_to_main')}</a>
 <CoinAnimation />
 <MobileAdsDrawer currentUser={undefined} layoutUser={undefined} />
 <MobileAdPopup />

@@ -4,6 +4,11 @@
 	import { qa, type QaItem } from '$lib/data/qa';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	const ITEMS_PAGE_SIZE = 3; // עד 3 פריטים לעמוד (כדי להכיל פריטים מרובים לאורך הסרגל הצדדי)
 	const SEARCH_PAGE_SIZE = 8;
@@ -138,21 +143,21 @@
 </script>
 
 <svelte:head>
-	<title>היכל הרוח - חכמי העדה</title>
+	<title>{tFn('articles_page_title')}</title>
 </svelte:head>
 
 <section class="py-8">
 	<header class="text-center mb-6">
 		<FancyHeading>
 			<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
-				היכל הרוח
+				{tFn('articles_hero_title')}
 			</h1>
 		</FancyHeading>
 	</header>
 
 	<!-- כותרת משנה מאוחדת -->
 	<h2 class="text-center text-xl md:text-2xl font-black bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent mb-6">
-		📜 מאמרים, שאלות ותשובות 📚
+		📜 {tFn('articles_subtitle')} 📚
 	</h2>
 
 	<!-- שורת חיפוש -->
@@ -162,15 +167,15 @@
 			<input
 				type="search"
 				bind:value={searchQuery}
-				placeholder="חיפוש במאמרים ובתשובות..."
-				aria-label="חיפוש במאמרים ובתשובות"
+				placeholder={tFn('articles_search_placeholder')}
+				aria-label={tFn('articles_search_aria')}
 				class="w-full pr-10 pl-10 py-2.5 rounded-full bg-white/80 border-2 border-blue-300/60 text-gray-900 placeholder-gray-500 font-medium focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400/40 transition-colors shadow-sm"
 			/>
 			{#if searchQuery}
 				<button
 					type="button"
 					onclick={() => (searchQuery = '')}
-					aria-label="נקה חיפוש"
+					aria-label={tFn('articles_clear_search')}
 					class="absolute inset-y-0 left-2 flex items-center justify-center w-7 h-full text-gray-600 hover:text-gray-900"
 				>
 					✕
@@ -179,9 +184,9 @@
 		</div>
 		{#if searchQuery}
 			<p class="mt-2 text-xs text-center text-gray-300 font-medium">
-				נמצאו {totalMatches} תוצאות
+				{tFn('articles_results_found')} {totalMatches} {tFn('articles_results_word')}
 				{#if totalMatches > 0}
-					· {articleMatches.length} מאמרים · {qaMatches.length} שאלות-תשובות
+					· {articleMatches.length} {tFn('articles_label_articles')} · {qaMatches.length} {tFn('articles_label_qa')}
 				{/if}
 			</p>
 		{/if}
@@ -190,12 +195,12 @@
 	{#if searchQuery}
 		<!-- תוצאות חיפוש -->
 		{#if totalMatches === 0}
-			<p class="text-center text-gray-400 py-12">לא נמצאו תוצאות עבור "{searchQuery}"</p>
+			<p class="text-center text-gray-400 py-12">{tFn('articles_no_results')} "{searchQuery}"</p>
 		{/if}
 
 		{#if searchPagedArticles.length > 0}
 			<div class="mb-8">
-				<h3 class="text-sm font-black text-blue-300 mb-3">📜 מאמרים ({articleMatches.length})</h3>
+				<h3 class="text-sm font-black text-blue-300 mb-3">📜 {tFn('articles_label_articles')} ({articleMatches.length})</h3>
 				<div class="space-y-3">
 					{#each searchPagedArticles as a (a.slug)}
 						<a
@@ -206,7 +211,7 @@
 								<h2 class="text-lg md:text-xl font-bold text-white">{@html highlight(a.title, searchQuery)}</h2>
 								<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
 							</div>
-							<p class="mt-1 text-xs text-blue-300">מאת: {@html highlight(a.author, searchQuery)}</p>
+							<p class="mt-1 text-xs text-blue-300">{tFn('articles_by')} {@html highlight(a.author, searchQuery)}</p>
 							<p class="mt-2 text-sm text-gray-300 leading-relaxed">{@html highlight(snippet(a.excerpt, searchQuery, 180), searchQuery)}</p>
 							{#if a.tags && a.tags.length > 0}
 								<div class="mt-3 flex flex-wrap gap-1.5">
@@ -229,7 +234,7 @@
 
 		{#if searchPagedQa.length > 0}
 			<div class="mb-8">
-				<h3 class="text-sm font-black text-indigo-300 mb-3">📚 שאלות ותשובות ({qaMatches.length})</h3>
+				<h3 class="text-sm font-black text-indigo-300 mb-3">📚 {tFn('articles_label_qa_full')} ({qaMatches.length})</h3>
 				<div class="space-y-3">
 					{#each searchPagedQa as item (item.slug)}
 						<a
@@ -240,11 +245,11 @@
 								<span class="text-xs text-gray-400">{item.answerDate}</span>
 							</div>
 							<p class="mt-2 text-sm font-bold text-white leading-snug">
-								<span class="text-indigo-300">שאלה:</span>
+								<span class="text-indigo-300">{tFn('articles_question_label')}</span>
 								{@html highlight(snippet(item.question, searchQuery, 140), searchQuery)}
 							</p>
 							<p class="mt-2 text-sm text-gray-300 leading-relaxed">
-								<span class="text-indigo-300 font-bold">תשובת {item.answeredBy}:</span>
+								<span class="text-indigo-300 font-bold">{tFn('articles_answer_by')} {item.answeredBy}:</span>
 								{@html highlight(snippet(item.answer, searchQuery, 180), searchQuery)}
 							</p>
 							<div class="mt-3 flex flex-wrap gap-1.5">
@@ -269,7 +274,7 @@
 	{:else}
 		<!-- רשימה מאוחדת: מאמרים ושאלות-תשובות לפי תאריך -->
 		{#if entriesNumbered.length === 0}
-			<p class="text-center text-gray-400 py-12">אין פריטים להצגה.</p>
+			<p class="text-center text-gray-400 py-12">{tFn('articles_no_items')}</p>
 		{:else}
 			<div class="space-y-4">
 				{#each itemsPaged as entry (entry.type + ':' + entry.item.slug)}
@@ -283,13 +288,13 @@
 								<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/30 border-2 border-blue-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(37,99,235,0.35)]">
 									{entry.number}
 								</span>
-								<span class="text-xs font-bold text-blue-200">📜 מאמר · פריט {entry.number} מתוך {entriesNumbered.length}</span>
+								<span class="text-xs font-bold text-blue-200">📜 {tFn('articles_item_article')} · {tFn('articles_item_word')} {entry.number} {tFn('articles_item_of')} {entriesNumbered.length}</span>
 							</div>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
 								<h2 class="text-xl md:text-2xl font-bold text-white">{a.title}</h2>
 								<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
 							</div>
-							<p class="mt-1 text-sm text-blue-300">מאת: {a.author}</p>
+							<p class="mt-1 text-sm text-blue-300">{tFn('articles_by')} {a.author}</p>
 							<p class="mt-3 text-gray-200 leading-relaxed font-medium">{a.excerpt}</p>
 							<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
 								{a.body}
@@ -309,7 +314,7 @@
 							{/if}
 							<div class="mt-3 text-left">
 								<a href="/articles/{a.slug}" class="text-[11px] text-blue-300/70 hover:text-blue-300 underline">
-									קישור ישיר ←
+									{tFn('articles_direct_link')}
 								</a>
 							</div>
 						</article>
@@ -323,17 +328,17 @@
 								<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-500/30 border-2 border-indigo-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(79,70,229,0.35)]">
 									{entry.number}
 								</span>
-								<span class="text-xs font-bold text-indigo-200">📚 שאלה ותשובה · פריט {entry.number} מתוך {entriesNumbered.length}</span>
+								<span class="text-xs font-bold text-indigo-200">📚 {tFn('articles_item_qa')} · {tFn('articles_item_word')} {entry.number} {tFn('articles_item_of')} {entriesNumbered.length}</span>
 							</div>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
-								<h2 class="text-xl md:text-2xl font-bold text-white">שאלה - {q.asker}</h2>
+								<h2 class="text-xl md:text-2xl font-bold text-white">{tFn('articles_question_word')} - {q.asker}</h2>
 								<span class="text-xs text-gray-400 flex-shrink-0">{fmtDate(q.answerDate)}</span>
 							</div>
-							<p class="mt-1 text-sm text-indigo-300">נשאל {fmtDate(q.askDate)}</p>
+							<p class="mt-1 text-sm text-indigo-300">{tFn('articles_asked_on')} {fmtDate(q.askDate)}</p>
 							<p class="mt-3 text-gray-200 leading-relaxed font-medium whitespace-pre-line">{q.question}</p>
 							<div class="mt-5 pt-4 border-t border-white/10">
 								<h4 class="text-sm md:text-base font-black text-indigo-300 mb-2">
-									תשובת {q.answeredBy} · {fmtDate(q.answerDate)}
+									{tFn('articles_answer_of')} {q.answeredBy} · {fmtDate(q.answerDate)}
 								</h4>
 								<p class="text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">{q.answer}</p>
 							</div>
@@ -358,10 +363,10 @@
 				<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">📚</div>
 				<div class="text-center min-w-0">
 					<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
-						שאל את חכמי העדה
+						{tFn('articles_cta_title')}
 					</h3>
 					<p class="ask-cta-text text-xs md:text-sm font-bold leading-snug">
-						יש לך שאלה בהלכה, במוסר, בהבנת התורה, בחינוך, בשלום בית וכולי - פנה אל החכמים ותענה בהקדם האפשרי
+						{tFn('articles_cta_text')}
 					</p>
 				</div>
 			</a>

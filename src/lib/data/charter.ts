@@ -5,21 +5,27 @@
 
 export type CharterStatus = 'pending' | 'signed' | 'disqualified';
 
+export type LocalizedString = { he: string; en: string; ru: string };
+
+/** Helper: pick localized value, falling back to Hebrew. Accepts plain strings too. */
+export const pickLang = (v: any, l: string): string =>
+	typeof v === 'string' ? v : (v?.[l] ?? v?.he ?? '');
+
 export interface CharterEntry {
 	id: string;
-	name: string;
-	role?: string;
-	city?: string;
+	name: string | LocalizedString;
+	role?: string | LocalizedString;
+	city?: string | LocalizedString;
 	email?: string;
 	phone?: string;
 	status: CharterStatus;
 	/** תאריך החתימה / הצטרפות */
 	date: string;
 	/** במקרה של פסילה - סיבה ותאריך פסילה */
-	disqualifiedReason?: string;
+	disqualifiedReason?: string | LocalizedString;
 	disqualifiedDate?: string;
 	/** מי פסל (חבר ביה"ד) */
-	disqualifiedBy?: string;
+	disqualifiedBy?: string | LocalizedString;
 	/** האם המשתמש סימן הסכמה מפורשת לאמנה */
 	acceptedTerms?: boolean;
 }
@@ -28,27 +34,27 @@ export interface CharterEntry {
 export const initialCharterEntries: CharterEntry[] = [
 	{
 		id: 'demo-1',
-		name: 'הרב יוסף כהן',
-		role: 'אב בית הדין',
-		city: 'ירושלים',
+		name: { he: 'הרב יוסף כהן', en: 'Rabbi Yosef Cohen', ru: 'Рав Йосеф Коэн' },
+		role: { he: 'אב בית הדין', en: 'Head of the Beit Din', ru: 'Глава Бейт Дина' },
+		city: { he: 'ירושלים', en: 'Jerusalem', ru: 'Иерусалим' },
 		status: 'signed',
 		date: '2026-01-15',
 		acceptedTerms: true
 	},
 	{
 		id: 'demo-2',
-		name: 'הרב דוד אברהם',
-		role: 'דיין',
-		city: 'בני ברק',
+		name: { he: 'הרב דוד אברהם', en: 'Rabbi David Avraham', ru: 'Рав Давид Авраам' },
+		role: { he: 'דיין', en: 'Dayan (Judge)', ru: 'Даян (судья)' },
+		city: { he: 'בני ברק', en: 'Bnei Brak', ru: 'Бней-Брак' },
 		status: 'signed',
 		date: '2026-01-15',
 		acceptedTerms: true
 	},
 	{
 		id: 'demo-3',
-		name: 'הרב משה לוי',
-		role: 'דיין',
-		city: 'אלעד',
+		name: { he: 'הרב משה לוי', en: 'Rabbi Moshe Levi', ru: 'Рав Моше Леви' },
+		role: { he: 'דיין', en: 'Dayan (Judge)', ru: 'Даян (судья)' },
+		city: { he: 'אלעד', en: 'Elad', ru: 'Эльад' },
 		status: 'signed',
 		date: '2026-01-15',
 		acceptedTerms: true

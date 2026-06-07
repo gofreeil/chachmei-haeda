@@ -1,48 +1,54 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { t, locale } from 'svelte-i18n';
+    import { get } from 'svelte/store';
+
+    let _loc = $state(get(locale));
+    $effect(() => locale.subscribe(l => (_loc = l)));
+    const tFn = (k: string) => { void _loc; return get(t)(k); };
 
     let showBanner = false;
 
     const ads = [
         {
-            title: 'בתי הפיוס',
-            summary: 'עזרה בדין ופיוס בסיכסוכים',
+            titleKey: 'mobile_ads_banner_ad_peace_houses_title',
+            summaryKey: 'mobile_ads_banner_ad_peace_houses_summary',
             url: 'https://chachmim.vercel.app/',
             color: 'from-orange-600 to-red-600'
         },
         {
-            title: 'ועדי שכונות',
-            summary: 'הצטרף לוועד השכונה שלך',
+            titleKey: 'mobile_ads_banner_ad_neighborhood_committees_title',
+            summaryKey: 'mobile_ads_banner_ad_neighborhood_committees_summary',
             url: 'https://neighborhoods-il.vercel.app/',
             color: 'from-blue-600 to-cyan-600'
         },
         {
-            title: 'קבוצת רכישה',
-            summary: 'הוזל את ההוצאות החודשיות',
+            titleKey: 'mobile_ads_banner_ad_purchasing_group_title',
+            summaryKey: 'mobile_ads_banner_ad_purchasing_group_summary',
             url: 'https://purchasing-groups.vercel.app/',
             color: 'from-green-600 to-emerald-600'
         },
         {
-            title: 'השקעות קבוצתיות',
-            summary: 'הצטרף אל מועדון המשקיעים של מהפכת הכלכלה המבוזרת!',
+            titleKey: 'mobile_ads_banner_ad_group_investments_title',
+            summaryKey: 'mobile_ads_banner_ad_group_investments_summary',
             url: 'https://www.melecshop.com/page/free',
             color: 'from-amber-600 to-orange-600'
         },
         {
-            title: 'גידול ביתי',
-            summary: 'מערכת לגידול ביתי (בקרוב)',
+            titleKey: 'mobile_ads_banner_ad_home_growing_title',
+            summaryKey: 'mobile_ads_banner_ad_home_growing_summary',
             url: 'https://www.melecshop.com/page/free',
             color: 'from-teal-500 to-teal-600'
         },
         {
-            title: 'בעלי מקצוע כשירים',
-            summary: 'מחפש בעל מקצוע איכותי?',
+            titleKey: 'mobile_ads_banner_ad_qualified_pros_title',
+            summaryKey: 'mobile_ads_banner_ad_qualified_pros_summary',
             url: 'https://index-chi-sage.vercel.app/',
             color: 'from-yellow-500 to-orange-500'
         },
         {
-            title: 'ביקורת על העיריה',
-            summary: 'יש לך תלונה לעיריה?',
+            titleKey: 'mobile_ads_banner_ad_municipality_review_title',
+            summaryKey: 'mobile_ads_banner_ad_municipality_review_summary',
             url: 'https://criticism.vercel.app/',
             color: 'from-red-600 to-pink-600'
         }
@@ -72,7 +78,7 @@
     {#if showBanner}
         <div
             role="region"
-            aria-label="פרסומות קהילתיות"
+            aria-label={tFn('mobile_ads_banner_region_label')}
             class="bg-gradient-to-t from-black/90 to-black/70 backdrop-blur-sm p-4"
         >
             <div class="space-y-2">
@@ -81,12 +87,12 @@
                         href={ad.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="{ad.title} – {ad.summary} (נפתח בחלון חדש)"
+                        aria-label="{tFn(ad.titleKey)} – {tFn(ad.summaryKey)} ({tFn('mobile_ads_banner_opens_new_window')})"
                         class="w-full flex items-center justify-between bg-gradient-to-r {ad.color} p-3 rounded-lg text-white hover:shadow-lg transition-all"
                     >
                         <div class="text-left">
-                            <p class="font-bold text-sm">{ad.title}</p>
-                            <p class="text-xs opacity-90">{ad.summary}</p>
+                            <p class="font-bold text-sm">{tFn(ad.titleKey)}</p>
+                            <p class="text-xs opacity-90">{tFn(ad.summaryKey)}</p>
                         </div>
                         <span class="text-lg" aria-hidden="true">→</span>
                     </a>
@@ -94,10 +100,10 @@
             </div>
             <button
                 onclick={() => (showBanner = false)}
-                aria-label="סגור פרסומות"
+                aria-label={tFn('mobile_ads_banner_close_aria')}
                 class="w-full mt-2 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg text-xs font-bold transition-colors"
             >
-                סגור
+                {tFn('mobile_ads_banner_close')}
             </button>
         </div>
     {/if}

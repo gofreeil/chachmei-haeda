@@ -2,6 +2,15 @@
 	import { onMount } from 'svelte';
 	import { loadEntries, filterByStatus } from '$lib/services/charter-service';
 	import type { CharterEntry } from '$lib/data/charter';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string, values?: Record<string, any>) => {
+		void _loc;
+		return get(t)(k, values ? { values } : undefined);
+	};
 
 	let entries = $state<CharterEntry[]>([]);
 	let tab = $state<'signed' | 'disqualified'>('signed');
@@ -28,16 +37,16 @@
 </script>
 
 <svelte:head>
-	<title>אינדקס האמנה - חכמי העדה</title>
+	<title>{tFn('charter_idx_page_title')}</title>
 </svelte:head>
 
 <section class="py-8">
 	<header class="text-center mb-6">
 		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-			אינדקס האמנה
+			{tFn('charter_idx_heading')}
 		</h1>
 		<p class="mt-2 text-gray-300 text-sm md:text-base max-w-2xl mx-auto">
-			רשימה ציבורית של כל מי שחתם על האמנה המוסרית של חכמי העדה, ושל מי שפסקו חכמי העדה כי אינו עומד בכלליה.
+			{tFn('charter_idx_subtitle')}
 		</p>
 	</header>
 
@@ -50,7 +59,7 @@
 				? 'bg-emerald-500/40 border-emerald-300 text-white'
 				: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
 		>
-			✅ חתומים ({signed.length})
+			✅ {tFn('charter_idx_tab_signed')} ({signed.length})
 		</button>
 		<button
 			type="button"
@@ -59,7 +68,7 @@
 				? 'bg-red-500/40 border-red-300 text-white'
 				: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
 		>
-			⛔ פסולים ({disqualified.length})
+			⛔ {tFn('charter_idx_tab_disqualified')} ({disqualified.length})
 		</button>
 	</div>
 
@@ -68,7 +77,7 @@
 		<input
 			type="text"
 			bind:value={search}
-			placeholder="חיפוש לפי שם, תפקיד או עיר…"
+			placeholder={tFn('charter_idx_search_placeholder')}
 			class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none text-right"
 		/>
 	</div>
@@ -79,11 +88,11 @@
 			<div class="text-4xl mb-2">{tab === 'signed' ? '📭' : '🕊️'}</div>
 			<p class="text-gray-300">
 				{#if search.trim()}
-					לא נמצאו תוצאות לחיפוש "{search}"
+					{tFn('charter_idx_empty_search', { query: search })}
 				{:else if tab === 'signed'}
-					עדיין אין חתומים על האמנה. <a href="/heichal-hamaaseh/charter-join" class="text-blue-300 underline">הצטרף ראשון</a>
+					{tFn('charter_idx_empty_signed_prefix')} <a href="/heichal-hamaaseh/charter-join" class="text-blue-300 underline">{tFn('charter_idx_empty_signed_link')}</a>
 				{:else}
-					אין רשומות פסולים
+					{tFn('charter_idx_empty_disqualified')}
 				{/if}
 			</p>
 		</div>
@@ -110,17 +119,17 @@
 							{e.role || ''}{e.role && e.city ? ' • ' : ''}{e.city || ''}
 						</p>
 						{#if tab === 'signed'}
-							<p class="text-[11px] text-emerald-300 mt-0.5">חתימה: {e.date}</p>
+							<p class="text-[11px] text-emerald-300 mt-0.5">{tFn('charter_idx_signed_on')}: {e.date}</p>
 						{:else}
 							<p class="text-[11px] text-red-300 mt-0.5">
-								נפסל: {e.disqualifiedDate || e.date}
+								{tFn('charter_idx_disqualified_on')}: {e.disqualifiedDate || e.date}
 							</p>
 							{#if e.disqualifiedReason}
 								<p class="text-[11px] text-gray-400 mt-0.5 italic">"{e.disqualifiedReason}"</p>
 							{/if}
 						{/if}
 					</div>
-					<span class="text-xl flex-shrink-0" title={tab === 'signed' ? 'חתום' : 'פסול'}>
+					<span class="text-xl flex-shrink-0" title={tab === 'signed' ? tFn('charter_idx_status_signed') : tFn('charter_idx_status_disqualified')}>
 						{tab === 'signed' ? '✅' : '⛔'}
 					</span>
 				</div>
@@ -133,17 +142,17 @@
 			href="/heichal-hamaaseh/charter-join"
 			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold transition-colors hover:opacity-90"
 		>
-			✍️ הצטרף לאמנה
+			✍️ {tFn('charter_idx_cta_join')}
 		</a>
 		<a
 			href="/heichal-hamaaseh/ethical-code"
 			class="inline-block px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
 		>
-			📜 קרא את האמנה
+			📜 {tFn('charter_idx_cta_read')}
 		</a>
 	</div>
 
 	<p class="text-center text-xs text-gray-500 mt-6">
-		רשימה זו תחובר בעתיד ל-CMS מרכזי לעדכון בזמן אמת
+		{tFn('charter_idx_cms_note')}
 	</p>
 </section>

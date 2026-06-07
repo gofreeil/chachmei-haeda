@@ -2,6 +2,15 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => {
+		void _loc;
+		return get(t)(k);
+	};
 
 	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
 
@@ -206,81 +215,81 @@
 </script>
 
 <svelte:head>
-	<title>בקשת דיון - חכמי העדה</title>
+	<title>{tFn('req_hearing_page_title')}</title>
 </svelte:head>
 
 <section class="py-8 max-w-3xl mx-auto px-3">
 	<header class="text-center mb-8">
 		<FancyHeading>
 			<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
-				בקשת דיון
+				{tFn('req_hearing_h1')}
 			</h1>
 		</FancyHeading>
-		<p class="mt-3 text-gray-300">פתיחת תיק חדש לבוררות ושלום על פי דין תורה</p>
+		<p class="mt-3 text-gray-300">{tFn('req_hearing_subtitle')}</p>
 	</header>
 
 	{#if saved}
 		<!-- ───────────── מצב לאחר שמירה - לוח אישורים ───────────── -->
 		<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-6 md:p-8">
 			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-bold text-blue-300">תיק #{caseId}</h2>
+				<h2 class="text-2xl font-bold text-blue-300">{tFn('req_hearing_case_label')} #{caseId}</h2>
 				<span class="text-sm text-gray-400">{nickname}</span>
 			</div>
 
 			<p class="text-gray-200 mb-5">
-				התאריך המוצע <strong class="text-yellow-300">{proposedDate}</strong> לא יינעל ביומן עד שלושת הצדדים יאשרו:
+				{tFn('req_hearing_proposed_date_prefix')} <strong class="text-yellow-300">{proposedDate}</strong> {tFn('req_hearing_proposed_date_suffix')}
 			</p>
 
 			<div class="space-y-3">
 				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
 					<div>
-						<div class="font-bold text-white">1. התובע</div>
+						<div class="font-bold text-white">1. {tFn('req_hearing_plaintiff_label')}</div>
 						<div class="text-sm text-gray-400">{plaintiffName}</div>
 					</div>
 					{#if approvals.plaintiff}
-						<span class="text-green-400 font-bold">✓ אישר</span>
+						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
 					{:else}
 						<button
 							onclick={() => (approvals.plaintiff = true)}
 							class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-bold"
 						>
-							אשר תאריך
+							{tFn('req_hearing_approve_date_btn')}
 						</button>
 					{/if}
 				</div>
 
 				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
 					<div>
-						<div class="font-bold text-white">2. הנתבע</div>
+						<div class="font-bold text-white">2. {tFn('req_hearing_defendant_label')}</div>
 						<div class="text-sm text-gray-400">{defendantName}</div>
 					</div>
 					{#if approvals.defendant}
-						<span class="text-green-400 font-bold">✓ אישר</span>
+						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
 					{:else}
 						<button
 							onclick={() => (approvals.defendant = true)}
 							class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-bold"
-							title="המתנה לאישור הנתבע (סימולציה ב-MVP)"
+							title={tFn('req_hearing_awaiting_defendant_title')}
 						>
-							ממתין לאישור
+							{tFn('req_hearing_awaiting_approval_btn')}
 						</button>
 					{/if}
 				</div>
 
 				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
 					<div>
-						<div class="font-bold text-white">3. בית הדין</div>
-						<div class="text-sm text-gray-400">רבני חכמי העדה</div>
+						<div class="font-bold text-white">3. {tFn('req_hearing_beit_din_label')}</div>
+						<div class="text-sm text-gray-400">{tFn('req_hearing_beit_din_rabbis')}</div>
 					</div>
 					{#if approvals.beitDin}
-						<span class="text-green-400 font-bold">✓ אישר</span>
+						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
 					{:else}
 						<button
 							onclick={() => (approvals.beitDin = true)}
 							class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-bold"
-							title="המתנה לאישור בית הדין (סימולציה ב-MVP)"
+							title={tFn('req_hearing_awaiting_beit_din_title')}
 						>
-							ממתין לאישור
+							{tFn('req_hearing_awaiting_approval_btn')}
 						</button>
 					{/if}
 				</div>
@@ -289,11 +298,11 @@
 			{#if allApproved}
 				<div class="mt-6 rounded-xl border-2 border-green-500/40 bg-green-500/10 p-5 text-center">
 					<div class="text-4xl mb-2">🎉</div>
-					<p class="text-green-200 font-bold text-lg">המועד אושר על ידי כל הצדדים ונקבע ביומן!</p>
+					<p class="text-green-200 font-bold text-lg">{tFn('req_hearing_all_approved_msg')}</p>
 				</div>
 			{:else}
 				<div class="mt-6 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-center text-sm text-yellow-200">
-					⏳ המועד עוד לא נקבע ביומן - ממתינים לאישור שאר הצדדים
+					{tFn('req_hearing_awaiting_others_msg')}
 				</div>
 			{/if}
 
@@ -302,29 +311,28 @@
 				onclick={resetForm}
 				class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
 			>
-				← פתיחת תיק נוסף
+				{tFn('req_hearing_open_another_case')}
 			</button>
 		</div>
 	{:else if showSignatureStep}
 		<!-- ───────────── שלב חתימה: לפני נעילת התאריך ───────────── -->
 		<div class="rounded-2xl border-2 border-yellow-400/40 bg-yellow-500/5 p-6 md:p-8">
 			<div class="flex items-start justify-between gap-3 mb-2">
-				<h2 class="text-xl md:text-2xl font-bold text-yellow-200">🔑 שלב אחרון - חתימה על הקוד האתי</h2>
+				<h2 class="text-xl md:text-2xl font-bold text-yellow-200">{tFn('req_hearing_signature_heading')}</h2>
 				<button
 					type="button"
 					onclick={backToForm}
 					class="shrink-0 text-sm text-blue-300 hover:text-blue-200 underline"
 				>
-					← חזרה לעריכת הפרטים
+					{tFn('req_hearing_back_to_form')}
 				</button>
 			</div>
 			<p class="text-gray-300 mb-5 leading-relaxed">
-				הפרטים נשמרו כטיוטה. כדי לנעול את התאריך ולפתוח את התיק, יש לאשר את הקוד האתי UECC ואת
-				סמכות בית הדין. חתימה זו תקפה גם לדיונים עתידיים.
+				{tFn('req_hearing_signature_intro')}
 			</p>
 			<div class="grid md:grid-cols-2 gap-4">
 				<label class="block">
-					<span class="text-sm font-bold text-gray-300">שם מלא *</span>
+					<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_full_name_label')}</span>
 					<input
 						type="text"
 						bind:value={signerName}
@@ -333,7 +341,7 @@
 					/>
 				</label>
 				<label class="block">
-					<span class="text-sm font-bold text-gray-300">טלפון *</span>
+					<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_phone_label')}</span>
 					<input
 						type="tel"
 						bind:value={signerPhone}
@@ -343,7 +351,7 @@
 				</label>
 			</div>
 			<label class="block mt-4">
-				<span class="text-sm font-bold text-gray-300">אימייל</span>
+				<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_email_label')}</span>
 				<input
 					type="email"
 					bind:value={signerEmail}
@@ -355,16 +363,15 @@
 				<label class="flex items-start gap-3 cursor-pointer">
 					<input type="checkbox" bind:checked={regUECC} class="mt-1" />
 					<span class="text-gray-200 text-sm">
-						אני מקבל על עצמי את
-						<a href="/heichal-hamaaseh/ethical-code" class="text-blue-300 underline">הקוד האתי UECC</a>
-						ושבע מצוות בני נח כתנאי לעריכת הדיון.
+						{tFn('req_hearing_uecc_consent_prefix')}
+						<a href="/heichal-hamaaseh/ethical-code" class="text-blue-300 underline">{tFn('req_hearing_uecc_link_text')}</a>
+						{tFn('req_hearing_uecc_consent_suffix')}
 					</span>
 				</label>
 				<label class="flex items-start gap-3 cursor-pointer">
 					<input type="checkbox" bind:checked={regArbitration} class="mt-1" />
 					<span class="text-gray-200 text-sm">
-						אני מסכים שהמחלוקת תוכרע בבית הדין של חכמי העדה על פי דין תורה, ומקבל על עצמי לציית
-						לפסק הדין.
+						{tFn('req_hearing_arbitration_consent')}
 					</span>
 				</label>
 			</div>
@@ -375,36 +382,36 @@
 				disabled={!signerName.trim() || !signerPhone.trim() || !regUECC || !regArbitration}
 				class="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
 			>
-				✓ חתימה ונעילת התאריך
+				{tFn('req_hearing_sign_and_lock_btn')}
 			</button>
 		</div>
 	{:else}
 		<!-- ───────────── המגירות (Accordion) ───────────── -->
 		{#if isRegistered && hasAcceptedUECC}
 			<div class="mb-5 rounded-xl border border-green-500/30 bg-green-500/5 p-3 text-center text-sm text-green-300">
-				✓ מחובר כ-<strong>{userName}</strong> · הקוד האתי UECC כבר חתום
+				{tFn('req_hearing_logged_in_prefix')}<strong>{userName}</strong>{tFn('req_hearing_logged_in_suffix')}
 			</div>
 		{:else}
 			<div class="mb-5 rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 text-center text-sm text-blue-200">
-				💡 מלא את הפרטים כטיוטה - חתימה על הקוד האתי תידרש רק בסוף, לפני נעילת התאריך.
+				{tFn('req_hearing_draft_only_notice')}
 			</div>
 		{/if}
 
 		{#if preferredDate}
 			<div class="mb-3 rounded-xl border border-green-500/40 bg-green-500/10 p-4 text-center">
-				<span class="text-green-300 font-bold">📅 תאריך נבחר מהלוח: {preferredDate}</span>
+				<span class="text-green-300 font-bold">{tFn('req_hearing_date_from_calendar')} {preferredDate}</span>
 			</div>
 		{/if}
 
 		{#if draftRestoredNotice}
 			<div class="mb-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3 flex items-center justify-between gap-3">
-				<span class="text-sm text-yellow-200">📝 שחזרנו טיוטה שהתחלת קודם.</span>
+				<span class="text-sm text-yellow-200">{tFn('req_hearing_draft_restored_notice')}</span>
 				<button
 					type="button"
 					onclick={clearDraft}
 					class="text-xs text-yellow-300 hover:text-yellow-100 underline shrink-0"
 				>
-					התחל מחדש
+					{tFn('req_hearing_start_over_btn')}
 				</button>
 			</div>
 		{/if}
@@ -420,7 +427,7 @@
 				>
 					<span class="flex items-center gap-3">
 						<span class="text-2xl">🏷️</span>
-						<span class="font-bold text-white text-lg">שם כינוי לדיון זה</span>
+						<span class="font-bold text-white text-lg">{tFn('req_hearing_drawer_nickname_title')}</span>
 						{#if nickname}<span class="text-green-400 text-sm">✓</span>{/if}
 					</span>
 					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'nickname' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -430,10 +437,10 @@
 						<input
 							type="text"
 							bind:value={nickname}
-							placeholder="לדוגמה: מחלוקת שותפים - מאפיית הזית"
+							placeholder={tFn('req_hearing_nickname_placeholder')}
 							class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
 						/>
-						<p class="text-xs text-gray-400 mt-2">כינוי פנימי בלבד, לזיהוי מהיר של התיק.</p>
+						<p class="text-xs text-gray-400 mt-2">{tFn('req_hearing_nickname_hint')}</p>
 					</div>
 				{/if}
 			</div>
@@ -448,7 +455,7 @@
 				>
 					<span class="flex items-center gap-3">
 						<span class="text-2xl">👥</span>
-						<span class="font-bold text-white text-lg">שמות המעורבים ונושא התיק</span>
+						<span class="font-bold text-white text-lg">{tFn('req_hearing_drawer_parties_title')}</span>
 						{#if plaintiffName && defendantName && subject}<span class="text-green-400 text-sm">✓</span>{/if}
 					</span>
 					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'parties' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -457,7 +464,7 @@
 					<div class="p-4 pt-0 border-t border-white/10 space-y-4">
 						<div class="grid md:grid-cols-2 gap-4">
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">שם התובע *</span>
+								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_plaintiff_name_label')}</span>
 								<input
 									type="text"
 									bind:value={plaintiffName}
@@ -466,7 +473,7 @@
 								/>
 							</label>
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">טלפון התובע</span>
+								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_plaintiff_phone_label')}</span>
 								<input
 									type="tel"
 									bind:value={plaintiffPhone}
@@ -476,7 +483,7 @@
 						</div>
 						<div class="grid md:grid-cols-2 gap-4">
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">שם הנתבע *</span>
+								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_defendant_name_label')}</span>
 								<input
 									type="text"
 									bind:value={defendantName}
@@ -485,7 +492,7 @@
 								/>
 							</label>
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">טלפון הנתבע</span>
+								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_defendant_phone_label')}</span>
 								<input
 									type="tel"
 									bind:value={defendantPhone}
@@ -494,17 +501,17 @@
 							</label>
 						</div>
 						<label class="block">
-							<span class="text-sm font-bold text-gray-300">נושא התיק *</span>
+							<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_subject_label')}</span>
 							<input
 								type="text"
 								bind:value={subject}
 								required
-								placeholder="לדוגמה: הלנת שכר, סכסוך שותפים, ערבות הלוואה..."
+								placeholder={tFn('req_hearing_subject_placeholder')}
 								class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
 							/>
 						</label>
 						<label class="block">
-							<span class="text-sm font-bold text-gray-300">פירוט הטענות</span>
+							<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_details_label')}</span>
 							<textarea
 								bind:value={details}
 								rows="5"
@@ -512,7 +519,7 @@
 							></textarea>
 						</label>
 						<p class="text-xs text-gray-400">
-							💡 הנתבע ייצור איתו קשר ויחתום על הקוד האתי לפני שיוכל לאשר את התאריך.
+							{tFn('req_hearing_defendant_contact_note')}
 						</p>
 					</div>
 				{/if}
@@ -528,7 +535,7 @@
 				>
 					<span class="flex items-center gap-3">
 						<span class="text-2xl">📅</span>
-						<span class="font-bold text-white text-lg">הצעת מועד לדיון</span>
+						<span class="font-bold text-white text-lg">{tFn('req_hearing_drawer_date_title')}</span>
 						{#if proposedDate}<span class="text-green-400 text-sm">✓</span>{/if}
 					</span>
 					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'date' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -536,7 +543,7 @@
 				{#if openDrawer === 'date'}
 					<div class="p-4 pt-0 border-t border-white/10">
 						<label class="block">
-							<span class="text-sm font-bold text-gray-300">תאריך שעליו אני ובעל דיני סיכמנו *</span>
+							<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_agreed_date_label')}</span>
 							<input
 								type="date"
 								bind:value={proposedDate}
@@ -545,7 +552,7 @@
 							/>
 						</label>
 						<p class="text-xs text-gray-400 mt-2">
-							התאריך לא יינעל ביומן עד שגם הנתבע וגם בית הדין יאשרו אותו.
+							{tFn('req_hearing_date_lock_note')}
 						</p>
 					</div>
 				{/if}
@@ -557,9 +564,9 @@
 				class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
 			>
 				{#if isRegistered && hasAcceptedUECC}
-					💾 שמור והעבר את ההצעה לרבנים
+					{tFn('req_hearing_submit_to_rabbis_btn')}
 				{:else}
-					← המשך לחתימה ונעילת התאריך
+					{tFn('req_hearing_continue_to_signature_btn')}
 				{/if}
 			</button>
 		</form>

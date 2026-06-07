@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
 	interface Props {
 		currentPage: number;
 		totalPages: number;
@@ -9,6 +12,13 @@
 
 	let { currentPage, totalPages, onPageChange, color = 'blue', label }: Props = $props();
 	const hasNext = $derived(currentPage < totalPages);
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => {
+		void _loc;
+		return get(t)(k);
+	};
 
 	const palette = {
 		blue: {
@@ -56,7 +66,7 @@
 </script>
 
 {#if totalPages > 1}
-	<nav class="mt-8 mb-2 flex justify-center" aria-label="ניווט בין עמודים">
+	<nav class="mt-8 mb-2 flex justify-center" aria-label={tFn('pagination_nav_aria')}>
 		<ul class="flex flex-wrap items-center justify-center gap-1.5 md:gap-2" dir="rtl">
 			<!-- הקודם (חץ ימינה ב-RTL = ימינה לעבר התחלה) -->
 			<li>
@@ -64,10 +74,10 @@
 					type="button"
 					onclick={() => go(currentPage - 1)}
 					disabled={currentPage === 1}
-					aria-label="עמוד קודם"
+					aria-label={tFn('pagination_prev_aria')}
 					class="min-w-[40px] h-10 px-3 rounded-lg border-2 font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white/85 {styles.arrow}"
 				>
-					‹ הקודם
+					‹ {tFn('pagination_prev_label')}
 				</button>
 			</li>
 
@@ -81,7 +91,7 @@
 						<button
 							type="button"
 							onclick={() => go(p)}
-							aria-label={`עמוד ${p}`}
+							aria-label={`${tFn('pagination_page_word')} ${p}`}
 							aria-current={p === currentPage ? 'page' : undefined}
 							class="min-w-[40px] h-10 px-3 rounded-lg border-2 font-bold text-sm transition-all {p === currentPage ? styles.active : styles.idle}"
 						>
@@ -97,10 +107,10 @@
 					type="button"
 					onclick={() => go(currentPage + 1)}
 					disabled={currentPage === totalPages}
-					aria-label="עמוד הבא"
+					aria-label={tFn('pagination_next_aria')}
 					class="min-w-[40px] h-10 px-3 rounded-lg border-2 font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white/85 {styles.arrow}"
 				>
-					הבא ›
+					{tFn('pagination_next_label')} ›
 				</button>
 			</li>
 		</ul>
@@ -109,8 +119,8 @@
 
 <p class="text-center text-xs text-gray-400 font-medium mt-3 mb-2">
 	{#if label}
-		עמוד {label} מס' {currentPage}{#if hasNext} — המשך לדף הבא{/if}
+		{tFn('pagination_page_word')} {label} {tFn('pagination_number_abbr')} {currentPage}{#if hasNext} — {tFn('pagination_continue_next')}{/if}
 	{:else}
-		עמוד {currentPage} מתוך {totalPages}
+		{tFn('pagination_page_word')} {currentPage} {tFn('pagination_of')} {totalPages}
 	{/if}
 </p>

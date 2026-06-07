@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { signatories } from '$lib/data/signatories';
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe(l => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k); };
 
 	let searchQuery = $state('');
 
@@ -16,11 +22,11 @@
 </script>
 
 <svelte:head>
-	<title>חתומים על הקוד האתי - חכמי העדה</title>
+	<title>{tFn('signatories_page_title')}</title>
 </svelte:head>
 
 <section class="py-8">
-	<HeichalHeader subtitle="רבנים, אנשי עסקים ופרטיים שקיבלו על עצמם את אמנת UECC ({signatories.length} חתומים)" />
+	<HeichalHeader subtitle="{tFn('signatories_subtitle_prefix')} ({signatories.length} {tFn('signatories_subtitle_count_suffix')})" />
 
 	<div class="mb-6 max-w-2xl mx-auto">
 		<div class="relative">
@@ -28,15 +34,15 @@
 			<input
 				type="search"
 				bind:value={searchQuery}
-				placeholder="חיפוש בשם, תפקיד, עיר..."
-				aria-label="חיפוש בחתומים"
+				placeholder={tFn('signatories_search_placeholder')}
+				aria-label={tFn('signatories_search_aria_label')}
 				class="w-full pr-10 pl-10 py-2.5 rounded-full bg-white/80 border-2 border-indigo-300/60 text-gray-900 placeholder-gray-500 font-medium focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 transition-colors shadow-sm"
 			/>
 			{#if searchQuery}
 				<button
 					type="button"
 					onclick={() => (searchQuery = '')}
-					aria-label="נקה חיפוש"
+					aria-label={tFn('signatories_clear_search_aria')}
 					class="absolute inset-y-0 left-2 flex items-center justify-center w-7 h-full text-gray-600 hover:text-gray-900"
 				>
 					✕
@@ -45,7 +51,7 @@
 		</div>
 		{#if searchQuery}
 			<p class="mt-2 text-xs text-center text-gray-700 font-medium">
-				נמצאו {filtered.length} תוצאות עבור "{searchQuery}"
+				{tFn('signatories_results_found_prefix')} {filtered.length} {tFn('signatories_results_found_suffix')} "{searchQuery}"
 			</p>
 		{/if}
 	</div>
@@ -61,9 +67,9 @@
 					<p class="text-sm text-gray-400">
 						{s.role || ''}{s.city ? ` • ${s.city}` : ''}
 					</p>
-					<p class="text-xs text-gray-500 mt-0.5">חתימה: {s.date}</p>
+					<p class="text-xs text-gray-500 mt-0.5">{tFn('signatories_signed_label')}: {s.date}</p>
 				</div>
-				<span class="text-green-400 text-xl" title="חתום">✓</span>
+				<span class="text-green-400 text-xl" title={tFn('signatories_signed_badge_title')}>✓</span>
 			</div>
 		{/each}
 	</div>
@@ -73,7 +79,7 @@
 			href="/heichal-hamaaseh/ethical-code"
 			class="inline-block px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
 		>
-			← קרא את הקוד האתי
+			← {tFn('signatories_read_ethical_code_link')}
 		</a>
 	</div>
 </section>

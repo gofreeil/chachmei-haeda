@@ -1,14 +1,23 @@
 <script lang="ts">
 	import { qa, type QaItem, type QaTopic } from '$lib/data/qa';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
 
-	const topics: (QaTopic | 'הכל')[] = [
-		'הכל',
-		'הלכה',
-		'מוסר עסקי',
-		'חושן משפט / ממונות',
-		'שלום בית ומשפחה',
-		'שבע מצוות בני נח',
-		'אחר'
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => {
+		void _loc;
+		return get(t)(k);
+	};
+
+	const topicKeys: { value: QaTopic | 'הכל'; key: string }[] = [
+		{ value: 'הכל', key: 'qa_topic_all' },
+		{ value: 'הלכה', key: 'qa_topic_halacha' },
+		{ value: 'מוסר עסקי', key: 'qa_topic_business_ethics' },
+		{ value: 'חושן משפט / ממונות', key: 'qa_topic_choshen_mishpat' },
+		{ value: 'שלום בית ומשפחה', key: 'qa_topic_shalom_bayit' },
+		{ value: 'שבע מצוות בני נח', key: 'qa_topic_noahide' },
+		{ value: 'אחר', key: 'qa_topic_other' }
 	];
 
 	let filter = $state<QaTopic | 'הכל'>('הכל');
@@ -27,31 +36,31 @@
 </script>
 
 <svelte:head>
-	<title>שאלות ותשובות - חכמי העדה</title>
+	<title>{tFn('qa_page_title')}</title>
 </svelte:head>
 
 <section class="py-8">
 	<header class="text-center mb-6">
 		<div class="text-5xl mb-3">📚</div>
 		<h2 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-			שאלות ותשובות
+			{tFn('qa_heading')}
 		</h2>
 		<p class="mt-3 text-gray-700 text-base md:text-lg font-bold max-w-2xl mx-auto">
-			תשובות רבני בית הדין לשאלות בהלכה, מוסר עסקי, שלום בית ושבע מצוות בני נח
+			{tFn('qa_subheading')}
 		</p>
 	</header>
 
 	<div class="flex flex-wrap gap-2 justify-center mb-6">
-		{#each topics as t}
+		{#each topicKeys as topicItem}
 			<button
 				type="button"
-				onclick={() => (filter = t)}
+				onclick={() => (filter = topicItem.value)}
 				class="px-3 py-1.5 rounded-full text-sm font-bold border transition-colors
-					{filter === t
+					{filter === topicItem.value
 						? 'bg-indigo-600 text-white border-indigo-600'
 						: 'bg-white/10 text-gray-800 border-white/20 hover:bg-white/20'}"
 			>
-				{t}
+				{tFn(topicItem.key)}
 			</button>
 		{/each}
 	</div>
@@ -63,20 +72,20 @@
 					<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-600/80 text-white">
 						{q.topic}
 					</span>
-					<span class="text-xs font-bold text-gray-700">נשאל {fmtDate(q.askDate)}</span>
+					<span class="text-xs font-bold text-gray-700">{tFn('qa_asked_on')} {fmtDate(q.askDate)}</span>
 				</div>
-				<h3 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">שאלה - {q.asker}</h3>
+				<h3 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">{tFn('qa_question_label')} - {q.asker}</h3>
 				<p class="text-gray-800 leading-relaxed mb-4">{q.question}</p>
 				<div class="border-t border-indigo-300/40 pt-4">
 					<h4 class="text-sm font-black text-indigo-700 mb-2">
-						תשובת {q.answeredBy} · {fmtDate(q.answerDate)}
+						{tFn('qa_answer_by')} {q.answeredBy} · {fmtDate(q.answerDate)}
 					</h4>
 					<p class="text-gray-900 leading-relaxed font-medium">{q.answer}</p>
 				</div>
 			</article>
 		{/each}
 		{#if filtered.length === 0}
-			<p class="text-center text-gray-600">אין שאלות בקטגוריה זו עדיין.</p>
+			<p class="text-center text-gray-600">{tFn('qa_empty_category')}</p>
 		{/if}
 	</div>
 
@@ -85,7 +94,7 @@
 			href="/ask"
 			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base hover:scale-105 transition-transform shadow"
 		>
-			📚 שאל את חכמי העדה →
+			{tFn('qa_cta_ask')}
 		</a>
 	</div>
 </section>
