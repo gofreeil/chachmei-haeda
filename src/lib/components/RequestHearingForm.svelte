@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import FancyHeading from './FancyHeading.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+
+	let { onClose }: { onClose?: () => void } = $props();
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
 		void _loc;
-		return get(t)(k);
+		return get(t)(k) as string;
 	};
 
 	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
@@ -214,16 +216,20 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{tFn('req_hearing_page_title')}</title>
-</svelte:head>
-
-<section class="py-8 max-w-3xl mx-auto px-3">
-	<header class="text-center mb-8">
+<div class="max-w-3xl mx-auto">
+	<header class="text-center mb-6 relative">
+		{#if onClose}
+			<button
+				type="button"
+				onclick={onClose}
+				aria-label="סגור"
+				class="absolute top-0 left-0 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl font-bold transition-colors flex items-center justify-center"
+			>✕</button>
+		{/if}
 		<FancyHeading>
-			<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent whitespace-nowrap">
+			<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl md:text-3xl font-black text-transparent whitespace-nowrap">
 				{tFn('req_hearing_h1')}
-			</h1>
+			</h2>
 		</FancyHeading>
 		<p class="mt-3 text-gray-300">{tFn('req_hearing_subtitle')}</p>
 	</header>
@@ -571,4 +577,4 @@
 			</button>
 		</form>
 	{/if}
-</section>
+</div>

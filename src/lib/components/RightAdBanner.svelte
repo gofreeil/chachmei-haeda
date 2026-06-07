@@ -1,11 +1,11 @@
-<script lang="ts">
+﻿<script lang="ts">
     import { onMount } from "svelte";
     import { t, locale } from 'svelte-i18n';
     import { get } from 'svelte/store';
 
     let _loc = $state(get(locale));
     $effect(() => locale.subscribe(l => (_loc = l)));
-    const tFn = (k: string) => { void _loc; return get(t)(k); };
+    const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
     let currentGroup = $state(0);
     let totalSwaps = $state(0);
@@ -169,7 +169,7 @@
                     <div
                         class="text-3xl mt-4 z-10 transition-transform group-hover:scale-125 duration-300"
                     >
-                        📢
+                        נ“¢
                     </div>
 
                     <div

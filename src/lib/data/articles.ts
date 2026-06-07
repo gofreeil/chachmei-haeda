@@ -1,7 +1,7 @@
 export type LocalizedString = { he: string; en: string; ru: string };
 
-export const pickLang = (v: any, l: string): string =>
-	typeof v === 'string' ? v : (v?.[l] ?? v?.he ?? '');
+export const pickLang = (v: any, l: string | null | undefined): string =>
+	typeof v === 'string' ? v : (v?.[l ?? 'he'] ?? v?.he ?? '');
 
 export interface Article {
 	slug: string;

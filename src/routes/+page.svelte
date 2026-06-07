@@ -1,8 +1,8 @@
-<script lang="ts">
+?<script lang="ts">
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { latestAnswer } from '$lib/data/qa';
-	import { latestActivity } from '$lib/data/activity';
+	import { latestActivity, pickLang } from '$lib/data/activity';
 	import NewsTicker from '$lib/components/NewsTicker.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
@@ -13,7 +13,7 @@
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
 		void _loc;
-		return get(t)(k);
+		return get(t)(k) as string;
 	};
 
 	const recentQa = latestAnswer();
@@ -125,29 +125,29 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {recentActivity.date} · {tFn('home_by_author')} {recentActivity.author}</span>
+						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {recentActivity.date} · {tFn('home_by_author')} {pickLang(recentActivity.author, _loc)}</span>
 					</div>
 				</div>
 			</div>
 			<h2 class="text-2xl md:text-3xl font-black text-amber-900 leading-tight mb-3 drop-shadow-[0_1px_1px_rgba(120,53,15,0.2)] text-center">
-				{recentActivity.title}
+				{pickLang(recentActivity.title, _loc)}
 			</h2>
 			{#if recentActivity.videoUrl || recentActivity.imageUrl}
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start mb-3">
 					<div class="md:order-1">
-						<p class="text-gray-800 leading-snug text-base md:text-lg font-medium">{recentActivity.excerpt}</p>
+						<p class="text-gray-800 leading-snug text-base md:text-lg font-medium">{pickLang(recentActivity.excerpt, _loc)}</p>
 					</div>
 					<div class="md:order-2">
 						{#if recentActivity.imageUrl}
 							<div class="rounded-xl overflow-hidden border border-amber-300/40 bg-black/20">
-								<img src={recentActivity.imageUrl} alt={recentActivity.title} class="w-full h-auto max-h-[320px] object-contain mx-auto" />
+								<img src={recentActivity.imageUrl} alt={pickLang(recentActivity.title, _loc)} class="w-full h-auto max-h-[320px] object-contain mx-auto" />
 							</div>
 						{/if}
 						{#if recentActivity.videoUrl}
 							<div class="rounded-xl overflow-hidden border border-amber-300/40 aspect-video bg-black">
 								<iframe
 									src={recentActivity.videoUrl}
-									title={recentActivity.title}
+									title={pickLang(recentActivity.title, _loc)}
 									class="w-full h-full"
 									frameborder="0"
 									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -158,16 +158,16 @@
 					</div>
 				</div>
 			{:else}
-				<p class="text-gray-800 leading-snug text-base md:text-lg font-medium">{recentActivity.excerpt}</p>
+				<p class="text-gray-800 leading-snug text-base md:text-lg font-medium">{pickLang(recentActivity.excerpt, _loc)}</p>
 			{/if}
 			{#if recentActivity.tags && recentActivity.tags.length > 0}
 				<div class="mt-4 pt-3 border-t border-amber-300/30 flex flex-wrap gap-1.5">
 					{#each recentActivity.tags as tag}
 						<a
-							href="/heichal-hamaaseh/activity?q={encodeURIComponent(tag)}"
+							href="/heichal-hamaaseh/activity?q={encodeURIComponent(pickLang(tag, _loc))}"
 							class="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-900 text-[11px] font-medium hover:bg-amber-500/25 hover:border-amber-400/50 transition-colors"
 						>
-							#{tag}
+							#{pickLang(tag, _loc)}
 						</a>
 					{/each}
 				</div>

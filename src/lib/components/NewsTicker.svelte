@@ -5,7 +5,7 @@
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	// אותו מקור שאתר "קהילה בשכונה" משתמש בו - סנכרון חד-כיווני משם לכאן.
 	const NATIONAL_NEWS_API = 'https://criticism.vercel.app/api/national-news';

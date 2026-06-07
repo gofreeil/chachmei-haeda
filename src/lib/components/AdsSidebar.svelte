@@ -5,7 +5,7 @@
 
     let _loc = $state(get(locale));
     $effect(() => locale.subscribe(l => (_loc = l)));
-    const tFn = (k: string) => { void _loc; return get(t)(k); };
+    const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
     type ApprovedAd = {
         id: string;
@@ -68,7 +68,7 @@
                     <div class="absolute inset-0 overflow-hidden">
                         <img
                             src={ad.image}
-                            alt={ad.title}
+                            alt={ad.title as string}
                             class="w-full h-full object-cover transition-opacity duration-[1500ms] group-hover:opacity-0"
                         />
                     </div>

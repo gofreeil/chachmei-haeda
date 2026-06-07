@@ -1,9 +1,9 @@
-<script lang="ts">
+?<script lang="ts">
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	let askName = $state('');
 	let askEmail = $state('');

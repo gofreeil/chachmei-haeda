@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import "../app.css";
 	import "flag-icons/css/flag-icons.min.css";
 	import "$lib/i18n";
@@ -21,7 +21,7 @@
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
 		void _loc;
-		return get(t)(k);
+		return get(t)(k) as string;
 	};
 
 	beforeNavigate(() => {

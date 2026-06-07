@@ -6,7 +6,7 @@
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	const dayNames = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
 
@@ -273,7 +273,7 @@
 				<div class="aspect-[3/2] rounded-lg bg-transparent"></div>
 			{:else if isAvailable(c)}
 				<a
-					href={`/request-hearing?date=${c.date}`}
+					href={`/heichal-hamishpat?open=request-hearing&date=${c.date}`}
 					onmouseenter={(e) => onCellEnter(c, e)}
 					onmousemove={onCellMove}
 					onmouseleave={onCellLeave}

@@ -3,7 +3,7 @@
     import { get } from "svelte/store";
     let _loc = $state(get(locale));
     $effect(() => locale.subscribe(l => (_loc = l)));
-    const tFn = (k: string) => { void _loc; return get(t)(k); };
+    const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 </script>
 
 <footer class="site-footer bg-[#0d1117] border-t border-white/10 py-1 md:py-2 mt-3 md:mt-0">

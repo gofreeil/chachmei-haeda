@@ -42,13 +42,13 @@
                     labelKey: 'header_nav_heichal_mishpat',
                     icon: '⚖️',
                     children: [
-                        { href: '/request-hearing', labelKey: 'header_nav_open_case', icon: '📂' },
+                        { href: '/heichal-hamishpat?open=request-hearing', labelKey: 'header_nav_open_case', icon: '📂' },
                         { href: '/hearings', labelKey: 'header_nav_zoom_hearings', icon: '🎥' },
                         { href: '/rulings', labelKey: 'header_nav_rulings', icon: '📋' },
                     ],
                 },
                 {
-                    href: '/request-hearing',
+                    href: '/heichal-hamishpat?open=request-hearing',
                     labelKey: 'header_nav_heichal_shalom',
                     icon: '🕊️',
                     children: [],
@@ -202,7 +202,7 @@
 	// tFn: תרגום reactive - $t אסור ב-Svelte 5
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 
 </script>
@@ -281,7 +281,7 @@
                                                 <span class="text-xl" aria-hidden="true">{item.icon}</span>
                                                 <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
                                             </a>
-                                            {#if item.children && item.children.length}
+                                            {#if 'children' in item && item.children && item.children.length}
                                                 {#each item.children as child}
                                                     <a
                                                         href={child.href}
@@ -452,7 +452,7 @@
                                         <span class="text-xl" aria-hidden="true">{item.icon}</span>
                                         <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
                                     </a>
-                                    {#if item.children && item.children.length}
+                                    {#if 'children' in item && item.children && item.children.length}
                                         {#each item.children as child}
                                             <a
                                                 href={child.href}

@@ -4,7 +4,7 @@
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	const mitzvotKeys = [
 		{ n: 'eth_code_mitzvah_1_n', title: 'eth_code_mitzvah_1_title', body: 'eth_code_mitzvah_1_body', img: '/images/051bb5c2afa0f882cb69274d1d2762f43c07ec83a3762e6a52c0fe31 (1).jpg' },

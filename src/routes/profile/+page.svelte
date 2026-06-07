@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { hearings, rulings } from '$lib/data/hearings';
+	import { hearings, rulings, pickLang } from '$lib/data/hearings';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
 		void _loc;
-		return get(t)(k);
+		return get(t)(k) as string;
 	};
 
 	type UserData = {
@@ -98,12 +98,18 @@
 	// סינון פסקי דין/דיונים ששייכים למשתמש (לפי שם)
 	const myRulings = $derived(
 		isLoggedIn
-			? rulings.filter((r) => r.caseName.includes(user!.name) || cases.some((c) => r.caseName.includes(c.nickname)))
+			? rulings.filter((r) => {
+					const name = pickLang(r.caseName, _loc);
+					return name.includes(user!.name) || cases.some((c) => name.includes(c.nickname));
+				})
 			: []
 	);
 	const myHearings = $derived(
 		isLoggedIn
-			? hearings.filter((h) => h.caseName.includes(user!.name) || cases.some((c) => h.caseName.includes(c.nickname)))
+			? hearings.filter((h) => {
+					const name = pickLang(h.caseName, _loc);
+					return name.includes(user!.name) || cases.some((c) => name.includes(c.nickname));
+				})
 			: []
 	);
 
@@ -182,7 +188,7 @@
 				{tFn('profile_signup_required_desc')}
 			</p>
 			<a
-				href="/request-hearing"
+				href="/heichal-hamishpat?open=request-hearing"
 				class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black hover:scale-105 transition-transform"
 			>
 				✍️ {tFn('profile_signup_cta')}
@@ -329,13 +335,13 @@
 			<div class="space-y-3">
 				<div class="flex items-center justify-between">
 					<h2 class="text-lg font-bold text-white">📂 {tFn('profile_my_cases')}</h2>
-					<a href="/request-hearing" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-bold">+ {tFn('profile_new_case')}</a>
+					<a href="/heichal-hamishpat?open=request-hearing" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-bold">+ {tFn('profile_new_case')}</a>
 				</div>
 				{#if cases.length === 0}
 					<div class="text-center py-12">
 						<div class="text-5xl mb-3">📭</div>
 						<p class="text-gray-400">{tFn('profile_no_cases')}</p>
-						<a href="/request-hearing" class="inline-block mt-4 px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold hover:scale-105 transition-transform">⚖️ {tFn('profile_open_first_case')}</a>
+						<a href="/heichal-hamishpat?open=request-hearing" class="inline-block mt-4 px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold hover:scale-105 transition-transform">⚖️ {tFn('profile_open_first_case')}</a>
 					</div>
 				{:else}
 					{#each cases as c}

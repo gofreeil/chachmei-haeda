@@ -6,7 +6,8 @@
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
+	const pickLang = (v: any): string => typeof v === 'string' ? v : (v?.[_loc as string] ?? v?.he ?? '');
 
 	let searchQuery = $state('');
 
@@ -14,9 +15,9 @@
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return signatories;
 		return signatories.filter(s =>
-			s.name.toLowerCase().includes(q) ||
-			(s.role ?? '').toLowerCase().includes(q) ||
-			(s.city ?? '').toLowerCase().includes(q)
+			pickLang(s.name).toLowerCase().includes(q) ||
+			pickLang(s.role ?? '').toLowerCase().includes(q) ||
+			pickLang(s.city ?? '').toLowerCase().includes(q)
 		);
 	});
 </script>
@@ -60,12 +61,12 @@
 		{#each filtered as s}
 			<div class="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors p-4 flex items-center gap-4">
 				<div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center font-bold text-white text-lg">
-					{s.name.charAt(0)}
+					{pickLang(s.name).charAt(0)}
 				</div>
 				<div class="flex-1 min-w-0">
-					<p class="font-bold text-white">{s.name}</p>
+					<p class="font-bold text-white">{pickLang(s.name)}</p>
 					<p class="text-sm text-gray-400">
-						{s.role || ''}{s.city ? ` • ${s.city}` : ''}
+						{pickLang(s.role) || ''}{s.city ? ` • ${pickLang(s.city)}` : ''}
 					</p>
 					<p class="text-xs text-gray-500 mt-0.5">{tFn('signatories_signed_label')}: {s.date}</p>
 				</div>

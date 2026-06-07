@@ -6,11 +6,11 @@
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	let isAuthPage = $derived(
-		page.url.pathname === '/login' ||
-		page.url.pathname === '/register'
+		(page.url.pathname as string) === '/login' ||
+		(page.url.pathname as string) === '/register'
 	);
 
 	interface LayoutUser {
@@ -277,7 +277,7 @@
 				<div class="ad-img-wrap">
 					<img
 						src={ad.image}
-						alt={ad.title}
+						alt={ad.title as unknown as string}
 						class="ad-img"
 						decoding="async"
 					/>
@@ -285,7 +285,7 @@
 				<div class="ad-body">
 					<p class="ad-title">{ad.title}</p>
 					<p class="ad-desc">{ad.description}</p>
-					<span class="ad-cta" title={ad.hover ?? undefined}>← {ad.cta}</span>
+					<span class="ad-cta" title={(ad.hover ?? undefined) as unknown as string | undefined}>← {ad.cta}</span>
 				</div>
 			</a>
 			{/each}

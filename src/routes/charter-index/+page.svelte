@@ -11,6 +11,8 @@
 		void _loc;
 		return get(t)(k, values ? { values } : undefined);
 	};
+	const pickLang = (v: any): string =>
+		typeof v === 'string' ? v : (v?.[_loc as any] ?? v?.he ?? '');
 
 	let entries = $state<CharterEntry[]>([]);
 	let tab = $state<'signed' | 'disqualified'>('signed');
@@ -29,9 +31,9 @@
 			? current
 			: current.filter(
 					(e) =>
-						e.name.includes(search.trim()) ||
-						(e.role || '').includes(search.trim()) ||
-						(e.city || '').includes(search.trim())
+						pickLang(e.name).includes(search.trim()) ||
+						pickLang(e.role).includes(search.trim()) ||
+						pickLang(e.city).includes(search.trim())
 				)
 	);
 </script>
@@ -111,12 +113,12 @@
 							? 'bg-gradient-to-br from-emerald-500 to-blue-500'
 							: 'bg-gradient-to-br from-red-500 to-orange-500'}"
 					>
-						{e.name.charAt(0)}
+						{pickLang(e.name).charAt(0)}
 					</div>
 					<div class="flex-1 min-w-0">
-						<p class="font-bold text-white text-sm">{e.name}</p>
+						<p class="font-bold text-white text-sm">{pickLang(e.name)}</p>
 						<p class="text-xs text-gray-400">
-							{e.role || ''}{e.role && e.city ? ' • ' : ''}{e.city || ''}
+							{pickLang(e.role)}{pickLang(e.role) && pickLang(e.city) ? ' • ' : ''}{pickLang(e.city)}
 						</p>
 						{#if tab === 'signed'}
 							<p class="text-[11px] text-emerald-300 mt-0.5">{tFn('charter_idx_signed_on')}: {e.date}</p>

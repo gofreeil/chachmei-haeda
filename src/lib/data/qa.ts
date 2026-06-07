@@ -32,10 +32,10 @@ export const topicLabels: Record<QaTopic, LocalizedText> = {
 	'אחר': { he: 'אחר', en: 'Other', ru: 'Прочее' }
 };
 
-export const pickLang = (v: LocalizedText | string | undefined, l: string): string => {
+export const pickLang = (v: LocalizedText | string | undefined, l: string | null | undefined): string => {
 	if (typeof v === 'string') return v;
 	if (!v) return '';
-	return (v as any)[l] ?? v.he ?? '';
+	return (v as any)[l ?? 'he'] ?? v.he ?? '';
 };
 
 export interface QaItem {

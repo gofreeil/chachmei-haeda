@@ -4,6 +4,10 @@
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
 
+	// Admin currently enters Hebrew only - mirror it to all 3 locales as a fallback
+	// until proper translation UI is added. pickLang() will fall back to .he anyway.
+	const toLoc = (s: string) => ({ he: s, en: s, ru: s });
+
 	// 🔑 סיסמת אדמין - לשנות כאן ידנית. מי שיודע את הסיסמה יכול להיכנס.
 	const ADMIN_PASSWORD = 'chachmei2026';
 
@@ -326,13 +330,13 @@
 		const tags = parseTags(artTags);
 		const newArt: Article = {
 			slug: slugify(artTitle) + '-' + Math.floor(Math.random() * 1000),
-			title: artTitle.trim(),
-			author: artAuthor.trim(),
+			title: toLoc(artTitle.trim()),
+			author: toLoc(artAuthor.trim()),
 			date: artDate || new Date().toISOString().slice(0, 10),
-			excerpt: artExcerpt.trim(),
-			body: artBody.trim(),
-			approvedBy,
-			...(tags.length > 0 ? { tags } : {})
+			excerpt: toLoc(artExcerpt.trim()),
+			body: toLoc(artBody.trim()),
+			approvedBy: approvedBy.map(toLoc),
+			...(tags.length > 0 ? { tags: tags.map(toLoc) } : {})
 		};
 		customArticles = [newArt, ...customArticles];
 		try {
@@ -385,11 +389,11 @@
 		const newItem: ActivityItem = {
 			slug: slugify(vidTitle) + '-' + Math.floor(Math.random() * 1000),
 			kind: vidKind,
-			title: vidTitle.trim(),
-			author: vidAuthor.trim(),
+			title: toLoc(vidTitle.trim()),
+			author: toLoc(vidAuthor.trim()),
 			date: vidDate || new Date().toISOString().slice(0, 10),
-			excerpt: vidExcerpt.trim(),
-			...(vidBody.trim() ? { body: vidBody.trim() } : {}),
+			excerpt: toLoc(vidExcerpt.trim()),
+			...(vidBody.trim() ? { body: toLoc(vidBody.trim()) } : {}),
 			...(embeddedVideo ? { videoUrl: embeddedVideo } : {}),
 			...(vidImageUrl.trim() ? { imageUrl: vidImageUrl.trim() } : {}),
 			...(vidSourceUrl.trim() ? { sourceUrl: vidSourceUrl.trim() } : {})

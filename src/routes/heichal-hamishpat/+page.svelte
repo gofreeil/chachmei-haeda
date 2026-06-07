@@ -1,17 +1,35 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import RequestHearingForm from '$lib/components/RequestHearingForm.svelte';
 
 	// tFn: reactive translation helper - $t forbidden in Svelte 5
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	let isRegistered = $state(false);
 	let userName = $state('');
+
+	// ───────────── Modal: בקשת דיון ─────────────
+	let showRequestModal = $state(false);
+	function openRequestModal() {
+		showRequestModal = true;
+		if (typeof document !== 'undefined') document.body.style.overflow = 'hidden';
+	}
+	function closeRequestModal() {
+		showRequestModal = false;
+		if (typeof document !== 'undefined') document.body.style.overflow = '';
+	}
+	$effect(() => {
+		if (page.url.searchParams.get('open') === 'request-hearing') {
+			openRequestModal();
+		}
+	});
 
 	type CaseStatus = 'active' | 'completed' | 'pending';
 	type CaseFile = {
@@ -319,12 +337,13 @@
 		<p class="text-gray-800 text-base md:text-lg font-bold mb-3">
 			{tFn('mishpat_ready_to_open_text')}
 		</p>
-		<a
-			href="/request-hearing"
+		<button
+			type="button"
+			onclick={openRequestModal}
 			class="inline-block px-7 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all"
 		>
 			{tFn('mishpat_open_hearing_btn')}
-		</a>
+		</button>
 	</div>
 
 	<div class="my-8 flex items-center gap-3" aria-hidden="true">
@@ -404,7 +423,7 @@
 					{/each}
 
 					{#if myCases.length === 0}
-						<p class="text-center text-gray-600 py-6">{tFn('mishpat_no_active_cases')} <a href="/request-hearing" class="text-indigo-700 font-bold underline">{tFn('mishpat_open_new_case_link')}</a></p>
+						<p class="text-center text-gray-600 py-6">{tFn('mishpat_no_active_cases')} <button type="button" onclick={openRequestModal} class="text-indigo-700 font-bold underline">{tFn('mishpat_open_new_case_link')}</button></p>
 					{/if}
 				</div>
 			{:else}
@@ -448,14 +467,29 @@
 					>
 						{tFn('mishpat_register_create_account_btn')}
 					</a>
-					<a
-						href="/request-hearing"
+					<button
+						type="button"
+						onclick={openRequestModal}
 						class="inline-block px-5 py-2 rounded-xl bg-white/10 border border-indigo-400/40 text-gray-900 font-bold text-sm md:text-base hover:bg-white/20 transition-colors text-center"
 					>
 						{tFn('mishpat_open_new_case_btn')}
-					</a>
+					</button>
 				</div>
 			{/if}
 		</div>
 	</section>
 </section>
+
+<!-- ───────── Modal: בקשת דיון ───────── -->
+{#if showRequestModal}
+	<div
+		class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-start justify-center p-3 md:p-6 overflow-y-auto"
+		onclick={(e) => { if (e.target === e.currentTarget) closeRequestModal(); }}
+		role="dialog"
+		aria-modal="true"
+	>
+		<div class="w-full max-w-3xl rounded-2xl border border-blue-500/30 bg-gradient-to-br from-slate-800 to-slate-900 shadow-2xl p-4 md:p-6 my-4">
+			<RequestHearingForm onClose={closeRequestModal} />
+		</div>
+	</div>
+{/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { activity as staticActivity, type ActivityKind, type ActivityItem } from '$lib/data/activity';
+	import { activity as staticActivity, type ActivityKind, type ActivityItem, type LocalizedText } from '$lib/data/activity';
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { t, locale } from 'svelte-i18n';
@@ -10,7 +10,13 @@
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
 		void _loc;
-		return get(t)(k);
+		return get(t)(k) as string;
+	};
+	const pickLang = (v: LocalizedText | string | undefined | null): string => {
+		void _loc;
+		if (v == null) return '';
+		if (typeof v === 'string') return v;
+		return (v as any)[_loc as string] ?? (v as any).he ?? '';
 	};
 
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
@@ -85,8 +91,8 @@
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return allItems;
 		return allItems.filter((a) => {
-			const tagsStr = (a.tags ?? []).join(' ');
-			const hay = `${a.title} ${a.excerpt ?? ''} ${a.body ?? ''} ${a.author ?? ''} ${a.kind} ${tagsStr}`.toLowerCase();
+			const tagsStr = (a.tags ?? []).map((tg) => pickLang(tg)).join(' ');
+			const hay = `${pickLang(a.title)} ${pickLang(a.excerpt)} ${pickLang(a.body)} ${pickLang(a.author)} ${a.kind} ${tagsStr}`.toLowerCase();
 			return hay.includes(q);
 		});
 	});
@@ -177,20 +183,20 @@
 						{/if}
 						<span class="text-[11px] text-gray-500">{a.date}</span>
 					</div>
-					<span class="text-xs text-indigo-300">{tFn('activity_by_author')}: {a.author}</span>
+					<span class="text-xs text-indigo-300">{tFn('activity_by_author')}: {pickLang(a.author)}</span>
 				</div>
 
 				<!-- כותרת ממורכזת -->
-				<h2 class="text-base md:text-lg font-bold text-white text-center mb-6 md:mb-8">{a.title}</h2>
+				<h2 class="text-base md:text-lg font-bold text-white text-center mb-6 md:mb-8">{pickLang(a.title)}</h2>
 
 				<!-- תוכן: טקסט מימין, מדיה משמאל -->
 				{#if hasMedia}
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
 						<!-- ימין: טקסט -->
 						<div class="space-y-3 md:order-1">
-							<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
+							<p class="text-sm text-gray-300 leading-relaxed">{pickLang(a.excerpt)}</p>
 							{#if a.body}
-								<p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+								<p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">{pickLang(a.body)}</p>
 							{/if}
 						</div>
 
@@ -198,14 +204,14 @@
 						<div class="space-y-3 md:order-2">
 							{#if a.imageUrl}
 								<div class="rounded-xl overflow-hidden border border-white/10 bg-black/30">
-									<img src={a.imageUrl} alt={a.title} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
+									<img src={a.imageUrl} alt={pickLang(a.title)} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
 								</div>
 							{/if}
 							{#if a.videoUrl}
 								<div class="rounded-xl overflow-hidden border border-white/10 aspect-video bg-black">
 									<iframe
 										src={a.videoUrl}
-										title={a.title}
+										title={pickLang(a.title)}
 										class="w-full h-full"
 										frameborder="0"
 										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -217,9 +223,9 @@
 					</div>
 				{:else}
 					<!-- ללא מדיה: טקסט בלבד -->
-					<p class="text-sm text-gray-300 leading-relaxed">{a.excerpt}</p>
+					<p class="text-sm text-gray-300 leading-relaxed">{pickLang(a.excerpt)}</p>
 					{#if a.body}
-						<p class="mt-3 text-sm text-gray-200 leading-relaxed whitespace-pre-line">{a.body}</p>
+						<p class="mt-3 text-sm text-gray-200 leading-relaxed whitespace-pre-line">{pickLang(a.body)}</p>
 					{/if}
 				{/if}
 
@@ -241,12 +247,13 @@
 				{#if a.tags && a.tags.length > 0}
 					<div class="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
 						{#each a.tags as tag}
+							{@const tagLabel = pickLang(tag)}
 							<button
 								type="button"
-								onclick={() => (searchQuery = tag)}
+								onclick={() => (searchQuery = tagLabel)}
 								class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 							>
-								#{tag}
+								#{tagLabel}
 							</button>
 						{/each}
 					</div>

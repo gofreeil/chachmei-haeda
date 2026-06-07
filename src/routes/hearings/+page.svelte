@@ -6,7 +6,7 @@
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
 		void _loc;
-		return get(t)(k);
+		return get(t)(k) as string;
 	};
 	const upcoming = hearings.filter((h) => h.status === 'מתוכנן');
 	const past = hearings.filter((h) => h.status !== 'מתוכנן');

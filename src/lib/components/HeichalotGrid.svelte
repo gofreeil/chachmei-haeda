@@ -3,7 +3,7 @@
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	const heichalim = [
 		{
@@ -20,7 +20,7 @@
 			bgStyle: ''
 		},
 		{
-			href: '/request-hearing',
+			href: '/heichal-hamishpat?open=request-hearing',
 			icon: '🕊️',
 			titleKey: 'heichalot_hall_shalom_title',
 			descKey: 'heichalot_hall_shalom_desc',

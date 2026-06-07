@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { articles as staticArticles, type Article } from '$lib/data/articles';
-	import { qa, type QaItem } from '$lib/data/qa';
+	import { articles as staticArticles, pickLang, type Article } from '$lib/data/articles';
+	import { qa, pickLang as pickLangQa, type QaItem } from '$lib/data/qa';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
-	const tFn = (k: string) => { void _loc; return get(t)(k); };
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	const ITEMS_PAGE_SIZE = 3; // עד 3 פריטים לעמוד (כדי להכיל פריטים מרובים לאורך הסרגל הצדדי)
 	const SEARCH_PAGE_SIZE = 8;
@@ -79,8 +79,8 @@
 		const q = searchQuery.trim().replace(/^#+/, '').toLowerCase();
 		if (!q) return [] as Article[];
 		return sorted.filter((a) => {
-			const tagsStr = (a.tags ?? []).join(' ');
-			const hay = `${a.title} ${a.author} ${a.excerpt} ${a.body} ${tagsStr}`.toLowerCase();
+			const tagsStr = (a.tags ?? []).map((t) => pickLang(t, _loc)).join(' ');
+			const hay = `${pickLang(a.title, _loc)} ${pickLang(a.author, _loc)} ${pickLang(a.excerpt, _loc)} ${pickLang(a.body, _loc)} ${tagsStr}`.toLowerCase();
 			return hay.includes(q);
 		});
 	});
@@ -89,7 +89,7 @@
 		const q = searchQuery.trim().toLowerCase();
 		if (!q) return [] as QaItem[];
 		return qa.filter((item) => {
-			const hay = `${item.question} ${item.answer} ${item.answeredBy} ${item.asker} ${item.topic}`.toLowerCase();
+			const hay = `${pickLangQa(item.question, _loc)} ${pickLangQa(item.answer, _loc)} ${pickLangQa(item.answeredBy, _loc)} ${pickLangQa(item.asker, _loc)} ${item.topic}`.toLowerCase();
 			return hay.includes(q);
 		});
 	});
@@ -208,20 +208,21 @@
 							class="block rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:border-blue-400/70 transition-all p-5"
 						>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
-								<h2 class="text-lg md:text-xl font-bold text-white">{@html highlight(a.title, searchQuery)}</h2>
+								<h2 class="text-lg md:text-xl font-bold text-white">{@html highlight(pickLang(a.title, _loc), searchQuery)}</h2>
 								<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
 							</div>
-							<p class="mt-1 text-xs text-blue-300">{tFn('articles_by')} {@html highlight(a.author, searchQuery)}</p>
-							<p class="mt-2 text-sm text-gray-300 leading-relaxed">{@html highlight(snippet(a.excerpt, searchQuery, 180), searchQuery)}</p>
+							<p class="mt-1 text-xs text-blue-300">{tFn('articles_by')} {@html highlight(pickLang(a.author, _loc), searchQuery)}</p>
+							<p class="mt-2 text-sm text-gray-300 leading-relaxed">{@html highlight(snippet(pickLang(a.excerpt, _loc), searchQuery, 180), searchQuery)}</p>
 							{#if a.tags && a.tags.length > 0}
 								<div class="mt-3 flex flex-wrap gap-1.5">
 									{#each a.tags as tag}
+										{@const tagStr = pickLang(tag, _loc)}
 										<button
 											type="button"
-											onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tag; }}
+											onclick={(e) => { e.preventDefault(); e.stopPropagation(); searchQuery = '#' + tagStr; }}
 											class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 										>
-											#{tag}
+											#{tagStr}
 										</button>
 									{/each}
 								</div>
@@ -246,11 +247,11 @@
 							</div>
 							<p class="mt-2 text-sm font-bold text-white leading-snug">
 								<span class="text-indigo-300">{tFn('articles_question_label')}</span>
-								{@html highlight(snippet(item.question, searchQuery, 140), searchQuery)}
+								{@html highlight(snippet(pickLangQa(item.question, _loc), searchQuery, 140), searchQuery)}
 							</p>
 							<p class="mt-2 text-sm text-gray-300 leading-relaxed">
-								<span class="text-indigo-300 font-bold">{tFn('articles_answer_by')} {item.answeredBy}:</span>
-								{@html highlight(snippet(item.answer, searchQuery, 180), searchQuery)}
+								<span class="text-indigo-300 font-bold">{tFn('articles_answer_by')} {pickLangQa(item.answeredBy, _loc)}:</span>
+								{@html highlight(snippet(pickLangQa(item.answer, _loc), searchQuery, 180), searchQuery)}
 							</p>
 							<div class="mt-3 flex flex-wrap gap-1.5">
 								<span class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium">
@@ -291,23 +292,24 @@
 								<span class="text-xs font-bold text-blue-200">📜 {tFn('articles_item_article')} · {tFn('articles_item_word')} {entry.number} {tFn('articles_item_of')} {entriesNumbered.length}</span>
 							</div>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
-								<h2 class="text-xl md:text-2xl font-bold text-white">{a.title}</h2>
+								<h2 class="text-xl md:text-2xl font-bold text-white">{pickLang(a.title, _loc)}</h2>
 								<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
 							</div>
-							<p class="mt-1 text-sm text-blue-300">{tFn('articles_by')} {a.author}</p>
-							<p class="mt-3 text-gray-200 leading-relaxed font-medium">{a.excerpt}</p>
+							<p class="mt-1 text-sm text-blue-300">{tFn('articles_by')} {pickLang(a.author, _loc)}</p>
+							<p class="mt-3 text-gray-200 leading-relaxed font-medium">{pickLang(a.excerpt, _loc)}</p>
 							<div class="mt-5 pt-4 border-t border-white/10 text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">
-								{a.body}
+								{pickLang(a.body, _loc)}
 							</div>
 							{#if a.tags && a.tags.length > 0}
 								<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
 									{#each a.tags as tag}
+										{@const tagStr = pickLang(tag, _loc)}
 										<button
 											type="button"
-											onclick={() => (searchQuery = '#' + tag)}
+											onclick={() => (searchQuery = '#' + tagStr)}
 											class="px-2 py-0.5 rounded-full bg-white/8 border border-white/15 text-gray-300 text-[11px] font-medium hover:bg-white/15 hover:border-white/25 transition-colors"
 										>
-											#{tag}
+											#{tagStr}
 										</button>
 									{/each}
 								</div>
@@ -331,16 +333,16 @@
 								<span class="text-xs font-bold text-indigo-200">📚 {tFn('articles_item_qa')} · {tFn('articles_item_word')} {entry.number} {tFn('articles_item_of')} {entriesNumbered.length}</span>
 							</div>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
-								<h2 class="text-xl md:text-2xl font-bold text-white">{tFn('articles_question_word')} - {q.asker}</h2>
+								<h2 class="text-xl md:text-2xl font-bold text-white">{tFn('articles_question_word')} - {pickLangQa(q.asker, _loc)}</h2>
 								<span class="text-xs text-gray-400 flex-shrink-0">{fmtDate(q.answerDate)}</span>
 							</div>
 							<p class="mt-1 text-sm text-indigo-300">{tFn('articles_asked_on')} {fmtDate(q.askDate)}</p>
-							<p class="mt-3 text-gray-200 leading-relaxed font-medium whitespace-pre-line">{q.question}</p>
+							<p class="mt-3 text-gray-200 leading-relaxed font-medium whitespace-pre-line">{pickLangQa(q.question, _loc)}</p>
 							<div class="mt-5 pt-4 border-t border-white/10">
 								<h4 class="text-sm md:text-base font-black text-indigo-300 mb-2">
-									{tFn('articles_answer_of')} {q.answeredBy} · {fmtDate(q.answerDate)}
+									{tFn('articles_answer_of')} {pickLangQa(q.answeredBy, _loc)} · {fmtDate(q.answerDate)}
 								</h4>
-								<p class="text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">{q.answer}</p>
+								<p class="text-gray-100 leading-relaxed text-sm md:text-base whitespace-pre-line">{pickLangQa(q.answer, _loc)}</p>
 							</div>
 							<div class="mt-5 pt-3 border-t border-white/10 flex flex-wrap gap-1.5">
 								<button

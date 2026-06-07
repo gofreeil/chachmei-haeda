@@ -7,7 +7,7 @@
 
     let _loc = $state(get(locale));
     $effect(() => locale.subscribe(l => (_loc = l)));
-    const tFn = (k: string) => { void _loc; return get(t)(k); };
+    const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
     let { ad, onClose }: { ad: Ad; onClose: () => void } = $props();
 
@@ -132,7 +132,7 @@
         <div class="h-64 overflow-hidden relative">
             <img
                 src={ad.image}
-                alt={ad.title}
+                alt={ad.title as unknown as string}
                 class="w-full h-full object-cover"
             />
             <div

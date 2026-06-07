@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import { t, locale } from "svelte-i18n";
@@ -8,7 +8,7 @@
     $effect(() => locale.subscribe((l) => (_loc = l)));
     const tFn = (k: string) => {
         void _loc;
-        return get(t)(k);
+        return get(t)(k) as string;
     };
 
     const ads = [

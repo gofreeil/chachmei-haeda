@@ -7,7 +7,7 @@
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
 		void _loc;
-		return get(t)(k);
+		return get(t)(k) as string;
 	};
 
 	const topicKeys: { value: QaTopic | 'הכל'; key: string }[] = [
