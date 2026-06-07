@@ -223,7 +223,7 @@
 <section class="mb-10">
 	<header class="text-right mb-5">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-			🕮 תשובות חכמי העדה
+			📖 תשובות חכמי העדה
 		</h3>
 		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">חכמי העדה עונים לשאלותך</p>
 	</header>
@@ -255,7 +255,7 @@
 		href="/ask"
 		class="ask-cta flex items-center justify-center gap-3 rounded-2xl border-2 p-4 md:p-5 transition-all group"
 	>
-		<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">🕮</div>
+		<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">📖</div>
 		<div class="text-center min-w-0">
 			<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
 				שאל את חכמי העדה
@@ -279,13 +279,13 @@
 			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
 		></div>
 	</div>
-	<div class="flex justify-start -mt-6 mb-2">
+	<div class="flex justify-start pr-3 -mt-6 mb-2">
 		<button
 			type="button"
 			onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
 			class="inline-flex items-center gap-1 text-amber-900 font-bold text-sm hover:text-amber-700 transition-colors"
 		>
-			↑ חזור לראש הדף
+			חזור לראש הדף ↑
 		</button>
 	</div>
 </section>

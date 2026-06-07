@@ -32,7 +32,7 @@
 
 <section class="py-8">
 	<header class="text-center mb-6">
-		<div class="text-5xl mb-3">🕮</div>
+		<div class="text-5xl mb-3">📖</div>
 		<h2 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
 			שאלות ותשובות
 		</h2>
@@ -85,7 +85,7 @@
 			href="/ask"
 			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-base hover:scale-105 transition-transform shadow"
 		>
-			🕮 שאל את חכמי העדה →
+			📖 שאל את חכמי העדה →
 		</a>
 	</div>
 </section>

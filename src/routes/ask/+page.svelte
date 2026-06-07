@@ -28,7 +28,7 @@
 <section class="py-8">
 	<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-6 md:p-8 shadow-[0_0_30px_rgba(99,102,241,0.15)] max-w-3xl mx-auto">
 		<header class="text-center mb-6">
-			<div class="text-5xl mb-3">🕮</div>
+			<div class="text-5xl mb-3">📖</div>
 			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
 				שאל את חכמי העדה
 			</h2>
@@ -89,7 +89,7 @@
 					type="submit"
 					class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all whitespace-nowrap"
 				>
-					🕮 שלח את השאלה
+					📖 שלח את השאלה
 				</button>
 			</div>
 		</form>
