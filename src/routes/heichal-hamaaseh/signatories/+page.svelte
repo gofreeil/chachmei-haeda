@@ -70,7 +70,7 @@
 
 	<div class="text-center mt-10">
 		<a
-			href="/ethical-code"
+			href="/heichal-hamaaseh/ethical-code"
 			class="inline-block px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
 		>
 			← קרא את הקוד האתי

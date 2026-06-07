@@ -10,7 +10,7 @@
 
 <section class="rounded-2xl border border-amber-700/40 bg-amber-700/15 p-3 md:p-4 pb-2 md:pb-2 mb-4">
 	<a
-		href="/ethical-code"
+		href="/heichal-hamaaseh/ethical-code"
 		class="group block rounded-xl -m-1 p-1 hover:bg-amber-700/10 transition-colors"
 		title="לדף הקוד האתי UECC"
 	>
@@ -58,7 +58,7 @@
 				✍️ חתום על הקוד
 			</a>
 			<a
-				href="/signatories"
+				href="/heichal-hamaaseh/signatories"
 				class="inline-block px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 font-black text-sm border-2 border-amber-800/50 shadow-md hover:scale-105 hover:shadow-[0_0_15px_rgba(234,88,12,0.5)] hover:from-amber-500 hover:to-red-400 transition-all"
 				style="color: #fff8e7 !important; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
 			>

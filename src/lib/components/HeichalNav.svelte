@@ -2,16 +2,16 @@
 	import { page } from '$app/state';
 
 	const tabs = [
-		{ href: '/activity', label: 'פעולות חכמי העדה' },
-		{ href: '/ethical-code', label: 'הקוד האתי העולמי' },
-		{ href: '/signatories', label: 'רשימת החתומים' },
+		{ href: '/heichal-hamaaseh/activity', label: 'פעולות חכמי העדה' },
+		{ href: '/heichal-hamaaseh/ethical-code', label: 'הקוד האתי העולמי' },
+		{ href: '/heichal-hamaaseh/signatories', label: 'רשימת החתומים' },
 	];
 
 	const activeFor: Record<string, string> = {
-		'/activity': '/activity',
-		'/ethical-code': '/ethical-code',
-		'/signatories': '/signatories',
-		'/charter-join': '/ethical-code',
+		'/heichal-hamaaseh/activity': '/heichal-hamaaseh/activity',
+		'/heichal-hamaaseh/ethical-code': '/heichal-hamaaseh/ethical-code',
+		'/heichal-hamaaseh/signatories': '/heichal-hamaaseh/signatories',
+		'/heichal-hamaaseh/charter-join': '/heichal-hamaaseh/ethical-code',
 	};
 
 	let activeHref = $derived(activeFor[page.url.pathname] ?? '');

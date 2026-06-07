@@ -54,14 +54,14 @@
                     children: [],
                 },
                 {
-                    href: '/activity',
+                    href: '/heichal-hamaaseh/activity',
                     label: 'היכל המעשה',
                     icon: '🛠️',
                     children: [
-                        { href: '/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
-                        { href: '/signatories', label: 'חתומים על הקוד', icon: '✍️' },
+                        { href: '/heichal-hamaaseh/ethical-code', label: 'הקוד האתי UECC', icon: '📜' },
+                        { href: '/heichal-hamaaseh/signatories', label: 'חתומים על הקוד', icon: '✍️' },
                         { href: '/charter-index', label: 'אינדקס האמנה', icon: '📑' },
-                        { href: '/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
+                        { href: '/heichal-hamaaseh/charter-join', label: 'הצטרפות לאמנה', icon: '🤝' },
                     ],
                 },
                 {

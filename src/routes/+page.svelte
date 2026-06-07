@@ -156,7 +156,7 @@
 				<div class="mt-4 pt-3 border-t border-amber-300/30 flex flex-wrap gap-1.5">
 					{#each recentActivity.tags as tag}
 						<a
-							href="/activity?q={encodeURIComponent(tag)}"
+							href="/heichal-hamaaseh/activity?q={encodeURIComponent(tag)}"
 							class="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-900 text-[11px] font-medium hover:bg-amber-500/25 hover:border-amber-400/50 transition-colors"
 						>
 							#{tag}
@@ -167,7 +167,7 @@
 		</article>
 		<div class="mt-4 text-left">
 			<a
-				href="/activity"
+				href="/heichal-hamaaseh/activity"
 				class="text-sm font-bold text-amber-700 hover:text-amber-900 transition-colors"
 			>
 				לכלל פעולות חכמי העדה ←

@@ -65,7 +65,7 @@
 		<div class="text-sm md:text-base text-gray-200 leading-relaxed space-y-3 text-right" dir="rtl">
 			<p class="italic text-gray-400">
 				[המלל המלא של האמנה ימולא כאן. עד אז – ניתן לקרוא את הקוד האתי המוסרי העולמי
-				<a href="/ethical-code" class="text-amber-300 underline">בעמוד הקוד האתי</a>
+				<a href="/heichal-hamaaseh/ethical-code" class="text-amber-300 underline">בעמוד הקוד האתי</a>
 				ולחתום עליו כאמנת UECC.]
 			</p>
 		</div>

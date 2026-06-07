@@ -140,7 +140,7 @@
 </article>
 
 <style>
-	.prose-rtl :global(p) {
+	.prose-rtl :global(p:not(.text-center)) {
 		text-align: justify;
 	}
 </style>

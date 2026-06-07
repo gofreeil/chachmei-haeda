@@ -27,7 +27,7 @@
 			bgStyle: ''
 		},
 		{
-			href: '/activity',
+			href: '/heichal-hamaaseh/activity',
 			icon: '🛠️',
 			title: 'היכל המעשה',
 			desc: 'פעילות, פרויקטים וקריאות לתיקון עולם',

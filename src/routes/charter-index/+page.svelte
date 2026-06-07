@@ -81,7 +81,7 @@
 				{#if search.trim()}
 					לא נמצאו תוצאות לחיפוש "{search}"
 				{:else if tab === 'signed'}
-					עדיין אין חתומים על האמנה. <a href="/charter-join" class="text-blue-300 underline">הצטרף ראשון</a>
+					עדיין אין חתומים על האמנה. <a href="/heichal-hamaaseh/charter-join" class="text-blue-300 underline">הצטרף ראשון</a>
 				{:else}
 					אין רשומות פסולים
 				{/if}
@@ -130,13 +130,13 @@
 
 	<div class="text-center mt-10 flex gap-3 justify-center flex-wrap">
 		<a
-			href="/charter-join"
+			href="/heichal-hamaaseh/charter-join"
 			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold transition-colors hover:opacity-90"
 		>
 			✍️ הצטרף לאמנה
 		</a>
 		<a
-			href="/ethical-code"
+			href="/heichal-hamaaseh/ethical-code"
 			class="inline-block px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
 		>
 			📜 קרא את האמנה

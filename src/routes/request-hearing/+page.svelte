@@ -356,7 +356,7 @@
 					<input type="checkbox" bind:checked={regUECC} class="mt-1" />
 					<span class="text-gray-200 text-sm">
 						אני מקבל על עצמי את
-						<a href="/ethical-code" class="text-blue-300 underline">הקוד האתי UECC</a>
+						<a href="/heichal-hamaaseh/ethical-code" class="text-blue-300 underline">הקוד האתי UECC</a>
 						ושבע מצוות בני נח כתנאי לעריכת הדיון.
 					</span>
 				</label>

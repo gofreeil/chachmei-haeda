@@ -160,7 +160,7 @@
 			{#each rulingSteps as step}
 				{#if step.num === 1}
 					<a
-						href="/charter-join"
+						href="/heichal-hamaaseh/charter-join"
 						class="relative rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-right block hover:border-purple-400 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] hover:scale-[1.02] transition-all cursor-pointer"
 					>
 						<div class="absolute top-4 right-4 h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-lg">
