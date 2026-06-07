@@ -23,7 +23,8 @@
                 <img
                     src="/images/yotzim-lecherut.png"
                     alt="יוצאים לחירות"
-                    class="h-28 w-28 md:h-32 md:w-32 object-contain rounded-2xl hover:scale-105 transition-transform flex-shrink-0"
+                    class="h-28 w-28 md:h-32 md:w-32 object-contain hover:scale-105 transition-transform flex-shrink-0"
+                    style="border-radius: 1rem;"
                 />
 
                 <!-- Mobile: horizontal layout -->
