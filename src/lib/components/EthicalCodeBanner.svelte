@@ -100,8 +100,8 @@
 			</div>
 		</a>
 
-		<div class="mt-1 pt-2 text-center pr-40 md:pr-60 relative">
-			<div class="absolute top-0 left-0 right-40 md:right-60 h-px bg-amber-700/40"></div>
+		<div class="mt-1 pt-2 text-center pr-40 md:pr-0 relative">
+			<div class="absolute top-0 left-0 right-40 md:right-0 h-px bg-amber-700/40"></div>
 			<h4 class="text-sm md:text-base font-black text-amber-900 mb-0.5">
 				עוד לא הצטרפת? - הצטרף מיד לקבלת המוסר האלוקי
 			</h4>
