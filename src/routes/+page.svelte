@@ -106,7 +106,7 @@
 		<div class="mt-2 mx-auto h-0.5 w-80 md:w-[28rem] bg-gradient-to-r from-transparent via-amber-700 to-transparent" aria-hidden="true"></div>
 	</header>
 
-	<div class="mt-6">
+	<div class="mt-10">
 		<NewsTicker />
 	</div>
 
