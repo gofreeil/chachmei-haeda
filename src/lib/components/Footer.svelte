@@ -20,12 +20,16 @@
                 style="cursor: pointer;"
                 class="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-                <img
-                    src="/images/yotzim-lecherut.png"
-                    alt="יוצאים לחירות"
-                    class="h-28 w-28 md:h-32 md:w-32 object-contain hover:scale-105 transition-transform flex-shrink-0"
-                    style="border-radius: 1rem;"
-                />
+                <div
+                    class="h-28 w-28 md:h-32 md:w-32 flex-shrink-0 hover:scale-105 transition-transform"
+                    style="border-radius: 1.25rem; overflow: hidden;"
+                >
+                    <img
+                        src="/images/yotzim-lecherut.png"
+                        alt="יוצאים לחירות"
+                        class="h-full w-full object-contain block"
+                    />
+                </div>
 
                 <!-- Mobile: horizontal layout -->
                 <div
