@@ -27,7 +27,7 @@
 						יתרונות הקיום של הקוד המוסרי
 					</h3>
 					<span class="text-xs md:text-sm font-bold text-amber-800 group-hover:text-amber-900 transition-colors">
-						לדף הקוד האתי ←
+						לקוד האתי העולמי ←
 					</span>
 				</div>
 				<ul class="space-y-0.5 text-gray-900 text-xs md:text-sm leading-snug">
