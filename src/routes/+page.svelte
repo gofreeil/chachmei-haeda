@@ -58,7 +58,7 @@
 </svelte:head>
 
 <section class="pt-4 pb-10 text-center">
-	<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent">
+	<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl sm:text-4xl md:text-5xl font-black text-transparent inline-block pb-1">
 		ברוכים הבאים לחכמי העדה
 	</h2>
 	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label="קרא עוד אודותנו">
@@ -96,7 +96,7 @@
 	</div>
 	<header class="text-center mb-8">
 		<FancyHeading noLine>
-			<h3 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent whitespace-nowrap">
+			<h3 class="text-xl sm:text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent whitespace-nowrap inline-block pb-1">
 				חדשות מהיכל המעשה
 			</h3>
 		</FancyHeading>
@@ -192,7 +192,7 @@
 		<header class="mb-5">
 			<FancyHeading>
 				<a href="/articles" class="inline-block transition-transform hover:scale-105">
-					<h3 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">
+					<h3 class="text-2xl sm:text-3xl md:text-5xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent whitespace-nowrap inline-block pb-1">
 						מהיכל הרוח
 					</h3>
 				</a>
