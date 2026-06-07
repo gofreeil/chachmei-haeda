@@ -57,7 +57,7 @@
 	<title>חכמי העדה - בית דין לבוררות ושלום על פי דין תורה</title>
 </svelte:head>
 
-<section class="py-10 text-center">
+<section class="pt-4 pb-10 text-center">
 	<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent">
 		ברוכים הבאים לחכמי העדה
 	</h2>
