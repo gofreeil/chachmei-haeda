@@ -46,7 +46,7 @@
 		},
 		{
 			href: '/articles',
-			icon: '📖',
+			icon: '📚',
 			title: 'היכל הרוח',
 			desc: 'מאמרים, תשובות ולימוד תורה ומוסר',
 			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',

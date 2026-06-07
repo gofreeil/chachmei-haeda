@@ -62,7 +62,7 @@
 		ברוכים הבאים לחכמי העדה
 	</h2>
 	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label="קרא עוד אודותנו">
-		<div class="mt-6 flex justify-center">
+		<div class="mt-2 md:mt-6 flex justify-center">
 			<div class="h-40 w-40 md:h-56 md:w-56 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">
 				<img
 					src="/images/chachmei-logo.png"
@@ -223,7 +223,7 @@
 <section class="mb-10">
 	<header class="text-right mb-5">
 		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-			📖 תשובות חכמי העדה
+			📚 תשובות חכמי העדה
 		</h3>
 		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">חכמי העדה עונים לשאלותך</p>
 	</header>
@@ -255,7 +255,7 @@
 		href="/ask"
 		class="ask-cta flex items-center justify-center gap-3 rounded-2xl border-2 p-4 md:p-5 transition-all group"
 	>
-		<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">📖</div>
+		<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">📚</div>
 		<div class="text-center min-w-0">
 			<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
 				שאל את חכמי העדה

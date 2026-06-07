@@ -85,7 +85,7 @@
 		{paused ? '▶ המשך' : '⏸ עצור'}
 	</button>
 
-	<div class="mx-auto max-w-7xl flex items-center px-4" aria-hidden="true">
+	<div class="mx-auto max-w-7xl flex items-center px-8 md:px-4" aria-hidden="true">
 		<!-- תווית "חדשות" - בזהב/ענבר להתאמה לערכת הצבעים של האתר -->
 		<div
 			class="z-10 bg-gradient-to-br from-amber-400 to-yellow-600 px-5 py-3 rounded-lg text-base font-black text-gray-900 shadow-xl flex-shrink-0 ml-5 flex-col items-center justify-center border-2 border-amber-200 lg:flex hidden leading-tight"
@@ -94,7 +94,7 @@
 		</div>
 
 		<!-- תוכן גולל -->
-		<div class="overflow-hidden flex-grow relative h-12">
+		<div class="ticker-viewport overflow-hidden flex-grow relative h-12">
 			<div
 				class="ticker-content flex gap-14 items-center absolute right-0 whitespace-nowrap h-full"
 				class:paused
@@ -129,6 +129,10 @@
 </section>
 
 <style>
+	.ticker-viewport {
+		mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+		-webkit-mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+	}
 	.ticker-content {
 		right: 0;
 		animation: ticker-move 85s linear infinite;

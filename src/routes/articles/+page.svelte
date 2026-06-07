@@ -152,7 +152,7 @@
 
 	<!-- כותרת משנה מאוחדת -->
 	<h2 class="text-center text-xl md:text-2xl font-black bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent mb-6">
-		📜 מאמרים, שאלות ותשובות 📖
+		📜 מאמרים, שאלות ותשובות 📚
 	</h2>
 
 	<!-- שורת חיפוש -->
@@ -229,7 +229,7 @@
 
 		{#if searchPagedQa.length > 0}
 			<div class="mb-8">
-				<h3 class="text-sm font-black text-indigo-300 mb-3">📖 שאלות ותשובות ({qaMatches.length})</h3>
+				<h3 class="text-sm font-black text-indigo-300 mb-3">📚 שאלות ותשובות ({qaMatches.length})</h3>
 				<div class="space-y-3">
 					{#each searchPagedQa as item (item.slug)}
 						<a
@@ -323,7 +323,7 @@
 								<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-500/30 border-2 border-indigo-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(79,70,229,0.35)]">
 									{entry.number}
 								</span>
-								<span class="text-xs font-bold text-indigo-200">📖 שאלה ותשובה · פריט {entry.number} מתוך {entriesNumbered.length}</span>
+								<span class="text-xs font-bold text-indigo-200">📚 שאלה ותשובה · פריט {entry.number} מתוך {entriesNumbered.length}</span>
 							</div>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
 								<h2 class="text-xl md:text-2xl font-bold text-white">שאלה - {q.asker}</h2>
@@ -355,7 +355,7 @@
 				href="/ask"
 				class="ask-cta mt-8 flex items-center justify-center gap-3 rounded-xl border-2 p-3 transition-all group max-w-3xl mx-auto"
 			>
-				<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">📖</div>
+				<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">📚</div>
 				<div class="text-center min-w-0">
 					<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
 						שאל את חכמי העדה

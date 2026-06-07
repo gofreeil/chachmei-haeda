@@ -67,7 +67,7 @@
                 {
                     href: '/articles',
                     label: 'היכל הרוח',
-                    icon: '📖',
+                    icon: '📚',
                     children: [
                         { href: '/articles', label: 'מאמרי רבנים', icon: '📚' },
                         { href: '/qa', label: 'שאלות ותשובות', icon: '💬' },
