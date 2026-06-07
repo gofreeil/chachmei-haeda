@@ -54,7 +54,7 @@
 </script>
 
 <svelte:head>
-	<title>חכמי העדה - בית דין לבוררות ושלום על פי דין תורה</title>
+	<title>חכמי העדה - בית דין לבוררות ושלום על פי תורת ישראל</title>
 </svelte:head>
 
 <section class="pt-4 pb-10 text-center">
