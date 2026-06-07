@@ -286,12 +286,11 @@
 	:global(.ask-cta) {
 		background-image: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%) !important;
 		border-color: #c7d2fe !important;
-		box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.45), 0 4px 10px -4px rgba(79, 70, 229, 0.35) !important;
+		box-shadow: 0 0 25px rgba(79, 70, 229, 0.12) !important;
 	}
 	:global(.ask-cta:hover) {
 		background-image: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #1d4ed8 100%) !important;
-		box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6), 0 6px 12px -4px rgba(79, 70, 229, 0.5) !important;
-		transform: scale(1.02);
+		box-shadow: 0 0 30px rgba(79, 70, 229, 0.25) !important;
 	}
 	:global(.ask-cta .ask-cta-title),
 	:global(.ask-cta .ask-cta-text) {
