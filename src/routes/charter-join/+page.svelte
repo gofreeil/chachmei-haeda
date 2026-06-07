@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { addSignatory } from '$lib/services/charter-service';
+	import HeichalNav from '$lib/components/HeichalNav.svelte';
 
 	let name = $state('');
 	let role = $state('');
@@ -55,6 +56,8 @@
 			אני מקבל/ת על עצמי את האמנה המוסרית של חכמי העדה ומבקש/ת להצטרף לחתומים עליה.
 		</p>
 	</header>
+
+	<HeichalNav />
 
 	<!-- מלל האמנה (יעודכן בהמשך) -->
 	<div class="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-yellow-500/5 p-5 md:p-7 mb-6">

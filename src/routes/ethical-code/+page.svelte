@@ -1,3 +1,7 @@
+<script lang="ts">
+	import HeichalNav from '$lib/components/HeichalNav.svelte';
+</script>
+
 <svelte:head>
 	<title>הקוד האתי UECC - חכמי העדה</title>
 </svelte:head>
@@ -10,6 +14,8 @@
 		<p class="mt-2 text-blue-300 text-base md:text-xl font-bold text-center" dir="ltr" style="text-align:center">UECC - Universal Ethical Common Code</p>
 		<p class="mt-2 text-gray-300 text-sm md:text-base">לכבוד מֶלֶךְ יָחִיד אֵ'ל חַי הָעוֹלָמִים</p>
 	</header>
+
+	<HeichalNav />
 
 	<section class="space-y-3 text-gray-200 leading-snug text-xs md:text-sm">
 		<p>

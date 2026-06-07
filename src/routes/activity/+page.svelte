@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { activity as staticActivity, type ActivityKind, type ActivityItem } from '$lib/data/activity';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import HeichalNav from '$lib/components/HeichalNav.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 
 	const ACTIVITY_KEY = 'chachmei-custom-activity';
@@ -124,6 +125,8 @@
 			קריאות החכמים ותקנותיהם לצורך קידום ותיקון עולם במלכות שדי
 		</p>
 	</header>
+
+	<HeichalNav />
 
 	<div class="mb-6 max-w-2xl mx-auto">
 		<div class="relative">

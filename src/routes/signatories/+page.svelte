@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { signatories } from '$lib/data/signatories';
+	import HeichalNav from '$lib/components/HeichalNav.svelte';
 </script>
 
 <svelte:head>
@@ -14,6 +15,8 @@
 		<p class="mt-3 text-gray-300">רבנים, אנשי עסקים ופרטיים שקיבלו על עצמם את אמנת UECC</p>
 		<p class="mt-1 text-sm text-gray-500">סה"כ {signatories.length} חתומים</p>
 	</header>
+
+	<HeichalNav />
 
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 		{#each signatories as s}
