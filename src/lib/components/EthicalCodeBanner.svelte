@@ -76,7 +76,7 @@
 				<img
 					src="/images/Copilot_20260602_125425.png"
 					alt="הקוד האתי UECC"
-					class="flex-shrink-0 w-32 h-32 md:w-52 md:h-52 rounded-xl object-contain border-2 border-amber-700/40 shadow relative z-10 -mb-4 md:-mb-6"
+					class="flex-shrink-0 w-32 h-32 md:w-44 md:h-44 rounded-xl object-contain border-2 border-amber-700/40 shadow relative z-10 -mb-4 md:-mb-4"
 					loading="lazy"
 				/>
 				<div class="flex-1 min-w-0">
@@ -100,8 +100,8 @@
 			</div>
 		</a>
 
-		<div class="mt-3 pt-3 text-center pr-40 md:pr-60 relative">
-			<div class="absolute top-0 left-0 right-40 md:right-60 h-px bg-amber-700/40"></div>
+		<div class="mt-1 pt-2 text-center pr-40 md:pr-52 relative">
+			<div class="absolute top-0 left-0 right-40 md:right-52 h-px bg-amber-700/40"></div>
 			<h4 class="text-sm md:text-base font-black text-amber-900 mb-0.5">
 				עוד לא הצטרפת? - הצטרף מיד לקבלת המוסר האלוקי
 			</h4>
