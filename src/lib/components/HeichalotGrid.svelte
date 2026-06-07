@@ -46,7 +46,8 @@
 		},
 		{
 			href: '/articles',
-			icon: '📜🕯️',
+			icon: '',
+			image: '/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif',
 			title: 'היכל הרוח',
 			desc: 'מאמרים, תשובות, מוסר אלוקי והעלאת הרוח',
 			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
@@ -74,7 +75,13 @@
 				class="block rounded-2xl border-4 {h.border} {h.bg} {h.hover} {h.shadow} transition-all p-4 md:p-6 text-center hover:scale-[1.04] hover:-translate-y-1 ring-1 ring-black/20"
 				style={h.bgStyle}
 			>
-				<div class="text-4xl md:text-5xl mb-2 md:mb-3 drop-shadow-lg">{h.icon}</div>
+				{#if h.image}
+					<div class="mb-2 md:mb-3 flex justify-center">
+						<img src={h.image} alt={h.title} class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
+					</div>
+				{:else}
+					<div class="text-4xl md:text-5xl mb-2 md:mb-3 drop-shadow-lg">{h.icon}</div>
+				{/if}
 				<h4 class="text-base md:text-xl font-black mb-1 md:mb-2 drop-shadow-sm" style="color: {h.titleColor} !important">{h.title}</h4>
 				<p class="text-xs md:text-sm leading-snug font-bold" style="color: {h.descColor} !important">{h.desc}</p>
 			</a>
