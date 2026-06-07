@@ -222,10 +222,10 @@
 
 <section class="mb-10">
 	<header class="text-right mb-5">
-		<h3 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+		<h3 class="text-lg md:text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent pr-3 md:pr-0">
 			📚 תשובות חכמי העדה
 		</h3>
-		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">חכמי העדה עונים לשאלותך</p>
+		<p class="mt-2 text-gray-700 text-xs md:text-base font-bold pr-3 md:pr-0">חכמי העדה עונים לשאלותך</p>
 	</header>
 	<article class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
 		<div class="flex items-baseline gap-3 flex-wrap mb-2">
