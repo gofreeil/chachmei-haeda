@@ -135,7 +135,7 @@
 	}
 	.ticker-content {
 		right: 0;
-		animation: ticker-move 85s linear infinite;
+		animation: ticker-move 60s linear infinite;
 	}
 
 	@keyframes ticker-move {
