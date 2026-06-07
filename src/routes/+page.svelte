@@ -218,14 +218,6 @@
 			<p class="text-sm text-blue-300 mb-2">מאת: {latestArticle.author}</p>
 			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
 		</article>
-		<div class="mt-4 text-left">
-			<a
-				href="/articles"
-				class="text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors"
-			>
-				לכלל המאמרים והתשובות של חכמי העדה ←
-			</a>
-		</div>
 	</section>
 {/if}
 
