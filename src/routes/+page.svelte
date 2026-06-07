@@ -116,12 +116,6 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs font-bold px-3 py-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200">
-							🆕 חדש
-						</span>
-						<span class="text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300/30 bg-amber-500/10 text-amber-100">
-							{recentActivity.kind}
-						</span>
 						<span class="text-xs text-gray-400">הועלה ב-{recentActivity.date} · מאת {recentActivity.author}</span>
 					</div>
 				</div>
