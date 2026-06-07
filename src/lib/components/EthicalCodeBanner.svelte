@@ -9,38 +9,34 @@
 </script>
 
 <section class="rounded-2xl border border-amber-700/40 bg-amber-700/15 p-3 md:p-4 pb-3 md:pb-2 mb-4">
-	<!-- מובייל: קומפקטי - תמונה קטנה + יתרונות + מקטע הצטרפות -->
+	<!-- מובייל: כותרת למעלה, תמונה משמאל מתחת + יתרונות מימין -->
 	<div class="md:hidden">
 		<a
 			href="/heichal-hamaaseh/ethical-code"
 			class="block"
 			title="לדף הקוד האתי UECC"
 		>
+			<h3 class="text-sm font-bold text-amber-900 leading-tight mb-0.5">
+				יתרונות הקיום של הקוד המוסרי
+			</h3>
+			<span class="block text-[11px] font-bold text-amber-800 mb-2">
+				לקוד האתי העולמי ←
+			</span>
 			<div class="flex items-start gap-3">
+				<ul class="flex-1 space-y-0.5 text-gray-900 text-[11px] leading-snug">
+					{#each benefits as b}
+						<li class="flex items-start gap-1">
+							<span class="text-amber-700 flex-shrink-0">✓</span>
+							<span>{b}</span>
+						</li>
+					{/each}
+				</ul>
 				<img
 					src="/images/Copilot_20260602_125425.png"
 					alt="הקוד האתי UECC"
-					class="flex-shrink-0 w-20 h-20 rounded-xl object-contain border-2 border-amber-700/40 shadow"
+					class="flex-shrink-0 w-24 h-24 rounded-xl object-contain border-2 border-amber-700/40 shadow"
 					loading="lazy"
 				/>
-				<div class="flex-1 min-w-0">
-					<div class="flex items-start justify-between gap-2 mb-1">
-						<h3 class="text-sm font-bold text-amber-900 leading-tight">
-							יתרונות הקיום של הקוד המוסרי
-						</h3>
-					</div>
-					<span class="block text-[11px] font-bold text-amber-800 mb-1">
-						לקוד האתי העולמי ←
-					</span>
-					<ul class="space-y-0.5 text-gray-900 text-[11px] leading-snug">
-						{#each benefits as b}
-							<li class="flex items-start gap-1">
-								<span class="text-amber-700 flex-shrink-0">✓</span>
-								<span>{b}</span>
-							</li>
-						{/each}
-					</ul>
-				</div>
 			</div>
 		</a>
 
