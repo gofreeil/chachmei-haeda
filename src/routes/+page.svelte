@@ -279,6 +279,15 @@
 			style="clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"
 		></div>
 	</div>
+	<div class="flex justify-center -mt-6 mb-2">
+		<button
+			type="button"
+			onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+			class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-600/15 border border-amber-700/40 text-amber-900 font-bold text-sm hover:bg-amber-600/25 transition-colors"
+		>
+			↑ חזור לראש הדף
+		</button>
+	</div>
 </section>
 
 <style>
