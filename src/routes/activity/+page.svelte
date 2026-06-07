@@ -165,11 +165,13 @@
 				<!-- שורה עליונה: סוג ותאריך מימין, מחבר משמאל -->
 				<div class="flex items-start justify-between gap-3 flex-wrap mb-3">
 					<div class="flex items-center gap-2">
-						<span
-							class="text-[11px] font-bold px-2 py-0.5 rounded-full border {kindStyles[a.kind]}"
-						>
-							{kindIcons[a.kind]} {a.kind}
-						</span>
+						{#if a.kind !== 'כתבה'}
+							<span
+								class="text-[11px] font-bold px-2 py-0.5 rounded-full border {kindStyles[a.kind]}"
+							>
+								{kindIcons[a.kind]} {a.kind}
+							</span>
+						{/if}
 						<span class="text-[11px] text-gray-500">{a.date}</span>
 					</div>
 					<span class="text-xs text-indigo-300">מאת: {a.author}</span>
