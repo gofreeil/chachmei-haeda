@@ -96,11 +96,11 @@
 		<!-- תוכן גולל -->
 		<div class="ticker-viewport overflow-hidden flex-grow relative h-12">
 			<div
-				class="ticker-content flex gap-14 items-center absolute right-0 whitespace-nowrap h-full"
+				class="ticker-content flex gap-6 md:gap-14 items-center absolute right-0 whitespace-nowrap h-full"
 				class:paused
 			>
 				{#each [...newsItems, ...newsItems] as item}
-					<div class="flex items-center gap-14 h-full">
+					<div class="flex items-center gap-6 md:gap-14 h-full">
 						<div class="flex flex-col justify-center text-center">
 							{#if item.local}
 								<span class="text-[10px] font-bold text-indigo-700 mb-0.5 tracking-wide">חכמי העדה</span>
@@ -110,13 +110,13 @@
 									href={item.sourceUrl}
 									target="_blank"
 									rel="noopener noreferrer"
-									class="text-lg md:text-xl font-extrabold text-indigo-900 hover:text-indigo-700 transition-colors"
+									class="text-xs md:text-xl font-extrabold text-indigo-900 hover:text-indigo-700 transition-colors"
 								>{item.line1}</a>
 							{:else}
-								<span class="text-lg md:text-xl font-extrabold text-indigo-900">{item.line1}</span>
+								<span class="text-xs md:text-xl font-extrabold text-indigo-900">{item.line1}</span>
 							{/if}
 							{#if item.line2}
-								<span class="text-sm md:text-base font-bold text-slate-700">{item.line2}</span>
+								<span class="text-[10px] md:text-base font-bold text-slate-700">{item.line2}</span>
 							{/if}
 						</div>
 						<!-- מפריד -->
