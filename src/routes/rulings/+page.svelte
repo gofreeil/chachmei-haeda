@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { rulings } from '$lib/data/hearings';
+	import { rulings, pickLang } from '$lib/data/hearings';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
@@ -23,19 +23,19 @@
 		{#each rulings as r}
 			<article class="rounded-2xl border border-white/10 bg-white/5 p-6">
 				<div class="flex items-start justify-between gap-3 flex-wrap mb-3">
-					<h2 class="text-xl md:text-2xl font-bold text-white">{r.caseName}</h2>
+					<h2 class="text-xl md:text-2xl font-bold text-white">{pickLang(r.caseName, _loc)}</h2>
 					<span class="text-sm text-gray-500">{r.date}</span>
 				</div>
-				<p class="text-sm text-blue-300 mb-4">{tFn('rulings_page_dayanim_panel')}: {r.dayanim.join(' • ')}</p>
+				<p class="text-sm text-blue-300 mb-4">{tFn('rulings_page_dayanim_panel')}: {r.dayanim.map((d) => pickLang(d, _loc)).join(' • ')}</p>
 
 				<div class="space-y-4">
 					<div>
 						<h3 class="font-bold text-yellow-300 mb-1">{tFn('rulings_page_summary_label')}</h3>
-						<p class="text-gray-200 leading-relaxed">{r.summary}</p>
+						<p class="text-gray-200 leading-relaxed">{pickLang(r.summary, _loc)}</p>
 					</div>
 					<div class="rounded-xl border border-green-500/30 bg-green-900/10 p-4">
 						<h3 class="font-bold text-green-300 mb-1">{tFn('rulings_page_decision_label')}</h3>
-						<p class="text-gray-100 leading-relaxed">{r.decision}</p>
+						<p class="text-gray-100 leading-relaxed">{pickLang(r.decision, _loc)}</p>
 					</div>
 				</div>
 			</article>

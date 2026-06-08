@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { qa, type QaItem, type QaTopic } from '$lib/data/qa';
+	import { qa, pickLang, type QaItem, type QaTopic } from '$lib/data/qa';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -74,13 +74,13 @@
 					</span>
 					<span class="text-xs font-bold text-gray-700">{tFn('qa_asked_on')} {fmtDate(q.askDate)}</span>
 				</div>
-				<h3 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">{tFn('qa_question_label')} - {q.asker}</h3>
-				<p class="text-gray-800 leading-relaxed mb-4">{q.question}</p>
+				<h3 class="text-lg md:text-xl font-extrabold text-gray-900 mb-2">{tFn('qa_question_label')} - {pickLang(q.asker, _loc)}</h3>
+				<p class="text-gray-800 leading-relaxed mb-4">{pickLang(q.question, _loc)}</p>
 				<div class="border-t border-indigo-300/40 pt-4">
 					<h4 class="text-sm font-black text-indigo-700 mb-2">
-						{tFn('qa_answer_by')} {q.answeredBy} · {fmtDate(q.answerDate)}
+						{tFn('qa_answer_by')} {pickLang(q.answeredBy, _loc)} · {fmtDate(q.answerDate)}
 					</h4>
-					<p class="text-gray-900 leading-relaxed font-medium">{q.answer}</p>
+					<p class="text-gray-900 leading-relaxed font-medium">{pickLang(q.answer, _loc)}</p>
 				</div>
 			</article>
 		{/each}

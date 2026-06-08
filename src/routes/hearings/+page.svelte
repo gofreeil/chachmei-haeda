@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { hearings } from '$lib/data/hearings';
+	import { hearings, pickLang } from '$lib/data/hearings';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
@@ -30,9 +30,9 @@
 			<div class="rounded-2xl border border-blue-500/30 bg-blue-900/10 p-5">
 				<div class="flex items-start justify-between gap-3 flex-wrap">
 					<div class="flex-1 min-w-0">
-						<h3 class="text-lg font-bold text-white">{h.caseName}</h3>
+						<h3 class="text-lg font-bold text-white">{pickLang(h.caseName, _loc)}</h3>
 						<p class="mt-1 text-sm text-gray-400">
-							{tFn('hearings_page_panel_label')}: {h.dayanim.join(' • ')}
+							{tFn('hearings_page_panel_label')}: {h.dayanim.map((d) => pickLang(d, _loc)).join(' • ')}
 						</p>
 						<p class="mt-2 text-sm">
 							<span class="text-yellow-300">📆 {h.date}</span>
@@ -56,9 +56,9 @@
 	<div class="space-y-3">
 		{#each past as h}
 			<div class="rounded-2xl border border-white/10 bg-white/5 p-5 opacity-80">
-				<h3 class="text-lg font-bold text-white">{h.caseName}</h3>
+				<h3 class="text-lg font-bold text-white">{pickLang(h.caseName, _loc)}</h3>
 				<p class="mt-1 text-sm text-gray-400">
-					{tFn('hearings_page_panel_label')}: {h.dayanim.join(' • ')}
+					{tFn('hearings_page_panel_label')}: {h.dayanim.map((d) => pickLang(d, _loc)).join(' • ')}
 				</p>
 				<p class="mt-2 text-sm text-gray-500">{h.date} {h.time}</p>
 				<a href="/rulings" class="inline-block mt-3 text-sm text-blue-300 hover:text-blue-200">
