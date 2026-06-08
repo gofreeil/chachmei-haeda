@@ -323,7 +323,7 @@
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         {#if 'image' in item && item.image}
-                                                            <div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
+                                                            <div class="w-16 h-16 rounded-full overflow-hidden ring-4 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50 flex-shrink-0">
                                                                 <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                             </div>
                                                         {:else}
@@ -558,12 +558,12 @@
                                                         <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {h.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
                                                     </a>
                                                     {#if 'children' in item && item.children && item.children.length}
-                                                        <div class="space-y-1.5 rounded-b-xl border-x-2 border-b-2 {h.subBorder ?? 'border-white/20'} {h.subBg ?? 'bg-white/5'} -mt-2 pt-4 px-2 pb-2">
+                                                        <div class="mt-1.5 space-y-1.5">
                                                             {#each item.children as child}
                                                                 <a
                                                                     href={child.href}
                                                                     role="menuitem"
-                                                                    class="flex items-center gap-1.5 rounded-lg border {h.subBorder ?? 'border-white/20'} bg-white/15 hover:bg-white/25 px-2 py-1.5 text-xs {h.subText ?? 'text-white'} font-bold transition-colors no-underline"
+                                                                    class="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 px-2 py-1.5 text-xs text-white transition-colors no-underline"
                                                                     onclick={() => (showNavMenu = false)}
                                                                 >
                                                                     <span class="text-sm flex-shrink-0" aria-hidden="true">{child.icon}</span>
