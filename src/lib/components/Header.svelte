@@ -336,12 +336,12 @@
                                     {#each navGroups as group, gi}
                                         {#if gi === 0}
                                             <!-- Row 1: Home + About (mobile) -->
-                                            <div class="flex justify-center items-center gap-6 mb-3">
+                                            <div class="flex justify-center items-center gap-4 mb-2">
                                                 {#each group.items as item}
                                                     <a
                                                         href={item.href}
                                                         role="menuitem"
-                                                        class="flex items-center justify-center gap-2 px-2 py-1.5 text-gray-900 font-bold no-underline"
+                                                        class="flex items-center justify-center gap-2 px-1.5 py-1 text-gray-900 font-bold no-underline"
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         {#if 'image' in item && item.image}
@@ -357,14 +357,14 @@
                                             </div>
                                         {:else}
                                             <!-- Row 2: 4 Heichalot in 2x2 grid with sub-items -->
-                                            <div class="grid grid-cols-2 gap-x-2 gap-y-5">
+                                            <div class="grid grid-cols-2 gap-x-1.5 gap-y-2">
                                                 {#each group.items as item}
                                                     {@const h = item as any}
                                                     <div class="flex flex-col">
                                                         <a
                                                             href={item.href}
                                                             role="menuitem"
-                                                            class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-2xl border-4 {h.border ?? ''} {h.bg ?? ''} {h.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 min-h-[95px] text-center"
+                                                            class="flex flex-col items-center justify-center gap-0.5 p-1.5 rounded-2xl border-4 {h.border ?? ''} {h.bg ?? ''} {h.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 min-h-[78px] text-center"
                                                             style={h.bgStyle ?? ''}
                                                             onclick={() => (showNavMenu = false)}
                                                         >
@@ -376,12 +376,12 @@
                                                             <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {h.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
                                                         </a>
                                                         {#if 'children' in item && item.children && item.children.length}
-                                                            <div class="mt-1.5 space-y-1.5">
+                                                            <div class="mt-1 space-y-1">
                                                                 {#each item.children as child}
                                                                     <a
                                                                         href={child.href}
                                                                         role="menuitem"
-                                                                        class="flex items-center gap-1.5 rounded-full border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-3 min-h-[44px] text-sm text-gray-800 font-bold transition-colors no-underline"
+                                                                        class="flex items-center gap-1.5 rounded-full border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-2.5 min-h-[36px] text-sm text-gray-800 font-bold transition-colors no-underline"
                                                                         onclick={() => (showNavMenu = false)}
                                                                     >
                                                                         <span class="text-base flex-shrink-0" aria-hidden="true">{child.icon}</span>
