@@ -223,7 +223,7 @@
 				type="button"
 				onclick={onClose}
 				aria-label="סגור"
-				class="absolute top-0 left-0 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl font-bold transition-colors flex items-center justify-center"
+				class="absolute top-0 left-0 w-9 h-9 rounded-full bg-white/70 hover:bg-white/80 text-gray-900 text-xl font-bold transition-colors flex items-center justify-center"
 			>✕</button>
 		{/if}
 		<FancyHeading>
@@ -231,7 +231,7 @@
 				{tFn('req_hearing_h1')}
 			</h2>
 		</FancyHeading>
-		<p class="mt-3 text-gray-300">{tFn('req_hearing_subtitle')}</p>
+		<p class="mt-3 text-gray-700">{tFn('req_hearing_subtitle')}</p>
 	</header>
 
 	{#if saved}
@@ -239,42 +239,42 @@
 		<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-6 md:p-8">
 			<div class="flex items-center justify-between mb-4">
 				<h2 class="text-2xl font-bold text-blue-300">{tFn('req_hearing_case_label')} #{caseId}</h2>
-				<span class="text-sm text-gray-400">{nickname}</span>
+				<span class="text-sm text-gray-600">{nickname}</span>
 			</div>
 
-			<p class="text-gray-200 mb-5">
-				{tFn('req_hearing_proposed_date_prefix')} <strong class="text-yellow-300">{proposedDate}</strong> {tFn('req_hearing_proposed_date_suffix')}
+			<p class="text-gray-800 mb-5">
+				{tFn('req_hearing_proposed_date_prefix')} <strong class="text-amber-700">{proposedDate}</strong> {tFn('req_hearing_proposed_date_suffix')}
 			</p>
 
 			<div class="space-y-3">
-				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
+				<div class="flex items-center justify-between rounded-xl border border-amber-400/40 bg-white/60 p-4">
 					<div>
-						<div class="font-bold text-white">1. {tFn('req_hearing_plaintiff_label')}</div>
-						<div class="text-sm text-gray-400">{plaintiffName}</div>
+						<div class="font-bold text-gray-900">1. {tFn('req_hearing_plaintiff_label')}</div>
+						<div class="text-sm text-gray-600">{plaintiffName}</div>
 					</div>
 					{#if approvals.plaintiff}
 						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
 					{:else}
 						<button
 							onclick={() => (approvals.plaintiff = true)}
-							class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-bold"
+							class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-gray-900 text-sm font-bold"
 						>
 							{tFn('req_hearing_approve_date_btn')}
 						</button>
 					{/if}
 				</div>
 
-				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
+				<div class="flex items-center justify-between rounded-xl border border-amber-400/40 bg-white/60 p-4">
 					<div>
-						<div class="font-bold text-white">2. {tFn('req_hearing_defendant_label')}</div>
-						<div class="text-sm text-gray-400">{defendantName}</div>
+						<div class="font-bold text-gray-900">2. {tFn('req_hearing_defendant_label')}</div>
+						<div class="text-sm text-gray-600">{defendantName}</div>
 					</div>
 					{#if approvals.defendant}
 						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
 					{:else}
 						<button
 							onclick={() => (approvals.defendant = true)}
-							class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-bold"
+							class="px-4 py-2 rounded-lg bg-white/70 hover:bg-white/80 text-gray-900 text-sm font-bold"
 							title={tFn('req_hearing_awaiting_defendant_title')}
 						>
 							{tFn('req_hearing_awaiting_approval_btn')}
@@ -282,17 +282,17 @@
 					{/if}
 				</div>
 
-				<div class="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4">
+				<div class="flex items-center justify-between rounded-xl border border-amber-400/40 bg-white/60 p-4">
 					<div>
-						<div class="font-bold text-white">3. {tFn('req_hearing_beit_din_label')}</div>
-						<div class="text-sm text-gray-400">{tFn('req_hearing_beit_din_rabbis')}</div>
+						<div class="font-bold text-gray-900">3. {tFn('req_hearing_beit_din_label')}</div>
+						<div class="text-sm text-gray-600">{tFn('req_hearing_beit_din_rabbis')}</div>
 					</div>
 					{#if approvals.beitDin}
 						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
 					{:else}
 						<button
 							onclick={() => (approvals.beitDin = true)}
-							class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-bold"
+							class="px-4 py-2 rounded-lg bg-white/70 hover:bg-white/80 text-gray-900 text-sm font-bold"
 							title={tFn('req_hearing_awaiting_beit_din_title')}
 						>
 							{tFn('req_hearing_awaiting_approval_btn')}
@@ -315,7 +315,7 @@
 			<button
 				type="button"
 				onclick={resetForm}
-				class="mt-6 w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
+				class="mt-6 w-full py-3 rounded-xl bg-white/70 hover:bg-white/80 text-gray-900 font-bold transition-colors"
 			>
 				{tFn('req_hearing_open_another_case')}
 			</button>
@@ -333,42 +333,42 @@
 					{tFn('req_hearing_back_to_form')}
 				</button>
 			</div>
-			<p class="text-gray-300 mb-5 leading-relaxed">
+			<p class="text-gray-700 mb-5 leading-relaxed">
 				{tFn('req_hearing_signature_intro')}
 			</p>
 			<div class="grid md:grid-cols-2 gap-4">
 				<label class="block">
-					<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_full_name_label')}</span>
+					<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_full_name_label')}</span>
 					<input
 						type="text"
 						bind:value={signerName}
 						required
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
+						class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-amber-500 focus:outline-none"
 					/>
 				</label>
 				<label class="block">
-					<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_phone_label')}</span>
+					<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_phone_label')}</span>
 					<input
 						type="tel"
 						bind:value={signerPhone}
 						required
-						class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
+						class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-amber-500 focus:outline-none"
 					/>
 				</label>
 			</div>
 			<label class="block mt-4">
-				<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_email_label')}</span>
+				<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_email_label')}</span>
 				<input
 					type="email"
 					bind:value={signerEmail}
-					class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-yellow-400 focus:outline-none"
+					class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-amber-500 focus:outline-none"
 				/>
 			</label>
 
 			<div class="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 mt-5 space-y-3">
 				<label class="flex items-start gap-3 cursor-pointer">
 					<input type="checkbox" bind:checked={regUECC} class="mt-1" />
-					<span class="text-gray-200 text-sm">
+					<span class="text-gray-800 text-sm">
 						{tFn('req_hearing_uecc_consent_prefix')}
 						<a href="/heichal-hamaaseh/ethical-code" class="text-blue-300 underline">{tFn('req_hearing_uecc_link_text')}</a>
 						{tFn('req_hearing_uecc_consent_suffix')}
@@ -376,7 +376,7 @@
 				</label>
 				<label class="flex items-start gap-3 cursor-pointer">
 					<input type="checkbox" bind:checked={regArbitration} class="mt-1" />
-					<span class="text-gray-200 text-sm">
+					<span class="text-gray-800 text-sm">
 						{tFn('req_hearing_arbitration_consent')}
 					</span>
 				</label>
@@ -415,7 +415,7 @@
 				<button
 					type="button"
 					onclick={clearDraft}
-					class="text-xs text-yellow-300 hover:text-yellow-100 underline shrink-0"
+					class="text-xs text-amber-700 hover:text-yellow-100 underline shrink-0"
 				>
 					{tFn('req_hearing_start_over_btn')}
 				</button>
@@ -424,107 +424,107 @@
 
 		<form onsubmit={onSubmitDraft} class="space-y-3">
 			<!-- מגירה 1: שם כינוי לדיון -->
-			<div class="rounded-xl border border-blue-500/20 bg-white/5 overflow-hidden">
+			<div class="rounded-xl border border-blue-500/20 bg-white/60 overflow-hidden">
 				<button
 					type="button"
 					onclick={() => toggle('nickname')}
-					class="w-full flex items-center justify-between p-4 hover:bg-white/5 text-right"
+					class="w-full flex items-center justify-between p-4 hover:bg-white/60 text-right"
 					aria-expanded={openDrawer === 'nickname'}
 				>
 					<span class="flex items-center gap-3">
 						<span class="text-2xl">🏷️</span>
-						<span class="font-bold text-white text-lg">{tFn('req_hearing_drawer_nickname_title')}</span>
+						<span class="font-bold text-gray-900 text-lg">{tFn('req_hearing_drawer_nickname_title')}</span>
 						{#if nickname}<span class="text-green-400 text-sm">✓</span>{/if}
 					</span>
-					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'nickname' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+					<svg class="h-5 w-5 text-gray-600 transition-transform {openDrawer === 'nickname' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
 				</button>
 				{#if openDrawer === 'nickname'}
-					<div class="p-4 pt-0 border-t border-white/10">
+					<div class="p-4 pt-0 border-t border-amber-400/40">
 						<input
 							type="text"
 							bind:value={nickname}
 							placeholder={tFn('req_hearing_nickname_placeholder')}
-							class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+							class="w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
 						/>
-						<p class="text-xs text-gray-400 mt-2">{tFn('req_hearing_nickname_hint')}</p>
+						<p class="text-xs text-gray-600 mt-2">{tFn('req_hearing_nickname_hint')}</p>
 					</div>
 				{/if}
 			</div>
 
 			<!-- מגירה 2: שמות המעורבים + נושא -->
-			<div class="rounded-xl border border-blue-500/20 bg-white/5 overflow-hidden">
+			<div class="rounded-xl border border-blue-500/20 bg-white/60 overflow-hidden">
 				<button
 					type="button"
 					onclick={() => toggle('parties')}
-					class="w-full flex items-center justify-between p-4 hover:bg-white/5 text-right"
+					class="w-full flex items-center justify-between p-4 hover:bg-white/60 text-right"
 					aria-expanded={openDrawer === 'parties'}
 				>
 					<span class="flex items-center gap-3">
 						<span class="text-2xl">👥</span>
-						<span class="font-bold text-white text-lg">{tFn('req_hearing_drawer_parties_title')}</span>
+						<span class="font-bold text-gray-900 text-lg">{tFn('req_hearing_drawer_parties_title')}</span>
 						{#if plaintiffName && defendantName && subject}<span class="text-green-400 text-sm">✓</span>{/if}
 					</span>
-					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'parties' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+					<svg class="h-5 w-5 text-gray-600 transition-transform {openDrawer === 'parties' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
 				</button>
 				{#if openDrawer === 'parties'}
-					<div class="p-4 pt-0 border-t border-white/10 space-y-4">
+					<div class="p-4 pt-0 border-t border-amber-400/40 space-y-4">
 						<div class="grid md:grid-cols-2 gap-4">
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_plaintiff_name_label')}</span>
+								<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_plaintiff_name_label')}</span>
 								<input
 									type="text"
 									bind:value={plaintiffName}
 									required
-									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+									class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
 								/>
 							</label>
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_plaintiff_phone_label')}</span>
+								<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_plaintiff_phone_label')}</span>
 								<input
 									type="tel"
 									bind:value={plaintiffPhone}
-									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+									class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
 								/>
 							</label>
 						</div>
 						<div class="grid md:grid-cols-2 gap-4">
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_defendant_name_label')}</span>
+								<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_defendant_name_label')}</span>
 								<input
 									type="text"
 									bind:value={defendantName}
 									required
-									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+									class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
 								/>
 							</label>
 							<label class="block">
-								<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_defendant_phone_label')}</span>
+								<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_defendant_phone_label')}</span>
 								<input
 									type="tel"
 									bind:value={defendantPhone}
-									class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+									class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
 								/>
 							</label>
 						</div>
 						<label class="block">
-							<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_subject_label')}</span>
+							<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_subject_label')}</span>
 							<input
 								type="text"
 								bind:value={subject}
 								required
 								placeholder={tFn('req_hearing_subject_placeholder')}
-								class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+								class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
 							/>
 						</label>
 						<label class="block">
-							<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_details_label')}</span>
+							<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_details_label')}</span>
 							<textarea
 								bind:value={details}
 								rows="5"
-								class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none resize-y"
+								class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none resize-y"
 							></textarea>
 						</label>
-						<p class="text-xs text-gray-400">
+						<p class="text-xs text-gray-600">
 							{tFn('req_hearing_defendant_contact_note')}
 						</p>
 					</div>
@@ -532,32 +532,32 @@
 			</div>
 
 			<!-- מגירה 3: הצעת תאריך -->
-			<div class="rounded-xl border border-blue-500/20 bg-white/5 overflow-hidden">
+			<div class="rounded-xl border border-blue-500/20 bg-white/60 overflow-hidden">
 				<button
 					type="button"
 					onclick={() => toggle('date')}
-					class="w-full flex items-center justify-between p-4 hover:bg-white/5 text-right"
+					class="w-full flex items-center justify-between p-4 hover:bg-white/60 text-right"
 					aria-expanded={openDrawer === 'date'}
 				>
 					<span class="flex items-center gap-3">
 						<span class="text-2xl">📅</span>
-						<span class="font-bold text-white text-lg">{tFn('req_hearing_drawer_date_title')}</span>
+						<span class="font-bold text-gray-900 text-lg">{tFn('req_hearing_drawer_date_title')}</span>
 						{#if proposedDate}<span class="text-green-400 text-sm">✓</span>{/if}
 					</span>
-					<svg class="h-5 w-5 text-gray-400 transition-transform {openDrawer === 'date' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+					<svg class="h-5 w-5 text-gray-600 transition-transform {openDrawer === 'date' ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
 				</button>
 				{#if openDrawer === 'date'}
-					<div class="p-4 pt-0 border-t border-white/10">
+					<div class="p-4 pt-0 border-t border-amber-400/40">
 						<label class="block">
-							<span class="text-sm font-bold text-gray-300">{tFn('req_hearing_agreed_date_label')}</span>
+							<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_agreed_date_label')}</span>
 							<input
 								type="date"
 								bind:value={proposedDate}
 								required
-								class="mt-1 w-full rounded-lg bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-blue-400 focus:outline-none"
+								class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
 							/>
 						</label>
-						<p class="text-xs text-gray-400 mt-2">
+						<p class="text-xs text-gray-600 mt-2">
 							{tFn('req_hearing_date_lock_note')}
 						</p>
 					</div>
@@ -567,7 +567,7 @@
 			<button
 				type="submit"
 				disabled={!readyToSubmit()}
-				class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
+				class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-gray-900 font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
 			>
 				{#if isRegistered && hasAcceptedUECC}
 					{tFn('req_hearing_submit_to_rabbis_btn')}

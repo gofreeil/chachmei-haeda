@@ -433,39 +433,63 @@
                     </button>
                     {#if showNavMenu}
                         <div
-                            class="absolute right-0 z-[160] mt-2 w-72 max-h-[80vh] overflow-y-auto rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-2"
+                            class="absolute right-0 z-[160] mt-2 w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#0f172a] border border-white/10 shadow-2xl p-4"
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
                         >
                             {#each navGroups as group, gi}
-                                {#if gi > 0}
-                                    <div class="my-1 border-t border-white/10"></div>
-                                {/if}
-                                <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{tFn(group.titleKey)}</div>
-                                {#each group.items as item}
-                                    <a
-                                        href={item.href}
-                                        role="menuitem"
-                                        class="flex items-center gap-3 px-4 py-2 text-right text-white hover:bg-white/10 transition-colors no-underline"
-                                        onclick={() => (showNavMenu = false)}
-                                    >
-                                        <span class="text-xl" aria-hidden="true">{item.icon}</span>
-                                        <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
-                                    </a>
-                                    {#if 'children' in item && item.children && item.children.length}
-                                        {#each item.children as child}
+                                {#if gi === 0}
+                                    <!-- Row 1: Home + About items (horizontal) -->
+                                    <div class="px-1 pt-1 pb-2 text-[11px] font-black uppercase tracking-wider text-blue-300/80 text-center">{tFn(group.titleKey)}</div>
+                                    <div class="grid grid-cols-2 gap-2 mb-4">
+                                        {#each group.items as item}
                                             <a
-                                                href={child.href}
+                                                href={item.href}
                                                 role="menuitem"
-                                                class="flex items-center gap-2.5 pr-10 pl-4 py-1.5 text-right text-gray-300 hover:bg-white/10 hover:text-white transition-colors no-underline border-r-2 border-white/10 mr-4"
+                                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/5 hover:bg-white/15 transition-colors text-white no-underline border border-white/10"
                                                 onclick={() => (showNavMenu = false)}
                                             >
-                                                <span class="text-base" aria-hidden="true">{child.icon}</span>
-                                                <span class="text-xs">{tFn(child.labelKey)}</span>
+                                                <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                                <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
                                             </a>
                                         {/each}
-                                    {/if}
-                                {/each}
+                                    </div>
+                                {:else}
+                                    <!-- Row 2+: Heichalot — 4-column grid with sub-items below each -->
+                                    <div class="border-t border-white/10 pt-3">
+                                        <div class="px-1 pb-2 text-[11px] font-black uppercase tracking-wider text-blue-300/80 text-center">{tFn(group.titleKey)}</div>
+                                        <div class="grid grid-cols-4 gap-2">
+                                            {#each group.items as item}
+                                                <div class="flex flex-col">
+                                                    <a
+                                                        href={item.href}
+                                                        role="menuitem"
+                                                        class="flex flex-col items-center gap-1 px-2 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-white no-underline border border-white/15 min-h-[90px] justify-center"
+                                                        onclick={() => (showNavMenu = false)}
+                                                    >
+                                                        <span class="text-2xl" aria-hidden="true">{item.icon}</span>
+                                                        <span class="text-xs font-bold text-center leading-tight">{tFn(item.labelKey)}</span>
+                                                    </a>
+                                                    {#if 'children' in item && item.children && item.children.length}
+                                                        <div class="mt-1.5 space-y-1">
+                                                            {#each item.children as child}
+                                                                <a
+                                                                    href={child.href}
+                                                                    role="menuitem"
+                                                                    class="flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs text-gray-300 hover:bg-white/10 hover:text-white transition-colors no-underline"
+                                                                    onclick={() => (showNavMenu = false)}
+                                                                >
+                                                                    <span class="text-sm flex-shrink-0" aria-hidden="true">{child.icon}</span>
+                                                                    <span class="leading-tight">{tFn(child.labelKey)}</span>
+                                                                </a>
+                                                            {/each}
+                                                        </div>
+                                                    {/if}
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    </div>
+                                {/if}
                             {/each}
                         </div>
                     {/if}

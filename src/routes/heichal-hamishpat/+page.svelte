@@ -488,7 +488,7 @@
 		role="dialog"
 		aria-modal="true"
 	>
-		<div class="w-full max-w-3xl rounded-2xl border border-blue-500/30 bg-gradient-to-br from-slate-800 to-slate-900 shadow-2xl p-4 md:p-6 my-4">
+		<div class="w-full max-w-3xl rounded-2xl border-2 border-amber-400/40 bg-gradient-to-br from-[#f8eecb] via-[#f0e3b8] to-[#e8d8a8] shadow-2xl p-4 md:p-6 my-4">
 			<RequestHearingForm onClose={closeRequestModal} />
 		</div>
 	</div>
