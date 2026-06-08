@@ -360,15 +360,19 @@
 
 			<a
 				href="/ask"
-				class="ask-cta mt-8 flex items-center justify-center gap-3 rounded-xl border-2 p-3 transition-all group max-w-3xl mx-auto"
+				class="ask-cta mt-8 flex items-center justify-center gap-3 rounded-2xl border-2 p-4 md:p-5 transition-all group"
 			>
-				<div class="text-2xl md:text-3xl flex-shrink-0 ask-cta-emoji">📚</div>
+				<img
+					src="/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif"
+					alt={tFn('home_logo_alt')}
+					class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 object-cover rounded-full ring-2 ring-white/80 shadow-lg"
+				/>
 				<div class="text-center min-w-0">
 					<h3 class="ask-cta-title text-base md:text-lg font-black leading-tight">
-						{tFn('articles_cta_title')}
+						{tFn('home_ask_cta_title')}
 					</h3>
 					<p class="ask-cta-text text-xs md:text-sm font-bold leading-snug">
-						{tFn('articles_cta_text')}
+						{tFn('home_ask_cta_text')}
 					</p>
 				</div>
 			</a>
