@@ -359,15 +359,15 @@
                                                             <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {h.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
                                                         </a>
                                                         {#if 'children' in item && item.children && item.children.length}
-                                                            <div class="mt-0.5 space-y-1 rounded-b-xl border-x-2 border-b-2 {h.subBorder ?? 'border-white/20'} {h.subBg ?? 'bg-white/5'} -mt-2 pt-3 px-1.5 pb-2">
+                                                            <div class="mt-1.5 space-y-1.5">
                                                                 {#each item.children as child}
                                                                     <a
                                                                         href={child.href}
                                                                         role="menuitem"
-                                                                        class="flex items-center gap-1 rounded-md border {h.subBorder ?? 'border-white/20'} bg-white/15 hover:bg-white/25 px-1.5 py-1 text-[10px] {h.subText ?? 'text-white'} font-bold transition-colors no-underline"
+                                                                        class="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 px-2 py-1.5 text-sm text-white font-bold transition-colors no-underline"
                                                                         onclick={() => (showNavMenu = false)}
                                                                     >
-                                                                        <span class="text-xs flex-shrink-0" aria-hidden="true">{child.icon}</span>
+                                                                        <span class="text-base flex-shrink-0" aria-hidden="true">{child.icon}</span>
                                                                         <span class="leading-tight">{tFn(child.labelKey)}</span>
                                                                     </a>
                                                                 {/each}
