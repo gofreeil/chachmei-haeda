@@ -20,7 +20,7 @@
 			bgStyle: ''
 		},
 		{
-			href: '/heichal-hamishpat?open=request-hearing',
+			href: '/heichal-hashalom',
 			icon: '🕊️',
 			titleKey: 'heichalot_hall_shalom_title',
 			descKey: 'heichalot_hall_shalom_desc',

@@ -47,6 +47,9 @@
                     titleColor: '#ffffff',
                     hover: 'hover:from-slate-500 hover:via-slate-700 hover:to-slate-800 hover:border-slate-100',
                     bgStyle: '',
+                    subBg: 'bg-slate-700/40',
+                    subBorder: 'border-slate-300/50',
+                    subText: 'text-slate-100',
                     children: [
                         { href: '/heichal-hamishpat?open=request-hearing', labelKey: 'header_nav_open_case', icon: '📂' },
                         { href: '/hearings', labelKey: 'header_nav_zoom_hearings', icon: '🎥' },
@@ -54,7 +57,7 @@
                     ],
                 },
                 {
-                    href: '/heichal-hamishpat?open=request-hearing',
+                    href: '/heichal-hashalom',
                     labelKey: 'header_nav_heichal_shalom',
                     icon: '🕊️',
                     bg: 'bg-gradient-to-br from-sky-200/60 via-cyan-100/50 to-blue-200/60 backdrop-blur-md',
@@ -63,6 +66,9 @@
                     titleColor: '#082f49',
                     hover: 'hover:from-sky-300/70 hover:via-cyan-200/60 hover:to-blue-300/70 hover:border-white',
                     bgStyle: '',
+                    subBg: 'bg-sky-200/40',
+                    subBorder: 'border-sky-300/60',
+                    subText: 'text-sky-950',
                     children: [
                         { href: '/heichal-hamishpat?open=request-hearing', labelKey: 'header_nav_shalom_open_case', icon: '📂' },
                         { href: '/heichal-hashalom/lessons', labelKey: 'header_nav_shalom_lessons', icon: '🎓' },
@@ -84,6 +90,9 @@
                     shadow: 'shadow-[0_8px_24px_-4px_rgba(120,53,15,0.65),inset_0_2px_0_rgba(255,237,178,0.3)]',
                     titleColor: '#ffffff',
                     hover: 'hover:border-amber-100 hover:brightness-110',
+                    subBg: 'bg-amber-900/35',
+                    subBorder: 'border-amber-400/55',
+                    subText: 'text-amber-50',
                     children: [
                         { href: '/heichal-hamaaseh/ethical-code', labelKey: 'header_nav_ethical_code', icon: '📜' },
                         { href: '/charter-index', labelKey: 'header_nav_charter_index', icon: '📑' },
@@ -101,6 +110,9 @@
                     titleColor: '#0f172a',
                     hover: 'hover:from-gray-100 hover:via-slate-200 hover:to-gray-300 hover:border-slate-100',
                     bgStyle: '',
+                    subBg: 'bg-slate-300/50',
+                    subBorder: 'border-slate-400/60',
+                    subText: 'text-slate-900',
                     children: [
                         { href: '/articles', labelKey: 'header_nav_rabbis_articles', icon: '📚' },
                         { href: '/qa', labelKey: 'header_nav_qa', icon: '💬' },
@@ -323,7 +335,7 @@
                                             </div>
                                         {:else}
                                             <!-- Row 2: 4 Heichalot in 2x2 grid with sub-items -->
-                                            <div class="grid grid-cols-2 gap-2">
+                                            <div class="grid grid-cols-2 gap-x-2 gap-y-5">
                                                 {#each group.items as item}
                                                     {@const h = item as any}
                                                     <div class="flex flex-col">
@@ -342,12 +354,12 @@
                                                             <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {h.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
                                                         </a>
                                                         {#if 'children' in item && item.children && item.children.length}
-                                                            <div class="mt-1 space-y-1">
+                                                            <div class="mt-0.5 space-y-1 rounded-b-xl border-x-2 border-b-2 {h.subBorder ?? 'border-white/20'} {h.subBg ?? 'bg-white/5'} -mt-2 pt-3 px-1.5 pb-2">
                                                                 {#each item.children as child}
                                                                     <a
                                                                         href={child.href}
                                                                         role="menuitem"
-                                                                        class="flex items-center gap-1 rounded-md border border-white/20 bg-white/10 hover:bg-white/20 px-1.5 py-1 text-[10px] text-white transition-colors no-underline"
+                                                                        class="flex items-center gap-1 rounded-md border {h.subBorder ?? 'border-white/20'} bg-white/15 hover:bg-white/25 px-1.5 py-1 text-[10px] {h.subText ?? 'text-white'} font-bold transition-colors no-underline"
                                                                         onclick={() => (showNavMenu = false)}
                                                                     >
                                                                         <span class="text-xs flex-shrink-0" aria-hidden="true">{child.icon}</span>
@@ -546,12 +558,12 @@
                                                         <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {h.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
                                                     </a>
                                                     {#if 'children' in item && item.children && item.children.length}
-                                                        <div class="mt-1.5 space-y-1.5">
+                                                        <div class="space-y-1.5 rounded-b-xl border-x-2 border-b-2 {h.subBorder ?? 'border-white/20'} {h.subBg ?? 'bg-white/5'} -mt-2 pt-4 px-2 pb-2">
                                                             {#each item.children as child}
                                                                 <a
                                                                     href={child.href}
                                                                     role="menuitem"
-                                                                    class="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 px-2 py-1.5 text-xs text-white transition-colors no-underline"
+                                                                    class="flex items-center gap-1.5 rounded-lg border {h.subBorder ?? 'border-white/20'} bg-white/15 hover:bg-white/25 px-2 py-1.5 text-xs {h.subText ?? 'text-white'} font-bold transition-colors no-underline"
                                                                     onclick={() => (showNavMenu = false)}
                                                                 >
                                                                     <span class="text-sm flex-shrink-0" aria-hidden="true">{child.icon}</span>
