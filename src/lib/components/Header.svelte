@@ -469,14 +469,13 @@
                         >
                             {#each navGroups as group, gi}
                                 {#if gi === 0}
-                                    <!-- Row 1: Home + About items (horizontal) -->
-                                    <div class="px-1 pt-1 pb-2 text-[11px] font-black uppercase tracking-wider text-blue-300/80 text-center">{tFn(group.titleKey)}</div>
-                                    <div class="grid grid-cols-2 gap-2 mb-4">
+                                    <!-- Row 1: Home + About items (horizontal, no frame, no title) -->
+                                    <div class="grid grid-cols-2 gap-2 mb-3">
                                         {#each group.items as item}
                                             <a
                                                 href={item.href}
                                                 role="menuitem"
-                                                class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/5 hover:bg-white/15 transition-colors text-white no-underline border border-white/10"
+                                                class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-white no-underline"
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 {#if 'image' in item && item.image}
@@ -489,9 +488,8 @@
                                         {/each}
                                     </div>
                                 {:else}
-                                    <!-- Row 2+: Heichalot — 4-column grid with sub-items below each -->
-                                    <div class="border-t border-white/10 pt-3">
-                                        <div class="px-1 pb-2 text-[11px] font-black uppercase tracking-wider text-blue-300/80 text-center">{tFn(group.titleKey)}</div>
+                                    <!-- Row 2+: Heichalot — 4-column grid with sub-items below each (no title) -->
+                                    <div>
                                         <div class="grid grid-cols-4 gap-2">
                                             {#each group.items as item}
                                                 <div class="flex flex-col">
