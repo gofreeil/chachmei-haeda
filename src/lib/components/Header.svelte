@@ -26,6 +26,25 @@
     let showLangDropdown = $state(false);
     let showNavMenu = $state(false);
 
+    // ─── סגירת תפריט בהחלקה כלפי מעלה (swipe-up) ───
+    let touchStartY = 0;
+    let touchCurrentY = 0;
+    function navMenuTouchStart(e: TouchEvent) {
+        touchStartY = e.changedTouches[0].screenY;
+        touchCurrentY = touchStartY;
+    }
+    function navMenuTouchMove(e: TouchEvent) {
+        touchCurrentY = e.changedTouches[0].screenY;
+    }
+    function navMenuTouchEnd() {
+        // נגיבה כלפי מעלה ביותר מ-50px → סגור תפריט
+        if (touchStartY - touchCurrentY > 50) {
+            showNavMenu = false;
+        }
+        touchStartY = 0;
+        touchCurrentY = 0;
+    }
+
     const navGroups = [
         {
             titleKey: 'header_nav_group_home_about',
@@ -310,7 +329,17 @@
                                     class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-3"
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
+                                    ontouchstart={navMenuTouchStart}
+                                    ontouchmove={navMenuTouchMove}
+                                    ontouchend={navMenuTouchEnd}
                                 >
+                                    <!-- ידית גרירה — רמז לסגירה בהחלקה כלפי מעלה -->
+                                    <button
+                                        type="button"
+                                        onclick={() => (showNavMenu = false)}
+                                        aria-label={tFn('header_close_menu_aria')}
+                                        class="block mx-auto mb-2 w-12 h-1.5 rounded-full bg-amber-700/40 hover:bg-amber-700/60 active:bg-amber-700/80 transition-colors"
+                                    ></button>
                                     {#each navGroups as group, gi}
                                         {#if gi === 0}
                                             <!-- Row 1: Home + About (mobile) -->
@@ -513,7 +542,17 @@
                             class="fixed left-1/2 -translate-x-1/2 top-[80px] z-[160] w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-4"
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
+                            ontouchstart={navMenuTouchStart}
+                            ontouchmove={navMenuTouchMove}
+                            ontouchend={navMenuTouchEnd}
                         >
+                            <!-- ידית גרירה — רמז לסגירה בהחלקה כלפי מעלה -->
+                            <button
+                                type="button"
+                                onclick={() => (showNavMenu = false)}
+                                aria-label={tFn('header_close_menu_aria')}
+                                class="block mx-auto mb-2 w-14 h-1.5 rounded-full bg-amber-700/40 hover:bg-amber-700/60 active:bg-amber-700/80 transition-colors"
+                            ></button>
                             {#each navGroups as group, gi}
                                 {#if gi === 0}
                                     <!-- Row 1: Home + About items (horizontal, no frame, no title) -->
