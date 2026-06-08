@@ -1,4 +1,4 @@
-?<script lang="ts">
+<script lang="ts">
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));

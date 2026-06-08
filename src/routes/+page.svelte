@@ -1,4 +1,4 @@
-?<script lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { latestAnswer } from '$lib/data/qa';
