@@ -385,7 +385,7 @@ register('he', () => Promise.resolve({
     header_nav_rulings: "פסקי דין",
     header_nav_heichal_shalom: "היכל השלום",
     header_nav_heichal_maaseh: "היכל המעשה",
-    header_nav_ethical_code: "אמנת המוסר העולמי",
+    header_nav_ethical_code: "אמנת המוסר העולמית",
     header_nav_signatories: "חתומים על הקוד",
     header_nav_charter_index: "אינדקס החתומים",
     header_nav_charter_join: "הצטרפות לאמנה",
