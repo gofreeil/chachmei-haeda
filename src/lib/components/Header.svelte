@@ -30,7 +30,7 @@
         {
             titleKey: 'header_nav_group_home_about',
             items: [
-                { href: '/', labelKey: 'header_nav_home', icon: '🏠' },
+                { href: '/', labelKey: 'header_nav_home', icon: '🏠', image: '/images/chachmei-logo.png' },
                 { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️' },
             ],
         },
@@ -41,6 +41,12 @@
                     href: '/heichal-hamishpat',
                     labelKey: 'header_nav_heichal_mishpat',
                     icon: '⚖️',
+                    bg: 'bg-gradient-to-br from-slate-600 via-slate-800 to-slate-900',
+                    border: 'border-slate-300',
+                    shadow: 'shadow-[0_8px_24px_-4px_rgba(15,23,42,0.6),inset_0_2px_0_rgba(255,255,255,0.18)]',
+                    titleColor: '#ffffff',
+                    hover: 'hover:from-slate-500 hover:via-slate-700 hover:to-slate-800 hover:border-slate-100',
+                    bgStyle: '',
                     children: [
                         { href: '/heichal-hamishpat?open=request-hearing', labelKey: 'header_nav_open_case', icon: '📂' },
                         { href: '/hearings', labelKey: 'header_nav_zoom_hearings', icon: '🎥' },
@@ -51,12 +57,29 @@
                     href: '/heichal-hamishpat?open=request-hearing',
                     labelKey: 'header_nav_heichal_shalom',
                     icon: '🕊️',
+                    bg: 'bg-gradient-to-br from-sky-200/60 via-cyan-100/50 to-blue-200/60 backdrop-blur-md',
+                    border: 'border-sky-200',
+                    shadow: 'shadow-[0_8px_24px_-4px_rgba(56,189,248,0.45),inset_0_2px_0_rgba(255,255,255,0.85)]',
+                    titleColor: '#082f49',
+                    hover: 'hover:from-sky-300/70 hover:via-cyan-200/60 hover:to-blue-300/70 hover:border-white',
+                    bgStyle: '',
                     children: [],
                 },
                 {
                     href: '/heichal-hamaaseh/activity',
                     labelKey: 'header_nav_heichal_maaseh',
                     icon: '🛠️',
+                    bg: '',
+                    bgStyle:
+                        "background-image:" +
+                        "repeating-linear-gradient(90deg, rgba(48,20,8,0.18) 0px, rgba(48,20,8,0.18) 1px, transparent 1px, transparent 4px)," +
+                        "linear-gradient(90deg, rgba(60,30,10,0.35) 0%, transparent 7%, rgba(60,30,10,0.25) 14%, transparent 22%, rgba(80,40,15,0.3) 32%, transparent 42%, rgba(60,30,10,0.2) 55%, transparent 65%, rgba(80,40,15,0.32) 78%, transparent 88%, rgba(60,30,10,0.25) 100%)," +
+                        "linear-gradient(180deg, rgba(255,237,178,0.22) 0%, transparent 40%, rgba(0,0,0,0.18) 100%)," +
+                        "linear-gradient(135deg, #92400e 0%, #78350f 50%, #713f12 100%);",
+                    border: 'border-amber-300',
+                    shadow: 'shadow-[0_8px_24px_-4px_rgba(120,53,15,0.65),inset_0_2px_0_rgba(255,237,178,0.3)]',
+                    titleColor: '#ffffff',
+                    hover: 'hover:border-amber-100 hover:brightness-110',
                     children: [
                         { href: '/heichal-hamaaseh/ethical-code', labelKey: 'header_nav_ethical_code', icon: '📜' },
                         { href: '/heichal-hamaaseh/signatories', labelKey: 'header_nav_signatories', icon: '✍️' },
@@ -67,7 +90,14 @@
                 {
                     href: '/articles',
                     labelKey: 'header_nav_heichal_ruach',
-                    icon: '📚',
+                    icon: '',
+                    image: '/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif',
+                    bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
+                    border: 'border-white',
+                    shadow: 'shadow-[0_8px_24px_-4px_rgba(100,116,139,0.55),inset_0_2px_0_rgba(255,255,255,0.9)]',
+                    titleColor: '#0f172a',
+                    hover: 'hover:from-gray-100 hover:via-slate-200 hover:to-gray-300 hover:border-slate-100',
+                    bgStyle: '',
                     children: [
                         { href: '/articles', labelKey: 'header_nav_rabbis_articles', icon: '📚' },
                         { href: '/qa', labelKey: 'header_nav_qa', icon: '💬' },
@@ -433,7 +463,7 @@
                     </button>
                     {#if showNavMenu}
                         <div
-                            class="absolute right-0 z-[160] mt-2 w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#0f172a] border border-white/10 shadow-2xl p-4"
+                            class="fixed left-1/2 -translate-x-1/2 top-[80px] z-[160] w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#0f172a] border border-white/10 shadow-2xl p-4"
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
                         >
@@ -449,7 +479,11 @@
                                                 class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/5 hover:bg-white/15 transition-colors text-white no-underline border border-white/10"
                                                 onclick={() => (showNavMenu = false)}
                                             >
-                                                <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                                {#if 'image' in item && item.image}
+                                                    <img src={item.image} alt={tFn(item.labelKey)} class="w-7 h-7 rounded-full object-cover" />
+                                                {:else}
+                                                    <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                                {/if}
                                                 <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
                                             </a>
                                         {/each}
@@ -464,19 +498,24 @@
                                                     <a
                                                         href={item.href}
                                                         role="menuitem"
-                                                        class="flex flex-col items-center gap-1 px-2 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-white no-underline border border-white/15 min-h-[90px] justify-center"
+                                                        class="flex flex-col items-center justify-center gap-1 p-3 rounded-2xl border-4 {item.border ?? ''} {item.bg ?? ''} {item.hover ?? ''} {item.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 min-h-[110px] text-center"
+                                                        style={item.bgStyle ?? ''}
                                                         onclick={() => (showNavMenu = false)}
                                                     >
-                                                        <span class="text-2xl" aria-hidden="true">{item.icon}</span>
-                                                        <span class="text-xs font-bold text-center leading-tight">{tFn(item.labelKey)}</span>
+                                                        {#if 'image' in item && item.image}
+                                                            <img src={item.image} alt={tFn(item.labelKey)} class="w-12 h-12 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
+                                                        {:else}
+                                                            <span class="text-3xl drop-shadow-lg" aria-hidden="true">{item.icon}</span>
+                                                        {/if}
+                                                        <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {item.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
                                                     </a>
                                                     {#if 'children' in item && item.children && item.children.length}
-                                                        <div class="mt-1.5 space-y-1">
+                                                        <div class="mt-1.5 space-y-1.5">
                                                             {#each item.children as child}
                                                                 <a
                                                                     href={child.href}
                                                                     role="menuitem"
-                                                                    class="flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs text-gray-300 hover:bg-white/10 hover:text-white transition-colors no-underline"
+                                                                    class="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 px-2 py-1.5 text-xs text-white transition-colors no-underline"
                                                                     onclick={() => (showNavMenu = false)}
                                                                 >
                                                                     <span class="text-sm flex-shrink-0" aria-hidden="true">{child.icon}</span>
