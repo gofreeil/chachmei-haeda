@@ -141,20 +141,16 @@
 
 	<div class="text-center mt-10 flex gap-3 justify-center flex-wrap">
 		<a
-			href="/heichal-hamaaseh/charter-join"
-			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold transition-colors hover:opacity-90"
-		>
-			✍️ {tFn('charter_idx_cta_join')}
-		</a>
-		<a
 			href="/heichal-hamaaseh/ethical-code"
 			class="inline-block px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
 		>
 			📜 {tFn('charter_idx_cta_read')}
 		</a>
+		<a
+			href="/heichal-hamaaseh/charter-join"
+			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold transition-colors hover:opacity-90"
+		>
+			✍️ {tFn('charter_idx_cta_join')}
+		</a>
 	</div>
-
-	<p class="text-center text-xs text-gray-500 mt-6">
-		{tFn('charter_idx_cms_note')}
-	</p>
 </section>
