@@ -311,6 +311,11 @@
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
                                 >
+                                    <div class="flex justify-center mb-3">
+                                        <div class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50">
+                                            <img src="/images/bati-hapius.png" alt="" class="w-full h-full object-cover" style="object-position: top; transform: scale(1.15);" />
+                                        </div>
+                                    </div>
                                     {#each navGroups as group, gi}
                                         {#if gi === 0}
                                             <!-- Row 1: Home + About (mobile) -->
@@ -514,6 +519,11 @@
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
                         >
+                            <div class="flex justify-center mb-3">
+                                <div class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50">
+                                    <img src="/images/bati-hapius.png" alt="" class="w-full h-full object-cover" style="object-position: top; transform: scale(1.15);" />
+                                </div>
+                            </div>
                             {#each navGroups as group, gi}
                                 {#if gi === 0}
                                     <!-- Row 1: Home + About items (horizontal, no frame, no title) -->
