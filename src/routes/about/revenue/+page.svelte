@@ -131,4 +131,19 @@
 			</a>
 		</div>
 	</div>
+
+	<!-- כפתור חזרה למעלה (מובייל בלבד) -->
+	<div class="md:hidden flex justify-center mt-10 mb-4">
+		<button
+			type="button"
+			onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+			aria-label={tFn('about_scroll_to_top_aria')}
+			class="flex flex-col items-center gap-1 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/30 to-purple-500/30 border-2 border-blue-400/50 text-blue-100 font-bold shadow-lg active:scale-95 transition-transform"
+		>
+			<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<polyline points="6 15 12 9 18 15" />
+			</svg>
+			<span class="text-xs">{tFn('about_scroll_to_top_label')}</span>
+		</button>
+	</div>
 </section>
