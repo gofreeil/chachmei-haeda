@@ -31,7 +31,7 @@
             titleKey: 'header_nav_group_home_about',
             items: [
                 { href: '/', labelKey: 'header_nav_home', icon: '🏠', image: '/images/chachmei-logo.png' },
-                { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️' },
+                { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️', image: '/images/bati-hapius.png' },
             ],
         },
         {
