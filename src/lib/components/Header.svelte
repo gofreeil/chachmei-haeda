@@ -469,20 +469,20 @@
                             {#each navGroups as group, gi}
                                 {#if gi === 0}
                                     <!-- Row 1: Home + About items (horizontal, no frame, no title) -->
-                                    <div class="grid grid-cols-2 gap-2 mb-3">
+                                    <div class="grid grid-cols-2 gap-3 mb-4">
                                         {#each group.items as item}
                                             <a
                                                 href={item.href}
                                                 role="menuitem"
-                                                class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-white no-underline"
+                                                class="flex items-center justify-center gap-3 px-5 py-4 rounded-lg hover:bg-white/10 transition-colors text-white no-underline"
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 {#if 'image' in item && item.image}
-                                                    <img src={item.image} alt={tFn(item.labelKey)} class="w-7 h-7 rounded-full object-cover" />
+                                                    <img src={item.image} alt={tFn(item.labelKey)} class="w-11 h-11 rounded-full object-cover" />
                                                 {:else}
-                                                    <span class="text-xl" aria-hidden="true">{item.icon}</span>
+                                                    <span class="text-3xl" aria-hidden="true">{item.icon}</span>
                                                 {/if}
-                                                <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
+                                                <span class="text-base font-bold">{tFn(item.labelKey)}</span>
                                             </a>
                                         {/each}
                                     </div>
