@@ -388,7 +388,7 @@
                                                                     <a
                                                                         href={child.href}
                                                                         role="menuitem"
-                                                                        class="flex items-center gap-1.5 rounded-full border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-3 py-1.5 text-sm text-gray-800 font-bold transition-colors no-underline"
+                                                                        class="flex items-center gap-1.5 rounded-full border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-3 min-h-[44px] text-sm text-gray-800 font-bold transition-colors no-underline"
                                                                         onclick={() => (showNavMenu = false)}
                                                                     >
                                                                         <span class="text-base flex-shrink-0" aria-hidden="true">{child.icon}</span>
