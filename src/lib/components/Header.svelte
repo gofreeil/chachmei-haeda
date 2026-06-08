@@ -323,13 +323,13 @@
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         {#if 'image' in item && item.image}
-                                                            <div class="w-16 h-16 rounded-full overflow-hidden ring-4 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50 flex-shrink-0">
+                                                            <div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50 flex-shrink-0">
                                                                 <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                             </div>
                                                         {:else}
                                                             <span class="text-2xl inline-block" aria-hidden="true">{item.icon}</span>
                                                         {/if}
-                                                        <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
+                                                        <span class="text-base font-bold">{tFn(item.labelKey)}</span>
                                                     </a>
                                                 {/each}
                                             </div>
@@ -526,13 +526,13 @@
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 {#if 'image' in item && item.image}
-                                                    <div class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50 transition-transform duration-200 group-hover:scale-150 flex-shrink-0">
+                                                    <div class="w-20 h-20 rounded-full overflow-hidden ring-2 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50 transition-transform duration-200 group-hover:scale-110 flex-shrink-0">
                                                         <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                     </div>
                                                 {:else}
-                                                    <span class="text-3xl inline-block transition-transform duration-200 group-hover:scale-150" aria-hidden="true">{item.icon}</span>
+                                                    <span class="text-3xl inline-block transition-transform duration-200 group-hover:scale-110" aria-hidden="true">{item.icon}</span>
                                                 {/if}
-                                                <span class="text-base font-bold">{tFn(item.labelKey)}</span>
+                                                <span class="text-xl font-bold">{tFn(item.labelKey)}</span>
                                             </a>
                                         {/each}
                                     </div>
