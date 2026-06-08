@@ -61,7 +61,7 @@
 					{tFn('eth_banner_btn_sign')}
 				</a>
 				<a
-					href="/heichal-hamaaseh/signatories"
+					href="/charter-index"
 					class="flex-1 text-center px-2 py-2 rounded-lg bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 font-black text-xs border-2 border-amber-800/50 shadow-md active:scale-95 transition-transform"
 					style="color: #fff8e7 !important; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
 				>
@@ -122,7 +122,7 @@
 					{tFn('eth_banner_btn_sign')}
 				</a>
 				<a
-					href="/heichal-hamaaseh/signatories"
+					href="/charter-index"
 					class="inline-block px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 font-black text-sm border-2 border-amber-800/50 shadow-md hover:scale-105 hover:shadow-[0_0_15px_rgba(234,88,12,0.5)] hover:from-amber-500 hover:to-red-400 transition-all"
 					style="color: #fff8e7 !important; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
 				>

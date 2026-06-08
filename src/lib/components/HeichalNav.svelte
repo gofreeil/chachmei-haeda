@@ -10,13 +10,13 @@
 	const tabs = [
 		{ href: '/heichal-hamaaseh/activity', labelKey: 'heichal_nav_tab_activity' },
 		{ href: '/heichal-hamaaseh/ethical-code', labelKey: 'heichal_nav_tab_ethical_code' },
-		{ href: '/heichal-hamaaseh/signatories', labelKey: 'heichal_nav_tab_signatories' },
+		{ href: '/charter-index', labelKey: 'heichal_nav_tab_signatories' },
 	];
 
 	const activeFor: Record<string, string> = {
 		'/heichal-hamaaseh/activity': '/heichal-hamaaseh/activity',
 		'/heichal-hamaaseh/ethical-code': '/heichal-hamaaseh/ethical-code',
-		'/heichal-hamaaseh/signatories': '/heichal-hamaaseh/signatories',
+		'/charter-index': '/charter-index',
 		'/heichal-hamaaseh/charter-join': '/heichal-hamaaseh/ethical-code',
 	};
 

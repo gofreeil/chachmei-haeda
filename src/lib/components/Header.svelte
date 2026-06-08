@@ -82,7 +82,6 @@
                     hover: 'hover:border-amber-100 hover:brightness-110',
                     children: [
                         { href: '/heichal-hamaaseh/ethical-code', labelKey: 'header_nav_ethical_code', icon: '📜' },
-                        { href: '/heichal-hamaaseh/signatories', labelKey: 'header_nav_signatories', icon: '✍️' },
                         { href: '/charter-index', labelKey: 'header_nav_charter_index', icon: '📑' },
                         { href: '/heichal-hamaaseh/charter-join', labelKey: 'header_nav_charter_join', icon: '🤝' },
                     ],
@@ -492,12 +491,13 @@
                                     <div>
                                         <div class="grid grid-cols-4 gap-2">
                                             {#each group.items as item}
+                                                {@const h = item as any}
                                                 <div class="flex flex-col">
                                                     <a
                                                         href={item.href}
                                                         role="menuitem"
-                                                        class="flex flex-col items-center justify-center gap-1 p-3 rounded-2xl border-4 {item.border ?? ''} {item.bg ?? ''} {item.hover ?? ''} {item.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 min-h-[110px] text-center"
-                                                        style={item.bgStyle ?? ''}
+                                                        class="flex flex-col items-center justify-center gap-1 p-3 rounded-2xl border-4 {h.border ?? ''} {h.bg ?? ''} {h.hover ?? ''} {h.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 min-h-[110px] text-center"
+                                                        style={h.bgStyle ?? ''}
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         {#if 'image' in item && item.image}
@@ -505,7 +505,7 @@
                                                         {:else}
                                                             <span class="text-3xl drop-shadow-lg" aria-hidden="true">{item.icon}</span>
                                                         {/if}
-                                                        <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {item.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
+                                                        <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {h.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
                                                     </a>
                                                     {#if 'children' in item && item.children && item.children.length}
                                                         <div class="mt-1.5 space-y-1.5">
