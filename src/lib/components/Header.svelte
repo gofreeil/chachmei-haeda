@@ -333,13 +333,6 @@
                                     ontouchmove={navMenuTouchMove}
                                     ontouchend={navMenuTouchEnd}
                                 >
-                                    <!-- ידית גרירה — רמז לסגירה בהחלקה כלפי מעלה -->
-                                    <button
-                                        type="button"
-                                        onclick={() => (showNavMenu = false)}
-                                        aria-label={tFn('header_close_menu_aria')}
-                                        class="block mx-auto mb-2 w-12 h-1.5 rounded-full bg-amber-700/40 hover:bg-amber-700/60 active:bg-amber-700/80 transition-colors"
-                                    ></button>
                                     {#each navGroups as group, gi}
                                         {#if gi === 0}
                                             <!-- Row 1: Home + About (mobile) -->
@@ -402,6 +395,18 @@
                                             </div>
                                         {/if}
                                     {/each}
+                                    <!-- ידית סגירה בתחתית — סוגרת בלחיצה / בהחלקה כלפי מעלה -->
+                                    <button
+                                        type="button"
+                                        onclick={() => (showNavMenu = false)}
+                                        aria-label={tFn('header_close_menu_aria')}
+                                        class="mt-3 mx-auto flex flex-col items-center gap-0.5 group"
+                                    >
+                                        <svg viewBox="0 0 12 8" class="w-3 h-2 text-amber-700/70 group-hover:text-amber-700 transition-colors" fill="currentColor" aria-hidden="true">
+                                            <path d="M6 0 L12 8 L0 8 Z" />
+                                        </svg>
+                                        <span class="block w-12 h-1.5 rounded-full bg-amber-700/40 group-hover:bg-amber-700/60 group-active:bg-amber-700/80 transition-colors"></span>
+                                    </button>
                                 </div>
                             {/if}
                         </div>
@@ -546,13 +551,6 @@
                             ontouchmove={navMenuTouchMove}
                             ontouchend={navMenuTouchEnd}
                         >
-                            <!-- ידית גרירה — רמז לסגירה בהחלקה כלפי מעלה -->
-                            <button
-                                type="button"
-                                onclick={() => (showNavMenu = false)}
-                                aria-label={tFn('header_close_menu_aria')}
-                                class="block mx-auto mb-2 w-14 h-1.5 rounded-full bg-amber-700/40 hover:bg-amber-700/60 active:bg-amber-700/80 transition-colors"
-                            ></button>
                             {#each navGroups as group, gi}
                                 {#if gi === 0}
                                     <!-- Row 1: Home + About items (horizontal, no frame, no title) -->
@@ -602,7 +600,7 @@
                                                                 <a
                                                                     href={child.href}
                                                                     role="menuitem"
-                                                                    class="flex items-center gap-1.5 rounded-full border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-3 py-1.5 text-xs text-gray-800 font-bold transition-colors no-underline"
+                                                                    class="flex items-center gap-1.5 rounded-lg border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-3 min-h-[38px] text-xs text-gray-800 font-bold transition-colors no-underline"
                                                                     onclick={() => (showNavMenu = false)}
                                                                 >
                                                                     <span class="text-sm flex-shrink-0" aria-hidden="true">{child.icon}</span>
@@ -617,6 +615,18 @@
                                     </div>
                                 {/if}
                             {/each}
+                            <!-- ידית סגירה בתחתית — סוגרת בלחיצה / בהחלקה כלפי מעלה -->
+                            <button
+                                type="button"
+                                onclick={() => (showNavMenu = false)}
+                                aria-label={tFn('header_close_menu_aria')}
+                                class="mt-4 mx-auto flex flex-col items-center gap-0.5 group"
+                            >
+                                <svg viewBox="0 0 12 8" class="w-3.5 h-2.5 text-amber-700/70 group-hover:text-amber-700 transition-colors" fill="currentColor" aria-hidden="true">
+                                    <path d="M6 0 L12 8 L0 8 Z" />
+                                </svg>
+                                <span class="block w-14 h-1.5 rounded-full bg-amber-700/40 group-hover:bg-amber-700/60 group-active:bg-amber-700/80 transition-colors"></span>
+                            </button>
                         </div>
                     {/if}
                 </div>
