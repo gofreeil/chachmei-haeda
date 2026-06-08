@@ -482,7 +482,9 @@
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 {#if 'image' in item && item.image}
-                                                    <img src={item.image} alt={tFn(item.labelKey)} class="w-11 h-11 rounded-full object-cover transition-transform duration-200 group-hover:scale-150" />
+                                                    <div class="w-14 h-14 rounded-full overflow-hidden ring-2 ring-white/30 transition-transform duration-200 group-hover:scale-150 flex-shrink-0">
+                                                        <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style="transform: scale(1.4);" />
+                                                    </div>
                                                 {:else}
                                                     <span class="text-3xl inline-block transition-transform duration-200 group-hover:scale-150" aria-hidden="true">{item.icon}</span>
                                                 {/if}
