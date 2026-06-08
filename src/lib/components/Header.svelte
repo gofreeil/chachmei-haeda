@@ -326,7 +326,7 @@
                             </button>
                             {#if showNavMenu}
                                 <div
-                                    class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-3"
+                                    class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-2"
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
                                     ontouchstart={navMenuTouchStart}
