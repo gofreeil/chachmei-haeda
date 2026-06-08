@@ -65,8 +65,8 @@
                     bgStyle: '',
                     children: [
                         { href: '/heichal-hamishpat?open=request-hearing', labelKey: 'header_nav_shalom_open_case', icon: '📂' },
-                        { href: '#', labelKey: 'header_nav_shalom_lessons', icon: '🎓' },
-                        { href: '#', labelKey: 'header_nav_shalom_recommendations', icon: '⭐' },
+                        { href: '/heichal-hashalom/lessons', labelKey: 'header_nav_shalom_lessons', icon: '🎓' },
+                        { href: '/heichal-hashalom/recommendations', labelKey: 'header_nav_shalom_recommendations', icon: '⭐' },
                     ],
                 },
                 {
