@@ -295,39 +295,71 @@
                             </button>
                             {#if showNavMenu}
                                 <div
-                                    class="absolute left-0 z-[160] mt-2 w-64 max-h-[80vh] overflow-y-auto rounded-lg bg-[#0f172a] border border-white/10 shadow-2xl py-2"
+                                    class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#0f172a] border border-white/10 shadow-2xl p-3"
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
                                 >
                                     {#each navGroups as group, gi}
-                                        {#if gi > 0}
-                                            <div class="my-1 border-t border-white/10"></div>
-                                        {/if}
-                                        <div class="px-4 pt-2 pb-1 text-[11px] font-black uppercase tracking-wider text-blue-300/80">{tFn(group.titleKey)}</div>
-                                        {#each group.items as item}
-                                            <a
-                                                href={item.href}
-                                                role="menuitem"
-                                                class="flex items-center gap-3 px-4 py-2 text-right text-white hover:bg-white/10 transition-colors no-underline"
-                                                onclick={() => (showNavMenu = false)}
-                                            >
-                                                <span class="text-xl" aria-hidden="true">{item.icon}</span>
-                                                <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
-                                            </a>
-                                            {#if 'children' in item && item.children && item.children.length}
-                                                {#each item.children as child}
+                                        {#if gi === 0}
+                                            <!-- Row 1: Home + About (mobile) -->
+                                            <div class="flex justify-center items-center gap-6 mb-3">
+                                                {#each group.items as item}
                                                     <a
-                                                        href={child.href}
+                                                        href={item.href}
                                                         role="menuitem"
-                                                        class="flex items-center gap-2.5 pr-10 pl-4 py-1.5 text-right text-gray-300 hover:bg-white/10 hover:text-white transition-colors no-underline border-r-2 border-white/10 mr-4"
+                                                        class="flex items-center justify-center gap-2 px-2 py-1.5 text-white no-underline"
                                                         onclick={() => (showNavMenu = false)}
                                                     >
-                                                        <span class="text-base" aria-hidden="true">{child.icon}</span>
-                                                        <span class="text-xs">{tFn(child.labelKey)}</span>
+                                                        {#if 'image' in item && item.image}
+                                                            <div class="w-11 h-11 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
+                                                                <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style="transform: scale(1.4);" />
+                                                            </div>
+                                                        {:else}
+                                                            <span class="text-2xl inline-block" aria-hidden="true">{item.icon}</span>
+                                                        {/if}
+                                                        <span class="text-sm font-bold">{tFn(item.labelKey)}</span>
                                                     </a>
                                                 {/each}
-                                            {/if}
-                                        {/each}
+                                            </div>
+                                        {:else}
+                                            <!-- Row 2: 4 Heichalot in 2x2 grid with sub-items -->
+                                            <div class="grid grid-cols-2 gap-2">
+                                                {#each group.items as item}
+                                                    {@const h = item as any}
+                                                    <div class="flex flex-col">
+                                                        <a
+                                                            href={item.href}
+                                                            role="menuitem"
+                                                            class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-2xl border-4 {h.border ?? ''} {h.bg ?? ''} {h.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 min-h-[95px] text-center"
+                                                            style={h.bgStyle ?? ''}
+                                                            onclick={() => (showNavMenu = false)}
+                                                        >
+                                                            {#if 'image' in item && item.image}
+                                                                <img src={item.image} alt={tFn(item.labelKey)} class="w-10 h-10 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
+                                                            {:else}
+                                                                <span class="text-2xl drop-shadow-lg" aria-hidden="true">{item.icon}</span>
+                                                            {/if}
+                                                            <span class="text-xs font-black text-center leading-tight drop-shadow-sm" style="color: {h.titleColor ?? '#ffffff'} !important">{tFn(item.labelKey)}</span>
+                                                        </a>
+                                                        {#if 'children' in item && item.children && item.children.length}
+                                                            <div class="mt-1 space-y-1">
+                                                                {#each item.children as child}
+                                                                    <a
+                                                                        href={child.href}
+                                                                        role="menuitem"
+                                                                        class="flex items-center gap-1 rounded-md border border-white/20 bg-white/10 hover:bg-white/20 px-1.5 py-1 text-[10px] text-white transition-colors no-underline"
+                                                                        onclick={() => (showNavMenu = false)}
+                                                                    >
+                                                                        <span class="text-xs flex-shrink-0" aria-hidden="true">{child.icon}</span>
+                                                                        <span class="leading-tight">{tFn(child.labelKey)}</span>
+                                                                    </a>
+                                                                {/each}
+                                                            </div>
+                                                        {/if}
+                                                    </div>
+                                                {/each}
+                                            </div>
+                                        {/if}
                                     {/each}
                                 </div>
                             {/if}
