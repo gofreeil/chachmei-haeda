@@ -307,7 +307,7 @@
                             </button>
                             {#if showNavMenu}
                                 <div
-                                    class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#0f172a] border border-white/10 shadow-2xl p-3"
+                                    class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-3"
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
                                 >
@@ -319,7 +319,7 @@
                                                     <a
                                                         href={item.href}
                                                         role="menuitem"
-                                                        class="flex items-center justify-center gap-2 px-2 py-1.5 text-white no-underline"
+                                                        class="flex items-center justify-center gap-2 px-2 py-1.5 text-gray-900 font-bold no-underline"
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         {#if 'image' in item && item.image}
@@ -359,7 +359,7 @@
                                                                     <a
                                                                         href={child.href}
                                                                         role="menuitem"
-                                                                        class="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 px-2 py-1.5 text-sm text-white font-bold transition-colors no-underline"
+                                                                        class="flex items-center gap-1.5 rounded-full border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-3 py-1.5 text-sm text-gray-800 font-bold transition-colors no-underline"
                                                                         onclick={() => (showNavMenu = false)}
                                                                     >
                                                                         <span class="text-base flex-shrink-0" aria-hidden="true">{child.icon}</span>
@@ -510,7 +510,7 @@
                     </button>
                     {#if showNavMenu}
                         <div
-                            class="fixed left-1/2 -translate-x-1/2 top-[80px] z-[160] w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#0f172a] border border-white/10 shadow-2xl p-4"
+                            class="fixed left-1/2 -translate-x-1/2 top-[80px] z-[160] w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-4"
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
                         >
@@ -522,7 +522,7 @@
                                             <a
                                                 href={item.href}
                                                 role="menuitem"
-                                                class="group flex items-center justify-center gap-3 px-3 py-2 text-white no-underline"
+                                                class="group flex items-center justify-center gap-3 px-3 py-2 text-gray-900 font-bold no-underline"
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 {#if 'image' in item && item.image}
@@ -563,7 +563,7 @@
                                                                 <a
                                                                     href={child.href}
                                                                     role="menuitem"
-                                                                    class="flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 px-2 py-1.5 text-xs text-white transition-colors no-underline"
+                                                                    class="flex items-center gap-1.5 rounded-full border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-3 py-1.5 text-xs text-gray-800 font-bold transition-colors no-underline"
                                                                     onclick={() => (showNavMenu = false)}
                                                                 >
                                                                     <span class="text-sm flex-shrink-0" aria-hidden="true">{child.icon}</span>
