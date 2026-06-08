@@ -63,7 +63,11 @@
                     titleColor: '#082f49',
                     hover: 'hover:from-sky-300/70 hover:via-cyan-200/60 hover:to-blue-300/70 hover:border-white',
                     bgStyle: '',
-                    children: [],
+                    children: [
+                        { href: '/heichal-hamishpat?open=request-hearing', labelKey: 'header_nav_shalom_open_case', icon: '📂' },
+                        { href: '#', labelKey: 'header_nav_shalom_lessons', icon: '🎓' },
+                        { href: '#', labelKey: 'header_nav_shalom_recommendations', icon: '⭐' },
+                    ],
                 },
                 {
                     href: '/heichal-hamaaseh/activity',
