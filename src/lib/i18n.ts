@@ -377,7 +377,7 @@ register('he', () => Promise.resolve({
     header_nav_group_home_about: "בית ואודותנו",
     header_nav_group_four_heichalot: "ארבעת ההיכלות",
     header_nav_home: "בית",
-    header_nav_about: "אודות",
+    header_nav_about: "אודותנו",
     header_nav_heichal_mishpat: "היכל המשפט",
     header_nav_open_case: "פתיחת תיק",
     header_nav_zoom_hearings: "דיוני זום",
