@@ -215,15 +215,15 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {latestArticle.date} · {tFn('home_by_author')} {latestArticle.author}</span>
+						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {latestArticle.date} · {tFn('home_by_author')} {pickLang(latestArticle.author, _loc)}</span>
 					</div>
 				</div>
 			</div>
 			<h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">
-				{latestArticle.title}
+				{pickLang(latestArticle.title, _loc)}
 			</h2>
-			<p class="text-sm text-blue-300 mb-2">{tFn('home_by_author_colon')} {latestArticle.author}</p>
-			<p class="text-gray-200 leading-snug text-base md:text-lg">{latestArticle.excerpt}</p>
+			<p class="text-sm text-blue-300 mb-2">{tFn('home_by_author_colon')} {pickLang(latestArticle.author, _loc)}</p>
+			<p class="text-gray-200 leading-snug text-base md:text-lg">{pickLang(latestArticle.excerpt, _loc)}</p>
 		</article>
 	</section>
 {/if}
@@ -237,15 +237,15 @@
 	</header>
 	<article class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 p-5 md:p-7 shadow-[0_0_25px_rgba(99,102,241,0.12)]">
 		<div class="flex items-baseline gap-3 flex-wrap mb-2">
-			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">{tFn('home_question_label')} - {recentQa.asker}</h4>
+			<h4 class="text-lg md:text-xl font-extrabold text-gray-900">{tFn('home_question_label')} - {pickLang(recentQa.asker, _loc)}</h4>
 			<span class="text-xs font-bold text-gray-600">· {tFn('home_published_on')} {recentQa.answerDate.split('-').reverse().join('.')}</span>
 		</div>
-		<p class="text-gray-800 leading-relaxed mb-4 line-clamp-3">{recentQa.question}</p>
+		<p class="text-gray-800 leading-relaxed mb-4 line-clamp-3">{pickLang(recentQa.question, _loc)}</p>
 		<div class="border-t border-indigo-300/40 pt-4">
 			<h5 class="text-sm font-black text-indigo-700 mb-2">
-				{tFn('home_answer_by')} {recentQa.answeredBy}
+				{tFn('home_answer_by')} {pickLang(recentQa.answeredBy, _loc)}
 			</h5>
-			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{recentQa.answer}</p>
+			<p class="text-gray-900 leading-relaxed font-medium line-clamp-4">{pickLang(recentQa.answer, _loc)}</p>
 		</div>
 	</article>
 	<div class="mt-4 text-left">

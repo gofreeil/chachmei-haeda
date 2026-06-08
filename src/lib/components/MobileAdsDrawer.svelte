@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ads } from '$lib/adsData';
+	import { ads, pickLang } from '$lib/adsData';
 	import { page } from '$app/state';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -277,15 +277,15 @@
 				<div class="ad-img-wrap">
 					<img
 						src={ad.image}
-						alt={ad.title as unknown as string}
+						alt={pickLang(ad.title, _loc)}
 						class="ad-img"
 						decoding="async"
 					/>
 				</div>
 				<div class="ad-body">
-					<p class="ad-title">{ad.title}</p>
-					<p class="ad-desc">{ad.description}</p>
-					<span class="ad-cta" title={(ad.hover ?? undefined) as unknown as string | undefined}>← {ad.cta}</span>
+					<p class="ad-title">{pickLang(ad.title, _loc)}</p>
+					<p class="ad-desc">{pickLang(ad.description, _loc)}</p>
+					<span class="ad-cta" title={ad.hover ? pickLang(ad.hover, _loc) : undefined}>← {pickLang(ad.cta, _loc)}</span>
 				</div>
 			</a>
 			{/each}

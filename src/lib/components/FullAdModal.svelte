@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade, scale } from "svelte/transition";
-    import type { Ad } from "$lib/adsData";
+    import { pickLang, type Ad } from "$lib/adsData";
     import { onMount } from "svelte";
     import { t, locale } from 'svelte-i18n';
     import { get } from 'svelte/store';
@@ -132,7 +132,7 @@
         <div class="h-64 overflow-hidden relative">
             <img
                 src={ad.image}
-                alt={ad.title as unknown as string}
+                alt={pickLang(ad.title, _loc)}
                 class="w-full h-full object-cover"
             />
             <div
@@ -147,20 +147,20 @@
                 id="modal-ad-title"
                 class="text-3xl font-black bg-gradient-to-r {ad.color} bg-clip-text text-transparent mb-4"
             >
-                {ad.title}
+                {pickLang(ad.title, _loc)}
             </h2>
             <p class="text-gray-300 text-lg mb-8 leading-relaxed">
-                {ad.description}
+                {pickLang(ad.description, _loc)}
             </p>
 
             <a
                 href={ad.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="{ad.cta} – {ad.title} ({tFn('ad_modal_opens_in_new_window')})"
+                aria-label="{pickLang(ad.cta, _loc)} – {pickLang(ad.title, _loc)} ({tFn('ad_modal_opens_in_new_window')})"
                 class="inline-block w-full py-4 px-8 rounded-2xl bg-gradient-to-r {ad.color} text-white font-black text-xl shadow-xl hover:scale-105 active:scale-95 transition-all shadow-blue-500/20"
             >
-                {ad.cta}
+                {pickLang(ad.cta, _loc)}
             </a>
         </div>
     </div>

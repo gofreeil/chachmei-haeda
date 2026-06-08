@@ -1,5 +1,6 @@
 <script lang="ts">
     import { adPopup, closeAdPopup } from '$lib/adPopupStore';
+    import { pickLang } from '$lib/adsData';
     import { goto } from '$app/navigation';
     import { onDestroy } from 'svelte';
     import { t, locale } from 'svelte-i18n';
@@ -76,7 +77,7 @@
         <div class="relative h-44 w-full">
             <img
                 src={popup.ad.image}
-                alt={popup.ad.title}
+                alt={pickLang(popup.ad.title, _loc)}
                 class="w-full h-full object-cover"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
@@ -85,18 +86,18 @@
         <!-- Ad content -->
         <div class="bg-[#0f172a] p-4">
             <h3 class="text-lg font-black bg-gradient-to-r {popup.ad.color} bg-clip-text text-transparent mb-1 leading-tight">
-                {popup.ad.title}
+                {pickLang(popup.ad.title, _loc)}
             </h3>
-            <p class="text-gray-300 text-sm mb-3 leading-snug">{popup.ad.description}</p>
+            <p class="text-gray-300 text-sm mb-3 leading-snug">{pickLang(popup.ad.description, _loc)}</p>
             <a
                 href={popup.ad.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="{popup.ad.cta} – {popup.ad.title} {tFn('mobile_ad_popup_opens_new_window')}"
+                aria-label="{pickLang(popup.ad.cta, _loc)} – {pickLang(popup.ad.title, _loc)} {tFn('mobile_ad_popup_opens_new_window')}"
                 onclick={() => closeAdPopup()}
                 class="block w-full text-center py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-bold hover:from-purple-500 hover:to-indigo-500 transition-all"
             >
-                ← {popup.ad.cta}
+                ← {pickLang(popup.ad.cta, _loc)}
             </a>
         </div>
     </div>

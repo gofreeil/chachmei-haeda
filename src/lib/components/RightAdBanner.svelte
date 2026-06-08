@@ -169,7 +169,7 @@
                     <div
                         class="text-3xl mt-4 z-10 transition-transform group-hover:scale-125 duration-300"
                     >
-                        נ“¢
+                        📢
                     </div>
 
                     <div

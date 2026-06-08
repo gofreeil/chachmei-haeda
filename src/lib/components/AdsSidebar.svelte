@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ads, type Ad } from '$lib/adsData';
+    import { ads, pickLang, type Ad } from '$lib/adsData';
     import { t, locale } from 'svelte-i18n';
     import { get } from 'svelte/store';
 
@@ -61,14 +61,14 @@
                 href={ad.href}
                 target={ad.target}
                 rel={ad.target === '_blank' ? 'noopener noreferrer' : undefined}
-                aria-label="{ad.title} – {ad.description}{ad.target === '_blank' ? ' ' + tFn('ads_sidebar_opens_new_window') : ''}"
+                aria-label="{pickLang(ad.title, _loc)} – {pickLang(ad.description, _loc)}{ad.target === '_blank' ? ' ' + tFn('ads_sidebar_opens_new_window') : ''}"
                 class="block overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 group relative"
             >
                 <div class="relative overflow-hidden" style="height: {ad.imageHeight ?? '160px'}">
                     <div class="absolute inset-0 overflow-hidden">
                         <img
                             src={ad.image}
-                            alt={ad.title as string}
+                            alt={pickLang(ad.title, _loc)}
                             class="w-full h-full object-cover transition-opacity duration-[1500ms] group-hover:opacity-0"
                         />
                     </div>
@@ -76,18 +76,18 @@
                         class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-[1500ms] flex items-center justify-center bg-black/60 backdrop-blur-sm"
                     >
                         <div class="relative z-10 text-center px-4">
-                            <h3 class="text-white font-bold text-base mb-1">{ad.title}</h3>
-                            <p class="text-gray-200 text-xs">{ad.description}</p>
+                            <h3 class="text-white font-bold text-base mb-1">{pickLang(ad.title, _loc)}</h3>
+                            <p class="text-gray-200 text-xs">{pickLang(ad.description, _loc)}</p>
                         </div>
                     </div>
                 </div>
                 <div class="relative group/cta bg-gradient-to-r {ad.color} p-3 text-center">
-                    <p class="text-white font-bold text-xs leading-tight">{ad.cta}</p>
+                    <p class="text-white font-bold text-xs leading-tight">{pickLang(ad.cta, _loc)}</p>
                     {#if ad.hover}
                         <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/cta:block
                                      bg-gray-900 text-white text-xs font-bold rounded-lg px-3 py-1.5
                                      whitespace-nowrap border border-white/10 shadow-xl pointer-events-none z-50">
-                            {ad.hover}
+                            {pickLang(ad.hover, _loc)}
                         </span>
                     {/if}
                 </div>
