@@ -31,7 +31,7 @@
             titleKey: 'header_nav_group_home_about',
             items: [
                 { href: '/', labelKey: 'header_nav_home', icon: '🏠', image: '/images/chachmei-logo.png' },
-                { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️', image: '/images/bati-hapius.png' },
+                { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️', image: '/images/bati-hapius.png', imgStyle: 'object-position: top; transform: scale(1.15);' },
             ],
         },
         {
@@ -329,7 +329,7 @@
                                                     >
                                                         {#if 'image' in item && item.image}
                                                             <div class="w-11 h-11 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
-                                                                <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style="transform: scale(1.4);" />
+                                                                <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                             </div>
                                                         {:else}
                                                             <span class="text-2xl inline-block" aria-hidden="true">{item.icon}</span>
@@ -537,7 +537,7 @@
                                             >
                                                 {#if 'image' in item && item.image}
                                                     <div class="w-14 h-14 rounded-full overflow-hidden ring-2 ring-white/30 transition-transform duration-200 group-hover:scale-150 flex-shrink-0">
-                                                        <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style="transform: scale(1.4);" />
+                                                        <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                     </div>
                                                 {:else}
                                                     <span class="text-3xl inline-block transition-transform duration-200 group-hover:scale-150" aria-hidden="true">{item.icon}</span>
