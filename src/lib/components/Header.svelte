@@ -469,18 +469,18 @@
                             {#each navGroups as group, gi}
                                 {#if gi === 0}
                                     <!-- Row 1: Home + About items (horizontal, no frame, no title) -->
-                                    <div class="grid grid-cols-2 gap-3 mb-4">
+                                    <div class="flex justify-center items-center gap-8 mb-4">
                                         {#each group.items as item}
                                             <a
                                                 href={item.href}
                                                 role="menuitem"
-                                                class="flex items-center justify-center gap-3 px-5 py-4 rounded-lg hover:bg-white/10 transition-colors text-white no-underline"
+                                                class="group flex items-center justify-center gap-3 px-3 py-2 text-white no-underline"
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 {#if 'image' in item && item.image}
-                                                    <img src={item.image} alt={tFn(item.labelKey)} class="w-11 h-11 rounded-full object-cover" />
+                                                    <img src={item.image} alt={tFn(item.labelKey)} class="w-11 h-11 rounded-full object-cover transition-transform duration-200 group-hover:scale-150" />
                                                 {:else}
-                                                    <span class="text-3xl" aria-hidden="true">{item.icon}</span>
+                                                    <span class="text-3xl inline-block transition-transform duration-200 group-hover:scale-150" aria-hidden="true">{item.icon}</span>
                                                 {/if}
                                                 <span class="text-base font-bold">{tFn(item.labelKey)}</span>
                                             </a>
