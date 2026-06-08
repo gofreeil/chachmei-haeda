@@ -311,11 +311,6 @@
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
                                 >
-                                    <div class="flex justify-center mb-3">
-                                        <div class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50">
-                                            <img src="/images/bati-hapius.png" alt="" class="w-full h-full object-cover" style="object-position: top; transform: scale(1.15);" />
-                                        </div>
-                                    </div>
                                     {#each navGroups as group, gi}
                                         {#if gi === 0}
                                             <!-- Row 1: Home + About (mobile) -->
@@ -328,7 +323,7 @@
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         {#if 'image' in item && item.image}
-                                                            <div class="w-11 h-11 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
+                                                            <div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
                                                                 <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                             </div>
                                                         {:else}
@@ -519,11 +514,6 @@
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
                         >
-                            <div class="flex justify-center mb-3">
-                                <div class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50">
-                                    <img src="/images/bati-hapius.png" alt="" class="w-full h-full object-cover" style="object-position: top; transform: scale(1.15);" />
-                                </div>
-                            </div>
                             {#each navGroups as group, gi}
                                 {#if gi === 0}
                                     <!-- Row 1: Home + About items (horizontal, no frame, no title) -->
@@ -536,7 +526,7 @@
                                                 onclick={() => (showNavMenu = false)}
                                             >
                                                 {#if 'image' in item && item.image}
-                                                    <div class="w-14 h-14 rounded-full overflow-hidden ring-2 ring-white/30 transition-transform duration-200 group-hover:scale-150 flex-shrink-0">
+                                                    <div class="w-20 h-20 rounded-full overflow-hidden ring-2 ring-white/30 transition-transform duration-200 group-hover:scale-150 flex-shrink-0">
                                                         <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                     </div>
                                                 {:else}
