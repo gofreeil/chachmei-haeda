@@ -364,7 +364,7 @@
                                                         <a
                                                             href={item.href}
                                                             role="menuitem"
-                                                            class="flex flex-col items-center justify-center gap-0.5 p-1.5 rounded-2xl border-4 {h.border ?? ''} {h.bg ?? ''} {h.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 min-h-[78px] text-center"
+                                                            class="flex flex-col items-center justify-center gap-0.5 p-1.5 rounded-2xl border-4 {h.border ?? ''} {h.bg ?? ''} {h.shadow ?? ''} transition-all no-underline ring-1 ring-black/20 h-[78px] text-center"
                                                             style={h.bgStyle ?? ''}
                                                             onclick={() => (showNavMenu = false)}
                                                         >
@@ -381,10 +381,9 @@
                                                                     <a
                                                                         href={child.href}
                                                                         role="menuitem"
-                                                                        class="flex items-center gap-1.5 rounded-lg border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-2.5 py-1.5 text-sm text-gray-800 font-bold transition-colors no-underline"
+                                                                        class="flex items-center justify-center rounded-lg border border-amber-700/25 bg-amber-50/70 hover:bg-amber-100 px-2 py-1.5 text-sm text-gray-800 font-bold transition-colors no-underline text-center"
                                                                         onclick={() => (showNavMenu = false)}
                                                                     >
-                                                                        <span class="text-base flex-shrink-0" aria-hidden="true">{child.icon}</span>
                                                                         <span class="leading-tight">{tFn(child.labelKey)}</span>
                                                                     </a>
                                                                 {/each}
