@@ -144,21 +144,30 @@
 		const isSwipeLeft  = dx < -25 && Math.abs(dx) > Math.abs(dy);  // גרירה שמאלה
 
 		if (!tabDragging) {
-			if (isSwipeLeft && !collapsed) {
-				// שמאלה ממצב ברירת מחדל: צמצום למשולש בלבד
-				collapsed = true;
-				tabSwipeHandled = true;
-				e.preventDefault();
-			} else if (isSwipeRight) {
-				// מימין: פתיחה מלאה (מכל מצב — דילוג על שלב אמצעי)
-				open = true;
-				tabSwipeHandled = true;
-				e.preventDefault();
-			} else if (isTap) {
-				// לחיצה: פתיחה מלאה (גם מ-collapsed וגם מברירת מחדל)
-				open = true;
-				tabSwipeHandled = true;
-				e.preventDefault();
+			if (open) {
+				// במצב פתוח: swipe שמאלה או tap על הלשונית = סגירה
+				if (isSwipeLeft || isTap) {
+					closeAll();
+					tabSwipeHandled = true;
+					e.preventDefault();
+				}
+			} else {
+				if (isSwipeLeft && !collapsed) {
+					// שמאלה ממצב ברירת מחדל: צמצום למשולש בלבד
+					collapsed = true;
+					tabSwipeHandled = true;
+					e.preventDefault();
+				} else if (isSwipeRight) {
+					// מימין: פתיחה מלאה (מכל מצב — דילוג על שלב אמצעי)
+					open = true;
+					tabSwipeHandled = true;
+					e.preventDefault();
+				} else if (isTap) {
+					// לחיצה: פתיחה מלאה (גם מ-collapsed וגם מברירת מחדל)
+					open = true;
+					tabSwipeHandled = true;
+					e.preventDefault();
+				}
 			}
 		} else {
 			// היתה גרירה אנכית — חסימת ה-click המסונתז כדי שלא יפתח את הדרואר
@@ -173,8 +182,9 @@
 			tabSwipeHandled = false;
 			return;
 		}
-		// fallback ללחיצה רגילה (קליק שלא הגיע מ-touch)
-		open = true;
+		// fallback ללחיצה רגילה (toggle: פותח אם סגור, סוגר אם פתוח)
+		if (open) closeAll();
+		else open = true;
 	}
 
 	$effect(() => {
@@ -200,8 +210,11 @@
 	></button>
 	{/if}
 
+	<!-- ה-Drawer והלשונית נעים יחד כיחידה אחת -->
+	<div class="drawer-system" class:is-open={open}>
+
 	<!-- Drawer -->
-	<div class="drawer" class:drawer-open={open}
+	<div class="drawer"
 		role="dialog"
 		aria-modal="true"
 		aria-label={tFn('mobile_ads_drawer_dialog_aria')}
@@ -338,12 +351,12 @@
 		</div>
 	</div>
 
-	<!-- לשונית קטנה בצד שמאל (נראית כשה-Drawer סגור) - ניתנת לגרירה אנכית -->
-	{#if !open && tabY > 0 && !isAuthPage}
+	<!-- לשונית מחוברת לקצה הימני של הבאנר, נעה איתו ימינה/שמאלה -->
+	{#if tabY > 0 && !isAuthPage}
 	<button
 		class="tab"
 		class:tab-dragging={tabDragging}
-		class:tab-collapsed={collapsed}
+		class:tab-collapsed={collapsed && !open}
 		style="top: {tabY}px; transform: translateY(-50%);"
 		onclick={onTabClick}
 		ontouchstart={onTabTouchStart}
@@ -351,11 +364,13 @@
 		ontouchend={onTabTouchEnd}
 		aria-label={tFn('mobile_ads_drawer_open_benefits_aria')}
 	>
-		{#if !collapsed}
+		{#if !(collapsed && !open)}
 			<span class="tab-text">{tFn('mobile_ads_drawer_tab_text')}</span>
 		{/if}
 	</button>
 	{/if}
+
+	</div>
 
 </div>
 
@@ -371,26 +386,37 @@
 		padding: 0;
 	}
 
-	/* ---- Drawer ---- */
-	.drawer {
+	/* ---- מערכת drawer+tab שזזה כיחידה אחת ---- */
+	.drawer-system {
 		position: fixed;
 		top: 0;
-		left: 0;
+		left: -340px;
 		height: 100dvh;
-		width: min(340px, 92vw);
+		width: 340px;
+		max-width: 92vw;
+		z-index: 1200;
+		transition: left 0.55s cubic-bezier(0.32, 0.72, 0.24, 1);
+		pointer-events: none;
+	}
+
+	.drawer-system.is-open {
+		left: 0px;
+	}
+
+	/* ---- Drawer ---- */
+	.drawer {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
 		background: linear-gradient(180deg, #0a0f1e 0%, #070b14 100%);
 		border-left: none;
 		border-right: 1px solid rgba(99, 102, 241, 0.2);
-		z-index: 1200;
 		display: flex;
 		flex-direction: column;
-		transform: translateX(-100%);
-		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
-	}
-
-	.drawer-open {
-		transform: translateX(0);
+		pointer-events: auto;
 	}
 
 	/* ---- כותרת סקציה ---- */
@@ -680,12 +706,12 @@
 	.ad-empty-text { font-size: 0.75rem; font-weight: 600; color: #6366f1; margin: 0; }
 	.ad-empty-sub  { font-size: 0.65rem; color: #64748b; margin: 0; }
 
-	/* ---- לשונית ---- */
+	/* ---- לשונית — מחוברת לקצה הימני של ה-drawer בתוך drawer-system ---- */
 	.tab {
-		position: fixed;
-		left: 0;
+		position: absolute;
+		left: 100%;
 		/* top + transform מגיעים כ-inline style דינמי */
-		z-index: 1050;
+		z-index: 2;
 		background: linear-gradient(180deg, rgba(79, 70, 229, 0.78), rgba(124, 58, 237, 0.78));
 		backdrop-filter: blur(3px);
 		-webkit-backdrop-filter: blur(3px);
@@ -697,6 +723,7 @@
 		transition: padding 0.2s ease, box-shadow 0.2s, border-radius 0.2s;
 		touch-action: none;
 		user-select: none;
+		pointer-events: auto;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
