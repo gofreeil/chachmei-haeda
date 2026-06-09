@@ -94,6 +94,7 @@
 	let tabTouchStartY = 0;
 	let tabTouchStartTime = 0;
 	let tabSwipeHandled = false;   // חסימת onclick מסונתז אחרי swipe
+	let tabAxis: 'h' | 'v' | null = null;  // נעילת כיוון הגרירה (אופקי/אנכי)
 
 	$effect(() => {
 		if (typeof window !== 'undefined' && tabY === 0) {
@@ -110,13 +111,21 @@
 		tabTouchStartTime     = Date.now();
 		tabDragging           = false;
 		tabSwipeHandled       = false;
+		tabAxis               = null;
 	}
 
 	function onTabTouchMove(e: TouchEvent) {
 		const dx = e.touches[0].clientX - tabTouchStartX;
 		const dy = e.touches[0].clientY - tabDragStartClientY;
-		// סף גבוה יותר (20px) כדי לא לסמן גרירה בטעות בטאפ
-		if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 20) {
+		const absX = Math.abs(dx), absY = Math.abs(dy);
+
+		// נעילת כיוון ברגע שעוברים סף של 10px — מונע חילוף axis באמצע ה-swipe
+		if (tabAxis === null && (absX > 10 || absY > 10)) {
+			tabAxis = absX > absY ? 'h' : 'v';
+		}
+
+		// גרירה אנכית רק אם הכיוון ננעל ל-'v' (כיוון אופקי לא יזיז את הלשונית)
+		if (tabAxis === 'v' && absY > 20) {
 			tabDragging = true;
 			let newY = tabDragStartTabY + dy;
 			newY = Math.max(60, Math.min(window.innerHeight - 60, newY));
@@ -151,6 +160,9 @@
 				tabSwipeHandled = true;
 				e.preventDefault();
 			}
+		} else {
+			// היתה גרירה אנכית — חסימת ה-click המסונתז כדי שלא יפתח את הדרואר
+			tabSwipeHandled = true;
 		}
 		tabDragging = false;
 	}
