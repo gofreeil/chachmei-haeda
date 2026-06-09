@@ -124,6 +124,12 @@
 			tabAxis = absX > absY ? 'h' : 'v';
 		}
 
+		// חסימת system gesture של back-swipe מהקצה השמאלי + scrolling רגיל
+		// (דורש passive: false ב-listener — מתבצע דרך use:nonPassiveTouch)
+		if (tabAxis !== null) {
+			try { e.preventDefault(); } catch { /* listener passive — מתעלמים */ }
+		}
+
 		// גרירה אנכית רק אם הכיוון ננעל ל-'v' (כיוון אופקי לא יזיז את הלשונית)
 		if (tabAxis === 'v' && absY > 20) {
 			tabDragging = true;
@@ -131,6 +137,22 @@
 			newY = Math.max(60, Math.min(window.innerHeight - 60, newY));
 			tabY = newY;
 		}
+	}
+
+	// Svelte action — מצמיד את ה-touch listeners ידנית עם passive: false
+	// כדי שנוכל לקרוא preventDefault() ולחסום back-swipe gesture של המכשיר
+	function nonPassiveTouch(node: HTMLElement) {
+		const opts: AddEventListenerOptions = { passive: false };
+		node.addEventListener('touchstart', onTabTouchStart, opts);
+		node.addEventListener('touchmove',  onTabTouchMove,  opts);
+		node.addEventListener('touchend',   onTabTouchEnd,   opts);
+		return {
+			destroy() {
+				node.removeEventListener('touchstart', onTabTouchStart, opts);
+				node.removeEventListener('touchmove',  onTabTouchMove,  opts);
+				node.removeEventListener('touchend',   onTabTouchEnd,   opts);
+			}
+		};
 	}
 
 	function onTabTouchEnd(e: TouchEvent) {
@@ -359,9 +381,7 @@
 		class:tab-collapsed={collapsed && !open}
 		style="top: {tabY}px; transform: translateY(-50%);"
 		onclick={onTabClick}
-		ontouchstart={onTabTouchStart}
-		ontouchmove={onTabTouchMove}
-		ontouchend={onTabTouchEnd}
+		use:nonPassiveTouch
 		aria-label={tFn('mobile_ads_drawer_open_benefits_aria')}
 	>
 		{#if !(collapsed && !open)}
@@ -722,6 +742,7 @@
 		box-shadow: 2px 0 6px rgba(79,70,229,0.25);
 		transition: padding 0.2s ease, box-shadow 0.2s, border-radius 0.2s;
 		touch-action: none;
+		overscroll-behavior: contain;   /* חסימה נוספת של edge gestures */
 		user-select: none;
 		pointer-events: auto;
 		display: flex;
