@@ -96,6 +96,15 @@
 	let tabSwipeHandled = false;   // חסימת onclick מסונתז אחרי swipe
 	let tabAxis: 'h' | 'v' | null = null;  // נעילת כיוון הגרירה (אופקי/אנכי)
 
+	// drag-following של ה-drawer-system בזמן אמת
+	let drawerSystemEl: HTMLElement | null = null;
+	let isDraggingH = false;
+	let dragStartLeftPx = -340;
+	const DRAWER_WIDTH = 340;
+	const OPEN_THRESHOLD = 100;     // כמה פיקסלים צריך לגרור ימינה כדי לפתוח
+	const CLOSE_THRESHOLD = -100;   // כמה צריך לגרור שמאלה כדי לסגור
+	const COLLAPSE_THRESHOLD = -20; // כמה צריך לגרור שמאלה כדי לצמצם
+
 	$effect(() => {
 		if (typeof window !== 'undefined' && tabY === 0) {
 			// ברירת מחדל: החלק התחתון של המסך (4/5 מהגובה)
@@ -112,6 +121,8 @@
 		tabDragging           = false;
 		tabSwipeHandled       = false;
 		tabAxis               = null;
+		isDraggingH           = false;
+		dragStartLeftPx       = open ? 0 : -DRAWER_WIDTH;
 	}
 
 	function onTabTouchMove(e: TouchEvent) {
@@ -128,6 +139,23 @@
 		// (דורש passive: false ב-listener — מתבצע דרך use:nonPassiveTouch)
 		if (tabAxis !== null) {
 			try { e.preventDefault(); } catch { /* listener passive — מתעלמים */ }
+		}
+
+		// גרירה אופקית — ה-drawer-system עוקב אחרי האצבע בזמן אמת
+		if (tabAxis === 'h' && drawerSystemEl) {
+			isDraggingH = true;
+			// חישוב מיקום חדש: התחל מהמיקום הנוכחי, הוסף את ההפרש האופקי
+			let newLeft = dragStartLeftPx + dx;
+			// קלאמפ: לא לעבור מעבר לפתוח לחלוטין (0) או יותר מ-20px מעבר לסגור
+			if (newLeft > 0) newLeft = 0;
+			if (newLeft < -DRAWER_WIDTH - 20) newLeft = -DRAWER_WIDTH - 20;
+			drawerSystemEl.style.transition = 'none';
+			drawerSystemEl.style.left = newLeft + 'px';
+
+			// רמז ויזואלי לצמצום: כשגוררים שמאלה במצב סגור, מצמצמים את ה-tab
+			if (!open) {
+				collapsed = dx <= COLLAPSE_THRESHOLD;
+			}
 		}
 
 		// גרירה אנכית רק אם הכיוון ננעל ל-'v' (כיוון אופקי לא יזיז את הלשונית)
@@ -159,42 +187,43 @@
 		const dx = e.changedTouches[0].clientX - tabTouchStartX;
 		const dy = e.changedTouches[0].clientY - tabTouchStartY;
 		const totalMove = Math.sqrt(dx * dx + dy * dy);
+		const isTap = totalMove < 15;
 
-		// סף נמוך יותר ל-swipe אופקי כדי שיהיה אדיב יותר למשתמש
-		const isTap        = totalMove < 15;                            // לחיצה
-		const isSwipeRight = dx > 25 && Math.abs(dx) > Math.abs(dy);   // גרירה ימינה
-		const isSwipeLeft  = dx < -25 && Math.abs(dx) > Math.abs(dy);  // גרירה שמאלה
+		if (isDraggingH && drawerSystemEl) {
+			// סיום גרירה אופקית — שחרור inline styles כדי שה-CSS class יקבע את ה-target
+			// והאנימציה הרגילה (transition מ-CSS) תרוץ מהמיקום הנוכחי ליעד.
+			drawerSystemEl.style.transition = '';
+			drawerSystemEl.style.left = '';
 
-		if (!tabDragging) {
-			if (open) {
-				// במצב פתוח: swipe שמאלה או tap על הלשונית = סגירה
-				if (isSwipeLeft || isTap) {
-					closeAll();
-					tabSwipeHandled = true;
-					e.preventDefault();
+			if (!open) {
+				// היה סגור: אם נגררו מספיק ימינה → פתיחה, אחרת נשארים סגורים (אולי collapsed)
+				if (dx >= OPEN_THRESHOLD) {
+					open = true;
+					collapsed = false;
 				}
+				// אחרת: collapsed כבר נקבע ב-touchmove (live)
 			} else {
-				if (isSwipeLeft && !collapsed) {
-					// שמאלה ממצב ברירת מחדל: צמצום למשולש בלבד
-					collapsed = true;
-					tabSwipeHandled = true;
-					e.preventDefault();
-				} else if (isSwipeRight) {
-					// מימין: פתיחה מלאה (מכל מצב — דילוג על שלב אמצעי)
-					open = true;
-					tabSwipeHandled = true;
-					e.preventDefault();
-				} else if (isTap) {
-					// לחיצה: פתיחה מלאה (גם מ-collapsed וגם מברירת מחדל)
-					open = true;
-					tabSwipeHandled = true;
-					e.preventDefault();
+				// היה פתוח: אם נגררו מספיק שמאלה → סגירה
+				if (dx <= CLOSE_THRESHOLD) {
+					open = false;
+					collapsed = false;
 				}
+				// אחרת נשארים פתוחים
 			}
-		} else {
-			// היתה גרירה אנכית — חסימת ה-click המסונתז כדי שלא יפתח את הדרואר
 			tabSwipeHandled = true;
+			e.preventDefault();
+		} else if (tabDragging) {
+			// היתה גרירה אנכית — חסימת ה-click המסונתז
+			tabSwipeHandled = true;
+		} else if (isTap) {
+			// לחיצה רגילה
+			if (open) closeAll();
+			else open = true;
+			tabSwipeHandled = true;
+			e.preventDefault();
 		}
+
+		isDraggingH = false;
 		tabDragging = false;
 	}
 
@@ -233,7 +262,7 @@
 	{/if}
 
 	<!-- ה-Drawer והלשונית נעים יחד כיחידה אחת -->
-	<div class="drawer-system" class:is-open={open}>
+	<div class="drawer-system" class:is-open={open} bind:this={drawerSystemEl}>
 
 	<!-- Drawer -->
 	<div class="drawer"
