@@ -59,6 +59,13 @@
 	const ringC = 2 * Math.PI * 43; // r=43
 
 	let open = $state(false);
+	let collapsed = $state(false);
+
+	// סגירה מלאה: חזרה למצב ההתחלתי (לא לקולאפס)
+	function closeAll() {
+		open = false;
+		collapsed = false;
+	}
 
 	// ---- Swipe gestures (Drawer) ----
 	let drawerTouchStartX = 0;
@@ -69,12 +76,12 @@
 		drawerTouchStartY = e.touches[0].clientY;
 	}
 
-	// על הדרואר: משיכה שמאלה → סגור
+	// על הדרואר: משיכה שמאלה → סגור (תמיד חזרה לברירת מחדל)
 	function onDrawerTouchEnd(e: TouchEvent) {
 		const dx = e.changedTouches[0].clientX - drawerTouchStartX;
 		const dy = e.changedTouches[0].clientY - drawerTouchStartY;
 		if (dx < -50 && Math.abs(dx) > Math.abs(dy)) {
-			open = false;
+			closeAll();
 		}
 	}
 
@@ -122,11 +129,22 @@
 
 		const isTap        = totalMove < 15;                            // לחיצה
 		const isSwipeRight = dx > 35 && Math.abs(dx) > Math.abs(dy);   // גרירה ימינה
+		const isSwipeLeft  = dx < -35 && Math.abs(dx) > Math.abs(dy);  // גרירה שמאלה
 
-		if (!tabDragging && (isTap || isSwipeRight)) {
-			open = true;
-			// מניעת click מסונתז שהדפדפן מייצר אחרי touch
-			e.preventDefault();
+		if (!tabDragging) {
+			if (isSwipeRight) {
+				// מימין: פתיחה מלאה (מכל מצב — דילוג על שלב אמצעי)
+				open = true;
+				e.preventDefault();
+			} else if (isSwipeLeft && !collapsed) {
+				// שמאלה ממצב ברירת מחדל: צמצום למשולש בלבד
+				collapsed = true;
+				e.preventDefault();
+			} else if (isTap) {
+				// לחיצה: פתיחה מלאה (גם מ-collapsed וגם מברירת מחדל)
+				open = true;
+				e.preventDefault();
+			}
 		}
 		tabDragging = false;
 	}
@@ -134,7 +152,7 @@
 	$effect(() => {
 		function handleKeydown(e: KeyboardEvent) {
 			if (e.key === 'Escape' && open) {
-				open = false;
+				closeAll();
 			}
 		}
 		document.addEventListener('keydown', handleKeydown);
@@ -149,7 +167,7 @@
 	{#if open}
 	<button
 		class="overlay"
-		onclick={() => open = false}
+		onclick={closeAll}
 		aria-label={tFn('mobile_ads_drawer_close_ads_aria')}
 	></button>
 	{/if}
@@ -169,14 +187,14 @@
 			<button
 				type="button"
 				class="close-btn"
-				onclick={() => open = false}
+				onclick={closeAll}
 				aria-label={tFn('mobile_ads_drawer_close_aria')}
 			>×</button>
 		</div>
 		<div class="auth-section">
 			{#if currentUser && layoutUser}
 			<!-- מיני-כרטיס פרופיל -->
-			<a href="/profile" onclick={() => open = false}
+			<a href="/profile" onclick={closeAll}
 				class="block w-full bg-gradient-to-br from-indigo-900/40 to-purple-900/40 hover:from-indigo-900/60 hover:to-purple-900/60 border-2 border-purple-500/50 rounded-2xl p-4 transition-all no-underline shadow-lg shadow-purple-500/10">
 				<div class="flex items-center gap-4">
 
@@ -230,7 +248,7 @@
 				</div>
 			</a>
 			{:else if currentUser}
-			<a href="/profile" class="profile-btn" onclick={() => open = false}>
+			<a href="/profile" class="profile-btn" onclick={closeAll}>
 				{#if currentUser.avatar_url}
 				<img src={currentUser.avatar_url} alt="avatar" class="profile-avatar" />
 				{:else}
@@ -242,7 +260,7 @@
 				</div>
 			</a>
 			{:else}
-			<a href="/login?redirect=/profile" class="login-btn" onclick={() => open = false}>
+			<a href="/login?redirect=/profile" class="login-btn" onclick={closeAll}>
 				<div class="anon-avatar-wrap">
 					<span class="anon-avatar">
 						<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
@@ -272,7 +290,7 @@
 				target="_blank"
 				rel="noopener noreferrer"
 				class="ad-card"
-				onclick={() => open = false}
+				onclick={closeAll}
 			>
 				<div class="ad-img-wrap">
 					<img
@@ -297,6 +315,7 @@
 	<button
 		class="tab"
 		class:tab-dragging={tabDragging}
+		class:tab-collapsed={collapsed}
 		style="top: {tabY}px; transform: translateY(-50%);"
 		onclick={() => open = true}
 		ontouchstart={onTabTouchStart}
@@ -304,7 +323,9 @@
 		ontouchend={onTabTouchEnd}
 		aria-label={tFn('mobile_ads_drawer_open_benefits_aria')}
 	>
-		<span class="tab-text">{tFn('mobile_ads_drawer_tab_text')}</span>
+		{#if !collapsed}
+			<span class="tab-text">{tFn('mobile_ads_drawer_tab_text')}</span>
+		{/if}
 	</button>
 	{/if}
 
@@ -641,17 +662,17 @@
 		backdrop-filter: blur(3px);
 		-webkit-backdrop-filter: blur(3px);
 		border: none;
-		border-radius: 0 10px 10px 0;
-		padding: 0.75rem 0.4rem;
+		border-radius: 0 9px 9px 0;
+		padding: 0.6rem 0.3rem;
 		cursor: grab;
 		box-shadow: 2px 0 6px rgba(79,70,229,0.25);
-		transition: padding 0.2s, box-shadow 0.2s;
+		transition: padding 0.2s ease, box-shadow 0.2s, border-radius 0.2s;
 		touch-action: none;
 		user-select: none;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.4rem;
+		gap: 0.35rem;
 	}
 
 	.tab::after {
@@ -674,13 +695,26 @@
 		transition: none;
 	}
 
+	/* מצב מצומצם: רק המשולש נשאר גלוי */
+	.tab.tab-collapsed {
+		padding: 0.35rem 0.2rem;
+		gap: 0;
+		border-radius: 0 6px 6px 0;
+	}
+
+	.tab.tab-collapsed::after {
+		border-top-width: 4px;
+		border-bottom-width: 4px;
+		border-left-width: 5px;
+	}
+
 	.tab-text {
 		writing-mode: vertical-rl;
 		text-orientation: mixed;
 		transform: rotate(180deg);
-		font-size: 0.65rem;
+		font-size: 0.6rem;
 		font-weight: 700;
 		color: #fff;
-		letter-spacing: 0.06em;
+		letter-spacing: 0.05em;
 	}
 </style>
