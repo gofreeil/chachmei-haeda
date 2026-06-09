@@ -93,6 +93,7 @@
 	let tabTouchStartX = 0;
 	let tabTouchStartY = 0;
 	let tabTouchStartTime = 0;
+	let tabSwipeHandled = false;   // חסימת onclick מסונתז אחרי swipe
 
 	$effect(() => {
 		if (typeof window !== 'undefined' && tabY === 0) {
@@ -108,6 +109,7 @@
 		tabDragStartTabY      = tabY;
 		tabTouchStartTime     = Date.now();
 		tabDragging           = false;
+		tabSwipeHandled       = false;
 	}
 
 	function onTabTouchMove(e: TouchEvent) {
@@ -127,26 +129,40 @@
 		const dy = e.changedTouches[0].clientY - tabTouchStartY;
 		const totalMove = Math.sqrt(dx * dx + dy * dy);
 
+		// סף נמוך יותר ל-swipe אופקי כדי שיהיה אדיב יותר למשתמש
 		const isTap        = totalMove < 15;                            // לחיצה
-		const isSwipeRight = dx > 35 && Math.abs(dx) > Math.abs(dy);   // גרירה ימינה
-		const isSwipeLeft  = dx < -35 && Math.abs(dx) > Math.abs(dy);  // גרירה שמאלה
+		const isSwipeRight = dx > 25 && Math.abs(dx) > Math.abs(dy);   // גרירה ימינה
+		const isSwipeLeft  = dx < -25 && Math.abs(dx) > Math.abs(dy);  // גרירה שמאלה
 
 		if (!tabDragging) {
-			if (isSwipeRight) {
-				// מימין: פתיחה מלאה (מכל מצב — דילוג על שלב אמצעי)
-				open = true;
-				e.preventDefault();
-			} else if (isSwipeLeft && !collapsed) {
+			if (isSwipeLeft && !collapsed) {
 				// שמאלה ממצב ברירת מחדל: צמצום למשולש בלבד
 				collapsed = true;
+				tabSwipeHandled = true;
+				e.preventDefault();
+			} else if (isSwipeRight) {
+				// מימין: פתיחה מלאה (מכל מצב — דילוג על שלב אמצעי)
+				open = true;
+				tabSwipeHandled = true;
 				e.preventDefault();
 			} else if (isTap) {
 				// לחיצה: פתיחה מלאה (גם מ-collapsed וגם מברירת מחדל)
 				open = true;
+				tabSwipeHandled = true;
 				e.preventDefault();
 			}
 		}
 		tabDragging = false;
+	}
+
+	function onTabClick() {
+		// אם touchend כבר טיפל (swipe / tap על מובייל), לדלג כדי שה-click המסונתז לא יפתח שוב
+		if (tabSwipeHandled) {
+			tabSwipeHandled = false;
+			return;
+		}
+		// fallback ללחיצה רגילה (קליק שלא הגיע מ-touch)
+		open = true;
 	}
 
 	$effect(() => {
@@ -317,7 +333,7 @@
 		class:tab-dragging={tabDragging}
 		class:tab-collapsed={collapsed}
 		style="top: {tabY}px; transform: translateY(-50%);"
-		onclick={() => open = true}
+		onclick={onTabClick}
 		ontouchstart={onTabTouchStart}
 		ontouchmove={onTabTouchMove}
 		ontouchend={onTabTouchEnd}
