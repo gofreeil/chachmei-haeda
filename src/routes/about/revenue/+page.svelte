@@ -107,7 +107,7 @@
 				{tFn('about_purpose_peace')}
 			</p>
 			<p class="text-base md:text-lg text-gray-100 leading-loose pt-2">
-				{@html tFn('about_chachmei_haeda_concept')}
+				{tFn('about_chachmei_concept_prefix')}<strong class="text-orange-700">{tFn('about_chachmei_concept_emphasis')}</strong>{tFn('about_chachmei_concept_suffix')}
 			</p>
 		</div>
 	</div>
@@ -118,7 +118,7 @@
 			🤝 {tFn('about_join_call_heading')}
 		</h2>
 		<p class="text-base md:text-lg text-gray-100 leading-relaxed font-semibold" style="text-align: center;">
-			{@html tFn('about_join_call_body')}
+			{tFn('about_join_body_prefix')}<span class="text-orange-700 font-black">{tFn('about_join_body_emphasis')}</span>{tFn('about_join_body_suffix')}
 		</p>
 		<div class="mt-6 flex justify-center">
 			<a

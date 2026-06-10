@@ -81,7 +81,7 @@
 			</div>
 		</div>
 		<p class="mt-3 text-gray-800 text-base md:text-lg font-bold max-w-2xl mx-auto group-hover:underline decoration-blue-400/60 underline-offset-4">
-			{@html tFn('home_welcome_description')}
+			{tFn('home_welcome_desc_prefix')}<span class="text-blue-700 font-black">{tFn('home_welcome_desc_emphasis')}</span>{tFn('home_welcome_desc_suffix')}
 		</p>
 		<p class="mt-2 text-sm text-blue-700 font-bold opacity-80 group-hover:opacity-100">{tFn('home_read_more_about_us_link')}</p>
 	</a>
