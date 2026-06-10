@@ -22,6 +22,7 @@
         { name: "English", code: "en", flag: "us" },
         { name: "русский", code: "ru", flag: "ru" },
         { name: "Español", code: "es", flag: "es" },
+        { name: "پښتو", code: "ps", flag: "af" },
     ];
 
     let showLangDropdown = $state(false);
