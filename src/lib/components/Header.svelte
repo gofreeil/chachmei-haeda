@@ -30,6 +30,12 @@
     let desktopMenuEl: HTMLDivElement | null = $state(null);
     let isClosingMenu = false;
 
+    // ─── טוגל חכם: סגור → פתח לאט (אנימציית CSS @keyframes menu-open-anim); פתוח → סגור לאט ───
+    function toggleNavMenu() {
+        if (showNavMenu) smoothCloseMenu();
+        else showNavMenu = true; // ה-class "menu-opening" על האלמנט מפעיל את האנימציה
+    }
+
     // ─── סגירה איטית: שלב 1 – גלילה חלקה לראש; שלב 2 – אנימציית max-height ל-0 ב-CSS ───
     function smoothCloseMenu() {
         if (isClosingMenu) return;
@@ -360,7 +366,7 @@
                         <!-- תפריט ניווט נפתח - מובייל -->
                         <div class="nav-menu-container relative">
                             <button
-                                onclick={() => (showNavMenu = !showNavMenu)}
+                                onclick={toggleNavMenu}
                                 class="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors"
                                 aria-label={tFn('header_menu_aria')}
                                 aria-haspopup="menu"
@@ -373,7 +379,7 @@
                             {#if showNavMenu}
                                 <div
                                     bind:this={mobileMenuEl}
-                                    class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-2"
+                                    class="menu-opening fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-2"
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
                                     ontouchstart={navMenuTouchStart}
@@ -578,7 +584,7 @@
                 <div class="nav-menu-container relative">
                     <button
                         class="flex items-center gap-2 rounded-lg bg-white/10 hover:bg-white/20 px-3 py-2 text-sm text-white transition-colors"
-                        onclick={() => (showNavMenu = !showNavMenu)}
+                        onclick={toggleNavMenu}
                         aria-label={tFn('header_menu_aria')}
                         aria-haspopup="menu"
                         aria-expanded={showNavMenu}
@@ -591,7 +597,7 @@
                     {#if showNavMenu}
                         <div
                             bind:this={desktopMenuEl}
-                            class="fixed left-1/2 -translate-x-1/2 top-[80px] z-[160] w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-4"
+                            class="menu-opening fixed left-1/2 -translate-x-1/2 top-[80px] z-[160] w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-4"
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
                             ontouchstart={navMenuTouchStart}
@@ -835,6 +841,15 @@
     :global(.logo-link:hover) {
         transform: scale(1.3);
         z-index: 60;
+    }
+
+    @keyframes menu-open-anim {
+        0%   { max-height: 0;    opacity: 0; transform: translate(-50%, -10px); }
+        100% { max-height: 85vh; opacity: 1; transform: translate(-50%, 0);     }
+    }
+    .menu-opening {
+        animation: menu-open-anim 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        transform-origin: top center;
     }
 
 </style>
