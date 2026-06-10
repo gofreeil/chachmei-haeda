@@ -21,6 +21,7 @@
         { name: "עברית", code: "he", flag: "il" },
         { name: "English", code: "en", flag: "us" },
         { name: "русский", code: "ru", flag: "ru" },
+        { name: "Español", code: "es", flag: "es" },
     ];
 
     let showLangDropdown = $state(false);
