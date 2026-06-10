@@ -487,14 +487,14 @@
                                 >
                                     {#each languages as langOption}
                                         <button
-                                            class="flex w-full items-center gap-3 px-3 py-2 text-right text-white hover:bg-white/10 transition-colors"
+                                            class="flex w-full items-center justify-between px-3 py-2 text-white hover:bg-white/10 transition-colors"
                                             onclick={() => { changeLang(langOption); showLangDropdown = false; }}
                                             onkeydown={handleLangKeydown}
                                             role="option"
                                             aria-selected={$locale === langOption.code || $locale?.startsWith(langOption.code)}
                                         >
-                                            <span class="fi fi-{langOption.flag}" style="font-size: 1.2rem;" aria-hidden="true"></span>
                                             <span class="text-sm">{langOption.name}</span>
+                                            <span class="fi fi-{langOption.flag} flex-shrink-0" style="font-size: 1.2rem; width: 1.6rem;" aria-hidden="true"></span>
                                         </button>
                                     {/each}
                                 </div>
@@ -726,7 +726,7 @@
                         >
                             {#each languages as langOption}
                                 <button
-                                    class="flex w-full items-center gap-4 px-4 py-2 text-right text-white hover:bg-white/10 transition-colors"
+                                    class="flex w-full items-center justify-between px-4 py-2 text-white hover:bg-white/10 transition-colors"
                                     onclick={() => {
                                         changeLang(langOption);
                                         showLangDropdown = false;
@@ -737,8 +737,8 @@
                                 >
                                     <span class="text-sm">{langOption.name}</span>
                                     <span
-                                        class="fi fi-{langOption.flag}"
-                                        style="font-size: 1.5rem;"
+                                        class="fi fi-{langOption.flag} flex-shrink-0"
+                                        style="font-size: 1.5rem; width: 2rem;"
                                         aria-hidden="true"
                                     ></span>
                                 </button>
