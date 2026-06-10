@@ -845,8 +845,8 @@
     }
 
     @keyframes menu-open-anim {
-        0%   { max-height: 0;    opacity: 0; transform: translate(-50%, -10px); }
-        100% { max-height: 85vh; opacity: 1; transform: translate(-50%, 0);     }
+        0%   { max-height: 0;    opacity: 0; translate: -50% -10px; }
+        100% { max-height: 85vh; opacity: 1; translate: -50% 0;     }
     }
     .menu-opening {
         animation: menu-open-anim 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
