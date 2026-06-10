@@ -26,6 +26,51 @@
 
     let showLangDropdown = $state(false);
     let showNavMenu = $state(false);
+    let mobileMenuEl: HTMLDivElement | null = $state(null);
+    let desktopMenuEl: HTMLDivElement | null = $state(null);
+    let isClosingMenu = false;
+
+    // ─── סגירה איטית: שלב 1 – גלילה חלקה לראש; שלב 2 – אנימציית max-height ל-0 ב-CSS ───
+    function smoothCloseMenu() {
+        if (isClosingMenu) return;
+        const el = [mobileMenuEl, desktopMenuEl].find(c => c && c.offsetHeight > 0) || null;
+        if (!el) { showNavMenu = false; return; }
+
+        isClosingMenu = true;
+        const startTop = el.scrollTop;
+        const startHeight = el.offsetHeight;
+        const SCROLL_MS = startTop > 2 ? 320 : 0;
+        const SHRINK_MS = 750;
+        const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+        const runShrink = () => {
+            // קיבוע גובה כדי שטרנזישן יוכל לפעול
+            el.style.maxHeight = startHeight + 'px';
+            el.style.overflow = 'hidden';
+            // reflow
+            void el.offsetHeight;
+            el.style.transition = `max-height ${SHRINK_MS}ms cubic-bezier(0.65, 0, 0.35, 1), opacity ${SHRINK_MS}ms ease-in`;
+            requestAnimationFrame(() => {
+                el.style.maxHeight = '0px';
+                el.style.opacity = '0';
+            });
+            window.setTimeout(() => {
+                isClosingMenu = false;
+                showNavMenu = false;
+            }, SHRINK_MS + 40);
+        };
+
+        if (SCROLL_MS === 0) { runShrink(); return; }
+
+        const t0 = performance.now();
+        function scrollStep(now: number) {
+            const p = Math.min(1, (now - t0) / SCROLL_MS);
+            el!.scrollTop = startTop * (1 - easeOut(p));
+            if (p < 1) requestAnimationFrame(scrollStep);
+            else runShrink();
+        }
+        requestAnimationFrame(scrollStep);
+    }
 
     // ─── סגירת תפריט בהחלקה כלפי מעלה (swipe-up) ───
     let touchStartY = 0;
@@ -327,6 +372,7 @@
                             </button>
                             {#if showNavMenu}
                                 <div
+                                    bind:this={mobileMenuEl}
                                     class="fixed left-1/2 -translate-x-1/2 top-[72px] z-[160] w-[94vw] max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-2"
                                     role="menu"
                                     aria-label={tFn('header_nav_aria')}
@@ -398,7 +444,7 @@
                                     <!-- ידית סגירה בתחתית — סוגרת בלחיצה / בהחלקה כלפי מעלה -->
                                     <button
                                         type="button"
-                                        onclick={() => (showNavMenu = false)}
+                                        onclick={smoothCloseMenu}
                                         aria-label={tFn('header_close_menu_aria')}
                                         class="mt-3 mx-auto flex flex-col items-center gap-0.5 group"
                                     >
@@ -544,6 +590,7 @@
                     </button>
                     {#if showNavMenu}
                         <div
+                            bind:this={desktopMenuEl}
                             class="fixed left-1/2 -translate-x-1/2 top-[80px] z-[160] w-[680px] max-h-[85vh] overflow-y-auto rounded-xl bg-[#f0e3b8]/95 backdrop-blur-md border border-amber-700/20 shadow-2xl p-4"
                             role="menu"
                             aria-label={tFn('header_nav_aria')}
@@ -618,7 +665,7 @@
                             <!-- ידית סגירה בתחתית — סוגרת בלחיצה / בהחלקה כלפי מעלה -->
                             <button
                                 type="button"
-                                onclick={() => (showNavMenu = false)}
+                                onclick={smoothCloseMenu}
                                 aria-label={tFn('header_close_menu_aria')}
                                 class="mt-4 mx-auto flex flex-col items-center gap-0.5 group"
                             >
