@@ -203,10 +203,10 @@
 			<div class="text-sm md:text-base text-gray-900 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
 		</div>
 
-		<form onsubmit={(e) => e.preventDefault()} class="rounded-b-2xl border-2 border-amber-700/40 bg-amber-50/40 p-5 md:p-7 mb-6 space-y-4 shadow-sm">
+		<form onsubmit={(e) => e.preventDefault()} class="rounded-b-2xl border-2 border-amber-700/40 bg-amber-50/40 p-4 md:p-5 mb-6 space-y-3 shadow-sm">
 			<h3 class="text-xl font-black text-blue-200 mb-3">{tFn('charter_join_form_title')}</h3>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 				<div>
 					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-name">{tFn('charter_join_label_name')}</label>
 					<input
@@ -272,7 +272,7 @@
 						class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none text-right"
 					/>
 				</div>
-				<div class="md:col-span-2">
+				<div class="sm:col-span-2 md:col-span-3">
 					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-email">{tFn('charter_join_label_email')}</label>
 					<input
 						id="join-email"
