@@ -669,7 +669,7 @@ register('he', () => Promise.resolve({
     charter_join_form_title: "📝 פרטי החתימה",
     charter_join_label_name: "שם מלא *",
     charter_join_placeholder_name: "ישראל ישראלי",
-    charter_join_label_role: "תפקיד / עיסוק",
+    charter_join_label_role: "שם עסק במידה וקיים",
     charter_join_placeholder_role: "איש עסקים, רב, יזם…",
     charter_join_label_city: "עיר מגורים",
     charter_join_placeholder_city: "ירושלים, בני ברק…",
