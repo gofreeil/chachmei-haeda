@@ -55,7 +55,7 @@
 			</p>
 			<div class="flex gap-2">
 				<a
-					href="/heichal-hamaaseh/charter-join"
+					href="/heichal-hamaaseh/ethical-code#join"
 					class="flex-1 text-center px-2 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 font-black text-xs active:scale-95 transition-transform"
 				>
 					{tFn('eth_banner_btn_sign')}
@@ -116,7 +116,7 @@
 			</p>
 			<div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
 				<a
-					href="/heichal-hamaaseh/charter-join"
+					href="/heichal-hamaaseh/ethical-code#join"
 					class="inline-block px-3 py-1.5 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 font-black text-sm hover:scale-105 hover:shadow-[0_0_15px_rgba(234,179,8,0.4)] transition-all"
 				>
 					{tFn('eth_banner_btn_sign')}

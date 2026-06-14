@@ -17,7 +17,6 @@
 		'/heichal-hamaaseh/activity': '/heichal-hamaaseh/activity',
 		'/heichal-hamaaseh/ethical-code': '/heichal-hamaaseh/ethical-code',
 		'/charter-index': '/charter-index',
-		'/heichal-hamaaseh/charter-join': '/heichal-hamaaseh/ethical-code',
 	};
 
 	let activeHref = $derived(activeFor[page.url.pathname] ?? '');

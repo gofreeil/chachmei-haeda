@@ -92,7 +92,7 @@
 				{#if search.trim()}
 					{tFn('charter_idx_empty_search', { query: search })}
 				{:else if tab === 'signed'}
-					{tFn('charter_idx_empty_signed_prefix')} <a href="/heichal-hamaaseh/charter-join" class="text-blue-300 underline">{tFn('charter_idx_empty_signed_link')}</a>
+					{tFn('charter_idx_empty_signed_prefix')} <a href="/heichal-hamaaseh/ethical-code#join" class="text-blue-300 underline">{tFn('charter_idx_empty_signed_link')}</a>
 				{:else}
 					{tFn('charter_idx_empty_disqualified')}
 				{/if}
@@ -147,7 +147,7 @@
 			📜 {tFn('charter_idx_cta_read')}
 		</a>
 		<a
-			href="/heichal-hamaaseh/charter-join"
+			href="/heichal-hamaaseh/ethical-code#join"
 			class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold transition-colors hover:opacity-90"
 		>
 			✍️ {tFn('charter_idx_cta_join')}
