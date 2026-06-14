@@ -65,16 +65,11 @@
 
 	<HeichalNav />
 
-	<!-- מלל האמנה (יעודכן בהמשך) -->
+	<!-- מלל האמנה -->
 	<div class="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-yellow-500/5 p-5 md:p-7 mb-6">
-		<h2 class="text-xl font-black text-amber-200 mb-3">{tFn('charter_join_text_section_title')}</h2>
-		<div class="text-sm md:text-base text-gray-200 leading-relaxed space-y-3 text-right" dir="rtl">
-			<p class="italic text-gray-400">
-				{tFn('charter_join_text_placeholder_prefix')}
-				<a href="/heichal-hamaaseh/ethical-code" class="text-amber-300 underline">{tFn('charter_join_text_placeholder_link')}</a>
-				{tFn('charter_join_text_placeholder_suffix')}
-			</p>
-		</div>
+		<h2 class="text-xl font-black text-amber-200 mb-2">{tFn('charter_join_text_section_title')}</h2>
+		<h3 class="text-lg md:text-xl font-bold text-amber-100 mb-4 text-center">{tFn('charter_text_title')}</h3>
+		<div class="text-sm md:text-base text-gray-200 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
 	</div>
 
 	<!-- טופס חתימה -->

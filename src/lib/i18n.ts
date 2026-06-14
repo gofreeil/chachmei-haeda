@@ -644,9 +644,28 @@ register('he', () => Promise.resolve({
     charter_join_heading: "הצטרפות לאמנה",
     charter_join_intro: "אני מקבל/ת על עצמי את האמנה המוסרית של חכמי העדה ומבקש/ת להצטרף לחתומים עליה.",
     charter_join_text_section_title: "📜 מלל האמנה",
-    charter_join_text_placeholder_prefix: "[המלל המלא של האמנה ימולא כאן. עד אז – ניתן לקרוא את הקוד האתי המוסרי העולמי",
-    charter_join_text_placeholder_link: "בעמוד הקוד האתי",
-    charter_join_text_placeholder_suffix: "ולחתום עליו כאמנת UECC.]",
+    charter_text_title: "האמנה המוסרית העולמית",
+    charter_text_full: `מקור הסמכות: אני מאמין / יודע / מעיד שהקדוש ברוך הוא התגלה במעמד הר סיני ונתן לעם ישראל ולכל העולם את עקרונות האמת והצדק.
+
+הריני מתחייב ומקבל על עצמי לקיים את דברי האמנה וכלליה בהתחייבות כלפי א-להים ואדם.
+
+אני מתחייב לעשות הישר והטוב בעיני ה', הישר הוא שכל מה שאני אומר אני מתכוון לעשותו ואיני מרמה בדיבורי. בכל עסקה שאשתתף, הריני מתחייב לקיימה ברגע שאתחייב על פי דרכי הקנין הנהוגות כגון תקיעת כף, חתימת חוזה והעברת בעלות.
+
+הטוב בעיני ה' הוא שאדאג לצרכים של זולתי במידת יכולתי, ואדאג לטוב של שותפי. בכל עסקה אוודא כי כל הצדדים יצאו מרוויחים ולא ניזוקים. כמעביד, אדאג לזכויות עובדי השכירים, אקדם אותם כמידת יכולתי ואשלם את שכרם בזמנו. כעובד אדאג בנאמנות לבצע את עבודתי לטובת המעסיק והעסק ולמנוע מהם כל נזק. כנותן שירות אדאג לספק ללקוח את המיטב שאוכל לתת לו. כשוכר את שירותיו של אדם אשלם את שכרו בזמן.
+
+אני מתחייב לקיים את המינימום הנדרש על ידי בורא עולם מכל בני האדם כפי שבורא עולם אמר למשה רבנו בהר סיני:
+
+א. איסור לעבוד עבודה זרה
+ב. איסור לגדף חלילה את שמו של הבורא
+ג. איסור לרצוח
+ד. איסור לנאוף
+ה. איסור לגזול
+ו. איסור לאכול אבר מן החי
+ז. אני מתחייב שכל מחלוקת או אי הסכמה ביני ובין אחרים אשתדל לפתור מתוך כבוד הדדי, ואם הדבר לא יעלה בידי אפנה לבתי הפיוס המוסכמים.
+
+אני מסכים שהתחייבות זו תפורסם ברשומות כך שכל איש עסקים, עובד או מעביד, יוכל לראות את התחייבותי זו.
+
+ובזאת באתי על החתום:`,
     charter_join_form_title: "📝 פרטי החתימה",
     charter_join_label_name: "שם מלא *",
     charter_join_placeholder_name: "ישראל ישראלי",
@@ -1531,9 +1550,8 @@ register('en', () => Promise.resolve({
     charter_join_heading: "Join the Charter",
     charter_join_intro: "I hereby accept upon myself the moral charter of Chachmei Ha'Eda and request to join its signatories.",
     charter_join_text_section_title: "📜 Charter Text",
-    charter_join_text_placeholder_prefix: "[The full text of the charter will be added here. In the meantime, you may read the Universal Ethical Code",
-    charter_join_text_placeholder_link: "on the Ethical Code page",
-    charter_join_text_placeholder_suffix: "and sign it as the UECC Charter.]",
+    charter_text_title: "The Universal Moral Charter",
+    charter_text_full: "[Translation pending — please refer to the Hebrew version of the Charter for the authoritative text.]",
     charter_join_form_title: "📝 Signing Details",
     charter_join_label_name: "Full name *",
     charter_join_placeholder_name: "John Doe",
@@ -2418,9 +2436,8 @@ register('ru', () => Promise.resolve({
     charter_join_heading: "Присоединение к Хартии",
     charter_join_intro: "Я принимаю на себя моральную Хартию Хахмей а-Эда и прошу присоединиться к числу её подписавших.",
     charter_join_text_section_title: "📜 Текст Хартии",
-    charter_join_text_placeholder_prefix: "[Полный текст Хартии будет добавлен здесь. До этого можно ознакомиться с Всеобщим этическим кодексом",
-    charter_join_text_placeholder_link: "на странице Этического кодекса",
-    charter_join_text_placeholder_suffix: "и подписать его как Хартию UECC.]",
+    charter_text_title: "Всеобщая Моральная Хартия",
+    charter_text_full: "[Перевод ожидается — пожалуйста, ознакомьтесь с ивритской версией Хартии для авторитетного текста.]",
     charter_join_form_title: "📝 Данные для подписи",
     charter_join_label_name: "Полное имя *",
     charter_join_placeholder_name: "Иван Иванов",
@@ -3320,9 +3337,8 @@ register('es', () => Promise.resolve({
     charter_join_heading: "Adhesión al Pacto",
     charter_join_intro: "Acepto sobre mí el Pacto Moral de Jajmei HaEda y solicito unirme a sus firmantes.",
     charter_join_text_section_title: "📜 Texto del Pacto",
-    charter_join_text_placeholder_prefix: "[El texto completo del Pacto se incluirá aquí. Mientras tanto, puedes leer el Código Ético Moral mundial",
-    charter_join_text_placeholder_link: "en la página del Código Ético",
-    charter_join_text_placeholder_suffix: "y firmarlo como Pacto UECC.]",
+    charter_text_title: "El Pacto Moral Universal",
+    charter_text_full: "[Traducción pendiente — por favor consulta la versión en hebreo del Pacto para el texto autoritativo.]",
     charter_join_form_title: "📝 Datos de la firma",
     charter_join_label_name: "Nombre completo *",
     charter_join_placeholder_name: "Israel Israeli",
@@ -4207,9 +4223,8 @@ register('ps', () => Promise.resolve({
     charter_join_heading: "منشور سره یوځای شئ",
     charter_join_intro: "زه په دې سره د چخمې هاعدا اخلاقي منشور پر ځان منم او د هغه د لاسلیک کوونکو سره د یوځای کیدو غوښتنه کوم.",
     charter_join_text_section_title: "📜 د منشور متن",
-    charter_join_text_placeholder_prefix: "[د منشور بشپړ متن به دلته اضافه شي. په دې وخت کې، تاسو کولی شئ نړیوال اخلاقي کوډ ولولئ",
-    charter_join_text_placeholder_link: "د اخلاقي کوډ په پاڼه کې",
-    charter_join_text_placeholder_suffix: "او د UECC منشور په توګه یې لاسلیک کړئ.]",
+    charter_text_title: "نړیوال اخلاقي منشور",
+    charter_text_full: "[ژباړه په تمه ده — مهرباني وکړئ د منشور د معتبر متن لپاره عبري نسخې ته مراجعه وکړئ.]",
     charter_join_form_title: "📝 د لاسلیک تفصیلات",
     charter_join_label_name: "بشپړ نوم *",
     charter_join_placeholder_name: "جان ډو",
