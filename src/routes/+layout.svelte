@@ -49,6 +49,15 @@
 			<div class="mt-2">
 				<EthicalCodeBanner />
 			</div>
+			<div class="flex justify-center mt-3 mb-4">
+				<button
+					type="button"
+					onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+					class="inline-flex items-center gap-1 text-amber-900 font-bold text-sm hover:text-amber-700 transition-colors"
+				>
+					{tFn('home_back_to_top')}
+				</button>
+			</div>
 		</main>
 		<AdsSidebar approvedAds={[]} />
 	</div>
