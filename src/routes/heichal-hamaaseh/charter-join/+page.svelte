@@ -133,14 +133,14 @@
 		</div>
 
 		<!-- אישור האמנה -->
-		<label class="flex items-start gap-3 rounded-xl border-2 border-amber-500/40 bg-amber-500/5 p-4 cursor-pointer hover:bg-amber-500/10 transition-colors">
+		<label class="flex items-start gap-3 rounded-xl border-2 border-amber-700/50 bg-amber-100/60 p-4 cursor-pointer hover:bg-amber-100 transition-colors">
 			<input
 				type="checkbox"
 				bind:checked={accepted}
-				class="mt-1 w-5 h-5 accent-amber-500 flex-shrink-0"
+				class="mt-1 w-5 h-5 accent-amber-700 flex-shrink-0"
 			/>
-			<span class="text-sm md:text-base text-amber-100">
-				<strong>{tFn('charter_join_consent_strong')}</strong> {tFn('charter_join_consent_body')}
+			<span class="text-sm md:text-base text-gray-900">
+				<strong class="text-amber-900">{tFn('charter_join_consent_strong')}</strong> {tFn('charter_join_consent_body')}
 			</span>
 		</label>
 
