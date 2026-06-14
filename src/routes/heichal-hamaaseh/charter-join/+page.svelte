@@ -3,6 +3,8 @@
 	import HeichalNav from '$lib/components/HeichalNav.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { fade, scale } from 'svelte/transition';
+	import { goto } from '$app/navigation';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
@@ -17,19 +19,26 @@
 	let idNumber = $state('');
 	let accepted = $state(false);
 	let notice = $state('');
-	let submitted = $state(false);
+	let showCelebration = $state(false);
+	let submitting = $state(false);
 
-	function handleSubmit(e: Event) {
-		e.preventDefault();
+	function sendCharterEmail(toEmail: string) {
+		if (!toEmail.trim()) return;
+		const subject = tFn('charter_email_subject');
+		const body = tFn('charter_email_intro') + '\n' + tFn('charter_text_full');
+		const href = `mailto:${encodeURIComponent(toEmail.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+		window.open(href, '_blank');
+	}
+
+	function onConsentChange() {
+		if (!accepted || submitting) return;
 		notice = '';
 		if (!name.trim()) {
 			notice = '⚠️ ' + tFn('charter_join_validation_name_required');
+			accepted = false;
 			return;
 		}
-		if (!accepted) {
-			notice = '⚠️ ' + tFn('charter_join_validation_accept_required');
-			return;
-		}
+		submitting = true;
 		addSignatory({
 			name,
 			role,
@@ -40,17 +49,9 @@
 			idNumber,
 			acceptedTerms: true
 		});
-		submitted = true;
-		notice = '✅ ' + tFn('charter_join_success_message');
-		// איפוס שדות
-		name = '';
-		role = '';
-		city = '';
-		email = '';
-		phone = '';
-		birthDate = '';
-		idNumber = '';
-		accepted = false;
+		sendCharterEmail(email);
+		setTimeout(() => { showCelebration = true; }, 700);
+		setTimeout(() => { goto('/charter-index'); }, 4200);
 	}
 </script>
 
@@ -78,7 +79,7 @@
 	</div>
 
 	<!-- טופס חתימה -->
-	<form onsubmit={handleSubmit} class="rounded-b-2xl border-2 border-amber-700/40 bg-amber-50/40 p-5 md:p-7 mb-6 space-y-4 shadow-sm">
+	<form onsubmit={(e) => e.preventDefault()} class="rounded-b-2xl border-2 border-amber-700/40 bg-amber-50/40 p-5 md:p-7 mb-6 space-y-4 shadow-sm">
 		<h2 class="text-xl font-black text-blue-200 mb-3">{tFn('charter_join_form_title')}</h2>
 
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -160,40 +161,46 @@
 			</div>
 		</div>
 
-		<!-- אישור האמנה -->
-		<label class="flex items-start gap-3 rounded-xl border-2 border-amber-700/50 bg-amber-100/60 p-4 cursor-pointer hover:bg-amber-100 transition-colors">
-			<input
-				type="checkbox"
-				bind:checked={accepted}
-				class="mt-1 w-5 h-5 accent-amber-700 flex-shrink-0"
-			/>
-			<span class="text-sm md:text-base text-gray-900">
-				<strong class="text-amber-900">{tFn('charter_join_consent_strong')}</strong> {tFn('charter_join_consent_body')}
-			</span>
-		</label>
+		<!-- אישור האמנה / הודעת ברכות -->
+		{#if !showCelebration}
+			<label
+				class="flex items-start gap-3 rounded-xl border-2 border-amber-700/50 bg-amber-100/60 p-4 cursor-pointer hover:bg-amber-100 transition-colors {submitting ? 'pointer-events-none opacity-95' : ''}"
+				transition:fade={{ duration: 400 }}
+			>
+				<input
+					type="checkbox"
+					bind:checked={accepted}
+					onchange={onConsentChange}
+					disabled={submitting}
+					class="mt-1 w-5 h-5 accent-amber-700 flex-shrink-0"
+				/>
+				<span class="text-sm md:text-base text-gray-900">
+					<strong class="text-amber-900">{tFn('charter_join_consent_strong')}</strong> {tFn('charter_join_consent_body')}
+				</span>
+			</label>
+		{:else}
+			<div
+				class="rounded-xl border-2 border-green-700/50 bg-green-100/70 p-6 text-center"
+				transition:scale={{ duration: 450, start: 0.9 }}
+			>
+				<div class="text-5xl mb-2">✅</div>
+				<h3 class="text-lg md:text-xl font-black text-green-900 mb-2">
+					{tFn('charter_join_celebration_title')}
+				</h3>
+				<p class="text-sm md:text-base text-gray-900 mb-3">
+					{tFn('charter_join_celebration_subtitle')}
+				</p>
+				<p class="text-xs md:text-sm text-green-800 font-bold">
+					{tFn('charter_join_celebration_redirect')}
+				</p>
+			</div>
+		{/if}
 
-		{#if notice}
-			<p class="text-sm font-bold {notice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">
+		{#if notice && !showCelebration}
+			<p class="text-sm font-bold text-yellow-700">
 				{notice}
 			</p>
 		{/if}
-
-		<div class="flex gap-3 flex-wrap pt-2">
-			<button
-				type="submit"
-				class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg hover:opacity-90 transition-opacity"
-			>
-				✍️ {tFn('charter_join_btn_submit')}
-			</button>
-			{#if submitted}
-				<a
-					href="/charter-index"
-					class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors"
-				>
-					← {tFn('charter_join_btn_view_index')}
-				</a>
-			{/if}
-		</div>
 
 		<p class="text-xs text-gray-500 mt-2">
 			{tFn('charter_join_privacy_note')}
