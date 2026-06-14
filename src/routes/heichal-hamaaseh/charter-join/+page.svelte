@@ -66,10 +66,10 @@
 	<HeichalNav />
 
 	<!-- מלל האמנה -->
-	<div class="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-yellow-500/5 p-5 md:p-7 mb-6">
-		<h2 class="text-xl font-black text-amber-200 mb-2">{tFn('charter_join_text_section_title')}</h2>
-		<h3 class="text-lg md:text-xl font-bold text-amber-100 mb-4 text-center">{tFn('charter_text_title')}</h3>
-		<div class="text-sm md:text-base text-gray-200 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
+	<div class="rounded-2xl border-2 border-amber-700/40 bg-amber-50/70 p-5 md:p-7 mb-6 shadow-sm">
+		<h2 class="text-xl font-black text-amber-900 mb-2">{tFn('charter_join_text_section_title')}</h2>
+		<h3 class="text-lg md:text-xl font-bold text-amber-900 mb-4 text-center">{tFn('charter_text_title')}</h3>
+		<div class="text-sm md:text-base text-gray-900 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
 	</div>
 
 	<!-- טופס חתימה -->
