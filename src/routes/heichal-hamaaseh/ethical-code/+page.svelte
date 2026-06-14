@@ -133,7 +133,9 @@
 			<li>{tFn('eth_code_accepts_li_4')}</li>
 		</ul>
 
-		<p class="border-t border-white/10 pt-5 mt-8">
+		<div class="mt-8 mb-5 mx-auto h-0.5 w-48 md:w-64 bg-gradient-to-r from-transparent via-amber-700/60 to-transparent" aria-hidden="true"></div>
+
+		<p>
 			{tFn('eth_code_derech_eretz_p1')} <strong class="text-blue-300">UECC</strong> {tFn('eth_code_derech_eretz_p2')}
 		</p>
 
