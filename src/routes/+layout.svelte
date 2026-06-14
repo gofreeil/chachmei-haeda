@@ -11,11 +11,14 @@
 	import MobileAdsDrawer from "$lib/components/MobileAdsDrawer.svelte";
 	import MobileAdPopup from "$lib/components/MobileAdPopup.svelte";
 	import { beforeNavigate } from "$app/navigation";
+	import { page } from "$app/state";
 	import { closeAdPopup } from "$lib/adPopupStore";
 	import { t, locale } from "svelte-i18n";
 	import { get } from "svelte/store";
 
 	let { children } = $props();
+
+	const hideEthicalBanner = $derived(page.url.pathname.startsWith('/heichal-hamaaseh/ethical-code'));
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
@@ -46,9 +49,11 @@
 		<RightAdBanner />
 		<main id="main-content" tabindex="-1" class="main-content">
 			{@render children()}
-			<div class="mt-2">
-				<EthicalCodeBanner />
-			</div>
+			{#if !hideEthicalBanner}
+				<div class="mt-2">
+					<EthicalCodeBanner />
+				</div>
+			{/if}
 			<div class="flex justify-center mt-3 mb-4">
 				<button
 					type="button"
