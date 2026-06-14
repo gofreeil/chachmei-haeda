@@ -1,5 +1,6 @@
 <script lang="ts">
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
+	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import { addSignatory } from '$lib/services/charter-service';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -183,12 +184,13 @@
 		</p>
 	</footer>
 
-	<section id="join" class="mt-10 pt-8 border-t-2 border-amber-700/40 scroll-mt-20">
+	<section id="join" class="mt-10 scroll-mt-20">
 		<header class="text-center mb-6">
-			<div class="text-5xl mb-3">✍️</div>
-			<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-				{tFn('charter_join_heading')}
-			</h2>
+			<FancyHeading>
+				<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent inline-block pb-1">
+					{tFn('charter_join_heading')}
+				</h2>
+			</FancyHeading>
 			<p class="mt-3 text-gray-300 max-w-2xl mx-auto text-sm md:text-base">
 				{tFn('charter_join_intro')}
 			</p>
