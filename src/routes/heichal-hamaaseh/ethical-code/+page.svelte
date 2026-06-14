@@ -203,9 +203,7 @@
 			<div class="text-sm md:text-base text-gray-900 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
 		</div>
 
-		<form onsubmit={(e) => e.preventDefault()} class="rounded-b-2xl border-2 border-amber-700/40 bg-amber-50/40 p-4 md:p-5 mb-6 space-y-3 shadow-sm">
-			<h3 class="text-xl font-black text-blue-200 mb-3">{tFn('charter_join_form_title')}</h3>
-
+		<form onsubmit={(e) => e.preventDefault()} class="rounded-b-2xl border-2 border-t-0 border-amber-700/40 bg-amber-50/70 p-4 md:p-5 mb-6 space-y-3 shadow-sm">
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 				<div>
 					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-name">{tFn('charter_join_label_name')}</label>
