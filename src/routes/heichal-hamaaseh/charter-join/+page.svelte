@@ -66,13 +66,13 @@
 	<HeichalNav />
 
 	<!-- מלל האמנה -->
-	<div class="rounded-2xl border-2 border-amber-700/40 bg-amber-50/70 p-5 md:p-7 mb-6 shadow-sm">
+	<div class="rounded-t-2xl border-2 border-b-0 border-amber-700/40 bg-amber-50/70 p-5 md:p-7 shadow-sm">
 		<h3 class="text-lg md:text-xl font-bold text-amber-900 mb-4 text-center">{tFn('charter_text_title')}</h3>
 		<div class="text-sm md:text-base text-gray-900 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
 	</div>
 
 	<!-- טופס חתימה -->
-	<form onsubmit={handleSubmit} class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-5 md:p-7 space-y-4">
+	<form onsubmit={handleSubmit} class="rounded-b-2xl border-2 border-amber-700/40 bg-amber-50/40 p-5 md:p-7 mb-6 space-y-4 shadow-sm">
 		<h2 class="text-xl font-black text-blue-200 mb-3">{tFn('charter_join_form_title')}</h2>
 
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
