@@ -63,6 +63,8 @@ export function addSignatory(input: {
 	city?: string;
 	email?: string;
 	phone?: string;
+	birthDate?: string;
+	idNumber?: string;
 	acceptedTerms: boolean;
 }): CharterEntry {
 	const entry: CharterEntry = {
@@ -72,6 +74,8 @@ export function addSignatory(input: {
 		city: input.city?.trim() || undefined,
 		email: input.email?.trim() || undefined,
 		phone: input.phone?.trim() || undefined,
+		birthDate: input.birthDate?.trim() || undefined,
+		idNumber: input.idNumber?.trim() || undefined,
 		status: 'signed',
 		date: new Date().toISOString().slice(0, 10),
 		acceptedTerms: input.acceptedTerms

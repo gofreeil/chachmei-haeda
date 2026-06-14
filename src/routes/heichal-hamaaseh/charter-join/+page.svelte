@@ -13,6 +13,8 @@
 	let city = $state('');
 	let email = $state('');
 	let phone = $state('');
+	let birthDate = $state('');
+	let idNumber = $state('');
 	let accepted = $state(false);
 	let notice = $state('');
 	let submitted = $state(false);
@@ -34,6 +36,8 @@
 			city,
 			email,
 			phone,
+			birthDate,
+			idNumber,
 			acceptedTerms: true
 		});
 		submitted = true;
@@ -44,6 +48,8 @@
 		city = '';
 		email = '';
 		phone = '';
+		birthDate = '';
+		idNumber = '';
 		accepted = false;
 	}
 </script>
@@ -115,6 +121,29 @@
 					bind:value={phone}
 					dir="ltr"
 					placeholder="050-0000000"
+					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none text-right"
+				/>
+			</div>
+			<div>
+				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-birth-date">{tFn('charter_join_label_birth_date')}</label>
+				<input
+					id="join-birth-date"
+					type="date"
+					bind:value={birthDate}
+					dir="ltr"
+					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none text-right"
+				/>
+			</div>
+			<div>
+				<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-id-number">{tFn('charter_join_label_id_number')}</label>
+				<input
+					id="join-id-number"
+					type="text"
+					inputmode="numeric"
+					maxlength="9"
+					bind:value={idNumber}
+					dir="ltr"
+					placeholder={tFn('charter_join_placeholder_id_number')}
 					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none text-right"
 				/>
 			</div>

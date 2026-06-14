@@ -18,6 +18,8 @@ export interface CharterEntry {
 	city?: string | LocalizedString;
 	email?: string;
 	phone?: string;
+	birthDate?: string;
+	idNumber?: string;
 	status: CharterStatus;
 	/** תאריך החתימה / הצטרפות */
 	date: string;
