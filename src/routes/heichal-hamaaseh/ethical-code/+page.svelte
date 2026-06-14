@@ -320,10 +320,6 @@
 					{notice}
 				</p>
 			{/if}
-
-			<p class="text-xs text-gray-500 mt-2">
-				{tFn('charter_join_privacy_note')}
-			</p>
 		</form>
 	</section>
 </article>
