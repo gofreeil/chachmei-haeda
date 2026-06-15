@@ -158,7 +158,7 @@
 
 		<div class="space-y-4 mt-6">
 			{#each mitzvotKeys as m}
-				<div class="rounded-xl border border-blue-500/20 bg-blue-900/10 p-3 md:p-4 flex flex-col md:flex-row md:items-center gap-3">
+				<div class="rounded-xl border border-blue-500/20 bg-blue-900/10 p-3 md:p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
 					<div class="flex-1 min-w-0">
 						<h4 class="text-sm md:text-base font-bold text-blue-300">
 							<span class="text-base text-yellow-400 ml-2">{tFn(m.n)}.</span>{tFn(m.title)}
