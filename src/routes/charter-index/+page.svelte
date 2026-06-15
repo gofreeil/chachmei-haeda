@@ -44,10 +44,11 @@
 
 <section class="py-8">
 	<header class="text-center mb-6">
-		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
+		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl md:text-3xl font-black text-transparent leading-tight">
 			{tFn('charter_idx_heading')}
 		</h1>
-		<p class="mt-2 text-gray-300 text-sm md:text-base max-w-2xl mx-auto">
+		<p class="mt-1 text-blue-300 font-black tracking-[0.2em] text-sm md:text-base">UECC</p>
+		<p class="mt-3 text-gray-300 text-sm md:text-base max-w-2xl mx-auto">
 			{tFn('charter_idx_subtitle')}
 		</p>
 	</header>
