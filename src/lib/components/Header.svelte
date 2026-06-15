@@ -125,7 +125,7 @@
                     children: [
                         { href: '/heichal-hamishpat?open=request-hearing', labelKey: 'header_nav_open_case', icon: '📂' },
                         { href: '/hearings', labelKey: 'header_nav_zoom_hearings', icon: '🎥' },
-                        { href: '/rulings', labelKey: 'header_nav_rulings', icon: '📋' },
+                        { href: '/rulings', labelKey: 'header_nav_rulings', icon: '🔨' },
                     ],
                 },
                 {
