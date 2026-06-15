@@ -14,10 +14,10 @@
 
 	const mitzvotKeys = [
 		{ n: 'eth_code_mitzvah_1_n', title: 'eth_code_mitzvah_1_title', body: 'eth_code_mitzvah_1_body', img: '/images/051bb5c2afa0f882cb69274d1d2762f43c07ec83a3762e6a52c0fe31 (1).jpg' },
-		{ n: 'eth_code_mitzvah_2_n', title: 'eth_code_mitzvah_2_title', body: 'eth_code_mitzvah_2_body', img: '/images/copyof_e9e782464b20dd1a78dc695f7f96d22bce0eaa7c3bd658140125d327.jpg' },
+		{ n: 'eth_code_mitzvah_2_n', title: 'eth_code_mitzvah_5_title', body: 'eth_code_mitzvah_5_body', img: '/images/598111f9fb5ce654ab97a14f7895e164e7bcce3dfca356213208dccd (1).jpg' },
 		{ n: 'eth_code_mitzvah_3_n', title: 'eth_code_mitzvah_3_title', body: 'eth_code_mitzvah_3_body', img: '/images/66d586997b1916c727e39b860ac1aaf1adcd7e09858c1f9652d8474e (1).jpg' },
 		{ n: 'eth_code_mitzvah_4_n', title: 'eth_code_mitzvah_4_title', body: 'eth_code_mitzvah_4_body', img: '/images/06906e45572ea20efba61c33ca2e0ee71d5f04fcb36dd24907a8f3e5 (1).jpg' },
-		{ n: 'eth_code_mitzvah_5_n', title: 'eth_code_mitzvah_5_title', body: 'eth_code_mitzvah_5_body', img: '/images/598111f9fb5ce654ab97a14f7895e164e7bcce3dfca356213208dccd (1).jpg' },
+		{ n: 'eth_code_mitzvah_5_n', title: 'eth_code_mitzvah_2_title', body: 'eth_code_mitzvah_2_body', img: '/images/copyof_e9e782464b20dd1a78dc695f7f96d22bce0eaa7c3bd658140125d327.jpg' },
 		{ n: 'eth_code_mitzvah_6_n', title: 'eth_code_mitzvah_6_title', body: 'eth_code_mitzvah_6_body', img: '/images/425738cfb4e7e3542b6ae9a64e4f5ed4060d807af4cd440dad202f87 (1).jpg' },
 		{ n: 'eth_code_mitzvah_7_n', title: 'eth_code_mitzvah_7_title', body: 'eth_code_mitzvah_7_body', img: '/images/7262c95d28eb13b988331fd0f3903273eee17bec96ad1b22378e0bb3 (1).jpg' }
 	];
