@@ -149,12 +149,14 @@
 			{tFn('eth_code_seven_mitzvot_intro')}
 		</p>
 
-		<div class="rounded-xl border border-white/10 bg-white/5 p-3 md:p-4 my-4">
-			<p class="text-xs text-gray-400 mb-1.5">{tFn('eth_code_gemara_citation')}</p>
-			<p class="italic text-gray-200 text-xs md:text-sm leading-snug">
-				{tFn('eth_code_gemara_text')}
-			</p>
-		</div>
+		<p class="font-bold text-red-300">
+			{tFn('eth_code_three_capital_note')}
+		</p>
+
+		<p class="text-xs text-gray-400 mt-4 mb-1">{tFn('eth_code_gemara_citation')}</p>
+		<p class="italic text-gray-200 text-xs md:text-sm leading-snug">
+			{tFn('eth_code_gemara_text')}
+		</p>
 
 		<div class="space-y-4 mt-6">
 			{#each mitzvotKeys as m}
@@ -168,11 +170,6 @@
 					<img src={m.img} alt={tFn(m.title)} loading="lazy" class="w-full md:w-44 lg:w-52 h-auto max-h-36 object-contain rounded-lg flex-shrink-0" />
 				</div>
 			{/each}
-		</div>
-
-		<div class="rounded-xl border border-red-500/30 bg-red-900/10 p-3 md:p-4 mt-6">
-			<h4 class="text-sm md:text-base font-bold text-red-300">{tFn('eth_code_yehareg_title')}</h4>
-			<p class="mt-1 text-gray-300 text-xs md:text-sm">{tFn('eth_code_yehareg_body')}</p>
 		</div>
 
 		<p class="text-center text-sm md:text-base text-yellow-200 mt-6 font-bold">
