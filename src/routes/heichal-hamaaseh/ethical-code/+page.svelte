@@ -23,6 +23,7 @@
 	];
 
 	let name = $state('');
+	let businessName = $state('');
 	let role = $state('');
 	let city = $state('');
 	let email = $state('');
@@ -53,6 +54,7 @@
 		submitting = true;
 		addSignatory({
 			name,
+			businessName,
 			role,
 			city,
 			email,
@@ -210,6 +212,16 @@
 						bind:value={name}
 						required
 						placeholder={tFn('charter_join_placeholder_name')}
+						class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
+					/>
+				</div>
+				<div>
+					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-business-name">{tFn('charter_join_label_business_name')}</label>
+					<input
+						id="join-business-name"
+						type="text"
+						bind:value={businessName}
+						placeholder={tFn('charter_join_placeholder_business_name')}
 						class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
 					/>
 				</div>

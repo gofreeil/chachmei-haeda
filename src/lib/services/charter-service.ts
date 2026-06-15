@@ -59,6 +59,7 @@ function genId(): string {
 /** הוספת חתימה חדשה. בעתיד: POST /api/charter-entries לסטראפי */
 export function addSignatory(input: {
 	name: string;
+	businessName?: string;
 	role?: string;
 	city?: string;
 	email?: string;
@@ -70,6 +71,7 @@ export function addSignatory(input: {
 	const entry: CharterEntry = {
 		id: genId(),
 		name: input.name.trim(),
+		businessName: input.businessName?.trim() || undefined,
 		role: input.role?.trim() || undefined,
 		city: input.city?.trim() || undefined,
 		email: input.email?.trim() || undefined,

@@ -16,6 +16,7 @@
 
 	let entries = $state<CharterEntry[]>([]);
 	let tab = $state<'signed' | 'disqualified'>('signed');
+	let searchType = $state<'name' | 'business'>('name');
 	let search = $state('');
 
 	onMount(() => {
@@ -26,16 +27,14 @@
 	const disqualified = $derived(filterByStatus(entries, 'disqualified'));
 
 	const current = $derived(tab === 'signed' ? signed : disqualified);
-	const filtered = $derived(
-		search.trim() === ''
-			? current
-			: current.filter(
-					(e) =>
-						pickLang(e.name).includes(search.trim()) ||
-						pickLang(e.role).includes(search.trim()) ||
-						pickLang(e.city).includes(search.trim())
-				)
-	);
+	const filtered = $derived.by(() => {
+		const q = search.trim();
+		if (q === '') return current;
+		return current.filter((e) => {
+			const field = searchType === 'business' ? pickLang(e.businessName) : pickLang(e.name);
+			return field.includes(q);
+		});
+	});
 </script>
 
 <svelte:head>
@@ -76,11 +75,33 @@
 	</div>
 
 	<!-- חיפוש -->
-	<div class="max-w-md mx-auto mb-6">
+	<div class="max-w-md mx-auto mb-6 space-y-2">
+		<div class="flex justify-center gap-2">
+			<button
+				type="button"
+				onclick={() => (searchType = 'name')}
+				class="px-4 py-1 rounded-full text-xs font-bold border transition-colors {searchType === 'name'
+					? 'bg-blue-500/40 border-blue-300 text-white'
+					: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
+			>
+				👤 {tFn('charter_idx_search_type_name')}
+			</button>
+			<button
+				type="button"
+				onclick={() => (searchType = 'business')}
+				class="px-4 py-1 rounded-full text-xs font-bold border transition-colors {searchType === 'business'
+					? 'bg-blue-500/40 border-blue-300 text-white'
+					: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
+			>
+				🏢 {tFn('charter_idx_search_type_business')}
+			</button>
+		</div>
 		<input
 			type="text"
 			bind:value={search}
-			placeholder={tFn('charter_idx_search_placeholder')}
+			placeholder={searchType === 'business'
+				? tFn('charter_idx_search_placeholder_business')
+				: tFn('charter_idx_search_placeholder_name')}
 			class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none text-right"
 		/>
 	</div>

@@ -14,6 +14,7 @@ export const pickLang = (v: any, l: string | null | undefined): string =>
 export interface CharterEntry {
 	id: string;
 	name: string | LocalizedString;
+	businessName?: string | LocalizedString;
 	role?: string | LocalizedString;
 	city?: string | LocalizedString;
 	email?: string;
