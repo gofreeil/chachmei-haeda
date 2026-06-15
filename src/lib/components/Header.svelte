@@ -166,8 +166,8 @@
                     subBorder: 'border-amber-400/55',
                     subText: 'text-amber-50',
                     children: [
+                        { href: '/heichal-hamaaseh/activity', labelKey: 'header_nav_heichal_activity', icon: '📰' },
                         { href: '/heichal-hamaaseh/ethical-code', labelKey: 'header_nav_ethical_code', icon: '📜' },
-                        { href: '/heichal-hamaaseh/ethical-code#join', labelKey: 'header_nav_charter_join', icon: '🤝' },
                         { href: '/charter-index', labelKey: 'header_nav_charter_index', icon: '📑' },
                     ],
                 },
