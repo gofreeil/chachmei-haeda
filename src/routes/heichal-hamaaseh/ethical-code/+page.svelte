@@ -185,29 +185,6 @@
 		</p>
 	</footer>
 
-	<aside
-		class="mt-10 rounded-2xl border-2 border-red-400/50 bg-red-500/5 p-5 md:p-6 max-w-3xl mx-auto"
-		dir="rtl"
-		aria-label="תנאי ההסרה"
-	>
-		<h3 class="text-xl md:text-2xl font-black text-red-300 mb-3 text-center">
-			⚠️ תנאי ההסרה מאמנת הקוד האתי
-		</h3>
-		<ol class="list-decimal list-inside space-y-2 text-gray-200 text-sm md:text-base mr-2">
-			<li>מי שנתבע על ידי חברו, ולא הגיע לדין ללא סיבה סבירה.</li>
-			<li>הגיע לדין אך מסרב לקיימו באופן שרירותי ללא הגשת ערעור.</li>
-			<li>
-				עבר על אחת מאיסורי "ייהרג ובל יעבור" שהם: גילוי עריות (אשת איש ופדופיליה), שפיכות דמים (במזיד), עבודה זרה (לשם אלילות).
-			</li>
-		</ol>
-		<p class="mt-4 text-sm md:text-base text-gray-200 font-bold leading-relaxed">
-			העובר על אחת מאלו יוסר מרשימת האמנה, עסקו יוחרם בקהילתנו — כולל העסקת פועלים, משא ומתן עימו וכן כל כיוצא בזה.
-		</p>
-		<p class="mt-2 text-sm md:text-base text-red-300 font-bold">
-			סיבת הסרתו תפורסם בפומבי ותהיה נגישה ב<a href="/charter-index" class="underline hover:text-red-200">אינדקס הקוד האתי המוסרי</a>.
-		</p>
-	</aside>
-
 	<section id="join" class="mt-10 scroll-mt-20">
 		<header class="text-center mb-6">
 			<FancyHeading>
@@ -223,6 +200,18 @@
 		<div class="rounded-t-2xl border-2 border-b-0 border-amber-700/40 bg-amber-50/70 p-5 md:p-7 shadow-sm">
 			<h3 class="text-lg md:text-xl font-bold text-amber-900 mb-4 text-center">{tFn('charter_text_title')}</h3>
 			<div class="text-sm md:text-base text-gray-900 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
+
+			<div class="mt-5 pt-4 border-t border-amber-700/30 text-sm md:text-base text-gray-900 leading-relaxed text-right" dir="rtl">
+				<h4 class="font-bold text-amber-900 mb-2">תנאי ההסרה מהאמנה:</h4>
+				<ol class="list-decimal pr-6 space-y-1">
+					<li>מי שנתבע על ידי חברו, ולא הגיע לדין ללא סיבה סבירה.</li>
+					<li>הגיע לדין אך מסרב לקיימו באופן שרירותי ללא הגשת ערעור.</li>
+					<li>עבר על אחת מאיסורי "ייהרג ובל יעבור" שהם: גילוי עריות (אשת איש ופדופיליה), שפיכות דמים (במזיד), עבודה זרה (לשם אלילות).</li>
+				</ol>
+				<p class="mt-3">
+					העובר על אחת מאלו יוסר מרשימת האמנה, עסקו יוחרם בקהילתנו — כולל העסקת פועלים, משא ומתן עימו וכן כל כיוצא בזה. סיבת הסרתו תפורסם בפומבי ותהיה נגישה ב<a href="/charter-index" class="underline text-amber-900 hover:text-amber-700">אינדקס הקוד האתי המוסרי</a>.
+				</p>
+			</div>
 		</div>
 
 		<form onsubmit={(e) => e.preventDefault()} class="rounded-b-2xl border-2 border-t-0 border-amber-700/40 bg-amber-50/70 p-4 md:p-5 mb-6 space-y-3 shadow-sm">
