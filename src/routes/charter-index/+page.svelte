@@ -46,7 +46,7 @@
 		<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl md:text-3xl font-black text-transparent leading-tight">
 			{tFn('charter_idx_heading')}
 		</h1>
-		<p class="mt-1 text-blue-300 font-black tracking-[0.2em] text-sm md:text-base">UECC</p>
+		<h2 class="mt-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-black tracking-[0.25em] text-xl md:text-2xl">UECC</h2>
 		<p class="mt-3 text-gray-300 text-sm md:text-base max-w-2xl mx-auto">
 			{tFn('charter_idx_subtitle')}
 		</p>
