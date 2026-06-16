@@ -75,35 +75,56 @@
 	</div>
 
 	<!-- חיפוש -->
-	<div class="max-w-md mx-auto mb-6 space-y-2">
-		<div class="flex justify-center gap-2">
-			<button
-				type="button"
-				onclick={() => (searchType = 'name')}
-				class="px-4 py-1 rounded-full text-xs font-bold border transition-colors {searchType === 'name'
-					? 'bg-blue-500/40 border-blue-300 text-white'
-					: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
-			>
-				👤 {tFn('charter_idx_search_type_name')}
-			</button>
-			<button
-				type="button"
-				onclick={() => (searchType = 'business')}
-				class="px-4 py-1 rounded-full text-xs font-bold border transition-colors {searchType === 'business'
-					? 'bg-blue-500/40 border-blue-300 text-white'
-					: 'bg-white/5 border-white/15 text-gray-300 hover:bg-white/10'}"
-			>
-				🏢 {tFn('charter_idx_search_type_business')}
-			</button>
+	<div class="max-w-md mx-auto mb-6">
+		<div class="rounded-2xl border-2 border-blue-400/40 bg-black/30 overflow-hidden shadow-lg">
+			<!-- בורר סוג חיפוש מחובר ל-input -->
+			<div class="grid grid-cols-2 bg-black/40" role="tablist">
+				<button
+					type="button"
+					role="tab"
+					aria-selected={searchType === 'name'}
+					onclick={() => (searchType = 'name')}
+					class="px-4 py-3 text-sm md:text-base font-bold transition-colors flex items-center justify-center gap-2 border-b-2 {searchType === 'name'
+						? 'bg-blue-500/40 text-white border-blue-300'
+						: 'text-gray-400 border-transparent hover:text-white hover:bg-white/10'}"
+				>
+					<span class="text-lg" aria-hidden="true">👤</span>
+					{tFn('charter_idx_search_type_name')}
+				</button>
+				<button
+					type="button"
+					role="tab"
+					aria-selected={searchType === 'business'}
+					onclick={() => (searchType = 'business')}
+					class="px-4 py-3 text-sm md:text-base font-bold transition-colors flex items-center justify-center gap-2 border-b-2 {searchType === 'business'
+						? 'bg-blue-500/40 text-white border-blue-300'
+						: 'text-gray-400 border-transparent hover:text-white hover:bg-white/10'}"
+				>
+					<span class="text-lg" aria-hidden="true">🏢</span>
+					{tFn('charter_idx_search_type_business')}
+				</button>
+			</div>
+			<!-- שורת ה-input עצמה -->
+			<div class="flex items-center gap-2 px-4 py-3">
+				<span class="text-gray-400 text-lg" aria-hidden="true">🔍</span>
+				<input
+					type="text"
+					bind:value={search}
+					placeholder={searchType === 'business'
+						? tFn('charter_idx_search_placeholder_business')
+						: tFn('charter_idx_search_placeholder_name')}
+					class="flex-1 min-w-0 bg-transparent text-white placeholder-gray-400 focus:outline-none text-right text-base"
+				/>
+				{#if search}
+					<button
+						type="button"
+						onclick={() => (search = '')}
+						aria-label="נקה"
+						class="text-gray-400 hover:text-white text-xl leading-none px-1"
+					>×</button>
+				{/if}
+			</div>
 		</div>
-		<input
-			type="text"
-			bind:value={search}
-			placeholder={searchType === 'business'
-				? tFn('charter_idx_search_placeholder_business')
-				: tFn('charter_idx_search_placeholder_name')}
-			class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none text-right"
-		/>
 	</div>
 
 	<!-- רשימה -->
