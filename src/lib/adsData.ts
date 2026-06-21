@@ -30,9 +30,9 @@ export const ads: Ad[] = [
             ru: "Ведущий соседский сайт — объединяет жителей, благотворительные фонды, кружки и многое другое"
         },
         cta: {
-            he: "כנס לקהילה השכונתית שלך",
-            en: "Enter your neighborhood community",
-            ru: "Войдите в свою соседскую общину"
+            he: "תהנה מכל היתרונות של הקהילה בשכונה שלך",
+            en: "Enjoy all the benefits of the community in your neighborhood",
+            ru: "Пользуйтесь всеми преимуществами общины в вашем районе"
         },
         href: "https://community-il.vercel.app/",
         image: "/images/community-neighborhood.png",

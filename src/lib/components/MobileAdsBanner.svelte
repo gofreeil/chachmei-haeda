@@ -11,6 +11,12 @@
 
     const ads = [
         {
+            titleKey: 'mobile_ads_banner_ad_community_neighborhood_title',
+            summaryKey: 'mobile_ads_banner_ad_community_neighborhood_summary',
+            url: 'https://community-il.vercel.app/',
+            color: 'from-blue-500 to-purple-600'
+        },
+        {
             titleKey: 'mobile_ads_banner_ad_peace_houses_title',
             summaryKey: 'mobile_ads_banner_ad_peace_houses_summary',
             url: 'https://chachmim.vercel.app/',
