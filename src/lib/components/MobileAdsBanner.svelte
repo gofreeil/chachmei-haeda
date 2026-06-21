@@ -13,25 +13,25 @@
         {
             titleKey: 'mobile_ads_banner_ad_community_neighborhood_title',
             summaryKey: 'mobile_ads_banner_ad_community_neighborhood_summary',
-            url: 'https://community-il.vercel.app/',
+            url: 'https://community.gofreeil.com/',
             color: 'from-blue-500 to-purple-600'
         },
         {
             titleKey: 'mobile_ads_banner_ad_peace_houses_title',
             summaryKey: 'mobile_ads_banner_ad_peace_houses_summary',
-            url: 'https://chachmim.vercel.app/',
+            url: 'https://chachmim.gofreeil.com/',
             color: 'from-orange-600 to-red-600'
         },
         {
             titleKey: 'mobile_ads_banner_ad_neighborhood_committees_title',
             summaryKey: 'mobile_ads_banner_ad_neighborhood_committees_summary',
-            url: 'https://neighborhoods-il.vercel.app/',
+            url: 'https://neighborhoods.gofreeil.com/',
             color: 'from-blue-600 to-cyan-600'
         },
         {
             titleKey: 'mobile_ads_banner_ad_purchasing_group_title',
             summaryKey: 'mobile_ads_banner_ad_purchasing_group_summary',
-            url: 'https://purchasing-groups.vercel.app/',
+            url: 'https://groups.gofreeil.com/',
             color: 'from-green-600 to-emerald-600'
         },
         {
@@ -43,13 +43,13 @@
         {
             titleKey: 'mobile_ads_banner_ad_qualified_pros_title',
             summaryKey: 'mobile_ads_banner_ad_qualified_pros_summary',
-            url: 'https://index-chi-sage.vercel.app/',
+            url: 'https://index.gofreeil.com/',
             color: 'from-yellow-500 to-orange-500'
         },
         {
             titleKey: 'mobile_ads_banner_ad_municipality_review_title',
             summaryKey: 'mobile_ads_banner_ad_municipality_review_summary',
-            url: 'https://criticism.vercel.app/',
+            url: 'https://criticism.gofreeil.com/',
             color: 'from-red-600 to-pink-600'
         }
     ];

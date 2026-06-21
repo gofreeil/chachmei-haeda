@@ -149,13 +149,13 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content={tFn('mishpat_page_title')} />
 	<meta property="og:description" content={tFn('mishpat_og_description')} />
-	<meta property="og:image" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
-	<meta property="og:image:secure_url" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
+	<meta property="og:image" content="https://chachmim.gofreeil.com/og-image.jpg?v=2" />
+	<meta property="og:image:secure_url" content="https://chachmim.gofreeil.com/og-image.jpg?v=2" />
 	<meta property="og:image:type" content="image/jpeg" />
 	<meta property="og:image:width" content="600" />
 	<meta property="og:image:height" content="600" />
 	<meta property="og:image:alt" content={tFn('mishpat_og_image_alt')} />
-	<meta property="og:url" content="https://chachmim.vercel.app/heichal-hamishpat" />
+	<meta property="og:url" content="https://chachmim.gofreeil.com/heichal-hamishpat" />
 	<meta property="og:site_name" content={tFn('mishpat_site_name')} />
 	<meta property="og:locale" content="he_IL" />
 
@@ -163,7 +163,7 @@
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={tFn('mishpat_page_title')} />
 	<meta name="twitter:description" content={tFn('mishpat_twitter_description')} />
-	<meta name="twitter:image" content="https://chachmim.vercel.app/og-image.jpg?v=2" />
+	<meta name="twitter:image" content="https://chachmim.gofreeil.com/og-image.jpg?v=2" />
 </svelte:head>
 
 <section class="py-8">

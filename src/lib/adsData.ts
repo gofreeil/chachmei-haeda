@@ -34,7 +34,7 @@ export const ads: Ad[] = [
             en: "Enjoy all the benefits of the community in your neighborhood",
             ru: "Пользуйтесь всеми преимуществами общины в вашем районе"
         },
-        href: "https://community-il.vercel.app/",
+        href: "https://community.gofreeil.com/",
         image: "/images/community-neighborhood.png",
         color: "from-blue-500 to-purple-600"
     },
@@ -60,7 +60,7 @@ export const ads: Ad[] = [
             en: 'Find any gemach easily!',
             ru: 'Легко найдите любой гмах!'
         },
-        href: "https://national-gemach.vercel.app/",
+        href: "https://gemach.gofreeil.com/",
         image: "/images/gemach-harzi.png",
         color: "from-pink-600 via-fuchsia-600 to-purple-700",
     },
@@ -81,7 +81,7 @@ export const ads: Ad[] = [
             en: "Learn about and join the revolution of public governance over its institutions",
             ru: "Узнайте и присоединяйтесь к революции народного управления своими учреждениями"
         },
-        href: "https://neighborhoods-il.vercel.app/",
+        href: "https://neighborhoods.gofreeil.com/",
         image: "/images/news/vaadei-shchunot.png",
         color: "from-blue-600 to-cyan-600"
     },
@@ -102,7 +102,7 @@ export const ads: Ad[] = [
             en: "Auditing the authorities, securing the resident's rights",
             ru: "Контролируем власти, отстаиваем права жителей"
         },
-        href: "https://criticism.vercel.app/",
+        href: "https://criticism.gofreeil.com/",
         image: "/images/mevaker-rashuyot.png",
         color: "from-blue-700 to-indigo-700",
         imageHeight: "120px",
@@ -125,7 +125,7 @@ export const ads: Ad[] = [
             en: "The public rates the authorities and public servants",
             ru: "Народ оценивает власти и государственных служащих"
         },
-        href: "https://public-rating-il.vercel.app/",
+        href: "https://rating.gofreeil.com/",
         image: "/images/public-rating.jpeg",
         color: "from-indigo-600 to-blue-600",
         imageHeight: "200px",
@@ -153,7 +153,7 @@ export const ads: Ad[] = [
             en: "Voice your opinion on the current issues",
             ru: "Выскажите своё мнение по актуальным вопросам"
         },
-        href: "https://referendum-il.vercel.app/",
+        href: "https://referendum.gofreeil.com/",
         image: "/images/referendum.png",
         color: "from-purple-600 to-indigo-700"
     },
@@ -174,7 +174,7 @@ export const ads: Ad[] = [
             en: "Join our purchasing group and cut your expenses right away!",
             ru: "Присоединяйтесь к нашей закупочной группе и сразу же сократите расходы!"
         },
-        href: "https://purchasing-groups.vercel.app/",
+        href: "https://groups.gofreeil.com/",
         image: "/images/whatsapp_cta.png",
         color: "from-green-800 to-emerald-900"
     },
@@ -195,7 +195,7 @@ export const ads: Ad[] = [
             en: "Looking for a quality professional in your area?",
             ru: "Ищете качественного специалиста в вашем районе?"
         },
-        href: "https://index-chi-sage.vercel.app/",
+        href: "https://index.gofreeil.com/",
         image: "/images/professionals.png",
         color: "from-yellow-500 to-orange-500"
     },
@@ -221,7 +221,7 @@ export const ads: Ad[] = [
             en: "Our store!",
             ru: "Наш магазин!"
         },
-        href: "https://heirut-shop.vercel.app/",
+        href: "https://shop.gofreeil.com/",
         image: "/images/freedom-store.png",
         color: "from-emerald-600 to-teal-700"
     }

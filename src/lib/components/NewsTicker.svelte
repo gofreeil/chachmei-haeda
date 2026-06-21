@@ -8,7 +8,7 @@
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	// אותו מקור שאתר "קהילה בשכונה" משתמש בו - סנכרון חד-כיווני משם לכאן.
-	const NATIONAL_NEWS_API = 'https://criticism.vercel.app/api/national-news';
+	const NATIONAL_NEWS_API = 'https://criticism.gofreeil.com/api/national-news';
 	const CUSTOM_NEWS_KEY = 'chachmei-custom-news';
 
 	type NewsItem = {

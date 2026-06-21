@@ -194,9 +194,9 @@
 				✍️ {tFn('profile_signup_cta')}
 			</a>
 			<p class="text-xs text-gray-500 mt-6">
-				💡 {tFn('profile_cross_site_signup_prefix')} <a href="https://community-il.vercel.app/" class="text-blue-300 underline">{tFn('profile_site_community')}</a>,
-				<a href="https://criticism.vercel.app/" class="text-blue-300 underline">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
-				<a href="https://purchasing-groups.vercel.app/" class="text-blue-300 underline">{tFn('profile_site_purchasing')}</a>.
+				💡 {tFn('profile_cross_site_signup_prefix')} <a href="https://community.gofreeil.com/" class="text-blue-300 underline">{tFn('profile_site_community')}</a>,
+				<a href="https://criticism.gofreeil.com/" class="text-blue-300 underline">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
+				<a href="https://groups.gofreeil.com/" class="text-blue-300 underline">{tFn('profile_site_purchasing')}</a>.
 			</p>
 		</div>
 	{:else}
@@ -280,9 +280,9 @@
 
 			<div class="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5 mt-5 text-sm text-gray-300">
 				🔗 <strong class="text-blue-300">{tFn('profile_cross_site_sync_label')}</strong> {tFn('profile_cross_site_sync_prefix')}
-				<a href="https://community-il.vercel.app/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_community')}</a>,
-				<a href="https://criticism.vercel.app/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
-				<a href="https://purchasing-groups.vercel.app/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_purchasing')}</a>.
+				<a href="https://community.gofreeil.com/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_community')}</a>,
+				<a href="https://criticism.gofreeil.com/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
+				<a href="https://groups.gofreeil.com/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_purchasing')}</a>.
 				{tFn('profile_cross_site_sync_suffix')}
 			</div>
 		{/if}
