@@ -29,12 +29,6 @@
             color: 'from-green-600 to-emerald-600'
         },
         {
-            titleKey: 'mobile_ads_banner_ad_group_investments_title',
-            summaryKey: 'mobile_ads_banner_ad_group_investments_summary',
-            url: 'https://www.melecshop.com/page/free',
-            color: 'from-amber-600 to-orange-600'
-        },
-        {
             titleKey: 'mobile_ads_banner_ad_home_growing_title',
             summaryKey: 'mobile_ads_banner_ad_home_growing_summary',
             url: 'https://www.melecshop.com/page/free',

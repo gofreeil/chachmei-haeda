@@ -179,27 +179,6 @@ export const ads: Ad[] = [
         color: "from-green-800 to-emerald-900"
     },
     {
-        id: 4,
-        title: {
-            he: "מועדון המשקיעים החברתי",
-            en: "Social Investors Club",
-            ru: "Клуб социальных инвесторов"
-        },
-        description: {
-            he: "התחבר עם קבוצת המשקיעים שלנו",
-            en: "Connect with our group of investors",
-            ru: "Присоединяйтесь к нашей группе инвесторов"
-        },
-        cta: {
-            he: "התחבר עם קבוצת המשקיעים שלנו",
-            en: "Connect with our group of investors",
-            ru: "Присоединяйтесь к нашей группе инвесторов"
-        },
-        href: "https://www.melecshop.com/page/free",
-        image: "/images/partners/investments.png",
-        color: "from-amber-600 to-orange-600"
-    },
-    {
         id: 6,
         title: {
             he: "בעלי מקצוע כשירים",
