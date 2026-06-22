@@ -10,7 +10,7 @@ import {
 	type CharterEntry,
 	type CharterStatus
 } from '$lib/data/charter';
-import { safeStrapiList, strapiPost } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiPut, strapiDelete } from '$lib/strapi';
 
 const COLLECTION = 'ch-charter-signatures';
 
@@ -55,7 +55,6 @@ function fromStrapi(item: StrapiCharterAttrs): CharterEntry {
 	};
 }
 
-/** טעינת כל הרשומות מסטראפי. נופל לנתוני הדמו אם הסטראפי לא זמין. */
 export async function loadEntries(): Promise<CharterEntry[]> {
 	const list = await safeStrapiList<StrapiCharterAttrs>(COLLECTION, {
 		sort: 'signedDate:desc',
@@ -65,7 +64,6 @@ export async function loadEntries(): Promise<CharterEntry[]> {
 	return list.map(fromStrapi);
 }
 
-/** הוספת חתימה ל-Strapi. מחזיר את הרשומה שנוצרה (כפי שהתקבלה חזרה). */
 export async function addSignatory(input: {
 	name: string;
 	businessName?: string;
@@ -100,4 +98,28 @@ export function filterByStatus(
 	status: CharterStatus
 ): CharterEntry[] {
 	return entries.filter((e) => e.status === status);
+}
+
+// ───────────────────────── Admin ─────────────────────────
+
+export async function disqualifyEntry(id: string, reason: string, by: string): Promise<void> {
+	await strapiPut(COLLECTION, id, {
+		status: 'disqualified',
+		disqualifiedReason: reason,
+		disqualifiedBy: by,
+		disqualifiedDate: new Date().toISOString().slice(0, 10)
+	});
+}
+
+export async function reinstateEntry(id: string): Promise<void> {
+	await strapiPut(COLLECTION, id, {
+		status: 'signed',
+		disqualifiedReason: null,
+		disqualifiedBy: null,
+		disqualifiedDate: null
+	});
+}
+
+export async function deleteEntry(id: string): Promise<void> {
+	await strapiDelete(COLLECTION, id);
 }

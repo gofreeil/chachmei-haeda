@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
@@ -8,13 +9,43 @@
 	import { addNewsItem } from '$lib/services/news-service';
 	import { loadRabbis, addRabbi as addRabbiToBackend } from '$lib/services/rabbis-service';
 	import { loadHomeConfig, saveHomeConfig } from '$lib/services/home-config-service';
+	import {
+		loadEntries as loadCharterEntries,
+		disqualifyEntry,
+		reinstateEntry,
+		deleteEntry as deleteCharterEntry
+	} from '$lib/services/charter-service';
+	import {
+		loadAllSubmissions,
+		publishAnswer,
+		markSubmissionAnswered,
+		rejectSubmission,
+		deleteSubmission,
+		deleteQa,
+		loadQa as loadQaItems,
+		type QaSubmission
+	} from '$lib/services/qa-service';
+	import {
+		loadHearings,
+		loadRulings,
+		loadHearingRequests,
+		setRequestStatus,
+		deleteHearingRequest,
+		createHearing,
+		updateHearing,
+		deleteHearing,
+		createRuling,
+		deleteRuling,
+		type HearingRequest
+	} from '$lib/services/hearings-service';
+	import { getCurrentUser, isChachmeiAdmin, strapiLogout, type StrapiUser } from '$lib/strapi';
+	import type { CharterEntry } from '$lib/data/charter';
+	import type { Hearing, Ruling, HearingStatus } from '$lib/data/hearings';
+	import type { QaItem } from '$lib/data/qa';
 
 	// Admin currently enters Hebrew only - mirror it to all 3 locales as a fallback
 	// until proper translation UI is added. pickLang() will fall back to .he anyway.
 	const toLoc = (s: string) => ({ he: s, en: s, ru: s });
-
-	// 🔑 סיסמת אדמין - לשנות כאן ידנית. מי שיודע את הסיסמה יכול להיכנס.
-	const ADMIN_PASSWORD = 'chachmei2026';
 
 	const SESSION_KEY = 'chachmei-admin-session';
 	const ARTICLES_KEY = 'chachmei-custom-articles';
@@ -34,9 +65,61 @@
 	};
 
 	let isLoggedIn = $state(false);
-	let passwordInput = $state('');
-	let loginError = $state('');
-	let activeTab = $state<'articles' | 'videos' | 'news' | 'dates' | 'rabbis'>('articles');
+	let authChecking = $state(true);
+	let currentUser = $state<StrapiUser | null>(null);
+	type AdminTab =
+		| 'articles' | 'videos' | 'news' | 'dates' | 'rabbis'
+		| 'charter' | 'qa' | 'qa-submissions' | 'hearings' | 'rulings' | 'hearing-requests';
+	let activeTab = $state<AdminTab>('qa-submissions');
+
+	// ── Data state ──
+	let charterEntries = $state<CharterEntry[]>([]);
+	let qaItems = $state<QaItem[]>([]);
+	let qaSubmissions = $state<QaSubmission[]>([]);
+	let hearings = $state<Hearing[]>([]);
+	let rulings = $state<Ruling[]>([]);
+	let hearingRequests = $state<HearingRequest[]>([]);
+
+	// ── Charter admin form ──
+	let charterFilter = $state<'all' | 'signed' | 'disqualified'>('all');
+	let disqualifyingId = $state<string | null>(null);
+	let disqualifyReason = $state('');
+	let disqualifyBy = $state('');
+
+	// ── QA Submissions answering form ──
+	let answeringId = $state<string | null>(null);
+	let answerText = $state('');
+	let answerBy = $state('');
+	let answerTopicOverride = $state('');
+
+	// ── Hearings form ──
+	let hearingEditingId = $state<string | null>(null);
+	let hearingCaseName = $state('');
+	let hearingDayan1 = $state('');
+	let hearingDayan2 = $state('');
+	let hearingDayan3 = $state('');
+	let hearingZoom = $state('');
+	let hearingDate = $state('');
+	let hearingTime = $state('');
+	let hearingStatus = $state<HearingStatus>('מתוכנן');
+	let hearingNotice = $state('');
+
+	// ── Rulings form ──
+	let rulingCaseRef = $state('');
+	let rulingCaseName = $state('');
+	let rulingDayan1 = $state('');
+	let rulingDayan2 = $state('');
+	let rulingDayan3 = $state('');
+	let rulingDate = $state('');
+	let rulingSummary = $state('');
+	let rulingDecision = $state('');
+	let rulingNotice = $state('');
+
+	function fmtAny(v: any): string {
+		if (!v) return '';
+		if (typeof v === 'string') return v;
+		return v.he ?? v.en ?? '';
+	}
 
 	let customArticles = $state<Article[]>([]);
 	let customActivity = $state<ActivityItem[]>([]);
@@ -139,14 +222,40 @@
 		setTimeout(() => (homeVideoNotice = ''), 4000);
 	}
 
-	onMount(() => {
-		try {
-			if (sessionStorage.getItem(SESSION_KEY) === 'ok') {
-				isLoggedIn = true;
-			}
-		} catch {}
-		loadAll();
+	onMount(async () => {
+		const user = await getCurrentUser();
+		if (!user || !isChachmeiAdmin(user)) {
+			authChecking = false;
+			goto('/admin/login');
+			return;
+		}
+		currentUser = user;
+		isLoggedIn = true;
+		authChecking = false;
+		await loadAll();
+		await loadAdminContent();
 	});
+
+	async function loadAdminContent() {
+		try {
+			const [c, q, s, h, r, hr] = await Promise.all([
+				loadCharterEntries(),
+				loadQaItems(),
+				loadAllSubmissions(),
+				loadHearings(),
+				loadRulings(),
+				loadHearingRequests()
+			]);
+			charterEntries = c;
+			qaItems = q;
+			qaSubmissions = s;
+			hearings = h;
+			rulings = r;
+			hearingRequests = hr;
+		} catch (e) {
+			console.warn('admin loadAdminContent failed', e);
+		}
+	}
 
 	async function loadAll() {
 		try {
@@ -315,27 +424,228 @@
 		cancelEditRabbi();
 	}
 
-	function handleLogin(e: Event) {
-		e.preventDefault();
-		if (passwordInput === ADMIN_PASSWORD) {
-			isLoggedIn = true;
-			loginError = '';
-			passwordInput = '';
-			try {
-				sessionStorage.setItem(SESSION_KEY, 'ok');
-			} catch {}
-			loadAll();
-		} else {
-			loginError = 'סיסמה שגויה';
+	function handleLogout() {
+		strapiLogout();
+		isLoggedIn = false;
+		currentUser = null;
+		try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+		goto('/admin/login');
+	}
+
+	// ───────────── ניהול חתימות ─────────────
+	const filteredCharter = $derived(
+		charterFilter === 'all'
+			? charterEntries
+			: charterEntries.filter((e) => e.status === charterFilter)
+	);
+
+	function startDisqualify(e: CharterEntry) {
+		disqualifyingId = e.id;
+		disqualifyReason = '';
+		disqualifyBy = fmtAny(currentUser?.username) || '';
+	}
+
+	async function confirmDisqualify(id: string) {
+		if (!disqualifyReason.trim()) {
+			alert('חובה להזין סיבת פסילה');
+			return;
+		}
+		try {
+			await disqualifyEntry(id, disqualifyReason.trim(), disqualifyBy.trim() || 'בית הדין');
+			disqualifyingId = null;
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה: ' + (e?.message ?? e));
 		}
 	}
 
-	function handleLogout() {
-		isLoggedIn = false;
+	async function doReinstate(id: string) {
+		if (!confirm('להחזיר את הרשומה לסטטוס "חתום"?')) return;
 		try {
-			sessionStorage.removeItem(SESSION_KEY);
-		} catch {}
+			await reinstateEntry(id);
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה: ' + (e?.message ?? e));
+		}
 	}
+
+	async function doDeleteCharter(id: string) {
+		if (!confirm('למחוק את הרשומה לצמיתות?')) return;
+		try {
+			await deleteCharterEntry(id);
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה: ' + (e?.message ?? e));
+		}
+	}
+
+	// ───────────── תשובות לשאלות ─────────────
+	const pendingSubmissions = $derived(qaSubmissions.filter((s) => s.status === 'pending'));
+
+	function startAnswer(s: QaSubmission) {
+		answeringId = s.documentId;
+		answerText = '';
+		answerBy = currentUser?.username ?? '';
+		answerTopicOverride = s.topic ?? 'אחר';
+	}
+
+	async function doPublishAnswer(s: QaSubmission) {
+		if (!answerText.trim()) { alert('יש להזין תשובה'); return; }
+		const slug = 'q-' + Date.now().toString(36);
+		try {
+			await publishAnswer({
+				slug,
+				topic: answerTopicOverride || s.topic || 'אחר',
+				question: s.question,
+				asker: s.askerName,
+				askDate: s.createdAt?.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+				answer: answerText.trim(),
+				answeredBy: answerBy.trim() || (currentUser?.username ?? 'חכמי העדה')
+			});
+			await markSubmissionAnswered(s.documentId, slug);
+			answeringId = null;
+			answerText = '';
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה בפרסום: ' + (e?.message ?? e));
+		}
+	}
+
+	async function doRejectSubmission(id: string) {
+		if (!confirm('לדחות את השאלה? (לא תפורסם כתשובה)')) return;
+		try { await rejectSubmission(id); await loadAdminContent(); }
+		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
+	}
+
+	async function doDeleteSubmission(id: string) {
+		if (!confirm('למחוק את השאלה לצמיתות?')) return;
+		try { await deleteSubmission(id); await loadAdminContent(); }
+		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
+	}
+
+	async function doDeleteQa(id: string) {
+		if (!confirm('למחוק את ה-Q&A מהאתר?')) return;
+		try { await deleteQa(id); await loadAdminContent(); }
+		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
+	}
+
+	// ───────────── ניהול דיונים ─────────────
+	function clearHearingForm() {
+		hearingEditingId = null;
+		hearingCaseName = '';
+		hearingDayan1 = ''; hearingDayan2 = ''; hearingDayan3 = '';
+		hearingZoom = '';
+		hearingDate = '';
+		hearingTime = '';
+		hearingStatus = 'מתוכנן';
+		hearingNotice = '';
+	}
+
+	function startEditHearing(h: Hearing & { documentId?: string }) {
+		hearingEditingId = (h as any).documentId ?? h.id;
+		hearingCaseName = fmtAny(h.caseName);
+		hearingDayan1 = fmtAny(h.dayanim?.[0]);
+		hearingDayan2 = fmtAny(h.dayanim?.[1]);
+		hearingDayan3 = fmtAny(h.dayanim?.[2]);
+		hearingZoom = h.zoomLink ?? '';
+		hearingDate = h.date ?? '';
+		hearingTime = h.time ?? '';
+		hearingStatus = h.status;
+	}
+
+	async function submitHearing(e: Event) {
+		e.preventDefault();
+		if (!hearingCaseName.trim() || !hearingDate) {
+			hearingNotice = '⚠️ חובה למלא שם תיק ותאריך';
+			return;
+		}
+		const dayanim = [hearingDayan1, hearingDayan2, hearingDayan3].map(s => s.trim()).filter(Boolean);
+		try {
+			if (hearingEditingId) {
+				await updateHearing(hearingEditingId, {
+					caseName: hearingCaseName.trim(), dayanim,
+					zoomLink: hearingZoom.trim(), date: hearingDate,
+					time: hearingTime.trim(), status: hearingStatus
+				});
+				hearingNotice = '✅ הדיון עודכן';
+			} else {
+				await createHearing({
+					caseName: hearingCaseName.trim(), dayanim,
+					zoomLink: hearingZoom.trim(), date: hearingDate,
+					time: hearingTime.trim(), status: hearingStatus
+				});
+				hearingNotice = '✅ הדיון נוסף';
+			}
+			clearHearingForm();
+			await loadAdminContent();
+			setTimeout(() => (hearingNotice = ''), 4000);
+		} catch (e: any) {
+			hearingNotice = '⚠️ שגיאה: ' + (e?.message ?? e);
+		}
+	}
+
+	async function doDeleteHearing(id: string) {
+		if (!confirm('למחוק את הדיון?')) return;
+		try { await deleteHearing(id); await loadAdminContent(); }
+		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
+	}
+
+	// ───────────── פסקי דין ─────────────
+	function clearRulingForm() {
+		rulingCaseRef = '';
+		rulingCaseName = '';
+		rulingDayan1 = ''; rulingDayan2 = ''; rulingDayan3 = '';
+		rulingDate = '';
+		rulingSummary = '';
+		rulingDecision = '';
+		rulingNotice = '';
+	}
+
+	async function submitRuling(e: Event) {
+		e.preventDefault();
+		if (!rulingCaseName.trim() || !rulingDate || !rulingSummary.trim() || !rulingDecision.trim()) {
+			rulingNotice = '⚠️ חובה: שם תיק, תאריך, סיכום והחלטה';
+			return;
+		}
+		const dayanim = [rulingDayan1, rulingDayan2, rulingDayan3].map(s => s.trim()).filter(Boolean);
+		try {
+			await createRuling({
+				caseRef: rulingCaseRef.trim() || undefined,
+				caseName: rulingCaseName.trim(),
+				dayanim,
+				date: rulingDate,
+				summary: rulingSummary.trim(),
+				decision: rulingDecision.trim()
+			});
+			rulingNotice = '✅ פסק הדין פורסם';
+			clearRulingForm();
+			await loadAdminContent();
+			setTimeout(() => (rulingNotice = ''), 4000);
+		} catch (e: any) {
+			rulingNotice = '⚠️ שגיאה: ' + (e?.message ?? e);
+		}
+	}
+
+	async function doDeleteRuling(id: string) {
+		if (!confirm('למחוק את פסק הדין?')) return;
+		try { await deleteRuling(id); await loadAdminContent(); }
+		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
+	}
+
+	// ───────────── בקשות לדיון ─────────────
+	async function doRequestStatus(id: string, status: 'accepted' | 'rejected' | 'scheduled') {
+		try { await setRequestStatus(id, status); await loadAdminContent(); }
+		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
+	}
+
+	async function doDeleteRequest(id: string) {
+		if (!confirm('למחוק את הבקשה?')) return;
+		try { await deleteHearingRequest(id); await loadAdminContent(); }
+		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
+	}
+
+	const pendingRequestsCount = $derived(hearingRequests.filter(r => r.status === 'pending').length);
+	const pendingQaCount = $derived(pendingSubmissions.length);
 
 	// ───────────── ניהול מאמרים ─────────────
 	function slugify(s: string): string {
@@ -541,49 +851,18 @@
 	<title>פאנל ניהול - חכמי העדה</title>
 </svelte:head>
 
-{#if !isLoggedIn}
-	<!-- ────────────── מסך התחברות ────────────── -->
-	<section class="py-16 max-w-md mx-auto px-4">
-		<div class="rounded-2xl border-2 border-purple-500/40 bg-gradient-to-br from-purple-900/30 to-blue-900/30 p-8 shadow-[0_0_40px_rgba(168,85,247,0.15)]">
-			<header class="text-center mb-6">
-				<div class="text-5xl mb-3">🔐</div>
-				<h1 class="bg-gradient-to-r from-purple-300 to-blue-300 bg-clip-text text-2xl md:text-3xl font-black text-transparent">
-					פאנל ניהול
-				</h1>
-				<p class="mt-2 text-gray-300 text-sm">כניסה למזכיר בתי הדין</p>
-			</header>
-
-			<form onsubmit={handleLogin} class="space-y-4">
-				<div>
-					<label class="block text-sm font-bold text-purple-200 mb-1.5" for="admin-pw">סיסמת ניהול</label>
-					<input
-						id="admin-pw"
-						type="password"
-						bind:value={passwordInput}
-						required
-						autofocus
-						placeholder="••••••••"
-						class="w-full px-3 py-2.5 rounded-lg bg-black/40 border border-white/15 text-white placeholder-gray-500 focus:border-purple-400 focus:outline-none focus:ring-1 focus:ring-purple-400"
-					/>
-				</div>
-
-				{#if loginError}
-					<p class="text-red-300 text-sm">{loginError}</p>
-				{/if}
-
-				<button
-					type="submit"
-					class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white font-black text-lg hover:opacity-90 transition-opacity"
-				>
-					כניסה
-				</button>
-			</form>
-
-			<p class="mt-6 text-center text-xs text-gray-500">
-				הסיסמה ניתנת על ידי בעל האתר. אם אינך מזכיר בית דין -
-				<a href="/" class="text-blue-300 underline">חזרה לדף הבית</a>
-			</p>
-		</div>
+{#if authChecking}
+	<section class="py-16 max-w-md mx-auto px-4 text-center">
+		<div class="text-4xl mb-3">⏳</div>
+		<p class="text-gray-300">בודק הרשאות...</p>
+	</section>
+{:else if !isLoggedIn}
+	<section class="py-16 max-w-md mx-auto px-4 text-center">
+		<div class="text-4xl mb-3">🔐</div>
+		<p class="text-gray-300 mb-4">נדרשת התחברות</p>
+		<a href="/admin/login" class="inline-block px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold">
+			לדף ההתחברות
+		</a>
 	</section>
 {:else}
 	<!-- ────────────── פאנל ניהול ────────────── -->
@@ -593,7 +872,10 @@
 				<h1 class="bg-gradient-to-r from-purple-300 to-blue-300 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
 					🔧 פאנל ניהול
 				</h1>
-				<p class="mt-1 text-gray-400 text-sm">מזכיר בתי הדין - חכמי העדה</p>
+				<p class="mt-1 text-gray-400 text-sm">
+					{currentUser?.username ?? ''}
+					{#if currentUser?.email}<span class="text-gray-500" dir="ltr"> · {currentUser.email}</span>{/if}
+				</p>
 			</div>
 			<button
 				onclick={handleLogout}
@@ -605,6 +887,76 @@
 
 		<!-- לשוניות -->
 		<div class="flex gap-2 mb-6 border-b border-white/10 flex-wrap">
+			<button
+				class="relative px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'qa-submissions'}
+				class:text-white={activeTab === 'qa-submissions'}
+				class:text-gray-400={activeTab !== 'qa-submissions'}
+				class:hover:text-gray-200={activeTab !== 'qa-submissions'}
+				onclick={() => (activeTab = 'qa-submissions')}
+			>
+				❓ שאלות חדשות
+				{#if pendingQaCount > 0}
+					<span class="absolute -top-1 -left-1 min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-black flex items-center justify-center">
+						{pendingQaCount}
+					</span>
+				{/if}
+			</button>
+			<button
+				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'qa'}
+				class:text-white={activeTab === 'qa'}
+				class:text-gray-400={activeTab !== 'qa'}
+				class:hover:text-gray-200={activeTab !== 'qa'}
+				onclick={() => (activeTab = 'qa')}
+			>
+				💬 שו"ת ({qaItems.length})
+			</button>
+			<button
+				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'charter'}
+				class:text-white={activeTab === 'charter'}
+				class:text-gray-400={activeTab !== 'charter'}
+				class:hover:text-gray-200={activeTab !== 'charter'}
+				onclick={() => (activeTab = 'charter')}
+			>
+				✍️ אמנה ({charterEntries.length})
+			</button>
+			<button
+				class="relative px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'hearing-requests'}
+				class:text-white={activeTab === 'hearing-requests'}
+				class:text-gray-400={activeTab !== 'hearing-requests'}
+				class:hover:text-gray-200={activeTab !== 'hearing-requests'}
+				onclick={() => (activeTab = 'hearing-requests')}
+			>
+				📥 בקשות לדיון
+				{#if pendingRequestsCount > 0}
+					<span class="absolute -top-1 -left-1 min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-black flex items-center justify-center">
+						{pendingRequestsCount}
+					</span>
+				{/if}
+			</button>
+			<button
+				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'hearings'}
+				class:text-white={activeTab === 'hearings'}
+				class:text-gray-400={activeTab !== 'hearings'}
+				class:hover:text-gray-200={activeTab !== 'hearings'}
+				onclick={() => (activeTab = 'hearings')}
+			>
+				⚖️ דיונים ({hearings.length})
+			</button>
+			<button
+				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+				class:bg-purple-500={activeTab === 'rulings'}
+				class:text-white={activeTab === 'rulings'}
+				class:text-gray-400={activeTab !== 'rulings'}
+				class:hover:text-gray-200={activeTab !== 'rulings'}
+				onclick={() => (activeTab = 'rulings')}
+			>
+				📜 פסקי דין ({rulings.length})
+			</button>
 			<button
 				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
 				class:bg-purple-500={activeTab === 'articles'}
@@ -663,7 +1015,377 @@
 		</div>
 
 		<!-- ───────────── תוכן הלשוניות ───────────── -->
-		{#if activeTab === 'articles'}
+		{#if activeTab === 'qa-submissions'}
+			<div class="space-y-4">
+				<div class="rounded-2xl border border-indigo-500/30 bg-indigo-500/5 p-5">
+					<h2 class="text-xl font-black text-indigo-200 mb-2">❓ שאלות שהגיעו מהאתר</h2>
+					<p class="text-sm text-gray-300">
+						שאלות אלו נשלחו דרך טופס /ask. תוכל לכתוב תשובה ולפרסם אותה כשו"ת, או לדחות שאלה לא רלוונטית.
+					</p>
+				</div>
+
+				{#if pendingSubmissions.length === 0}
+					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center">
+						<div class="text-4xl mb-2">📭</div>
+						<p class="text-gray-300">אין שאלות חדשות</p>
+					</div>
+				{:else}
+					<div class="space-y-3">
+						{#each pendingSubmissions as s (s.documentId)}
+							<div class="rounded-xl border border-indigo-400/40 bg-indigo-500/5 p-4 md:p-5">
+								<div class="flex items-start justify-between gap-3 flex-wrap mb-2">
+									<div>
+										<div class="font-bold text-white">{s.askerName}</div>
+										{#if s.askerEmail}
+											<div class="text-xs text-gray-400" dir="ltr">{s.askerEmail}</div>
+										{/if}
+										{#if s.askerPhone}
+											<div class="text-xs text-gray-400" dir="ltr">{s.askerPhone}</div>
+										{/if}
+									</div>
+									<div class="text-xs text-gray-500">
+										{s.topic ?? 'ללא נושא'} · {s.createdAt?.slice(0, 10) ?? ''}
+									</div>
+								</div>
+								<p class="text-gray-100 leading-relaxed mb-3 whitespace-pre-line">{s.question}</p>
+
+								{#if answeringId === s.documentId}
+									<div class="space-y-3 mt-3 pt-3 border-t border-white/10">
+										<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+											<input
+												type="text"
+												bind:value={answerBy}
+												placeholder="שם המשיב (רב/דיין)"
+												class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white"
+											/>
+											<input
+												type="text"
+												bind:value={answerTopicOverride}
+												placeholder="נושא"
+												class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white"
+											/>
+										</div>
+										<textarea
+											bind:value={answerText}
+											rows="5"
+											placeholder="כתוב את התשובה הרבנית כאן..."
+											class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white resize-y"
+										></textarea>
+										<div class="flex gap-2 flex-wrap">
+											<button onclick={() => doPublishAnswer(s)} class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold">
+												✅ פרסם תשובה
+											</button>
+											<button onclick={() => (answeringId = null)} class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold">
+												ביטול
+											</button>
+										</div>
+									</div>
+								{:else}
+									<div class="flex gap-2 flex-wrap">
+										<button onclick={() => startAnswer(s)} class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold">
+											✍️ ענה ופרסם
+										</button>
+										<button onclick={() => doRejectSubmission(s.documentId)} class="px-4 py-2 rounded-lg bg-yellow-600/40 hover:bg-yellow-600/60 text-yellow-100 text-sm font-bold">
+											דחה
+										</button>
+										<button onclick={() => doDeleteSubmission(s.documentId)} class="px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-sm font-bold">
+											מחק
+										</button>
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/if}
+
+				{#if qaSubmissions.filter(s => s.status !== 'pending').length > 0}
+					<details class="rounded-xl border border-white/10 bg-white/5 p-4">
+						<summary class="cursor-pointer text-sm font-bold text-gray-300">
+							📦 ארכיון שאלות שטופלו ({qaSubmissions.filter(s => s.status !== 'pending').length})
+						</summary>
+						<div class="mt-3 space-y-2">
+							{#each qaSubmissions.filter(s => s.status !== 'pending') as s (s.documentId)}
+								<div class="text-xs text-gray-400 border-b border-white/5 pb-2 flex items-center justify-between gap-3">
+									<div>
+										<span class="font-bold">{s.askerName}</span> · {s.status} · {s.createdAt?.slice(0, 10)}
+									</div>
+									<button onclick={() => doDeleteSubmission(s.documentId)} class="text-red-300 hover:text-red-200 text-xs">מחק</button>
+								</div>
+							{/each}
+						</div>
+					</details>
+				{/if}
+			</div>
+
+		{:else if activeTab === 'qa'}
+			<div class="space-y-3">
+				<div class="rounded-xl border border-white/10 bg-white/5 p-4">
+					<h2 class="text-lg font-black text-white">💬 שו"ת שפורסם</h2>
+					<p class="text-xs text-gray-400">מחיקה כאן מסירה את ה-Q&A מהאתר. לעריכה - דרך פאנל סטראפי.</p>
+				</div>
+				{#each qaItems as q (q.slug)}
+					<div class="rounded-xl border border-indigo-400/30 bg-indigo-500/5 p-4">
+						<div class="flex items-start justify-between gap-3 flex-wrap">
+							<div class="min-w-0 flex-1">
+								<p class="font-bold text-white">{fmtAny(q.asker)} · {q.topic}</p>
+								<p class="text-sm text-gray-300 mt-1 line-clamp-2">{fmtAny(q.question)}</p>
+								<p class="text-xs text-indigo-300 mt-2">{fmtAny(q.answeredBy)} · {q.answerDate}</p>
+							</div>
+							<button onclick={() => doDeleteQa((q as any).documentId ?? q.slug)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">
+								מחק
+							</button>
+						</div>
+					</div>
+				{/each}
+			</div>
+
+		{:else if activeTab === 'charter'}
+			<div class="space-y-4">
+				<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5">
+					<h2 class="text-xl font-black text-emerald-200 mb-2">✍️ חתימות אמנת UECC</h2>
+					<p class="text-sm text-gray-300">
+						רשימת החתומים מתעדכנת אוטומטית מהטופס באתר. ניתן לפסול חתימה (תועבר ללשונית "פסולים" באתר), להחזיר חתימה פסולה או למחוק.
+					</p>
+				</div>
+
+				<div class="flex gap-2 flex-wrap">
+					<button onclick={() => (charterFilter = 'all')} class="px-3 py-1.5 rounded-full text-sm font-bold border {charterFilter === 'all' ? 'bg-emerald-500/30 border-emerald-400 text-white' : 'border-white/15 text-gray-300 hover:bg-white/10'}">
+						הכל ({charterEntries.length})
+					</button>
+					<button onclick={() => (charterFilter = 'signed')} class="px-3 py-1.5 rounded-full text-sm font-bold border {charterFilter === 'signed' ? 'bg-emerald-500/30 border-emerald-400 text-white' : 'border-white/15 text-gray-300 hover:bg-white/10'}">
+						חתומים ({charterEntries.filter(e => e.status === 'signed').length})
+					</button>
+					<button onclick={() => (charterFilter = 'disqualified')} class="px-3 py-1.5 rounded-full text-sm font-bold border {charterFilter === 'disqualified' ? 'bg-red-500/30 border-red-400 text-white' : 'border-white/15 text-gray-300 hover:bg-white/10'}">
+						פסולים ({charterEntries.filter(e => e.status === 'disqualified').length})
+					</button>
+				</div>
+
+				{#if filteredCharter.length === 0}
+					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-400">
+						אין רשומות
+					</div>
+				{:else}
+					<div class="space-y-2">
+						{#each filteredCharter as e (e.id)}
+							<div class="rounded-xl border p-4 {e.status === 'signed' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'}">
+								<div class="flex items-start justify-between gap-3 flex-wrap">
+									<div class="min-w-0 flex-1">
+										<div class="flex items-center gap-2 flex-wrap">
+											<span class="font-bold text-white">{fmtAny(e.name)}</span>
+											<span class="text-xs px-2 py-0.5 rounded-full {e.status === 'signed' ? 'bg-emerald-500/30 text-emerald-100' : 'bg-red-500/30 text-red-100'}">
+												{e.status === 'signed' ? '✅ חתום' : '⛔ פסול'}
+											</span>
+										</div>
+										{#if fmtAny(e.role) || fmtAny(e.city)}
+											<div class="text-xs text-gray-300 mt-0.5">
+												{fmtAny(e.role)}{fmtAny(e.role) && fmtAny(e.city) ? ' • ' : ''}{fmtAny(e.city)}
+											</div>
+										{/if}
+										{#if e.email || e.phone}
+											<div class="text-xs text-gray-500 mt-0.5" dir="ltr">{e.email ?? ''} {e.phone ?? ''}</div>
+										{/if}
+										<div class="text-xs text-gray-500 mt-0.5">חתם: {e.date}</div>
+										{#if e.status === 'disqualified' && e.disqualifiedReason}
+											<div class="text-xs text-red-200 mt-1 italic">"{fmtAny(e.disqualifiedReason)}"</div>
+										{/if}
+									</div>
+									<div class="flex gap-1 flex-shrink-0">
+										{#if e.status === 'signed'}
+											<button onclick={() => startDisqualify(e)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">פסול</button>
+										{:else}
+											<button onclick={() => doReinstate(e.id)} class="px-3 py-1.5 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 text-xs font-bold">החזר</button>
+										{/if}
+										<button onclick={() => doDeleteCharter(e.id)} class="px-3 py-1.5 rounded bg-white/5 hover:bg-white/15 text-gray-200 text-xs font-bold">מחק</button>
+									</div>
+								</div>
+
+								{#if disqualifyingId === e.id}
+									<div class="mt-3 pt-3 border-t border-white/10 space-y-2">
+										<input
+											type="text"
+											bind:value={disqualifyReason}
+											placeholder="סיבת פסילה (חובה)"
+											class="w-full px-3 py-2 rounded-lg bg-black/30 border border-red-400/40 text-white"
+										/>
+										<input
+											type="text"
+											bind:value={disqualifyBy}
+											placeholder="שם הפוסל"
+											class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white"
+										/>
+										<div class="flex gap-2">
+											<button onclick={() => confirmDisqualify(e.id)} class="px-4 py-2 rounded bg-red-600 text-white text-sm font-bold">אשר פסילה</button>
+											<button onclick={() => (disqualifyingId = null)} class="px-4 py-2 rounded bg-white/10 text-white text-sm font-bold">ביטול</button>
+										</div>
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
+		{:else if activeTab === 'hearing-requests'}
+			<div class="space-y-3">
+				<div class="rounded-2xl border border-orange-500/30 bg-orange-500/5 p-5">
+					<h2 class="text-xl font-black text-orange-200 mb-2">📥 בקשות לפתיחת דיון</h2>
+					<p class="text-sm text-gray-300">
+						בקשות שנשלחו דרך /request-hearing. אשר בקשה, דחה, או צור דיון בלשונית "דיונים" על בסיסה.
+					</p>
+				</div>
+				{#if hearingRequests.length === 0}
+					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-400">
+						אין בקשות
+					</div>
+				{:else}
+					{#each hearingRequests as r (r.documentId)}
+						<div class="rounded-xl border border-orange-400/30 bg-orange-500/5 p-4">
+							<div class="flex items-start justify-between gap-3 flex-wrap mb-2">
+								<div>
+									<div class="font-bold text-white">{r.requesterName}</div>
+									{#if r.requesterPhone}<div class="text-xs text-gray-400" dir="ltr">{r.requesterPhone}</div>{/if}
+									{#if r.requesterEmail}<div class="text-xs text-gray-400" dir="ltr">{r.requesterEmail}</div>{/if}
+								</div>
+								<span class="text-xs px-2 py-1 rounded-full bg-orange-500/30 text-orange-100">{r.status}</span>
+							</div>
+							{#if r.oppositeParty}
+								<p class="text-sm text-gray-300">נגד: <strong>{r.oppositeParty}</strong></p>
+							{/if}
+							<p class="text-sm text-gray-200 whitespace-pre-line my-2">{r.caseDescription}</p>
+							{#if r.amount}<p class="text-xs text-orange-200">סכום: {r.amount}</p>{/if}
+							<div class="flex gap-2 mt-3 flex-wrap">
+								{#if r.status === 'pending'}
+									<button onclick={() => doRequestStatus(r.documentId, 'accepted')} class="px-3 py-1.5 rounded bg-green-600 text-white text-xs font-bold">✓ אשר</button>
+									<button onclick={() => doRequestStatus(r.documentId, 'rejected')} class="px-3 py-1.5 rounded bg-red-600 text-white text-xs font-bold">✗ דחה</button>
+								{/if}
+								<button onclick={() => doRequestStatus(r.documentId, 'scheduled')} class="px-3 py-1.5 rounded bg-blue-600 text-white text-xs font-bold">📅 סמן כמתוכנן</button>
+								<button onclick={() => doDeleteRequest(r.documentId)} class="px-3 py-1.5 rounded bg-white/5 hover:bg-white/15 text-gray-300 text-xs font-bold">מחק</button>
+							</div>
+						</div>
+					{/each}
+				{/if}
+			</div>
+
+		{:else if activeTab === 'hearings'}
+			<div class="space-y-6">
+				<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-5 md:p-6">
+					<h2 class="text-xl font-black text-blue-200 mb-4">
+						{hearingEditingId ? '✏️ עריכת דיון' : '➕ דיון חדש'}
+					</h2>
+					<form onsubmit={submitHearing} class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5">שם תיק *</label>
+							<input type="text" bind:value={hearingCaseName} placeholder="תיק 005/2026 - סכסוך שותפים" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+						</div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">דיין 1</label>
+							<input type="text" bind:value={hearingDayan1} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">דיין 2</label>
+							<input type="text" bind:value={hearingDayan2} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">דיין 3</label>
+							<input type="text" bind:value={hearingDayan3} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">קישור Zoom</label>
+							<input type="url" bind:value={hearingZoom} dir="ltr" placeholder="https://zoom.us/j/..." class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white text-right" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">תאריך *</label>
+							<input type="date" bind:value={hearingDate} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">שעה</label>
+							<input type="time" bind:value={hearingTime} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">סטטוס</label>
+							<select bind:value={hearingStatus} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white">
+								<option class="bg-gray-900" value="מתוכנן">מתוכנן</option>
+								<option class="bg-gray-900" value="התקיים">התקיים</option>
+								<option class="bg-gray-900" value="בוטל">בוטל</option>
+							</select></div>
+						{#if hearingNotice}
+							<p class="md:col-span-2 text-sm font-bold {hearingNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">{hearingNotice}</p>
+						{/if}
+						<div class="md:col-span-2 flex gap-2 flex-wrap">
+							<button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black">
+								{hearingEditingId ? 'שמור' : 'הוסף דיון'}
+							</button>
+							{#if hearingEditingId}
+								<button type="button" onclick={clearHearingForm} class="px-4 py-2 rounded-xl bg-white/10 text-white font-bold">ביטול</button>
+							{/if}
+						</div>
+					</form>
+				</div>
+
+				<div class="space-y-2">
+					{#each hearings as h ((h as any).documentId ?? h.id)}
+						<div class="rounded-xl border border-blue-400/30 bg-blue-500/5 p-4">
+							<div class="flex items-start justify-between gap-3 flex-wrap">
+								<div class="min-w-0 flex-1">
+									<p class="font-bold text-white">{fmtAny(h.caseName)}</p>
+									<p class="text-xs text-gray-300 mt-1">{h.date} · {h.time} · {h.status}</p>
+									<p class="text-xs text-gray-400 mt-0.5">{h.dayanim?.map(fmtAny).filter(Boolean).join(' · ')}</p>
+									{#if h.zoomLink}
+										<a href={h.zoomLink} target="_blank" rel="noopener" class="text-xs text-blue-300 hover:text-blue-200 underline" dir="ltr">{h.zoomLink}</a>
+									{/if}
+								</div>
+								<div class="flex gap-1 flex-shrink-0">
+									<button onclick={() => startEditHearing(h as any)} class="px-3 py-1.5 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold">ערוך</button>
+									<button onclick={() => doDeleteHearing((h as any).documentId ?? h.id)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">מחק</button>
+								</div>
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+
+		{:else if activeTab === 'rulings'}
+			<div class="space-y-6">
+				<div class="rounded-2xl border border-green-500/30 bg-green-500/5 p-5 md:p-6">
+					<h2 class="text-xl font-black text-green-200 mb-4">📜 פרסם פסק דין חדש</h2>
+					<form onsubmit={submitRuling} class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5">מזהה תיק (אופציונלי)</label>
+							<input type="text" bind:value={rulingCaseRef} placeholder="h-2026-003" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+						</div>
+						<div>
+							<label class="block text-sm font-bold text-gray-300 mb-1.5">שם תיק *</label>
+							<input type="text" bind:value={rulingCaseName} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+						</div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">דיין 1</label>
+							<input type="text" bind:value={rulingDayan1} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">דיין 2</label>
+							<input type="text" bind:value={rulingDayan2} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">דיין 3</label>
+							<input type="text" bind:value={rulingDayan3} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">תאריך *</label>
+							<input type="date" bind:value={rulingDate} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5">סיכום הדיון *</label>
+							<textarea bind:value={rulingSummary} rows="3" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white resize-y"></textarea>
+						</div>
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5">החלטה *</label>
+							<textarea bind:value={rulingDecision} rows="3" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white resize-y"></textarea>
+						</div>
+						{#if rulingNotice}
+							<p class="md:col-span-2 text-sm font-bold {rulingNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">{rulingNotice}</p>
+						{/if}
+						<div class="md:col-span-2">
+							<button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-black">פרסם פסק דין</button>
+						</div>
+					</form>
+				</div>
+
+				<div class="space-y-2">
+					{#each rulings as r ((r as any).documentId ?? r.id)}
+						<div class="rounded-xl border border-green-400/30 bg-green-500/5 p-4">
+							<div class="flex items-start justify-between gap-3 flex-wrap">
+								<div class="min-w-0 flex-1">
+									<p class="font-bold text-white">{fmtAny(r.caseName)}</p>
+									<p class="text-xs text-gray-300 mt-1">{r.date} · {r.dayanim?.map(fmtAny).filter(Boolean).join(' · ')}</p>
+									<p class="text-sm text-gray-200 mt-2 line-clamp-2">{fmtAny(r.summary)}</p>
+								</div>
+								<button onclick={() => doDeleteRuling((r as any).documentId ?? r.id)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">מחק</button>
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+
+		{:else if activeTab === 'articles'}
 			<div class="space-y-6">
 				<!-- טופס הוספה -->
 				<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-5 md:p-6">
