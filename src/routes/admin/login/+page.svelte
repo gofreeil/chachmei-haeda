@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { strapiLogin, getCurrentUser, isChachmeiAdmin } from '$lib/strapi';
+	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 
 	let identifier = $state('');
 	let password = $state('');
@@ -52,6 +53,19 @@
 			</h1>
 			<p class="mt-2 text-gray-300 text-sm">למורשים בלבד · אתר חכמי העדה</p>
 		</header>
+
+		<div class="mb-5">
+			<GoogleSignInButton returnTo="/admin" />
+		</div>
+
+		<div class="relative mb-5">
+			<div class="absolute inset-0 flex items-center">
+				<div class="w-full border-t border-white/15"></div>
+			</div>
+			<div class="relative flex justify-center text-xs">
+				<span class="px-3 bg-purple-900/30 text-gray-400 font-bold">או עם דוא"ל וסיסמה</span>
+			</div>
+		</div>
 
 		<form onsubmit={handleLogin} class="space-y-4">
 			<div>

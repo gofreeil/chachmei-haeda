@@ -205,6 +205,30 @@ export async function strapiRegister(input: {
 	return data;
 }
 
+/** מחזיר את ה-URL להתחלת OAuth של Google דרך Strapi.
+ *  ה-callback של Strapi → /auth/google/callback אצלנו → מוסיף ?access_token=<JWT>. */
+export function googleOAuthStartUrl(returnTo: string = '/profile'): string {
+	const callback = typeof window !== 'undefined'
+		? `${window.location.origin}/auth/google-callback?returnTo=${encodeURIComponent(returnTo)}`
+		: `/auth/google-callback?returnTo=${encodeURIComponent(returnTo)}`;
+	return `${BASE_URL}/api/connect/google?callback=${encodeURIComponent(callback)}`;
+}
+
+/** ה-callback של Strapi מחזיר ?access_token=<JWT_של_provider>. צריך להחליפו ב-JWT של Strapi. */
+export async function strapiGoogleExchange(accessToken: string): Promise<StrapiLoginResult> {
+	const res = await fetch(`${BASE_URL}/api/auth/google/callback?access_token=${encodeURIComponent(accessToken)}`, {
+		headers: { 'Content-Type': 'application/json' }
+	});
+	if (!res.ok) {
+		const json = await res.json().catch(() => ({}));
+		const msg = json?.error?.message || `Google exchange failed: ${res.status}`;
+		throw new Error(msg);
+	}
+	const data: StrapiLoginResult = await res.json();
+	setJwt(data.jwt);
+	return data;
+}
+
 export async function getCurrentUser(): Promise<StrapiUser | null> {
 	if (!getJwt()) return null;
 	try {

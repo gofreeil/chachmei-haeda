@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { strapiRegister, getCurrentUser } from '$lib/strapi';
+	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -68,6 +69,19 @@
 			</h1>
 			<p class="mt-2 text-gray-300 text-sm">פתיחת חשבון משתמש - לחתימה על האמנה, שליחת שאלות ומעקב אחר תיקים</p>
 		</header>
+
+		<div class="mb-5">
+			<GoogleSignInButton label="הירשם עם Google" />
+		</div>
+
+		<div class="relative mb-5">
+			<div class="absolute inset-0 flex items-center">
+				<div class="w-full border-t border-white/15"></div>
+			</div>
+			<div class="relative flex justify-center text-xs">
+				<span class="px-3 bg-blue-900/30 text-gray-400 font-bold">או עם דוא"ל וסיסמה</span>
+			</div>
+		</div>
 
 		<form onsubmit={handleSubmit} class="space-y-4">
 			<div>
@@ -142,6 +156,9 @@
 		<p class="mt-6 text-center text-sm text-gray-400">
 			כבר רשום?
 			<a href="/login" class="text-blue-300 hover:text-blue-200 underline font-bold">התחבר כאן</a>
+		</p>
+		<p class="mt-3 text-center text-xs text-gray-500">
+			🔗 אותו חשבון פועל גם באתר <a href="https://community-il.gofreeil.com" class="text-blue-300/80 underline">קהילה בשכונה</a>
 		</p>
 	</div>
 </section>
