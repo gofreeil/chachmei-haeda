@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { hearings, pickLang } from '$lib/data/hearings';
+	import { onMount } from 'svelte';
+	import { hearings as staticHearings, pickLang, type Hearing } from '$lib/data/hearings';
+	import { loadHearings } from '$lib/services/hearings-service';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
@@ -8,8 +10,18 @@
 		void _loc;
 		return get(t)(k) as string;
 	};
-	const upcoming = hearings.filter((h) => h.status === 'מתוכנן');
-	const past = hearings.filter((h) => h.status !== 'מתוכנן');
+
+	let hearings = $state<Hearing[]>(staticHearings);
+
+	onMount(async () => {
+		try {
+			const list = await loadHearings();
+			if (list.length) hearings = list;
+		} catch {}
+	});
+
+	const upcoming = $derived(hearings.filter((h) => h.status === 'מתוכנן'));
+	const past = $derived(hearings.filter((h) => h.status !== 'מתוכנן'));
 </script>
 
 <svelte:head>

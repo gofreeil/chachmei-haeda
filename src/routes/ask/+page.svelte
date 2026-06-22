@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { submitQuestion } from '$lib/services/qa-service';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
@@ -9,6 +10,9 @@
 	let askEmail = $state('');
 	let askTopic = $state('ask_topic_halacha');
 	let askQuestion = $state('');
+	let submitting = $state(false);
+	let submitted = $state(false);
+	let errorMsg = $state('');
 
 	const askTopics = [
 		'ask_topic_halacha',
@@ -19,12 +23,30 @@
 		'ask_topic_other'
 	];
 
-	function handleAskSubmit(e: Event) {
+	async function handleAskSubmit(e: Event) {
 		e.preventDefault();
+		if (submitting) return;
+		submitting = true;
+		errorMsg = '';
 		const topicLabel = tFn(askTopic);
-		const subject = `${tFn('ask_email_subject_prefix')} - ${topicLabel}`;
-		const body = `${tFn('ask_email_field_name')}: ${askName}\n${tFn('ask_email_field_email')}: ${askEmail}\n${tFn('ask_email_field_topic')}: ${topicLabel}\n\n${tFn('ask_email_field_question')}:\n${askQuestion}`;
-		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+		const result = await submitQuestion({
+			askerName: askName,
+			askerEmail: askEmail,
+			topic: topicLabel,
+			question: askQuestion
+		});
+		submitting = false;
+		if (result.ok) {
+			submitted = true;
+			askName = '';
+			askEmail = '';
+			askQuestion = '';
+		} else {
+			// אם ה-API נכשל - נופלים על mailto כגיבוי
+			const subject = `${tFn('ask_email_subject_prefix')} - ${topicLabel}`;
+			const body = `${tFn('ask_email_field_name')}: ${askName}\n${tFn('ask_email_field_email')}: ${askEmail}\n${tFn('ask_email_field_topic')}: ${topicLabel}\n\n${tFn('ask_email_field_question')}:\n${askQuestion}`;
+			window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+		}
 	}
 </script>
 
@@ -43,6 +65,20 @@
 				{tFn('ask_intro')}
 			</p>
 		</header>
+		{#if submitted}
+			<div class="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-6 text-center">
+				<div class="text-4xl mb-2">✅</div>
+				<p class="text-emerald-100 font-bold text-lg">{tFn('ask_submitted_title') || 'תודה! השאלה התקבלה.'}</p>
+				<p class="text-sm text-gray-200 mt-2">{tFn('ask_submitted_body') || 'חכמי העדה יבחנו את השאלה ויחזרו אליך בהקדם.'}</p>
+				<button
+					type="button"
+					onclick={() => { submitted = false; }}
+					class="mt-4 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 transition-colors"
+				>
+					{tFn('ask_submit_another') || 'שאל שאלה נוספת'}
+				</button>
+			</div>
+		{:else}
 		<form onsubmit={handleAskSubmit} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 			<div>
 				<label class="block text-sm font-bold text-indigo-700 mb-1.5" for="ask-name">{tFn('ask_label_name')}</label>
@@ -94,12 +130,17 @@
 				<p class="text-xs text-gray-700 max-w-md font-medium">{tFn('ask_disclaimer')}</p>
 				<button
 					type="submit"
-					class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all whitespace-nowrap"
+					disabled={submitting}
+					class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-black text-lg hover:scale-105 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] transition-all whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
 				>
-					📚 {tFn('ask_btn_submit')}
+					📚 {submitting ? (tFn('ask_btn_submitting') || 'שולח...') : tFn('ask_btn_submit')}
 				</button>
 			</div>
+			{#if errorMsg}
+				<p class="md:col-span-2 text-sm text-red-300 font-bold text-center">{errorMsg}</p>
+			{/if}
 		</form>
+		{/if}
 		<div class="mt-6 text-center">
 			<a href="/qa" class="text-sm font-bold text-indigo-700 hover:text-indigo-900 underline">
 				{tFn('ask_link_previous_answers')}

@@ -3,6 +3,11 @@
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+	import { addArticle } from '$lib/services/articles-service';
+	import { addActivity } from '$lib/services/activity-service';
+	import { addNewsItem } from '$lib/services/news-service';
+	import { loadRabbis, addRabbi as addRabbiToBackend } from '$lib/services/rabbis-service';
+	import { loadHomeConfig, saveHomeConfig } from '$lib/services/home-config-service';
 
 	// Admin currently enters Hebrew only - mirror it to all 3 locales as a fallback
 	// until proper translation UI is added. pickLang() will fall back to .he anyway.
@@ -105,7 +110,7 @@
 		return t;
 	}
 
-	function saveHomeVideo(e: Event) {
+	async function saveHomeVideo(e: Event) {
 		e.preventDefault();
 		const trimmed = homeVideoUrl.trim();
 		const trimmedTitle = homeVideoTitle.trim();
@@ -113,6 +118,13 @@
 			localStorage.setItem(HOME_VIDEO_KEY, trimmed);
 			localStorage.setItem(HOME_VIDEO_TITLE_KEY, trimmedTitle);
 		} catch {}
+		try {
+			await saveHomeConfig({ homeVideoUrl: trimmed, homeVideoTitle: trimmedTitle });
+		} catch (err) {
+			homeVideoNotice = '⚠️ נשמר מקומית בלבד (Strapi לא זמין)';
+			setTimeout(() => (homeVideoNotice = ''), 4000);
+			return;
+		}
 		homeVideoNotice = trimmed ? '✅ הסרטון והכותרת נשמרו ויופיעו בדף הבית' : '✅ הסרטון הוסר מדף הבית';
 		setTimeout(() => (homeVideoNotice = ''), 4000);
 	}
@@ -136,7 +148,7 @@
 		loadAll();
 	});
 
-	function loadAll() {
+	async function loadAll() {
 		try {
 			const a = JSON.parse(localStorage.getItem(ARTICLES_KEY) || '[]');
 			if (Array.isArray(a)) customArticles = a;
@@ -157,6 +169,16 @@
 					rabbis = parsed as Rabbi[];
 				}
 			}
+		} catch {}
+		// Strapi מנצח על localStorage לרבנים וקונפיג בית
+		try {
+			const backendRabbis = await loadRabbis();
+			if (backendRabbis.length) rabbis = backendRabbis;
+		} catch {}
+		try {
+			const cfg = await loadHomeConfig();
+			if (cfg.homeVideoUrl) homeVideoUrl = cfg.homeVideoUrl;
+			if (cfg.homeVideoTitle) homeVideoTitle = cfg.homeVideoTitle;
 		} catch {}
 	}
 
@@ -207,7 +229,7 @@
 		}
 	}
 
-	function submitRabbi(e: Event) {
+	async function submitRabbi(e: Event) {
 		e.preventDefault();
 		const name = rabbiName.trim();
 		if (!name) {
@@ -218,12 +240,21 @@
 		const title = rabbiTitle.trim() || undefined;
 		const nickname = rabbiNickname.trim() || undefined;
 		const city = rabbiCity.trim() || undefined;
+		const newRabbi: Rabbi = { id: editingRabbiId ?? genRabbiId(), name, photo, title, nickname, city };
+		let toBackend = true;
+		if (!editingRabbiId) {
+			try {
+				await addRabbiToBackend(newRabbi);
+			} catch {
+				toBackend = false;
+			}
+		}
 		if (editingRabbiId) {
-			rabbis = rabbis.map((x) => (x.id === editingRabbiId ? { ...x, name, photo, title, nickname, city } : x));
-			rabbiNotice = '✅ הדיין עודכן';
+			rabbis = rabbis.map((x) => (x.id === editingRabbiId ? newRabbi : x));
+			rabbiNotice = '✅ הדיין עודכן (לעדכון בסטראפי - דרך פאנל האדמין של Strapi)';
 		} else {
-			rabbis = [...rabbis, { id: genRabbiId(), name, photo, title, nickname, city }];
-			rabbiNotice = '✅ הדיין נוסף';
+			rabbis = [...rabbis, newRabbi];
+			rabbiNotice = toBackend ? '✅ הדיין נוסף לסטראפי' : '⚠️ נשמר מקומית בלבד';
 		}
 		persistRabbis();
 		rabbiName = '';
@@ -316,7 +347,7 @@
 			.slice(0, 60) || `art-${Date.now()}`;
 	}
 
-	function submitArticle(e: Event) {
+	async function submitArticle(e: Event) {
 		e.preventDefault();
 		if (!artTitle.trim() || !artAuthor.trim() || !artExcerpt.trim() || !artBody.trim()) {
 			artNotice = '⚠️ יש למלא את כל השדות החיוניים';
@@ -338,6 +369,12 @@
 			approvedBy: approvedBy.map(toLoc),
 			...(tags.length > 0 ? { tags: tags.map(toLoc) } : {})
 		};
+		let toBackend = true;
+		try {
+			await addArticle(newArt);
+		} catch {
+			toBackend = false;
+		}
 		customArticles = [newArt, ...customArticles];
 		try {
 			localStorage.setItem(ARTICLES_KEY, JSON.stringify(customArticles));
@@ -351,7 +388,9 @@
 		artApprover2 = '';
 		artApprover3 = '';
 		artTags = '';
-		artNotice = '✅ המאמר נוסף בהצלחה - מופיע מיד בדף הבית';
+		artNotice = toBackend
+			? '✅ המאמר נוסף לסטראפי ומופיע באתר'
+			: '⚠️ נשמר מקומית בלבד (Strapi לא זמין)';
 		setTimeout(() => (artNotice = ''), 4000);
 	}
 
@@ -375,7 +414,7 @@
 		}
 	}
 
-	function submitActivity(e: Event) {
+	async function submitActivity(e: Event) {
 		e.preventDefault();
 		if (!vidTitle.trim() || !vidAuthor.trim() || !vidExcerpt.trim()) {
 			vidNotice = '⚠️ יש למלא כותרת, מחבר ותקציר';
@@ -398,6 +437,12 @@
 			...(vidImageUrl.trim() ? { imageUrl: vidImageUrl.trim() } : {}),
 			...(vidSourceUrl.trim() ? { sourceUrl: vidSourceUrl.trim() } : {})
 		};
+		let toBackend = true;
+		try {
+			await addActivity(newItem);
+		} catch {
+			toBackend = false;
+		}
 		customActivity = [newItem, ...customActivity];
 		try {
 			localStorage.setItem(ACTIVITY_KEY, JSON.stringify(customActivity));
@@ -410,7 +455,9 @@
 		vidUrl = '';
 		vidImageUrl = '';
 		vidSourceUrl = '';
-		vidNotice = `✅ ה${vidKind} נוסף בהצלחה`;
+		vidNotice = toBackend
+			? `✅ ה${vidKind} נוסף לסטראפי ומופיע באתר`
+			: `⚠️ נשמר מקומית בלבד (Strapi לא זמין)`;
 		setTimeout(() => (vidNotice = ''), 4000);
 	}
 
@@ -423,7 +470,7 @@
 	}
 
 	// ───────────── ניהול חדשות לוקאליות ─────────────
-	function submitNews(e: Event) {
+	async function submitNews(e: Event) {
 		e.preventDefault();
 		if (!newsTitle.trim()) {
 			newsNotice = '⚠️ חובה למלא כותרת';
@@ -436,6 +483,16 @@
 			date: new Date().toISOString().slice(0, 10),
 			...(newsSourceUrl.trim() ? { sourceUrl: newsSourceUrl.trim() } : {})
 		};
+		let toBackend = true;
+		try {
+			await addNewsItem({
+				line1: item.title,
+				line2: item.summary || undefined,
+				sourceUrl: item.sourceUrl
+			});
+		} catch {
+			toBackend = false;
+		}
 		customNews = [item, ...customNews];
 		try {
 			localStorage.setItem(NEWS_KEY, JSON.stringify(customNews));
@@ -443,7 +500,9 @@
 		newsTitle = '';
 		newsSummary = '';
 		newsSourceUrl = '';
-		newsNotice = '✅ החדשה נוספה - תופיע בטיקר בדף הבית (לוקאלית בלבד, לא בקהילה בשכונה)';
+		newsNotice = toBackend
+			? '✅ החדשה נוספה לסטראפי - תופיע בטיקר'
+			: '⚠️ נשמר מקומית בלבד (Strapi לא זמין)';
 		setTimeout(() => (newsNotice = ''), 5000);
 	}
 

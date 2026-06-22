@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { activity as staticActivity, type ActivityKind, type ActivityItem, type LocalizedText } from '$lib/data/activity';
+	import { loadActivity } from '$lib/services/activity-service';
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { t, locale } from 'svelte-i18n';
@@ -19,11 +20,10 @@
 		return (v as any)[_loc as string] ?? (v as any).he ?? '';
 	};
 
-	const ACTIVITY_KEY = 'chachmei-custom-activity';
 	const PAGE_SIZE = 8;
 
 	let searchQuery = $state('');
-	let customActivity = $state<ActivityItem[]>([]);
+	let backendActivity = $state<ActivityItem[]>([]);
 	let currentPage = $state(1);
 
 	// טופס "פדיון קרקעות"
@@ -69,23 +69,19 @@
 		window.location.href = `mailto:freedomhasbegun@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 	}
 
-	onMount(() => {
-		try {
-			const raw = localStorage.getItem(ACTIVITY_KEY);
-			if (raw) {
-				const parsed = JSON.parse(raw);
-				if (Array.isArray(parsed)) customActivity = parsed;
-			}
-		} catch {}
-		// אם הגיעו עם ?q=... מקישור לתגית - אכלוס שדה החיפוש
+	onMount(async () => {
 		try {
 			const params = new URLSearchParams(window.location.search);
 			const q = params.get('q');
 			if (q) searchQuery = q;
 		} catch {}
+		try {
+			const list = await loadActivity();
+			if (list.length) backendActivity = list;
+		} catch {}
 	});
 
-	const allItems = $derived([...customActivity, ...staticActivity]);
+	const allItems = $derived(backendActivity.length ? backendActivity : staticActivity);
 
 	const filtered = $derived.by(() => {
 		const q = searchQuery.trim().toLowerCase();

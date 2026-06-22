@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { pickLang, type Article } from '$lib/data/articles';
+	import { loadArticles } from '$lib/services/articles-service';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -12,20 +13,15 @@
 	let a = $state<Article | null>(data.article);
 	let notFound = $state(false);
 
-	onMount(() => {
-		if (!a) {
-			try {
-				const custom = JSON.parse(localStorage.getItem('chachmei-custom-articles') || '[]');
-				if (Array.isArray(custom)) {
-					const found = custom.find((x: Article) => x?.slug === data.slug);
-					if (found) a = found;
-					else notFound = true;
-				} else {
-					notFound = true;
-				}
-			} catch {
-				notFound = true;
-			}
+	onMount(async () => {
+		if (a) return;
+		try {
+			const all = await loadArticles();
+			const found = all.find((x) => x.slug === data.slug);
+			if (found) a = found;
+			else notFound = true;
+		} catch {
+			notFound = true;
 		}
 	});
 </script>

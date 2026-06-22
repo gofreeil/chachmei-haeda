@@ -3,6 +3,9 @@
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { latestAnswer } from '$lib/data/qa';
 	import { latestActivity, pickLang } from '$lib/data/activity';
+	import { loadArticles } from '$lib/services/articles-service';
+	import { latestActivityAsync } from '$lib/services/activity-service';
+	import { loadHomeConfig } from '$lib/services/home-config-service';
 	import NewsTicker from '$lib/components/NewsTicker.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
@@ -17,7 +20,7 @@
 	};
 
 	const recentQa = latestAnswer();
-	const recentActivity = latestActivity();
+	let recentActivity = $state(latestActivity());
 
 	let allArticles = $state<Article[]>(staticArticles);
 	const DEFAULT_HOME_VIDEO = 'https://youtu.be/9ioV_PeaqWE?si=WN00o8ByG65ZOvQ4';
@@ -44,14 +47,23 @@
 
 	let embedVideoUrl = $derived(toEmbedUrl(homeVideoUrl));
 
-	onMount(() => {
+	onMount(async () => {
 		try {
-			const customArt = JSON.parse(localStorage.getItem('chachmei-custom-articles') || '[]');
-			if (Array.isArray(customArt)) allArticles = [...customArt, ...staticArticles];
 			const savedVid = localStorage.getItem('chachmei-home-video-url');
 			if (savedVid !== null) homeVideoUrl = savedVid;
 			const savedTitle = localStorage.getItem('chachmei-home-video-title');
 			if (savedTitle !== null) homeVideoTitle = savedTitle;
+		} catch {}
+		try {
+			const [arts, act, cfg] = await Promise.all([
+				loadArticles(),
+				latestActivityAsync(),
+				loadHomeConfig()
+			]);
+			if (arts.length) allArticles = arts;
+			if (act) recentActivity = act;
+			if (cfg.homeVideoUrl) homeVideoUrl = cfg.homeVideoUrl;
+			if (cfg.homeVideoTitle) homeVideoTitle = cfg.homeVideoTitle;
 		} catch {}
 	});
 

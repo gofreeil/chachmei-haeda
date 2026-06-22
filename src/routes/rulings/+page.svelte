@@ -1,10 +1,21 @@
 <script lang="ts">
-	import { rulings, pickLang } from '$lib/data/hearings';
+	import { onMount } from 'svelte';
+	import { rulings as staticRulings, pickLang, type Ruling } from '$lib/data/hearings';
+	import { loadRulings } from '$lib/services/hearings-service';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
+
+	let rulings = $state<Ruling[]>(staticRulings);
+
+	onMount(async () => {
+		try {
+			const list = await loadRulings();
+			if (list.length) rulings = list;
+		} catch {}
+	});
 </script>
 
 <svelte:head>

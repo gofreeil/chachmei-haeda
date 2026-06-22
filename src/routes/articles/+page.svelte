@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, pickLang, type Article } from '$lib/data/articles';
-	import { qa, pickLang as pickLangQa, type QaItem } from '$lib/data/qa';
+	import { qa as staticQa, pickLang as pickLangQa, type QaItem } from '$lib/data/qa';
+	import { loadArticles } from '$lib/services/articles-service';
+	import { loadQa } from '$lib/services/qa-service';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { t, locale } from 'svelte-i18n';
@@ -14,6 +16,7 @@
 	const SEARCH_PAGE_SIZE = 8;
 
 	let allArticles = $state<Article[]>(staticArticles);
+	let qa = $state<QaItem[]>(staticQa);
 	let searchQuery = $state('');
 	// ברירת מחדל = העמוד החדש ביותר (האחרון). מספר גבוה ייחתך אוטומטית ל-itemsTotalPages.
 	let itemsPage = $state(Number.MAX_SAFE_INTEGER);
@@ -28,16 +31,16 @@
 		| { type: 'article'; date: string; item: Article }
 		| { type: 'qa'; date: string; item: QaItem };
 
-	onMount(() => {
-		try {
-			const custom = JSON.parse(localStorage.getItem('chachmei-custom-articles') || '[]');
-			if (Array.isArray(custom)) allArticles = [...custom, ...staticArticles];
-		} catch {}
-		// אם הגיעו עם ?q=... מקישור לתגית - אכלוס שדה החיפוש
+	onMount(async () => {
 		try {
 			const params = new URLSearchParams(window.location.search);
 			const q = params.get('q');
 			if (q) searchQuery = q;
+		} catch {}
+		try {
+			const [a, q] = await Promise.all([loadArticles(), loadQa()]);
+			if (a.length) allArticles = a;
+			if (q.length) qa = q;
 		} catch {}
 	});
 

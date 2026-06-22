@@ -43,7 +43,7 @@
 		window.open(href, '_blank');
 	}
 
-	function onConsentChange() {
+	async function onConsentChange() {
 		if (!accepted || submitting) return;
 		notice = '';
 		if (!name.trim()) {
@@ -52,17 +52,24 @@
 			return;
 		}
 		submitting = true;
-		addSignatory({
-			name,
-			businessName,
-			role,
-			city,
-			email,
-			phone,
-			birthDate,
-			idNumber,
-			acceptedTerms: true
-		});
+		try {
+			await addSignatory({
+				name,
+				businessName,
+				role,
+				city,
+				email,
+				phone,
+				birthDate,
+				idNumber,
+				acceptedTerms: true
+			});
+		} catch (e) {
+			notice = '⚠️ ' + (tFn('charter_join_save_failed') || 'שגיאה בשמירה. אנא נסו שוב.');
+			submitting = false;
+			accepted = false;
+			return;
+		}
 		sendCharterEmail(email);
 		setTimeout(() => { showCelebration = true; }, 700);
 		setTimeout(() => { goto('/charter-index'); }, 4200);

@@ -15,12 +15,17 @@
 		typeof v === 'string' ? v : (v?.[_loc as any] ?? v?.he ?? '');
 
 	let entries = $state<CharterEntry[]>([]);
+	let loading = $state(true);
 	let tab = $state<'signed' | 'disqualified'>('signed');
 	let searchType = $state<'name' | 'business'>('name');
 	let search = $state('');
 
-	onMount(() => {
-		entries = loadEntries();
+	onMount(async () => {
+		try {
+			entries = await loadEntries();
+		} finally {
+			loading = false;
+		}
 	});
 
 	const signed = $derived(filterByStatus(entries, 'signed'));
@@ -128,7 +133,12 @@
 	</div>
 
 	<!-- רשימה -->
-	{#if filtered.length === 0}
+	{#if loading}
+		<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center max-w-lg mx-auto">
+			<div class="text-4xl mb-2">⏳</div>
+			<p class="text-gray-300">{tFn('charter_idx_loading') || 'טוען חתימות...'}</p>
+		</div>
+	{:else if filtered.length === 0}
 		<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center max-w-lg mx-auto">
 			<div class="text-4xl mb-2">{tab === 'signed' ? '📭' : '🕊️'}</div>
 			<p class="text-gray-300">

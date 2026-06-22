@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { qa, pickLang, type QaItem, type QaTopic } from '$lib/data/qa';
+	import { onMount } from 'svelte';
+	import { qa as staticQa, pickLang, type QaItem, type QaTopic } from '$lib/data/qa';
+	import { loadQa } from '$lib/services/qa-service';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -21,6 +23,14 @@
 	];
 
 	let filter = $state<QaTopic | 'הכל'>('הכל');
+	let qa = $state<QaItem[]>(staticQa);
+
+	onMount(async () => {
+		try {
+			const list = await loadQa();
+			if (list.length) qa = list;
+		} catch {}
+	});
 
 	const sorted = $derived(
 		[...qa].sort((a, b) => b.answerDate.localeCompare(a.answerDate))

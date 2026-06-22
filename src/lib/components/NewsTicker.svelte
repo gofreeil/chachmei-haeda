@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { loadNews } from '$lib/services/news-service';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
@@ -48,7 +49,25 @@
 		}
 	}
 
+	function pickLocalized(v: any): string {
+		if (!v) return '';
+		if (typeof v === 'string') return v;
+		return v[_loc as string] ?? v.he ?? v.en ?? '';
+	}
+
 	onMount(async () => {
+		let backend: NewsItem[] = [];
+		try {
+			const items = await loadNews();
+			backend = items.map((i) => ({
+				line1: pickLocalized(i.line1),
+				line2: pickLocalized(i.line2),
+				sourceUrl: i.sourceUrl || null,
+				documentId: i.id,
+				local: true
+			})).filter((i) => i.line1);
+		} catch {}
+
 		let remote: NewsItem[] = [];
 		try {
 			const res = await fetch(NATIONAL_NEWS_API);
@@ -63,12 +82,10 @@
 					}));
 				}
 			}
-		} catch {
-			// fallback להמשך
-		}
+		} catch {}
 
 		const local = loadLocal();
-		const merged = [...local, ...remote];
+		const merged = [...backend, ...local, ...remote];
 		if (merged.length > 0) newsItems = merged;
 	});
 </script>

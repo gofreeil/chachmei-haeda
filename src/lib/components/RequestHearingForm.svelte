@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import FancyHeading from './FancyHeading.svelte';
+	import { submitHearingRequest } from '$lib/services/hearings-service';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -160,9 +161,28 @@
 		finalizeCase();
 	}
 
-	function finalizeCase() {
+	async function finalizeCase() {
 		caseId = 'C-' + Math.floor(100000 + Math.random() * 900000);
 		approvals = { plaintiff: true, defendant: false, beitDin: false };
+
+		const description = [
+			subject,
+			details ? `\n\n${details}` : '',
+			`\n\nכינוי הדיון: ${nickname}`,
+			plaintiffPhone ? `\nטלפון תובע: ${plaintiffPhone}` : '',
+			defendantPhone ? `\nטלפון נתבע: ${defendantPhone}` : '',
+			proposedDate ? `\nתאריך מוצע: ${proposedDate}` : '',
+			`\nמזהה מקומי: ${caseId}`
+		].join('');
+
+		await submitHearingRequest({
+			requesterName: plaintiffName,
+			requesterPhone: plaintiffPhone,
+			requesterEmail: userEmail,
+			oppositeParty: defendantName,
+			caseDescription: description
+		});
+
 		try {
 			const cases = JSON.parse(localStorage.getItem('chachmei-cases') || '[]');
 			cases.push({
