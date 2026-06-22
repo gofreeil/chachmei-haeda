@@ -95,7 +95,8 @@
 		</form>
 
 		<p class="mt-6 text-center text-xs text-gray-500">
-			הרשאות ניהול מוקצות על ידי מנהל המערכת.
+			אין לך חשבון? <a href="/signup" class="text-blue-300 hover:text-blue-200 underline font-bold">הירשם כאן</a>
+			<br />הרשאות ניהול מוקצות על ידי מנהל המערכת.
 			<br />אם איבדת גישה - <a href="/" class="text-blue-300 underline">חזרה לדף הבית</a>
 		</p>
 	</div>

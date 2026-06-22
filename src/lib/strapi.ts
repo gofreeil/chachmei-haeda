@@ -185,6 +185,26 @@ export async function strapiLogin(identifier: string, password: string): Promise
 	return data;
 }
 
+export async function strapiRegister(input: {
+	username: string;
+	email: string;
+	password: string;
+}): Promise<StrapiLoginResult> {
+	const res = await fetch(`${BASE_URL}/api/auth/local/register`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(input)
+	});
+	if (!res.ok) {
+		const json = await res.json().catch(() => ({}));
+		const msg = json?.error?.message || `Register failed: ${res.status}`;
+		throw new Error(msg);
+	}
+	const data: StrapiLoginResult = await res.json();
+	setJwt(data.jwt);
+	return data;
+}
+
 export async function getCurrentUser(): Promise<StrapiUser | null> {
 	if (!getJwt()) return null;
 	try {

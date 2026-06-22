@@ -516,22 +516,20 @@
                                 {/if}
                             </a>
                         {:else}
-                            <a
-                                href="/profile"
-                                class="relative group flex-shrink-0"
-                                aria-label={tFn('header_profile_area')}
-                            >
-                                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 rounded-full border-2 border-white/20 group-hover:border-purple-400 transition-all">
-                                    <circle cx="20" cy="20" r="20" fill="#374151"/>
-                                    <circle cx="20" cy="16" r="7" fill="#6b7280"/>
-                                    <ellipse cx="20" cy="34" rx="12" ry="8" fill="#6b7280"/>
-                                </svg>
-                                <span class="absolute bottom-full right-1/2 translate-x-1/2 mb-2 hidden group-hover:block
-                                             bg-gray-900 text-white text-[10px] font-bold rounded-lg px-2 py-1
-                                             whitespace-nowrap border border-white/10 shadow-xl pointer-events-none">
-                                    {tFn('header_profile_area')}
-                                </span>
-                            </a>
+                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                                <a
+                                    href="/login"
+                                    class="px-2.5 py-1.5 rounded-lg bg-white/70 hover:bg-white/85 text-xs font-bold text-gray-900 transition-colors whitespace-nowrap"
+                                >
+                                    התחבר
+                                </a>
+                                <a
+                                    href="/signup"
+                                    class="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
+                                >
+                                    הירשם
+                                </a>
+                            </div>
                         {/if}
                     </div>
                 </div>
@@ -779,22 +777,20 @@
                             </a>
                         </div>
                     {:else}
-                        <a
-                            href="/profile"
-                            class="relative group flex-shrink-0"
-                            aria-label={tFn('header_profile_area')}
-                        >
-                            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 rounded-full border-2 border-white/20 group-hover:border-purple-400 transition-all">
-                                <circle cx="20" cy="20" r="20" fill="#374151"/>
-                                <circle cx="20" cy="16" r="7" fill="#6b7280"/>
-                                <ellipse cx="20" cy="34" rx="12" ry="8" fill="#6b7280"/>
-                            </svg>
-                            <span class="absolute top-full right-1/2 translate-x-1/2 mt-2 hidden group-hover:block
-                                         bg-gray-900 text-white text-sm font-bold rounded-lg px-3 py-1.5
-                                         whitespace-nowrap border border-white/10 shadow-xl pointer-events-none z-50">
-                                {tFn('header_profile_area')}
-                            </span>
-                        </a>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <a
+                                href="/login"
+                                class="px-4 py-2 rounded-lg bg-white/70 hover:bg-white/85 text-sm font-bold text-gray-900 transition-colors"
+                            >
+                                התחבר
+                            </a>
+                            <a
+                                href="/signup"
+                                class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
+                            >
+                                הירשם
+                            </a>
+                        </div>
                     {/if}
                 </div>
             {/if}

@@ -10,15 +10,28 @@
 	import CoinAnimation from "$lib/components/CoinAnimation.svelte";
 	import MobileAdsDrawer from "$lib/components/MobileAdsDrawer.svelte";
 	import MobileAdPopup from "$lib/components/MobileAdPopup.svelte";
-	import { beforeNavigate } from "$app/navigation";
+	import { beforeNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { closeAdPopup } from "$lib/adPopupStore";
 	import { t, locale } from "svelte-i18n";
 	import { get } from "svelte/store";
+	import { onMount } from "svelte";
+	import { getCurrentUser, strapiLogout, type StrapiUser } from "$lib/strapi";
 
 	let { children } = $props();
+	let currentUser = $state<StrapiUser | null>(null);
 
 	const hideEthicalBanner = $derived(page.url.pathname.startsWith('/heichal-hamaaseh/ethical-code'));
+
+	onMount(async () => {
+		currentUser = await getCurrentUser();
+	});
+
+	function handleLogout() {
+		strapiLogout();
+		currentUser = null;
+		goto('/');
+	}
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
@@ -43,7 +56,7 @@
 <MobileAdsDrawer currentUser={undefined} layoutUser={undefined} />
 <MobileAdPopup />
 <div class="min-h-screen flex flex-col bg-[#f0e3b8]">
-	<Header />
+	<Header {currentUser} onLogout={handleLogout} />
 
 	<div class="layout-container flex-grow">
 		<RightAdBanner />
