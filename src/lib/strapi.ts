@@ -206,11 +206,14 @@ export async function strapiRegister(input: {
 }
 
 /** מחזיר את ה-URL להתחלת OAuth של Google דרך Strapi.
- *  ה-callback של Strapi → /auth/google/callback אצלנו → מוסיף ?access_token=<JWT>. */
+ *  שומר את returnTo ב-sessionStorage (Strapi v5 דורש callback מדויק בלי query params). */
 export function googleOAuthStartUrl(returnTo: string = '/profile'): string {
+	if (typeof sessionStorage !== 'undefined') {
+		try { sessionStorage.setItem('chachmei-oauth-returnTo', returnTo); } catch {}
+	}
 	const callback = typeof window !== 'undefined'
-		? `${window.location.origin}/auth/google-callback?returnTo=${encodeURIComponent(returnTo)}`
-		: `/auth/google-callback?returnTo=${encodeURIComponent(returnTo)}`;
+		? `${window.location.origin}/auth/google-callback`
+		: `/auth/google-callback`;
 	return `${BASE_URL}/api/connect/google?callback=${encodeURIComponent(callback)}`;
 }
 

@@ -9,7 +9,13 @@
 	onMount(async () => {
 		try {
 			const params = new URLSearchParams(window.location.search);
-			const returnTo = params.get('returnTo') || '/profile';
+			// returnTo נשמר ב-sessionStorage ע"י googleOAuthStartUrl (Strapi v5 דורש callback מדויק)
+			let returnTo = '/profile';
+			try {
+				const stored = sessionStorage.getItem('chachmei-oauth-returnTo');
+				if (stored) returnTo = stored;
+				sessionStorage.removeItem('chachmei-oauth-returnTo');
+			} catch {}
 
 			// Strapi מחזיר בדר"כ jwt= ישירות, ולפעמים access_token=
 			const directJwt = params.get('jwt') || params.get('id_token');
