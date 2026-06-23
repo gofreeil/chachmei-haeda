@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { setJwt, getCurrentUser } from '$lib/strapi';
+	import { strapiGoogleExchange, getCurrentUser } from '$lib/strapi';
 
 	let status = $state<'working' | 'error'>('working');
 	let errorMsg = $state('');
@@ -17,10 +17,10 @@
 				sessionStorage.removeItem('chachmei-oauth-returnTo');
 			} catch {}
 
-			// Strapi מחזיר את ה-JWT שלו ישירות ב-?access_token= (אחרי שעשה את כל ה-OAuth dance עם Google)
-			const jwt = params.get('access_token') || params.get('jwt') || params.get('id_token');
-			if (!jwt) throw new Error('לא התקבל טוקן מ-Strapi');
-			setJwt(jwt);
+			// Strapi/Grant מחזיר את ה-Google access_token בשורת הכתובת.
+			// צריך לעשות עוד קריאה ל-/api/auth/google/callback כדי לקבל JWT של Strapi.
+			if (!params.get('access_token')) throw new Error('לא התקבל token מ-Google');
+			await strapiGoogleExchange(params);
 
 			const me = await getCurrentUser();
 			if (!me) throw new Error('ההזדהות נכשלה - אין משתמש');

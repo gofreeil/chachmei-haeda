@@ -217,9 +217,10 @@ export function googleOAuthStartUrl(returnTo: string = '/profile'): string {
 	return `${BASE_URL}/api/connect/google?callback=${encodeURIComponent(callback)}`;
 }
 
-/** ה-callback של Strapi מחזיר ?access_token=<JWT_של_provider>. צריך להחליפו ב-JWT של Strapi. */
-export async function strapiGoogleExchange(accessToken: string): Promise<StrapiLoginResult> {
-	const res = await fetch(`${BASE_URL}/api/auth/google/callback?access_token=${encodeURIComponent(accessToken)}`, {
+/** ה-callback של Strapi מחזיר ?access_token=<Google_token>. צריך להחליפו ב-JWT של Strapi דרך /auth/{provider}/callback. */
+export async function strapiGoogleExchange(allQueryParams: URLSearchParams): Promise<StrapiLoginResult> {
+	const qs = allQueryParams.toString();
+	const res = await fetch(`${BASE_URL}/api/auth/google/callback?${qs}`, {
 		headers: { 'Content-Type': 'application/json' }
 	});
 	if (!res.ok) {
