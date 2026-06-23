@@ -5,12 +5,13 @@
 //
 // Auth:
 //   strapiLogin → JWT
-//   ה-JWT נשמר ב-sessionStorage (לא localStorage) כך שמתאפסת ביציאה מהדפדפן
+//   ה-JWT נשמר ב-localStorage → נשאר גם אחרי סגירת הדפדפן (Strapi JWT תוקף 30 ימים)
 //   כל קריאה עם needAuth=true שולחת אוטומטית Authorization: Bearer <jwt>
 // ─────────────────────────────────────────────────────────────
 
 const DEFAULT_URL = 'https://community-il.duckdns.org';
 const JWT_STORAGE_KEY = 'chachmei-strapi-jwt';
+const LEGACY_SESSION_KEY = 'chachmei-strapi-jwt'; // היה ב-sessionStorage לפני
 
 function resolveBaseUrl(): string {
 	const fromVite = (import.meta as any)?.env?.PUBLIC_STRAPI_URL as string | undefined;
@@ -32,15 +33,33 @@ export interface StrapiUser {
 }
 
 export function getJwt(): string | null {
-	if (typeof sessionStorage === 'undefined') return null;
-	try { return sessionStorage.getItem(JWT_STORAGE_KEY); } catch { return null; }
+	if (typeof localStorage === 'undefined') return null;
+	try {
+		// קוראים קודם מ-localStorage, ואם אין - מנסים sessionStorage (מיגרציה ממשתמשים ישנים)
+		const fromLocal = localStorage.getItem(JWT_STORAGE_KEY);
+		if (fromLocal) return fromLocal;
+		if (typeof sessionStorage !== 'undefined') {
+			const fromSession = sessionStorage.getItem(LEGACY_SESSION_KEY);
+			if (fromSession) {
+				// מעבירים ל-localStorage כדי שזה יהיה persistent מהפעם הבאה
+				localStorage.setItem(JWT_STORAGE_KEY, fromSession);
+				sessionStorage.removeItem(LEGACY_SESSION_KEY);
+				return fromSession;
+			}
+		}
+		return null;
+	} catch { return null; }
 }
 
 export function setJwt(jwt: string | null): void {
-	if (typeof sessionStorage === 'undefined') return;
+	if (typeof localStorage === 'undefined') return;
 	try {
-		if (jwt) sessionStorage.setItem(JWT_STORAGE_KEY, jwt);
-		else sessionStorage.removeItem(JWT_STORAGE_KEY);
+		if (jwt) localStorage.setItem(JWT_STORAGE_KEY, jwt);
+		else localStorage.removeItem(JWT_STORAGE_KEY);
+		// מנקים גם את sessionStorage למקרה שיש שאריות
+		if (typeof sessionStorage !== 'undefined') {
+			try { sessionStorage.removeItem(LEGACY_SESSION_KEY); } catch {}
+		}
 	} catch {}
 }
 
