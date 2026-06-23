@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { hearings, rulings, pickLang } from '$lib/data/hearings';
+	import { getCurrentUser, type StrapiUser } from '$lib/strapi';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
@@ -47,6 +48,7 @@
 	// ───────────────── מצב משתמש ─────────────────
 	let isLoaded = $state(false);
 	let user = $state<UserData | null>(null);
+	let strapiUser = $state<StrapiUser | null>(null);
 	let cases = $state<CaseRecord[]>([]);
 	let messages = $state<Message[]>([]);
 	let activeTab = $state<Tab>('overview');
@@ -58,15 +60,28 @@
 	let editCity = $state('');
 	let savedNotice = $state(false);
 
-	onMount(() => {
+	onMount(async () => {
+		// קודם בודקים אם המשתמש מחובר ל-Strapi (Google/local)
+		strapiUser = await getCurrentUser();
+
 		try {
 			const raw = localStorage.getItem('chachmei-user');
 			if (raw) {
 				user = JSON.parse(raw);
-				editName = user?.name ?? '';
-				editPhone = user?.phone ?? '';
-				editEmail = user?.email ?? '';
-				editCity = user?.city ?? '';
+			}
+			// אם יש משתמש Strapi אבל אין user מקומי - יוצרים אחד מהפרטים שלו
+			if (strapiUser && !user) {
+				user = {
+					name: strapiUser.username || strapiUser.email,
+					phone: '',
+					email: strapiUser.email,
+				};
+			}
+			if (user) {
+				editName = user.name ?? '';
+				editPhone = user.phone ?? '';
+				editEmail = user.email ?? '';
+				editCity = user.city ?? '';
 			}
 			const casesRaw = localStorage.getItem('chachmei-cases');
 			if (casesRaw) cases = JSON.parse(casesRaw);
@@ -91,7 +106,7 @@
 		isLoaded = true;
 	});
 
-	const isLoggedIn = $derived(!!user?.name);
+	const isLoggedIn = $derived(!!user?.name || !!strapiUser);
 	const initial = $derived((user?.name || '?').charAt(0));
 	const unreadCount = $derived(messages.filter((m) => !m.read).length);
 
@@ -187,12 +202,20 @@
 			<p class="text-gray-300 mb-5 leading-relaxed">
 				{tFn('profile_signup_required_desc')}
 			</p>
-			<a
-				href="/heichal-hamishpat?open=request-hearing"
-				class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black hover:scale-105 transition-transform"
-			>
-				✍️ {tFn('profile_signup_cta')}
-			</a>
+			<div class="flex gap-2 justify-center flex-wrap">
+				<a
+					href="/signup"
+					class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black hover:scale-105 transition-transform"
+				>
+					✨ הרשם / התחבר
+				</a>
+				<a
+					href="/heichal-hamaaseh/ethical-code#join"
+					class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black hover:scale-105 transition-transform"
+				>
+					✍️ חתימה על האמנה
+				</a>
+			</div>
 			<p class="text-xs text-gray-500 mt-6">
 				💡 {tFn('profile_cross_site_signup_prefix')} <a href="https://community.gofreeil.com/" class="text-blue-300 underline">{tFn('profile_site_community')}</a>,
 				<a href="https://criticism.gofreeil.com/" class="text-blue-300 underline">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
