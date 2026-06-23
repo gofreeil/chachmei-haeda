@@ -71,8 +71,14 @@
 			}
 			// אם יש משתמש Strapi אבל אין user מקומי - יוצרים אחד מהפרטים שלו
 			if (strapiUser && !user) {
+				// username מ-Google OAuth זה google_<id>; משתמשים בחלק לפני @ של המייל במקום
+				const username = strapiUser.username || '';
+				const isAutoUsername = /^google_\d+$|^facebook_\d+$|^github_\d+$/.test(username);
+				const friendlyName = isAutoUsername
+					? (strapiUser.email?.split('@')[0] ?? username)
+					: username;
 				user = {
-					name: strapiUser.username || strapiUser.email,
+					name: friendlyName,
 					phone: '',
 					email: strapiUser.email,
 				};
