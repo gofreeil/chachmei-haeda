@@ -21,7 +21,12 @@
 	let { children } = $props();
 	let currentUser = $state<StrapiUser | null>(null);
 
-	const hideEthicalBanner = $derived(page.url.pathname.startsWith('/heichal-hamaaseh/ethical-code'));
+	// מסתירים את הבאנר בעמודי auth (לא קשור להצטרפות לקוד) ובעמוד הקוד עצמו
+	const hideEthicalBanner = $derived(
+		page.url.pathname.startsWith('/heichal-hamaaseh/ethical-code') ||
+		page.url.pathname.startsWith('/login') ||
+		page.url.pathname.startsWith('/signup')
+	);
 
 	onMount(async () => {
 		currentUser = await getCurrentUser();
