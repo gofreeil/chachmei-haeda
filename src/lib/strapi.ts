@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// קליינט פשוט ל-Strapi (community-il.duckdns.org).
+// קליינט פשוט ל-Strapi (api.gofreeil.com).
 // כל ה-content-types של חכמי העדה מאוכסנים בקידומת `ch-`.
 // אם הסטראפי לא זמין/ריק → הקריאות מחזירות [] / null והדפים נופלים על הנתונים הסטטיים.
 //
@@ -9,7 +9,7 @@
 //   כל קריאה עם needAuth=true שולחת אוטומטית Authorization: Bearer <jwt>
 // ─────────────────────────────────────────────────────────────
 
-const DEFAULT_URL = 'https://community-il.duckdns.org';
+const DEFAULT_URL = 'https://api.gofreeil.com';
 const JWT_STORAGE_KEY = 'chachmei-strapi-jwt';
 const LEGACY_SESSION_KEY = 'chachmei-strapi-jwt'; // היה ב-sessionStorage לפני
 
