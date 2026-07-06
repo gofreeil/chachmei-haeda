@@ -3,6 +3,7 @@
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+	import { loadRabbis } from '$lib/services/rabbis-service';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 
 	let _loc = $state(get(locale));
@@ -11,7 +12,8 @@
 
 	let rabbis = $state<Rabbi[]>(defaultRabbis);
 
-	onMount(() => {
+	onMount(async () => {
+		// גיבוי מיידי מ-localStorage כדי שלא יהבהב, ואז מקור-האמת מהבאקאנד
 		try {
 			const raw = localStorage.getItem(RABBIS_STORAGE_KEY);
 			if (raw) {
@@ -20,6 +22,10 @@
 					rabbis = saved as Rabbi[];
 				}
 			}
+		} catch {}
+		try {
+			const backend = await loadRabbis();
+			if (backend.length) rabbis = backend;
 		} catch {}
 	});
 </script>

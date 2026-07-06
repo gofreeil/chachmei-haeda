@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
-	import { latestAnswer } from '$lib/data/qa';
+	import { latestAnswer, type QaItem } from '$lib/data/qa';
 	import { latestActivity, pickLang } from '$lib/data/activity';
 	import { loadArticles } from '$lib/services/articles-service';
 	import { latestActivityAsync } from '$lib/services/activity-service';
+	import { loadQa } from '$lib/services/qa-service';
 	import { loadHomeConfig } from '$lib/services/home-config-service';
 	import NewsTicker from '$lib/components/NewsTicker.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
@@ -19,7 +20,7 @@
 		return get(t)(k) as string;
 	};
 
-	const recentQa = latestAnswer();
+	let recentQa = $state<QaItem>(latestAnswer());
 	let recentActivity = $state(latestActivity());
 
 	let allArticles = $state<Article[]>(staticArticles);
@@ -55,13 +56,19 @@
 			if (savedTitle !== null) homeVideoTitle = savedTitle;
 		} catch {}
 		try {
-			const [arts, act, cfg] = await Promise.all([
+			const [arts, act, qa, cfg] = await Promise.all([
 				loadArticles(),
 				latestActivityAsync(),
+				loadQa(),
 				loadHomeConfig()
 			]);
 			if (arts.length) allArticles = arts;
 			if (act) recentActivity = act;
+			// השאלה-תשובה האחרונה עם מענה מהבאקאנד
+			const answered = qa.filter((q) => q.answerDate && q.answer?.he);
+			if (answered.length) {
+				recentQa = [...answered].sort((a, b) => b.answerDate.localeCompare(a.answerDate))[0];
+			}
 			if (cfg.homeVideoUrl) homeVideoUrl = cfg.homeVideoUrl;
 			if (cfg.homeVideoTitle) homeVideoTitle = cfg.homeVideoTitle;
 		} catch {}

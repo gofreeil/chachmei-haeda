@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { hearings, rulings, pickLang } from '$lib/data/hearings';
+	import { hearings as staticHearings, rulings as staticRulings, pickLang, type Hearing, type Ruling } from '$lib/data/hearings';
+	import { loadHearings, loadRulings } from '$lib/services/hearings-service';
 	import { getCurrentUser, strapiLogout, type StrapiUser } from '$lib/strapi';
 	import { goto } from '$app/navigation';
 	import { t, locale } from 'svelte-i18n';
@@ -54,6 +55,10 @@
 	let messages = $state<Message[]>([]);
 	let activeTab = $state<Tab>('overview');
 
+	// דיונים/פסקי דין - מקור-אמת מהבאקאנד, עם נפילה לנתונים הסטטיים
+	let hearings = $state<Hearing[]>(staticHearings);
+	let rulings = $state<Ruling[]>(staticRulings);
+
 	// טופס עריכה
 	let editName = $state('');
 	let editPhone = $state('');
@@ -64,6 +69,10 @@
 	onMount(async () => {
 		// קודם בודקים אם המשתמש מחובר ל-Strapi (Google/local)
 		strapiUser = await getCurrentUser();
+
+		// טוענים דיונים/פסקי דין מהבאקאנד (fallback לסטטי בתוך השירות)
+		loadHearings().then((h) => { if (h.length) hearings = h; }).catch(() => {});
+		loadRulings().then((r) => { if (r.length) rulings = r; }).catch(() => {});
 
 		try {
 			const raw = localStorage.getItem('chachmei-user');
@@ -423,7 +432,7 @@
 						<div class="rounded-xl border border-white/10 bg-white/5 p-4">
 							<div class="flex items-start justify-between gap-2 flex-wrap">
 								<div>
-									<p class="font-bold text-white">{h.caseName}</p>
+									<p class="font-bold text-white">{pickLang(h.caseName, _loc)}</p>
 									<p class="text-sm text-gray-400">{h.date} · {h.time}</p>
 								</div>
 								<a href={h.zoomLink} target="_blank" rel="noopener" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-200 font-bold hover:bg-blue-500/30">🎥 {tFn('profile_join_hearing')}</a>
@@ -436,8 +445,11 @@
 					<h3 class="text-sm font-bold text-green-300 mt-4">📋 {tFn('profile_final_rulings')}</h3>
 					{#each myRulings as r}
 						<div class="rounded-xl border border-white/10 bg-white/5 p-4">
-							<p class="font-bold text-white">{r.caseName}</p>
-							<p class="text-sm text-gray-400 mt-1">{r.date} · {tFn('profile_status')}: {r.status}</p>
+							<p class="font-bold text-white">{pickLang(r.caseName, _loc)}</p>
+							<p class="text-sm text-gray-400 mt-1">{r.date}</p>
+							{#if r.summary}
+								<p class="text-sm text-gray-300 mt-2 line-clamp-2">{pickLang(r.summary, _loc)}</p>
+							{/if}
 						</div>
 					{/each}
 				{/if}
