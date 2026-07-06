@@ -62,14 +62,6 @@
 		}
 	});
 
-	function sendCharterEmail(toEmail: string) {
-		if (!toEmail.trim()) return;
-		const subject = tFn('charter_email_subject');
-		const body = tFn('charter_email_intro') + '\n' + tFn('charter_text_full');
-		const href = `mailto:${encodeURIComponent(toEmail.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-		window.open(href, '_blank');
-	}
-
 	async function onConsentChange() {
 		if (!accepted || submitting) return;
 		notice = '';
@@ -97,7 +89,6 @@
 			accepted = false;
 			return;
 		}
-		sendCharterEmail(email);
 		setTimeout(() => { showCelebration = true; }, 700);
 		setTimeout(() => { goto('/charter-index'); }, 4200);
 	}
