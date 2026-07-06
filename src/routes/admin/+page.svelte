@@ -13,6 +13,7 @@
 		loadEntries as loadCharterEntries,
 		disqualifyEntry,
 		reinstateEntry,
+		updateSignatory,
 		deleteEntry as deleteCharterEntry
 	} from '$lib/services/charter-service';
 	import {
@@ -85,6 +86,16 @@
 	let disqualifyingId = $state<string | null>(null);
 	let disqualifyReason = $state('');
 	let disqualifyBy = $state('');
+	// עריכת פרטי חתימה
+	let editingCharterId = $state<string | null>(null);
+	let editCharterName = $state('');
+	let editCharterBusiness = $state('');
+	let editCharterRole = $state('');
+	let editCharterCity = $state('');
+	let editCharterEmail = $state('');
+	let editCharterPhone = $state('');
+	let editCharterDate = $state('');
+	let savingCharter = $state(false);
 
 	// ── QA Submissions answering form ──
 	let answeringId = $state<string | null>(null);
@@ -443,6 +454,43 @@
 		disqualifyingId = e.id;
 		disqualifyReason = '';
 		disqualifyBy = fmtAny(currentUser?.username) || '';
+	}
+
+	function startEditCharter(e: CharterEntry) {
+		editingCharterId = e.id;
+		disqualifyingId = null;
+		editCharterName = fmtAny(e.name);
+		editCharterBusiness = fmtAny(e.businessName);
+		editCharterRole = fmtAny(e.role);
+		editCharterCity = fmtAny(e.city);
+		editCharterEmail = e.email ?? '';
+		editCharterPhone = e.phone ?? '';
+		editCharterDate = e.date ?? '';
+	}
+
+	async function saveEditCharter(id: string) {
+		if (!editCharterName.trim()) {
+			alert('חובה להזין שם');
+			return;
+		}
+		savingCharter = true;
+		try {
+			await updateSignatory(id, {
+				name: editCharterName,
+				businessName: editCharterBusiness,
+				role: editCharterRole,
+				city: editCharterCity,
+				email: editCharterEmail,
+				phone: editCharterPhone,
+				signedDate: editCharterDate
+			});
+			editingCharterId = null;
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה בשמירה: ' + (e?.message ?? e));
+		} finally {
+			savingCharter = false;
+		}
 	}
 
 	async function confirmDisqualify(id: string) {
@@ -1190,6 +1238,7 @@
 										{/if}
 									</div>
 									<div class="flex gap-1 flex-shrink-0">
+										<button onclick={() => startEditCharter(e)} class="px-3 py-1.5 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold">ערוך</button>
 										{#if e.status === 'signed'}
 											<button onclick={() => startDisqualify(e)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">פסול</button>
 										{:else}
@@ -1198,6 +1247,47 @@
 										<button onclick={() => doDeleteCharter(e.id)} class="px-3 py-1.5 rounded bg-white/5 hover:bg-white/15 text-gray-200 text-xs font-bold">מחק</button>
 									</div>
 								</div>
+
+								{#if editingCharterId === e.id}
+									<div class="mt-3 pt-3 border-t border-white/10 space-y-2">
+										<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+											<label class="block">
+												<span class="text-xs text-gray-400">שם מלא</span>
+												<input type="text" bind:value={editCharterName} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-blue-400/40 text-white" />
+											</label>
+											<label class="block">
+												<span class="text-xs text-gray-400">שם עסק / ארגון</span>
+												<input type="text" bind:value={editCharterBusiness} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+											</label>
+											<label class="block">
+												<span class="text-xs text-gray-400">תפקיד</span>
+												<input type="text" bind:value={editCharterRole} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+											</label>
+											<label class="block">
+												<span class="text-xs text-gray-400">עיר</span>
+												<input type="text" bind:value={editCharterCity} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+											</label>
+											<label class="block">
+												<span class="text-xs text-gray-400">אימייל</span>
+												<input type="email" dir="ltr" bind:value={editCharterEmail} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+											</label>
+											<label class="block">
+												<span class="text-xs text-gray-400">טלפון</span>
+												<input type="tel" dir="ltr" bind:value={editCharterPhone} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+											</label>
+											<label class="block">
+												<span class="text-xs text-gray-400">תאריך חתימה</span>
+												<input type="date" bind:value={editCharterDate} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+											</label>
+										</div>
+										<div class="flex gap-2">
+											<button onclick={() => saveEditCharter(e.id)} disabled={savingCharter} class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-bold">
+												{savingCharter ? 'שומר…' : '💾 שמור'}
+											</button>
+											<button onclick={() => (editingCharterId = null)} class="px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-bold">ביטול</button>
+										</div>
+									</div>
+								{/if}
 
 								{#if disqualifyingId === e.id}
 									<div class="mt-3 pt-3 border-t border-white/10 space-y-2">

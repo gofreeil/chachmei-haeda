@@ -93,6 +93,30 @@ export async function addSignatory(input: {
 	return fromStrapi({ ...payload, ...item });
 }
 
+/** עדכון פרטי חתימה קיימת (שם/עסק/תפקיד/עיר/מייל/טלפון/תאריך).
+ *  שולח רק שדות שהוגדרו. ריק ('') → null (ניקוי השדה). undefined → לא נוגעים. */
+export async function updateSignatory(
+	id: string,
+	fields: {
+		name?: string;
+		businessName?: string;
+		role?: string;
+		city?: string;
+		email?: string;
+		phone?: string;
+		signedDate?: string;
+	}
+): Promise<void> {
+	const payload: Record<string, any> = {};
+	for (const [k, v] of Object.entries(fields)) {
+		if (v === undefined) continue;
+		const trimmed = typeof v === 'string' ? v.trim() : v;
+		payload[k] = trimmed === '' ? null : trimmed;
+	}
+	if (Object.keys(payload).length === 0) return;
+	await strapiPut(COLLECTION, id, payload);
+}
+
 export function filterByStatus(
 	entries: CharterEntry[],
 	status: CharterStatus
