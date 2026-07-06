@@ -10,7 +10,7 @@
 	import CoinAnimation from "$lib/components/CoinAnimation.svelte";
 	import MobileAdsDrawer from "$lib/components/MobileAdsDrawer.svelte";
 	import MobileAdPopup from "$lib/components/MobileAdPopup.svelte";
-	import { beforeNavigate, goto } from "$app/navigation";
+	import { beforeNavigate, afterNavigate, goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { closeAdPopup } from "$lib/adPopupStore";
 	import { t, locale } from "svelte-i18n";
@@ -30,6 +30,13 @@
 
 	onMount(async () => {
 		currentUser = await getCurrentUser();
+	});
+
+	// ההתחברות (Google/SSO) מסתיימת ב-goto (ניווט צד-לקוח) שלא מריץ מחדש את onMount,
+	// ולכן ההדר נשאר על מצב "מנותק" עד רענון מלא. מרעננים את המשתמש אחרי כל ניווט
+	// כשעדיין אין currentUser — כך ההדר מתעדכן מיד אחרי התחברות (וגם התמונה עולה).
+	afterNavigate(async () => {
+		if (!currentUser) currentUser = await getCurrentUser();
 	});
 
 	function handleLogout() {

@@ -36,6 +36,7 @@ export interface StrapiUser {
 	city?: string;
 	phone?: string;
 	birth_date?: string;
+	avatar_url?: string;
 }
 
 export function getJwt(): string | null {
