@@ -20,6 +20,14 @@
 		if (user) goto(returnTo);
 	});
 
+	// SSO: מפנים לקהילת "יוצאים לחירות", היא קובעת את העוגייה המשותפת gofreeil-auth
+	// על .gofreeil.com ומחזירה ל-callback. אותו JWT תקף כאן (אותו Strapi המשותף).
+	function loginWithCommunity() {
+		const origin = window.location.origin;
+		const callback = `${origin}/auth/community-callback?returnTo=${encodeURIComponent(returnTo)}`;
+		window.location.href = `https://community.gofreeil.com/sso?callback=${encodeURIComponent(callback)}`;
+	}
+
 	async function handleLogin(e: Event) {
 		e.preventDefault();
 		if (submitting) return;
@@ -56,9 +64,21 @@
 			<p class="mt-2 text-gray-300 text-sm">היכנס לחשבון שלך</p>
 		</header>
 
-		<div class="mb-5">
+		<div class="mb-3">
 			<GoogleSignInButton {returnTo} />
 		</div>
+
+		<button
+			type="button"
+			onclick={loginWithCommunity}
+			class="w-full mb-2 flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black hover:opacity-90 transition-opacity shadow-lg"
+		>
+			<span class="text-xl" aria-hidden="true">🕊️</span>
+			<span>התחבר דרך "יוצאים לחירות"</span>
+		</button>
+		<p class="text-center text-xs text-gray-400 mb-5">
+			רשום כבר בקהילה, בשכונה או באתר אחר של יוצאים לחירות? המערכת תזהה אותך אוטומטית.
+		</p>
 
 		<div class="relative mb-5">
 			<div class="absolute inset-0 flex items-center">
