@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { hearings, rulings, pickLang } from '$lib/data/hearings';
-	import { getCurrentUser, type StrapiUser } from '$lib/strapi';
+	import { getCurrentUser, strapiLogout, type StrapiUser } from '$lib/strapi';
+	import { goto } from '$app/navigation';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
@@ -178,9 +179,12 @@
 		try {
 			localStorage.removeItem('chachmei-user');
 		} catch {}
+		strapiLogout(); // מנקה גם התחברות Strapi/Google, אחרת המשתמש נשאר מחובר
 		user = null;
+		strapiUser = null;
 		cases = [];
 		messages = [];
+		goto('/');
 	}
 
 	function formatDate(iso: string): string {
@@ -247,6 +251,13 @@
 						<span class="px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-gray-300">📂 {cases.length} {tFn('profile_cases_label')}</span>
 					</div>
 				</div>
+				<button
+					onclick={logout}
+					class="flex-shrink-0 self-start flex items-center gap-1.5 px-3 md:px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold text-sm border border-red-500/30 transition-colors"
+				>
+					<span aria-hidden="true">🚪</span>
+					<span>{tFn('profile_logout')}</span>
+				</button>
 			</div>
 		</div>
 
