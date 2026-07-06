@@ -264,9 +264,21 @@ export async function getCurrentUser(): Promise<StrapiUser | null> {
 	}
 }
 
+/** בעלי האתר — תמיד סופר-אדמין עם כל ההרשאות, ללא תלות בהגדרת role/app_role בבאקאנד.
+ *  רשת ביטחון: גם אם רשומת המשתמש ב-Strapi לא תוייגה, הבעלים לא ננעל בחוץ. */
+export const SUPER_ADMIN_EMAILS = new Set<string>([
+	'yahavanter@gmail.com'
+]);
+
+export function isSuperAdminEmail(email: string | null | undefined): boolean {
+	if (!email) return false;
+	return SUPER_ADMIN_EMAILS.has(email.trim().toLowerCase());
+}
+
 /** האם המשתמש רשאי לערוך תוכן בחכמי העדה */
 export function isChachmeiAdmin(user: StrapiUser | null | undefined): boolean {
 	if (!user) return false;
+	if (isSuperAdminEmail(user.email)) return true;
 	if (user.app_role === 'super_admin' || user.app_role === 'ch_admin') return true;
 	const roleType = user.role?.type?.toLowerCase();
 	if (roleType === 'chachmei_editor') return true;
