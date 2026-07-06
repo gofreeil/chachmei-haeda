@@ -2,11 +2,12 @@
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import { addSignatory } from '$lib/services/charter-service';
+	import { getCurrentUser } from '$lib/strapi';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { fade, scale } from 'svelte/transition';
 	import { goto, afterNavigate } from '$app/navigation';
-	import { tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
@@ -34,6 +35,32 @@
 	let notice = $state('');
 	let showCelebration = $state(false);
 	let submitting = $state(false);
+	let prefilled = $state(false);
+
+	// מזהה משתמש מחובר (SSO/Strapi) וממלא אוטומטית את הפרטים הידועים מרשימת המשתמשים המאוחדת
+	onMount(async () => {
+		try {
+			const u = await getCurrentUser();
+			if (!u) return;
+			const isAutoUsername = /^(google|facebook|github)_\d+$/.test(u.username || '');
+			const friendlyName =
+				u.nickname?.trim() ||
+				(isAutoUsername ? (u.email?.split('@')[0] ?? '') : (u.username ?? ''));
+			// ממלאים רק שדות ריקים כדי לא לדרוס קלט ידני של המשתמש
+			if (!name.trim() && friendlyName) name = friendlyName;
+			if (!businessName.trim() && u.business) businessName = u.business;
+			if (!city.trim() && u.city) city = u.city;
+			if (!email.trim() && u.email) email = u.email;
+			if (!phone.trim() && u.phone) phone = u.phone;
+			// input type=date דורש yyyy-mm-dd; ממלאים רק אם התבנית תואמת
+			if (!birthDate && u.birth_date && /^\d{4}-\d{2}-\d{2}$/.test(u.birth_date)) {
+				birthDate = u.birth_date;
+			}
+			prefilled = !!(name || businessName || city || email || phone);
+		} catch {
+			/* אורח / לא מחובר - הטופס נשאר ריק */
+		}
+	});
 
 	function sendCharterEmail(toEmail: string) {
 		if (!toEmail.trim()) return;
@@ -222,6 +249,12 @@
 		</div>
 
 		<form onsubmit={(e) => e.preventDefault()} class="rounded-b-2xl border-2 border-t-0 border-amber-700/40 bg-amber-50/70 p-4 md:p-5 mb-6 space-y-3 shadow-sm">
+			{#if prefilled && !showCelebration}
+				<div class="flex items-center gap-2 rounded-lg border border-green-700/40 bg-green-100/70 px-3 py-2 text-sm text-green-900" transition:fade={{ duration: 300 }}>
+					<span>✓</span>
+					<span>מילאנו עבורך את הפרטים מהחשבון שלך — אפשר לעדכן אם משהו השתנה.</span>
+				</div>
+			{/if}
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 				<div>
 					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-name">{tFn('charter_join_label_name')}</label>

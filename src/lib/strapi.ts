@@ -30,6 +30,12 @@ export interface StrapiUser {
 	blocked?: boolean;
 	role?: { id: number; name: string; type: string };
 	app_role?: string;
+	// שדות פרופיל מהרשימה המאוחדת (users/me מחזיר אותם) - לשימוש במילוי-אוטומטי
+	nickname?: string;
+	business?: string;
+	city?: string;
+	phone?: string;
+	birth_date?: string;
 }
 
 export function getJwt(): string | null {
