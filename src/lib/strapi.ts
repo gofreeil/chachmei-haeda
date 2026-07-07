@@ -264,9 +264,11 @@ export async function getCurrentUser(): Promise<StrapiUser | null> {
 	try {
 		const data = await strapiGet<StrapiUser>('users/me?populate=role', {}, { needAuth: true });
 		return data ?? null;
-	} catch {
-		// טוקן לא תקף
-		setJwt(null);
+	} catch (e) {
+		// מוחקים את הטוקן רק אם הוא באמת נדחה (401/403). תקלת רשת/CORS/5xx זמנית
+		// לא אמורה למחוק טוקן תקף ולנעל את המשתמש בחוץ.
+		const msg = e instanceof Error ? e.message : '';
+		if (/\b40[13]\b/.test(msg)) setJwt(null);
 		return null;
 	}
 }

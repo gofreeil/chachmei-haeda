@@ -12,12 +12,11 @@
 		if (data.status === 'ok' && data.jwt) {
 			// שומרים את ה-JWT המשותף כטוקן של חכמי העדה → getCurrentUser יזהה מיד
 			setJwt(data.jwt);
-			const me = await getCurrentUser();
-			if (me) {
-				goto(data.returnTo);
-				return;
-			}
-			phase = 'error';
+			// השרת כבר אימת את הטוקן מול Strapi (status='ok'), אז ממשיכים בכל מקרה.
+			// getCurrentUser רק "מחמם" את המשתמש; אם הקריאה בצד-לקוח נכשלת זמנית
+			// (רשת/CORS) — לא חוסמים את ההתחברות, כי הטוקן כבר אומת בצד-שרת.
+			try { await getCurrentUser(); } catch {}
+			goto(data.returnTo);
 			return;
 		}
 		phase = data.status === 'not_registered' ? 'not_registered' : 'error';
