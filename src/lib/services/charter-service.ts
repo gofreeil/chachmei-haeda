@@ -10,7 +10,7 @@ import {
 	type CharterEntry,
 	type CharterStatus
 } from '$lib/data/charter';
-import { safeStrapiList, strapiPost, strapiPut, strapiDelete } from '$lib/strapi';
+import { safeStrapiList, strapiGet, strapiPost, strapiPut, strapiDelete, getJwt } from '$lib/strapi';
 
 const COLLECTION = 'ch-charter-signatures';
 
@@ -62,6 +62,44 @@ export async function loadEntries(): Promise<CharterEntry[]> {
 	});
 	if (list.length === 0) return [...initialCharterEntries];
 	return list.map(fromStrapi);
+}
+
+/** החתימה של המשתמש המחובר (התאמה לפי email בצד השרת — כולל השדות הפרטיים שלו). */
+export async function loadMyEntry(): Promise<CharterEntry | null> {
+	if (!getJwt()) return null;
+	try {
+		const resp = await strapiGet<{ data: StrapiCharterAttrs | null }>(
+			`${COLLECTION}/mine`, {}, { needAuth: true }
+		);
+		return resp?.data ? fromStrapi(resp.data) : null;
+	} catch {
+		return null;
+	}
+}
+
+/** עריכה עצמית: מותר לחותם עצמו, לסופר-אדמין ולרכז — האכיפה בצד השרת (self-update).
+ *  ריק ('') → null (ניקוי). undefined → לא נוגעים. */
+export async function selfUpdateSignatory(
+	id: string,
+	fields: {
+		name?: string;
+		businessName?: string;
+		role?: string;
+		city?: string;
+		email?: string;
+		phone?: string;
+	}
+): Promise<CharterEntry | null> {
+	const payload: Record<string, any> = {};
+	for (const [k, v] of Object.entries(fields)) {
+		if (v === undefined) continue;
+		payload[k] = typeof v === 'string' ? v.trim() : v;
+	}
+	// strapiPut בונה /api/<path>/<id> → כאן ה"מזהה" הוא <documentId>/self-update
+	const resp = await strapiPut<{ ok: boolean; data: StrapiCharterAttrs }>(
+		COLLECTION, `${id}/self-update`, payload
+	);
+	return resp?.data ? fromStrapi(resp.data) : null;
 }
 
 export async function addSignatory(input: {

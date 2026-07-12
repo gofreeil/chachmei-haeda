@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { loadEntries, filterByStatus } from '$lib/services/charter-service';
+	import { loadEntries, filterByStatus, loadMyEntry, selfUpdateSignatory } from '$lib/services/charter-service';
+	import { getCurrentUser, canEditAnyCharterEntry } from '$lib/strapi';
 	import type { CharterEntry } from '$lib/data/charter';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -20,13 +21,74 @@
 	let searchType = $state<'name' | 'business'>('name');
 	let search = $state('');
 
+	// עריכה: מותרת לחותם עצמו (זיהוי בצד השרת לפי email), לסופר-אדמין ולרכזים
+	let myEntry = $state<CharterEntry | null>(null);
+	let canEditAll = $state(false);
+	let editing = $state<CharterEntry | null>(null);
+	let editForm = $state({ name: '', businessName: '', role: '', city: '', email: '', phone: '' });
+	let editInitial: Record<string, string> = {};
+	let saving = $state(false);
+	let editError = $state('');
+
 	onMount(async () => {
 		try {
 			entries = await loadEntries();
 		} finally {
 			loading = false;
 		}
+		// זיהוי הרשאות עריכה ברקע — לא מעכב את הצגת הרשימה
+		try {
+			const [user, mine] = await Promise.all([getCurrentUser(), loadMyEntry()]);
+			canEditAll = canEditAnyCharterEntry(user);
+			myEntry = mine;
+		} catch { /* אורח — אין כפתורי עריכה */ }
 	});
+
+	const canEdit = (e: CharterEntry) => canEditAll || (!!myEntry && e.id === myEntry.id);
+
+	function openEdit(e: CharterEntry) {
+		// לחתימה שלי יש גם email/phone (הגיעו מ-mine); לחתימות אחרות השדות הפרטיים לא נטענים
+		const src = myEntry && e.id === myEntry.id ? myEntry : e;
+		editForm = {
+			name: pickLang(src.name),
+			businessName: pickLang(src.businessName),
+			role: pickLang(src.role),
+			city: pickLang(src.city),
+			email: src.email ?? '',
+			phone: src.phone ?? ''
+		};
+		editInitial = { ...editForm };
+		editError = '';
+		editing = e;
+	}
+
+	async function saveEdit() {
+		if (!editing || saving) return;
+		if (!editForm.name.trim()) {
+			editError = '⚠️ ' + tFn('charter_join_validation_name_required');
+			return;
+		}
+		// שולחים רק שדות שהשתנו — לא דורסים email/phone פרטיים שלא נטענו (עריכת אדמין)
+		const changed: Record<string, string> = {};
+		for (const k of Object.keys(editForm) as (keyof typeof editForm)[]) {
+			if (editForm[k].trim() !== (editInitial[k] ?? '').trim()) changed[k] = editForm[k];
+		}
+		if (Object.keys(changed).length === 0) { editing = null; return; }
+		saving = true;
+		editError = '';
+		try {
+			const updated = await selfUpdateSignatory(editing.id, changed);
+			if (updated) {
+				entries = entries.map((en) => (en.id === editing!.id ? updated : en));
+				if (myEntry && myEntry.id === editing.id) myEntry = updated;
+			}
+			editing = null;
+		} catch {
+			editError = '⚠️ ' + tFn('charter_idx_edit_failed');
+		} finally {
+			saving = false;
+		}
+	}
 
 	const signed = $derived(filterByStatus(entries, 'signed'));
 	const disqualified = $derived(filterByStatus(entries, 'disqualified'));
@@ -184,11 +246,81 @@
 							{/if}
 						{/if}
 					</div>
-					<span class="text-xl flex-shrink-0" title={tab === 'signed' ? tFn('charter_idx_status_signed') : tFn('charter_idx_status_disqualified')}>
-						{tab === 'signed' ? '✅' : '⛔'}
-					</span>
+					<div class="flex items-center gap-1.5 flex-shrink-0">
+						{#if canEdit(e)}
+							<button
+								type="button"
+								onclick={() => openEdit(e)}
+								title={tFn('charter_idx_edit_btn')}
+								aria-label={tFn('charter_idx_edit_btn')}
+								class="w-8 h-8 rounded-full border border-white/15 bg-white/5 hover:bg-white/15 flex items-center justify-center text-sm transition-colors"
+							>✏️</button>
+						{/if}
+						<span class="text-xl" title={tab === 'signed' ? tFn('charter_idx_status_signed') : tFn('charter_idx_status_disqualified')}>
+							{tab === 'signed' ? '✅' : '⛔'}
+						</span>
+					</div>
 				</div>
 			{/each}
+		</div>
+	{/if}
+
+	<!-- מודל עריכת חתימה -->
+	{#if editing}
+		<div
+			class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-start justify-center p-3 md:p-6 overflow-y-auto"
+			onclick={(ev) => { if (ev.target === ev.currentTarget && !saving) editing = null; }}
+			role="dialog"
+			aria-modal="true"
+		>
+			<div class="w-full max-w-md rounded-2xl border-2 border-amber-400/40 bg-gradient-to-br from-[#f8eecb] via-[#f0e3b8] to-[#e8d8a8] shadow-2xl p-4 md:p-5 my-4">
+				<h3 class="text-base md:text-lg font-black text-amber-900 mb-3 text-center">✏️ {tFn('charter_idx_edit_title')}</h3>
+				<form onsubmit={(ev) => { ev.preventDefault(); saveEdit(); }} class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+					<div>
+						<label class="block text-xs font-bold text-amber-900 mb-1" for="edit-name">{tFn('charter_join_label_name')}</label>
+						<input id="edit-name" type="text" bind:value={editForm.name} required
+							class="w-full px-3 py-1.5 rounded-lg bg-white/70 border border-amber-700/30 text-gray-900 focus:border-amber-600 focus:outline-none text-sm" />
+					</div>
+					<div>
+						<label class="block text-xs font-bold text-amber-900 mb-1" for="edit-business">{tFn('charter_join_label_business_name')}</label>
+						<input id="edit-business" type="text" bind:value={editForm.businessName}
+							class="w-full px-3 py-1.5 rounded-lg bg-white/70 border border-amber-700/30 text-gray-900 focus:border-amber-600 focus:outline-none text-sm" />
+					</div>
+					<div>
+						<label class="block text-xs font-bold text-amber-900 mb-1" for="edit-role">{tFn('charter_join_label_role')}</label>
+						<input id="edit-role" type="text" bind:value={editForm.role}
+							class="w-full px-3 py-1.5 rounded-lg bg-white/70 border border-amber-700/30 text-gray-900 focus:border-amber-600 focus:outline-none text-sm" />
+					</div>
+					<div>
+						<label class="block text-xs font-bold text-amber-900 mb-1" for="edit-city">{tFn('charter_join_label_city')}</label>
+						<input id="edit-city" type="text" bind:value={editForm.city}
+							class="w-full px-3 py-1.5 rounded-lg bg-white/70 border border-amber-700/30 text-gray-900 focus:border-amber-600 focus:outline-none text-sm" />
+					</div>
+					<div>
+						<label class="block text-xs font-bold text-amber-900 mb-1" for="edit-phone">{tFn('charter_join_label_phone')}</label>
+						<input id="edit-phone" type="tel" bind:value={editForm.phone} dir="ltr"
+							class="w-full px-3 py-1.5 rounded-lg bg-white/70 border border-amber-700/30 text-gray-900 focus:border-amber-600 focus:outline-none text-sm text-right" />
+					</div>
+					<div>
+						<label class="block text-xs font-bold text-amber-900 mb-1" for="edit-email">{tFn('charter_join_label_email')}</label>
+						<input id="edit-email" type="email" bind:value={editForm.email} dir="ltr"
+							class="w-full px-3 py-1.5 rounded-lg bg-white/70 border border-amber-700/30 text-gray-900 focus:border-amber-600 focus:outline-none text-sm text-right" />
+					</div>
+					{#if editError}
+						<p class="sm:col-span-2 text-sm font-bold text-red-700">{editError}</p>
+					{/if}
+					<div class="sm:col-span-2 flex gap-2 mt-1">
+						<button type="submit" disabled={saving}
+							class="flex-1 px-4 py-2 rounded-lg bg-amber-700 hover:bg-amber-800 text-amber-50 font-bold text-sm transition-colors disabled:opacity-60">
+							{saving ? '⏳' : '💾'} {tFn('charter_idx_edit_save')}
+						</button>
+						<button type="button" onclick={() => (editing = null)} disabled={saving}
+							class="px-4 py-2 rounded-lg border border-amber-700/40 text-amber-900 font-bold text-sm hover:bg-amber-100/60 transition-colors disabled:opacity-60">
+							{tFn('charter_idx_edit_cancel')}
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	{/if}
 

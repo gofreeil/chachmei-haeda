@@ -297,6 +297,16 @@ export function isChachmeiAdmin(user: StrapiUser | null | undefined): boolean {
 	return false;
 }
 
+/** רכז חכמי העדה — מוגדר ע"י סימון app_role='ch_coordinator' על המשתמש ב-Strapi */
+export function isChachmeiCoordinator(user: StrapiUser | null | undefined): boolean {
+	return user?.app_role === 'ch_coordinator';
+}
+
+/** מי רשאי לערוך כל חתימה באינדקס האמנה (אדמין/רכז). חותם רגיל עורך רק את שלו — לפי mine */
+export function canEditAnyCharterEntry(user: StrapiUser | null | undefined): boolean {
+	return isChachmeiAdmin(user) || isChachmeiCoordinator(user);
+}
+
 export function strapiLogout(): void {
 	setJwt(null);
 }
