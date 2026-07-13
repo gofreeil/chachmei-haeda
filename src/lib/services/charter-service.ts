@@ -53,18 +53,26 @@ function writeSignedCache(signed: boolean): void {
 	}
 }
 
-/** עדכון hasSignedCharter לבאנר: קודם מהקאש המקומי; רק אם אין — קריאה אחת לשרת. */
-export async function refreshSignedCharter(): Promise<void> {
+/** עדכון hasSignedCharter לבאנר/פרופיל: קודם מהקאש המקומי; רק אם אין — קריאה אחת לשרת.
+ *  קריאות מקבילות (לייאאוט + עמוד) חולקות את אותה בקשה. */
+let refreshInFlight: Promise<void> | null = null;
+export function refreshSignedCharter(): Promise<void> {
 	if (!getJwt()) {
 		hasSignedCharter.set(false);
-		return;
+		return Promise.resolve();
 	}
 	const cached = readSignedCache();
 	if (cached !== null) {
 		hasSignedCharter.set(cached);
-		return;
+		return Promise.resolve();
 	}
-	await loadMyEntry(); // מעדכן את ה-store וכותב לקאש
+	if (!refreshInFlight) {
+		// loadMyEntry מעדכן את ה-store וכותב לקאש
+		refreshInFlight = loadMyEntry().then(() => {
+			refreshInFlight = null;
+		});
+	}
+	return refreshInFlight;
 }
 
 type StrapiCharterAttrs = {

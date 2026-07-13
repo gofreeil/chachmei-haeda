@@ -3,6 +3,7 @@
 	import { hearings as staticHearings, rulings as staticRulings, pickLang, type Hearing, type Ruling } from '$lib/data/hearings';
 	import { loadHearings, loadRulings } from '$lib/services/hearings-service';
 	import { getCurrentUser, strapiLogout, type StrapiUser } from '$lib/strapi';
+	import { hasSignedCharter, refreshSignedCharter } from '$lib/services/charter-service';
 	import { goto } from '$app/navigation';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -67,9 +68,14 @@
 	let editCity = $state('');
 	let savedNotice = $state(false);
 
+	// סטטוס חתימה על אמנת המוסר — מוצג רק אחרי שהבדיקה הסתיימה, כדי לא להציג
+	// "לא חתום" לרגע למי שכן חתם
+	let charterChecked = $state(false);
+
 	onMount(async () => {
 		// קודם בודקים אם המשתמש מחובר ל-Strapi (Google/local)
 		strapiUser = await getCurrentUser();
+		refreshSignedCharter().then(() => (charterChecked = true));
 
 		// טוענים דיונים/פסקי דין מהבאקאנד (fallback לסטטי בתוך השירות)
 		loadHearings().then((h) => { if (h.length) hearings = h; }).catch(() => {});
@@ -262,8 +268,12 @@
 				<div class="flex-1 min-w-0">
 					<h1 class="text-xl md:text-2xl font-black text-white truncate">{user?.name}</h1>
 					<div class="flex flex-wrap gap-2 mt-2 text-xs">
-						{#if user?.uecc}
-							<span class="px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-300">✓ {tFn('profile_signed_uecc')}</span>
+						{#if $hasSignedCharter || user?.uecc}
+							<a href="/charter-index" class="px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-300 hover:bg-green-500/25 transition-colors">✓ {tFn('profile_signed_uecc')}</a>
+						{:else if charterChecked}
+							<a href="/heichal-hamaaseh/ethical-code#join" class="px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 transition-colors">
+								{tFn('profile_not_signed_uecc')} · <span class="underline font-bold">{tFn('profile_sign_uecc_cta')}</span>
+							</a>
 						{/if}
 						{#if user?.arbitration}
 							<span class="px-2.5 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300">⚖️ {tFn('profile_arbitration_consent')}</span>
@@ -338,13 +348,6 @@
 				</button>
 			</div>
 
-			<div class="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5 mt-5 text-sm text-gray-300">
-				🔗 <strong class="text-blue-300">{tFn('profile_cross_site_sync_label')}</strong> {tFn('profile_cross_site_sync_prefix')}
-				<a href="https://community.gofreeil.com/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_community')}</a>,
-				<a href="https://criticism.gofreeil.com/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_criticism')}</a> {tFn('profile_and')}
-				<a href="https://groups.gofreeil.com/" class="text-blue-300 underline hover:text-blue-200">{tFn('profile_site_purchasing')}</a>.
-				{tFn('profile_cross_site_sync_suffix')}
-			</div>
 		{/if}
 
 		<!-- ───────────── טאב: הודעות ───────────── -->
