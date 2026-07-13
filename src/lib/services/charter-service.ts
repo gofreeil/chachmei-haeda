@@ -5,6 +5,7 @@
 // fallback: נתוני הדמו ב-charter.ts (אם הסטראפי לא זמין)
 // ─────────────────────────────────────────────────────────────
 
+import { writable } from 'svelte/store';
 import {
 	initialCharterEntries,
 	type CharterEntry,
@@ -13,6 +14,58 @@ import {
 import { safeStrapiList, strapiGet, strapiPost, strapiPut, strapiDelete, getJwt } from '$lib/strapi';
 
 const COLLECTION = 'ch-charter-signatures';
+
+/** האם למשתמש המחובר יש חתימה בתוקף — משמש להסתרת באנר ההצטרפות בלייאאוט.
+ *  מתעדכן ב-loadMyEntry (טעינה) וב-addSignatory (חתימה חדשה); מתאפס ביציאה. */
+export const hasSignedCharter = writable(false);
+
+// ── קאש מקומי לסטטוס החתימה — חוסך את קריאת /mine ברוב טעינות העמוד ──
+// המפתח נגזר מה-JWT, כך שהתחברות של משתמש אחר (או מחדש) לא קוראת קאש ישן.
+const SIGNED_CACHE_KEY = 'chachmei-charter-signed';
+const SIGNED_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // בדיקה מול השרת לכל היותר פעם ביממה למכשיר
+
+function signedCacheId(): string | null {
+	const jwt = getJwt();
+	return jwt ? jwt.slice(-32) : null;
+}
+
+function readSignedCache(): boolean | null {
+	const id = signedCacheId();
+	if (!id || typeof localStorage === 'undefined') return null;
+	try {
+		const raw = localStorage.getItem(SIGNED_CACHE_KEY);
+		if (!raw) return null;
+		const parsed = JSON.parse(raw) as { id: string; signed: boolean; ts: number };
+		if (parsed.id !== id || Date.now() - parsed.ts > SIGNED_CACHE_TTL_MS) return null;
+		return parsed.signed;
+	} catch {
+		return null;
+	}
+}
+
+function writeSignedCache(signed: boolean): void {
+	const id = signedCacheId();
+	if (!id || typeof localStorage === 'undefined') return;
+	try {
+		localStorage.setItem(SIGNED_CACHE_KEY, JSON.stringify({ id, signed, ts: Date.now() }));
+	} catch {
+		/* private mode / storage מלא — ממשיכים בלי קאש */
+	}
+}
+
+/** עדכון hasSignedCharter לבאנר: קודם מהקאש המקומי; רק אם אין — קריאה אחת לשרת. */
+export async function refreshSignedCharter(): Promise<void> {
+	if (!getJwt()) {
+		hasSignedCharter.set(false);
+		return;
+	}
+	const cached = readSignedCache();
+	if (cached !== null) {
+		hasSignedCharter.set(cached);
+		return;
+	}
+	await loadMyEntry(); // מעדכן את ה-store וכותב לקאש
+}
 
 type StrapiCharterAttrs = {
 	id?: number;
@@ -66,13 +119,21 @@ export async function loadEntries(): Promise<CharterEntry[]> {
 
 /** החתימה של המשתמש המחובר (התאמה לפי email בצד השרת — כולל השדות הפרטיים שלו). */
 export async function loadMyEntry(): Promise<CharterEntry | null> {
-	if (!getJwt()) return null;
+	if (!getJwt()) {
+		hasSignedCharter.set(false);
+		return null;
+	}
 	try {
 		const resp = await strapiGet<{ data: StrapiCharterAttrs | null }>(
 			`${COLLECTION}/mine`, {}, { needAuth: true }
 		);
-		return resp?.data ? fromStrapi(resp.data) : null;
+		const entry = resp?.data ? fromStrapi(resp.data) : null;
+		const signed = entry?.status === 'signed';
+		hasSignedCharter.set(signed);
+		writeSignedCache(signed);
+		return entry;
 	} catch {
+		// תקלת רשת — לא נוגעים במצב הקיים כדי לא להקפיץ את הבאנר לחותם
 		return null;
 	}
 }
@@ -127,6 +188,8 @@ export async function addSignatory(input: {
 		acceptedTerms: input.acceptedTerms
 	};
 	const resp = await strapiPost<{ data: StrapiCharterAttrs }>(COLLECTION, payload);
+	hasSignedCharter.set(true);
+	writeSignedCache(true);
 	const item = (resp?.data ?? payload) as StrapiCharterAttrs;
 	return fromStrapi({ ...payload, ...item });
 }

@@ -17,12 +17,15 @@
 	import { get } from "svelte/store";
 	import { onMount } from "svelte";
 	import { getCurrentUser, strapiLogout, type StrapiUser } from "$lib/strapi";
+	import { refreshSignedCharter, hasSignedCharter } from "$lib/services/charter-service";
 
 	let { children } = $props();
 	let currentUser = $state<StrapiUser | null>(null);
 
-	// מסתירים את הבאנר בעמודי auth (לא קשור להצטרפות לקוד) ובעמוד הקוד עצמו
+	// מסתירים את הבאנר בעמודי auth (לא קשור להצטרפות לקוד), בעמוד הקוד עצמו,
+	// וכן למי שכבר חתם על הקוד האתי (hasSignedCharter)
 	const hideEthicalBanner = $derived(
+		$hasSignedCharter ||
 		page.url.pathname.startsWith('/heichal-hamaaseh/ethical-code') ||
 		page.url.pathname.startsWith('/login') ||
 		page.url.pathname.startsWith('/signup')
@@ -30,18 +33,23 @@
 
 	onMount(async () => {
 		currentUser = await getCurrentUser();
+		if (currentUser) refreshSignedCharter();
 	});
 
 	// ההתחברות (Google/SSO) מסתיימת ב-goto (ניווט צד-לקוח) שלא מריץ מחדש את onMount,
 	// ולכן ההדר נשאר על מצב "מנותק" עד רענון מלא. מרעננים את המשתמש אחרי כל ניווט
 	// כשעדיין אין currentUser — כך ההדר מתעדכן מיד אחרי התחברות (וגם התמונה עולה).
 	afterNavigate(async () => {
-		if (!currentUser) currentUser = await getCurrentUser();
+		if (!currentUser) {
+			currentUser = await getCurrentUser();
+			if (currentUser) refreshSignedCharter();
+		}
 	});
 
 	function handleLogout() {
 		strapiLogout();
 		currentUser = null;
+		hasSignedCharter.set(false);
 		goto('/');
 	}
 

@@ -38,7 +38,7 @@
 					{/each}
 				</ul>
 				<img
-					src="/images/Copilot_20260602_125425.png"
+					src="/images/ethical-code-banner.jpg"
 					alt={tFn('eth_banner_img_alt')}
 					class="flex-shrink-0 w-24 h-24 rounded-xl object-contain border-2 border-amber-700/40 shadow"
 					loading="lazy"
@@ -80,7 +80,7 @@
 		>
 			<div class="flex items-start gap-5 md:gap-8">
 				<img
-					src="/images/Copilot_20260602_125425.png"
+					src="/images/ethical-code-banner.jpg"
 					alt={tFn('eth_banner_img_alt')}
 					class="flex-shrink-0 w-32 h-32 md:w-52 md:h-52 rounded-xl object-contain border-2 border-amber-700/40 shadow relative z-10 -mb-4 md:-mb-2"
 					loading="lazy"
