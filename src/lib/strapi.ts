@@ -297,6 +297,20 @@ export function isChachmeiAdmin(user: StrapiUser | null | undefined): boolean {
 	return false;
 }
 
+/** סופר-אדמין — בעלי האתר. בנוסף לתוכן: מנהל אדמינים ואת חתימות האמנה. */
+export function isSuperAdmin(user: StrapiUser | null | undefined): boolean {
+	if (!user) return false;
+	if (isSuperAdminEmail(user.email)) return true;
+	if (user.app_role === 'super_admin') return true;
+	return user.role?.type?.toLowerCase() === 'super_admin';
+}
+
+/** אדמין תוכן — מעלה תוכן בכל ההיכלות ומאשר תאריכי דיונים ישירות;
+ *  בלי ניהול אדמינים ובלי ניהול חתימות האמנה (סופר-אדמין בלבד). */
+export function isLimitedChachmeiAdmin(user: StrapiUser | null | undefined): boolean {
+	return isChachmeiAdmin(user) && !isSuperAdmin(user);
+}
+
 /** רכז חכמי העדה — מוגדר ע"י סימון app_role='ch_coordinator' על המשתמש ב-Strapi */
 export function isChachmeiCoordinator(user: StrapiUser | null | undefined): boolean {
 	return user?.app_role === 'ch_coordinator';

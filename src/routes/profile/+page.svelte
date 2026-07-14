@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { hearings as staticHearings, rulings as staticRulings, pickLang, type Hearing, type Ruling } from '$lib/data/hearings';
 	import { loadHearings, loadRulings } from '$lib/services/hearings-service';
-	import { getCurrentUser, strapiLogout, type StrapiUser } from '$lib/strapi';
+	import { getCurrentUser, strapiLogout, isChachmeiAdmin, isSuperAdmin, type StrapiUser } from '$lib/strapi';
 	import { hasSignedCharter, refreshSignedCharter } from '$lib/services/charter-service';
 	import { goto } from '$app/navigation';
 	import { t, locale } from 'svelte-i18n';
@@ -347,6 +347,29 @@
 					<div class="text-sm text-gray-400 mt-1 truncate">{user?.phone || tFn('profile_no_phone')}</div>
 				</button>
 			</div>
+
+			{#if isChachmeiAdmin(strapiUser)}
+				<!-- קישור לפאנל ניהול האתר — מוצג רק לאדמינים -->
+				<a
+					href="/admin"
+					class="block rounded-2xl border border-purple-500/40 bg-purple-900/20 hover:bg-purple-900/30 transition-colors p-5 mt-4"
+				>
+					<div class="flex items-center gap-4">
+						<div class="text-3xl">🔧</div>
+						<div class="min-w-0">
+							<div class="font-bold text-white text-lg">
+								{tFn('profile_admin_panel_title')}
+								{#if isSuperAdmin(strapiUser)}
+									<span class="mr-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold align-middle">👑 {tFn('profile_admin_super_badge')}</span>
+								{:else}
+									<span class="mr-1 px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-xs font-bold align-middle">🤝 {tFn('profile_admin_limited_badge')}</span>
+								{/if}
+							</div>
+							<div class="text-sm text-gray-400 mt-1">{tFn('profile_admin_panel_sub')}</div>
+						</div>
+					</div>
+				</a>
+			{/if}
 
 		{/if}
 

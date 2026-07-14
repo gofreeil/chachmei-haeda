@@ -39,7 +39,8 @@
 		deleteRuling,
 		type HearingRequest
 	} from '$lib/services/hearings-service';
-	import { getCurrentUser, isChachmeiAdmin, strapiLogout, type StrapiUser } from '$lib/strapi';
+	import { getCurrentUser, isChachmeiAdmin, isSuperAdmin, isLimitedChachmeiAdmin, strapiLogout, type StrapiUser } from '$lib/strapi';
+	import { listAdmins, setAdminRole, type AdminUser } from '$lib/services/admin-users-service';
 	import type { CharterEntry } from '$lib/data/charter';
 	import type { Hearing, Ruling, HearingStatus } from '$lib/data/hearings';
 	import type { QaItem } from '$lib/data/qa';
@@ -70,8 +71,20 @@
 	let currentUser = $state<StrapiUser | null>(null);
 	type AdminTab =
 		| 'articles' | 'videos' | 'news' | 'dates' | 'rabbis'
-		| 'charter' | 'qa' | 'qa-submissions' | 'hearings' | 'rulings' | 'hearing-requests';
+		| 'charter' | 'qa' | 'qa-submissions' | 'hearings' | 'rulings' | 'hearing-requests'
+		| 'admins';
 	let activeTab = $state<AdminTab>('qa-submissions');
+
+	// ── תפקידים: סופר-אדמין מנהל אדמינים ואת האמנה; אדמין תוכן מפרסם ישירות ──
+	let isSuper = $state(false);
+	let isLimited = $state(false);
+
+	// ── ניהול אדמינים (סופר-אדמין בלבד) ──
+	let adminsList = $state<AdminUser[]>([]);
+	let adminSearch = $state('');
+	let adminSearchResults = $state<AdminUser[]>([]);
+	let adminSearching = $state(false);
+	let adminsNotice = $state('');
 
 	// ── Data state ──
 	let charterEntries = $state<CharterEntry[]>([]);
@@ -241,11 +254,56 @@
 			return;
 		}
 		currentUser = user;
+		isSuper = isSuperAdmin(user);
+		isLimited = isLimitedChachmeiAdmin(user);
 		isLoggedIn = true;
 		authChecking = false;
 		await loadAll();
 		await loadAdminContent();
+		if (isSuper) reloadAdmins();
 	});
+
+	// ───────────── ניהול אדמינים (סופר-אדמין) ─────────────
+
+	async function reloadAdmins() {
+		try {
+			adminsList = await listAdmins();
+		} catch (e) {
+			console.warn('listAdmins failed', e);
+		}
+	}
+
+	async function searchAdminUsers() {
+		const q = adminSearch.trim();
+		if (!q) {
+			adminSearchResults = [];
+			return;
+		}
+		adminSearching = true;
+		try {
+			adminSearchResults = await listAdmins(q);
+		} catch (e: any) {
+			adminsNotice = '⚠️ שגיאה בחיפוש: ' + (e?.message ?? e);
+		} finally {
+			adminSearching = false;
+		}
+	}
+
+	async function doSetAdminRole(email: string, role: 'ch_admin' | 'user') {
+		const verb = role === 'ch_admin' ? 'למנות את' : 'להסיר הרשאת אדמין מ-';
+		if (!confirm(`${verb} ${email}?`)) return;
+		try {
+			await setAdminRole(email, role);
+			adminsNotice = role === 'ch_admin'
+				? `✅ ${email} מונה לאדמין תוכן — יכול להעלות תוכן בכל ההיכלות ולאשר תאריכי דיונים`
+				: `✅ ההרשאה של ${email} הוסרה`;
+			await reloadAdmins();
+			await searchAdminUsers();
+			setTimeout(() => (adminsNotice = ''), 5000);
+		} catch (e: any) {
+			adminsNotice = '⚠️ שגיאה: ' + (e?.message ?? e);
+		}
+	}
 
 	async function loadAdminContent() {
 		try {
@@ -923,6 +981,11 @@
 				<p class="mt-1 text-gray-400 text-sm">
 					{currentUser?.username ?? ''}
 					{#if currentUser?.email}<span class="text-gray-500" dir="ltr"> · {currentUser.email}</span>{/if}
+					{#if isSuper}
+						<span class="mr-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold">👑 סופר-אדמין</span>
+					{:else if isLimited}
+						<span class="mr-1 px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-xs font-bold">🛠️ אדמין תוכן</span>
+					{/if}
 				</p>
 			</div>
 			<button
@@ -960,16 +1023,19 @@
 			>
 				💬 שו"ת ({qaItems.length})
 			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'charter'}
-				class:text-white={activeTab === 'charter'}
-				class:text-gray-400={activeTab !== 'charter'}
-				class:hover:text-gray-200={activeTab !== 'charter'}
-				onclick={() => (activeTab = 'charter')}
-			>
-				✍️ אמנה ({charterEntries.length})
-			</button>
+			{#if !isLimited}
+				<!-- ניהול חתימות האמנה — לסופר-אדמין בלבד -->
+				<button
+					class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+					class:bg-purple-500={activeTab === 'charter'}
+					class:text-white={activeTab === 'charter'}
+					class:text-gray-400={activeTab !== 'charter'}
+					class:hover:text-gray-200={activeTab !== 'charter'}
+					onclick={() => (activeTab = 'charter')}
+				>
+					✍️ אמנה ({charterEntries.length})
+				</button>
+			{/if}
 			<button
 				class="relative px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
 				class:bg-purple-500={activeTab === 'hearing-requests'}
@@ -1060,6 +1126,18 @@
 			>
 				👤 דיינים
 			</button>
+			{#if isSuper}
+				<button
+					class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+					class:bg-purple-500={activeTab === 'admins'}
+					class:text-white={activeTab === 'admins'}
+					class:text-gray-400={activeTab !== 'admins'}
+					class:hover:text-gray-200={activeTab !== 'admins'}
+					onclick={() => (activeTab = 'admins')}
+				>
+					🛡️ אדמינים
+				</button>
+			{/if}
 		</div>
 
 		<!-- ───────────── תוכן הלשוניות ───────────── -->
@@ -2319,6 +2397,103 @@
 						{/each}
 					</div>
 				{/if}
+			</div>
+		{:else if activeTab === 'admins'}
+			<!-- ───────────── ניהול אדמינים (סופר-אדמין) ───────────── -->
+			<div class="space-y-4">
+				<div class="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5">
+					<h2 class="text-xl font-black text-amber-200 mb-2">🛡️ ניהול אדמינים</h2>
+					<p class="text-sm text-gray-300">
+						אדמין תוכן יכול להעלות תוכן בכל ההיכלות ולאשר תאריכי דיונים — השינויים שלו נכנסים לאתר מיד.
+						ניהול חתימות האמנה ומינוי אדמינים נשארים לסופר-אדמין בלבד.
+					</p>
+				</div>
+
+				{#if adminsNotice}
+					<div class="rounded-lg border border-white/15 bg-white/10 px-4 py-2.5 text-sm text-gray-100">{adminsNotice}</div>
+				{/if}
+
+				<div class="rounded-xl border border-white/10 bg-white/5 p-4">
+					<h3 class="font-bold text-white text-sm mb-2">מינוי אדמין חדש</h3>
+					<p class="text-xs text-gray-500 mb-2">המשתמש חייב להיות רשום לאתר. חיפוש לפי אימייל או שם.</p>
+					<form onsubmit={(e) => { e.preventDefault(); searchAdminUsers(); }} class="flex gap-2 flex-wrap">
+						<input
+							bind:value={adminSearch}
+							placeholder="אימייל או שם משתמש…"
+							class="flex-1 min-w-[220px] px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white text-sm placeholder:text-gray-500"
+						/>
+						<button
+							type="submit"
+							disabled={adminSearching}
+							class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold disabled:opacity-50"
+						>
+							{adminSearching ? 'מחפש…' : 'חיפוש'}
+						</button>
+					</form>
+					{#if adminSearchResults.length > 0}
+						<div class="mt-3 space-y-2">
+							{#each adminSearchResults as u (u.id)}
+								<div class="flex items-center justify-between gap-3 rounded-lg bg-black/20 px-3 py-2">
+									<div class="min-w-0 text-sm">
+										<span class="text-white font-bold">{u.nickname || u.username || u.email}</span>
+										<span class="text-gray-400" dir="ltr"> · {u.email}</span>
+										{#if u.app_role === 'super_admin'}
+											<span class="text-amber-300 text-xs font-bold"> 👑 סופר-אדמין</span>
+										{:else if u.app_role === 'ch_admin'}
+											<span class="text-blue-300 text-xs font-bold"> 🛠️ אדמין תוכן</span>
+										{/if}
+									</div>
+									{#if u.app_role === 'ch_admin'}
+										<button
+											onclick={() => doSetAdminRole(u.email, 'user')}
+											class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold flex-shrink-0"
+										>
+											הסר הרשאה
+										</button>
+									{:else if u.app_role !== 'super_admin'}
+										<button
+											onclick={() => doSetAdminRole(u.email, 'ch_admin')}
+											class="px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white text-xs font-bold flex-shrink-0"
+										>
+											מנה לאדמין תוכן
+										</button>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+
+				<div class="rounded-xl border border-white/10 bg-white/5 p-4">
+					<h3 class="font-bold text-white text-sm mb-2">אדמינים קיימים</h3>
+					{#if adminsList.length === 0}
+						<p class="text-sm text-gray-400">אין עדיין אדמינים נוספים — מנה אחד דרך החיפוש למעלה</p>
+					{:else}
+						<div class="space-y-2">
+							{#each adminsList as u (u.id)}
+								<div class="flex items-center justify-between gap-3 rounded-lg bg-black/20 px-3 py-2">
+									<div class="min-w-0 text-sm">
+										<span class="text-white font-bold">{u.nickname || u.username || u.email}</span>
+										<span class="text-gray-400" dir="ltr"> · {u.email}</span>
+										{#if u.app_role === 'super_admin'}
+											<span class="text-amber-300 text-xs font-bold"> 👑 סופר-אדמין</span>
+										{:else}
+											<span class="text-blue-300 text-xs font-bold"> 🛠️ אדמין תוכן</span>
+										{/if}
+									</div>
+									{#if u.app_role !== 'super_admin'}
+										<button
+											onclick={() => doSetAdminRole(u.email, 'user')}
+											class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold flex-shrink-0"
+										>
+											הסר הרשאה
+										</button>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
 			</div>
 		{/if}
 	</section>
