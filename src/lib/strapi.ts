@@ -13,13 +13,35 @@ const DEFAULT_URL = 'https://api.gofreeil.com';
 const JWT_STORAGE_KEY = 'chachmei-strapi-jwt';
 const LEGACY_SESSION_KEY = 'chachmei-strapi-jwt'; // היה ב-sessionStorage לפני
 
-function resolveBaseUrl(): string {
+function resolveExplicitUrl(): string | null {
 	const fromVite = (import.meta as any)?.env?.PUBLIC_STRAPI_URL as string | undefined;
 	if (fromVite && fromVite.trim()) return fromVite.replace(/\/$/, '');
-	return DEFAULT_URL;
+	return null;
+}
+const EXPLICIT_URL = resolveExplicitUrl();
+
+// כתובת ה-API לקריאות fetch:
+//  • בדפדפן (ברירת-מחדל): same-origin ('') → הקריאות יוצאות כ-`/api/...` ועוברות דרך
+//    ה-proxy של האתר (src/routes/api/[...path]) אל Strapi. כך הדפדפן לא פונה ישירות
+//    ל-api.gofreeil.com ואינו נחסם ע"י חוסמי-פרסומות / DNS מסנן / רשת של המשתמש
+//    (הסיבה ל-"failed to fetch" בהרשמה/התחברות/חתימה).
+//  • בשרת (SSR) או כשהוגדר PUBLIC_STRAPI_URL מפורש: כתובת מוחלטת → קריאה ישירה.
+const BASE_URL = EXPLICIT_URL ?? (typeof window !== 'undefined' ? '' : DEFAULT_URL);
+
+// כתובת מוחלטת קבועה — לזרימות שהן ניווט-דף-מלא (OAuth) שאינן fetch וחייבות דומיין אמיתי.
+const ABSOLUTE_URL = EXPLICIT_URL ?? DEFAULT_URL;
+
+/** האם זו שגיאת-רשת — ה-fetch נכשל ברמת הרשת (אין חיבור / CORS / חוסם-פרסומות /
+ *  השרת לא זמין) ולא תשובת-שגיאה מהשרת. אלו מופיעים כ-"Failed to fetch" (Chrome),
+ *  "NetworkError…" (Firefox) או "Load failed" (Safari). */
+export function isNetworkError(e: unknown): boolean {
+	const msg = (e instanceof Error ? e.message : String(e ?? '')).toLowerCase();
+	return /failed to fetch|networkerror|load failed|network request failed/.test(msg);
 }
 
-const BASE_URL = resolveBaseUrl();
+/** הודעה ידידותית בעברית לכשל-רשת — מכסה גם ניתוק זמני וגם חסימה בצד הלקוח. */
+export const NETWORK_ERROR_MESSAGE_HE =
+	'לא הצלחנו להתחבר לשרת. בדקו את חיבור האינטרנט ונסו שוב. אם מותקן חוסם פרסומות או הרחבת פרטיות — כבו אותו עבור אתר זה, או נסו דפדפן/רשת אחרת.';
 
 export interface StrapiUser {
 	id: number;
@@ -253,7 +275,8 @@ export function googleOAuthStartUrl(returnTo: string = '/profile'): string {
 	const callback = typeof window !== 'undefined'
 		? `${window.location.origin}/auth/google-callback`
 		: `/auth/google-callback`;
-	return `${BASE_URL}/api/connect/google?callback=${encodeURIComponent(callback)}`;
+	// ניווט-דף-מלא ל-OAuth — חייב כתובת מוחלטת (לא עובר דרך ה-proxy, שהוא ל-fetch בלבד).
+	return `${ABSOLUTE_URL}/api/connect/google?callback=${encodeURIComponent(callback)}`;
 }
 
 /** ה-callback של Strapi מחזיר ?access_token=<Google_token>. צריך להחליפו ב-JWT של Strapi דרך /auth/{provider}/callback. */

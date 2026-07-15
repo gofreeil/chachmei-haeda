@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { strapiLogin, getCurrentUser, isChachmeiAdmin } from '$lib/strapi';
+	import { strapiLogin, getCurrentUser, isChachmeiAdmin, isNetworkError, NETWORK_ERROR_MESSAGE_HE } from '$lib/strapi';
 	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 
 	let identifier = $state('');
@@ -44,7 +44,11 @@
 			goto(returnTo);
 		} catch (e: any) {
 			const msg = e?.message ?? 'שגיאת התחברות';
-			errorMsg = msg.toLowerCase().includes('invalid') ? 'שם משתמש או סיסמה לא תקפים' : msg;
+			if (isNetworkError(e)) {
+				errorMsg = NETWORK_ERROR_MESSAGE_HE;
+			} else {
+				errorMsg = msg.toLowerCase().includes('invalid') ? 'שם משתמש או סיסמה לא תקפים' : msg;
+			}
 			submitting = false;
 		}
 	}

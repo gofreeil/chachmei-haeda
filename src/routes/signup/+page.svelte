@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { strapiRegister, getCurrentUser, claimRegistrationOrigin } from '$lib/strapi';
+	import { strapiRegister, getCurrentUser, claimRegistrationOrigin, isNetworkError, NETWORK_ERROR_MESSAGE_HE } from '$lib/strapi';
 	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -45,7 +45,9 @@
 			goto('/profile');
 		} catch (e: any) {
 			const msg = e?.message ?? 'שגיאה בהרשמה';
-			if (msg.toLowerCase().includes('email') && msg.toLowerCase().includes('taken')) {
+			if (isNetworkError(e)) {
+				errorMsg = NETWORK_ERROR_MESSAGE_HE;
+			} else if (msg.toLowerCase().includes('email') && msg.toLowerCase().includes('taken')) {
 				errorMsg = 'האימייל כבר רשום במערכת. נסה להתחבר.';
 			} else if (msg.toLowerCase().includes('username') && msg.toLowerCase().includes('taken')) {
 				errorMsg = 'שם המשתמש תפוס. בחר אחר.';
