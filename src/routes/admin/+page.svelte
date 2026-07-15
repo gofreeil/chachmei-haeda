@@ -40,7 +40,7 @@
 		type HearingRequest
 	} from '$lib/services/hearings-service';
 	import { getCurrentUser, isChachmeiAdmin, isSuperAdmin, isLimitedChachmeiAdmin, strapiLogout, type StrapiUser } from '$lib/strapi';
-	import { listAdmins, setAdminRole, type AdminUser } from '$lib/services/admin-users-service';
+	import { listAdmins, listAllUsers, setAdminRole, type AdminUser, type RegisteredUser } from '$lib/services/admin-users-service';
 	import type { CharterEntry } from '$lib/data/charter';
 	import type { Hearing, Ruling, HearingStatus } from '$lib/data/hearings';
 	import type { QaItem } from '$lib/data/qa';
@@ -72,7 +72,7 @@
 	type AdminTab =
 		| 'articles' | 'videos' | 'news' | 'dates' | 'rabbis'
 		| 'charter' | 'qa' | 'qa-submissions' | 'hearings' | 'rulings' | 'hearing-requests'
-		| 'admins';
+		| 'admins' | 'users';
 	let activeTab = $state<AdminTab>('qa-submissions');
 
 	// ── תפקידים: סופר-אדמין מנהל אדמינים ואת האמנה; אדמין תוכן מפרסם ישירות ──
@@ -85,6 +85,20 @@
 	let adminSearchResults = $state<AdminUser[]>([]);
 	let adminSearching = $state(false);
 	let adminsNotice = $state('');
+
+	// ── רשימת הרשומים (סופר-אדמין בלבד) ──
+	let allUsers = $state<RegisteredUser[]>([]);
+	let usersLoaded = $state(false);
+	let usersLoading = $state(false);
+	let usersFilter = $state('');
+	const filteredUsers = $derived.by(() => {
+		const q = usersFilter.trim().toLowerCase();
+		if (!q) return allUsers;
+		return allUsers.filter((u) =>
+			[u.nickname, u.username, u.email, u.city, u.phone]
+				.some((f) => (f ?? '').toLowerCase().includes(q))
+		);
+	});
 
 	// ── Data state ──
 	let charterEntries = $state<CharterEntry[]>([]);
@@ -273,6 +287,23 @@
 		}
 	}
 
+	async function reloadUsers() {
+		usersLoading = true;
+		try {
+			allUsers = await listAllUsers();
+			usersLoaded = true;
+		} catch (e: any) {
+			adminsNotice = '⚠️ שגיאה בטעינת הרשומים: ' + (e?.message ?? e);
+		} finally {
+			usersLoading = false;
+		}
+	}
+
+	function openUsersTab() {
+		activeTab = 'users';
+		if (!usersLoaded && !usersLoading) reloadUsers();
+	}
+
 	async function searchAdminUsers() {
 		const q = adminSearch.trim();
 		if (!q) {
@@ -299,6 +330,7 @@
 				: `✅ ההרשאה של ${email} הוסרה`;
 			await reloadAdmins();
 			await searchAdminUsers();
+			if (usersLoaded) await reloadUsers();
 			setTimeout(() => (adminsNotice = ''), 5000);
 		} catch (e: any) {
 			adminsNotice = '⚠️ שגיאה: ' + (e?.message ?? e);
@@ -1136,6 +1168,16 @@
 					onclick={() => (activeTab = 'admins')}
 				>
 					🛡️ אדמינים
+				</button>
+				<button
+					class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
+					class:bg-purple-500={activeTab === 'users'}
+					class:text-white={activeTab === 'users'}
+					class:text-gray-400={activeTab !== 'users'}
+					class:hover:text-gray-200={activeTab !== 'users'}
+					onclick={openUsersTab}
+				>
+					👥 רשומים{usersLoaded ? ` (${allUsers.length})` : ''}
 				</button>
 			{/if}
 		</div>
@@ -2494,6 +2536,70 @@
 						</div>
 					{/if}
 				</div>
+			</div>
+		{:else if activeTab === 'users'}
+			<!-- ───────────── רשימת הרשומים (סופר-אדמין) ───────────── -->
+			<div class="space-y-3">
+				<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+					<div class="flex items-center justify-between gap-3 flex-wrap">
+						<div>
+							<h2 class="text-xl font-black text-emerald-200 mb-1">👥 רשומים לאתר</h2>
+							<p class="text-xs text-gray-400">כל המשתמשים הרשומים (חדשים תחילה). אפשר למנות אדמין ישירות מהרשימה.</p>
+						</div>
+						<button
+							onclick={reloadUsers}
+							disabled={usersLoading}
+							class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold disabled:opacity-50 flex-shrink-0"
+						>
+							{usersLoading ? 'טוען…' : '↻ רענון'}
+						</button>
+					</div>
+				</div>
+
+				{#if adminsNotice}
+					<div class="rounded-lg border border-white/15 bg-white/10 px-4 py-2.5 text-sm text-gray-100">{adminsNotice}</div>
+				{/if}
+
+				<input
+					bind:value={usersFilter}
+					placeholder="סינון לפי שם / אימייל / עיר / טלפון…"
+					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white text-sm placeholder:text-gray-500"
+				/>
+
+				{#if usersLoading && !usersLoaded}
+					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-300">⏳ טוען רשומים…</div>
+				{:else if allUsers.length === 0}
+					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-300">אין רשומים להצגה</div>
+				{:else}
+					<div class="text-xs text-gray-500 px-1">מציג {filteredUsers.length} מתוך {allUsers.length}</div>
+					<div class="rounded-xl border border-white/10 bg-white/5 divide-y divide-white/5 overflow-hidden">
+						{#each filteredUsers as u (u.id)}
+							<div class="flex items-center gap-2 px-2.5 py-1 text-xs hover:bg-white/5">
+								<span class="text-gray-100 font-bold flex-shrink-0 max-w-[35%] truncate">{u.nickname || u.username || '—'}</span>
+								<span class="text-gray-400 min-w-0 flex-1 truncate" dir="ltr">{u.email}</span>
+								{#if u.city}<span class="text-gray-500 flex-shrink-0 max-w-[22%] truncate hidden sm:inline">{u.city}</span>{/if}
+								{#if u.phone}<span class="text-gray-500 flex-shrink-0 hidden md:inline" dir="ltr">{u.phone}</span>{/if}
+								{#if u.app_role === 'super_admin'}
+									<span class="flex-shrink-0" title="סופר-אדמין">👑</span>
+								{:else if u.app_role === 'ch_admin'}
+									<span class="flex-shrink-0" title="אדמין תוכן">🛠️</span>
+								{/if}
+								{#if u.blocked}<span class="flex-shrink-0" title="חסום">🚫</span>{/if}
+								{#if u.app_role === 'ch_admin'}
+									<button
+										onclick={() => doSetAdminRole(u.email, 'user')}
+										class="px-2 py-0.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-[11px] font-bold flex-shrink-0"
+									>הסר</button>
+								{:else if u.app_role !== 'super_admin'}
+									<button
+										onclick={() => doSetAdminRole(u.email, 'ch_admin')}
+										class="px-2 py-0.5 rounded bg-green-600 hover:bg-green-700 text-white text-[11px] font-bold flex-shrink-0"
+									>מנה</button>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</section>
