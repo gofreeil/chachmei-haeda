@@ -2591,7 +2591,7 @@
 
 				<!-- שורת משתמש כטבלה: כל שדה בטור נפרד, מיושר בין השורות, עם מפריד אנכי עדין בגבול הימני של כל טור -->
 				{#snippet userRow(u: RegisteredUser)}
-					<div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_auto] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,0.9fr)_auto] md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_auto] text-xs hover:bg-white/5">
+					<div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_7.5rem] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,0.9fr)_7.5rem] md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_7.5rem] text-xs hover:bg-white/5">
 						<!-- שם -->
 						<div class="flex items-center min-w-0 px-2.5 py-1.5">
 							<span class="text-gray-100 font-bold truncate">{friendlyName(u) || '—'}</span>
@@ -2635,7 +2635,7 @@
 					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-300">⏳ טוען רשומים…</div>
 				{:else if usersLoaded}
 					<!-- קבוצה 1: משתמשי חכמי העדה (מי שביצע פעולה באתר) -->
-					<div class="flex items-center justify-between gap-2 px-1">
+					<div class="flex items-center gap-2 px-1">
 						<h3 class="text-lg font-black text-emerald-200">משתמשי חכמי העדה</h3>
 						<span class="text-xs text-gray-500">{filteredCommunity.length}{usersFilter.trim() ? ` / ${communityUsers.length}` : ''}</span>
 					</div>
@@ -2659,7 +2659,7 @@
 							{othersLoading ? '⏳ טוען…' : othersCount === 0 ? 'אין רשומים נוספים' : `לשאר הרשומים (${othersCount}) ⌄`}
 						</button>
 					{:else}
-						<div class="flex items-center justify-between gap-2 px-1 pt-1">
+						<div class="flex items-center gap-2 px-1 pt-1">
 							<h3 class="text-lg font-black text-gray-300">רשומים מאתרים אחרים</h3>
 							<span class="text-xs text-gray-500">{filteredOthers.length}{usersFilter.trim() ? ` / ${otherUsers.length}` : ''}</span>
 						</div>
