@@ -86,6 +86,17 @@
 	let adminSearching = $state(false);
 	let adminsNotice = $state('');
 
+	// ── דיאלוג אישור מעוצב (מחליף את confirm() המובנה של הדפדפן) ──
+	// שימוש: if (!(await askConfirm('...'))) return;
+	let confirmDialog = $state<{ message: string; resolve: (ok: boolean) => void } | null>(null);
+	function askConfirm(message: string): Promise<boolean> {
+		return new Promise((resolve) => (confirmDialog = { message, resolve }));
+	}
+	function closeConfirm(ok: boolean) {
+		confirmDialog?.resolve(ok);
+		confirmDialog = null;
+	}
+
 	// ── רשימת הרשומים (סופר-אדמין בלבד) ──
 	// קבוצה 1: משתמשי חכמי העדה (מי שביצע פעולה באתר). קבוצה 2: שאר הרשומים —
 	// נטענים רק בלחיצה על הכפתור. השיוך מבוסס-פעילות כי אתר-ההרשמה אינו נשמר.
@@ -272,8 +283,8 @@
 		setTimeout(() => (homeVideoNotice = ''), 4000);
 	}
 
-	function clearHomeVideo() {
-		if (!confirm('להסיר את הסרטון מדף הבית?')) return;
+	async function clearHomeVideo() {
+		if (!(await askConfirm('להסיר את הסרטון מדף הבית?'))) return;
 		homeVideoUrl = '';
 		try {
 			localStorage.removeItem(HOME_VIDEO_KEY);
@@ -361,7 +372,7 @@
 
 	async function doSetAdminRole(email: string, role: 'ch_admin' | 'user') {
 		const verb = role === 'ch_admin' ? 'למנות את' : 'להסיר הרשאת אדמין מ-';
-		if (!confirm(`${verb} ${email}?`)) return;
+		if (!(await askConfirm(`${verb} ${email}?`))) return;
 		try {
 			await setAdminRole(email, role);
 			adminsNotice = role === 'ch_admin'
@@ -535,8 +546,8 @@
 		rabbiNotice = '';
 	}
 
-	function deleteRabbi(id: string) {
-		if (!confirm('למחוק את הדיין?')) return;
+	async function deleteRabbi(id: string) {
+		if (!(await askConfirm('למחוק את הדיין?'))) return;
 		rabbis = rabbis.filter((x) => x.id !== id);
 		persistRabbis();
 		if (editingRabbiId === id) cancelEditRabbi();
@@ -557,8 +568,8 @@
 		persistRabbis();
 	}
 
-	function resetRabbisToDefault() {
-		if (!confirm('לאפס לרשימת ברירת המחדל? (תמונות שהעלית יימחקו)')) return;
+	async function resetRabbisToDefault() {
+		if (!(await askConfirm('לאפס לרשימת ברירת המחדל? (תמונות שהעלית יימחקו)'))) return;
 		rabbis = [...defaultRabbis];
 		persistRabbis();
 		cancelEditRabbi();
@@ -637,7 +648,7 @@
 	}
 
 	async function doReinstate(id: string) {
-		if (!confirm('להחזיר את הרשומה לסטטוס "חתום"?')) return;
+		if (!(await askConfirm('להחזיר את הרשומה לסטטוס "חתום"?'))) return;
 		try {
 			await reinstateEntry(id);
 			await loadAdminContent();
@@ -647,7 +658,7 @@
 	}
 
 	async function doDeleteCharter(id: string) {
-		if (!confirm('למחוק את הרשומה לצמיתות?')) return;
+		if (!(await askConfirm('למחוק את הרשומה לצמיתות?'))) return;
 		try {
 			await deleteCharterEntry(id);
 			await loadAdminContent();
@@ -689,19 +700,19 @@
 	}
 
 	async function doRejectSubmission(id: string) {
-		if (!confirm('לדחות את השאלה? (לא תפורסם כתשובה)')) return;
+		if (!(await askConfirm('לדחות את השאלה? (לא תפורסם כתשובה)'))) return;
 		try { await rejectSubmission(id); await loadAdminContent(); }
 		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
 	}
 
 	async function doDeleteSubmission(id: string) {
-		if (!confirm('למחוק את השאלה לצמיתות?')) return;
+		if (!(await askConfirm('למחוק את השאלה לצמיתות?'))) return;
 		try { await deleteSubmission(id); await loadAdminContent(); }
 		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
 	}
 
 	async function doDeleteQa(id: string) {
-		if (!confirm('למחוק את ה-Q&A מהאתר?')) return;
+		if (!(await askConfirm('למחוק את ה-Q&A מהאתר?'))) return;
 		try { await deleteQa(id); await loadAdminContent(); }
 		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
 	}
@@ -762,7 +773,7 @@
 	}
 
 	async function doDeleteHearing(id: string) {
-		if (!confirm('למחוק את הדיון?')) return;
+		if (!(await askConfirm('למחוק את הדיון?'))) return;
 		try { await deleteHearing(id); await loadAdminContent(); }
 		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
 	}
@@ -804,7 +815,7 @@
 	}
 
 	async function doDeleteRuling(id: string) {
-		if (!confirm('למחוק את פסק הדין?')) return;
+		if (!(await askConfirm('למחוק את פסק הדין?'))) return;
 		try { await deleteRuling(id); await loadAdminContent(); }
 		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
 	}
@@ -816,7 +827,7 @@
 	}
 
 	async function doDeleteRequest(id: string) {
-		if (!confirm('למחוק את הבקשה?')) return;
+		if (!(await askConfirm('למחוק את הבקשה?'))) return;
 		try { await deleteHearingRequest(id); await loadAdminContent(); }
 		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
 	}
@@ -881,8 +892,8 @@
 		setTimeout(() => (artNotice = ''), 4000);
 	}
 
-	function deleteCustomArticle(slug: string) {
-		if (!confirm('למחוק את המאמר?')) return;
+	async function deleteCustomArticle(slug: string) {
+		if (!(await askConfirm('למחוק את המאמר?'))) return;
 		customArticles = customArticles.filter((x) => x.slug !== slug);
 		try {
 			localStorage.setItem(ARTICLES_KEY, JSON.stringify(customArticles));
@@ -948,8 +959,8 @@
 		setTimeout(() => (vidNotice = ''), 4000);
 	}
 
-	function deleteCustomActivity(slug: string) {
-		if (!confirm('למחוק את הפריט?')) return;
+	async function deleteCustomActivity(slug: string) {
+		if (!(await askConfirm('למחוק את הפריט?'))) return;
 		customActivity = customActivity.filter((x) => x.slug !== slug);
 		try {
 			localStorage.setItem(ACTIVITY_KEY, JSON.stringify(customActivity));
@@ -993,8 +1004,8 @@
 		setTimeout(() => (newsNotice = ''), 5000);
 	}
 
-	function deleteCustomNews(id: string) {
-		if (!confirm('למחוק את החדשה?')) return;
+	async function deleteCustomNews(id: string) {
+		if (!(await askConfirm('למחוק את החדשה?'))) return;
 		customNews = customNews.filter((x) => x.id !== id);
 		try {
 			localStorage.setItem(NEWS_KEY, JSON.stringify(customNews));
@@ -1011,8 +1022,8 @@
 		} catch {}
 	}
 
-	function rejectCase(id: string) {
-		if (!confirm('לדחות ולמחוק את הבקשה?')) return;
+	async function rejectCase(id: string) {
+		if (!(await askConfirm('לדחות ולמחוק את הבקשה?'))) return;
 		pendingCases = pendingCases.filter((c) => c.id !== id);
 		try {
 			localStorage.setItem(CASES_KEY, JSON.stringify(pendingCases));
@@ -1027,6 +1038,9 @@
 <svelte:head>
 	<title>פאנל ניהול - חכמי העדה</title>
 </svelte:head>
+
+<!-- Escape סוגר את דיאלוג האישור -->
+<svelte:window onkeydown={(e) => { if (confirmDialog && e.key === 'Escape') closeConfirm(false); }} />
 
 {#if authChecking}
 	<section class="py-16 max-w-md mx-auto px-4 text-center">
@@ -2677,4 +2691,40 @@
 			</div>
 		{/if}
 	</section>
+
+	<!-- ────────────── דיאלוג אישור מעוצב (במקום confirm() של הדפדפן) ────────────── -->
+	{#if confirmDialog}
+		<div class="fixed inset-0 z-[100] flex items-center justify-center p-4" dir="rtl">
+			<!-- רקע כהה — לחיצה עליו = ביטול -->
+			<button
+				type="button"
+				aria-label="ביטול"
+				class="absolute inset-0 bg-black/60"
+				onclick={() => closeConfirm(false)}
+			></button>
+			<div
+				role="dialog"
+				aria-modal="true"
+				class="relative w-full max-w-sm rounded-2xl border border-white/10 bg-gray-900 p-6 text-center shadow-2xl"
+			>
+				<p class="text-base font-bold leading-relaxed text-gray-100 whitespace-pre-line">{confirmDialog.message}</p>
+				<div class="mt-6 flex gap-3">
+					<button
+						type="button"
+						onclick={() => closeConfirm(false)}
+						class="flex-1 py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-sm font-bold text-gray-200 transition-colors"
+					>
+						ביטול
+					</button>
+					<button
+						type="button"
+						onclick={() => closeConfirm(true)}
+						class="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-sm font-bold text-white transition-colors"
+					>
+						אישור
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
 {/if}
