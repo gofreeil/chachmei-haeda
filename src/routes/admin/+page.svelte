@@ -101,6 +101,16 @@
 		return [u.nickname, u.username, u.email, u.city, u.phone]
 			.some((f) => (f ?? '').toLowerCase().includes(q));
 	}
+	// שם לתצוגה — מתעלם מ-username שנוצר אוטומטית בהתחברות חברתית (google_<sub>, facebook_<id> וכו'),
+	// שהוא מזהה ארוך ולא-קריא. מעדיף כינוי, ואם ה-username הוא מזהה-ספק — מחזיר ריק (ליפול חזרה למייל).
+	function friendlyName(u?: { nickname?: string | null; username?: string | null } | null): string {
+		const nick = u?.nickname?.trim();
+		if (nick) return nick;
+		const uname = u?.username?.trim();
+		if (uname && !/^(google|facebook|apple|twitter|github|line|discord)[_-]/i.test(uname)) return uname;
+		return '';
+	}
+	const headerName = $derived(friendlyName(currentUser));
 	const filteredCommunity = $derived.by(() => {
 		const q = usersFilter.trim().toLowerCase();
 		return q ? communityUsers.filter((u) => matchUser(u, q)) : communityUsers;
@@ -1037,15 +1047,14 @@
 		<header class="flex items-center justify-between mb-6 gap-3 flex-wrap">
 			<div>
 				<h1 class="bg-gradient-to-r from-purple-300 to-blue-300 bg-clip-text text-3xl md:text-4xl font-black text-transparent">
-					🔧 פאנל ניהול
+					פאנל ניהול
 				</h1>
 				<p class="mt-1 text-gray-400 text-sm">
-					{currentUser?.username ?? ''}
-					{#if currentUser?.email}<span class="text-gray-500" dir="ltr"> · {currentUser.email}</span>{/if}
+					{#if headerName}<span class="font-bold text-gray-300">{headerName}</span><span class="text-gray-500"> · </span>{/if}<span class="text-gray-500" dir="ltr">{currentUser?.email ?? ''}</span>
 					{#if isSuper}
-						<span class="mr-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold">👑 סופר-אדמין</span>
+						<span class="mr-2 inline-block align-middle px-3 py-1 rounded-full bg-amber-400 border border-amber-500 text-amber-950 text-sm font-black whitespace-nowrap">👑 סופר-אדמין</span>
 					{:else if isLimited}
-						<span class="mr-1 px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-xs font-bold">🛠️ אדמין תוכן</span>
+						<span class="mr-2 inline-block align-middle px-3 py-1 rounded-full bg-blue-500 border border-blue-600 text-white text-sm font-black whitespace-nowrap">🛠️ אדמין תוכן</span>
 					{/if}
 				</p>
 			</div>
@@ -2507,7 +2516,7 @@
 							{#each adminSearchResults as u (u.id)}
 								<div class="flex items-center justify-between gap-3 rounded-lg bg-black/20 px-3 py-2">
 									<div class="min-w-0 text-sm">
-										<span class="text-white font-bold">{u.nickname || u.username || u.email}</span>
+										<span class="text-white font-bold">{friendlyName(u) || u.email}</span>
 										<span class="text-gray-400" dir="ltr"> · {u.email}</span>
 										{#if u.app_role === 'super_admin'}
 											<span class="text-amber-300 text-xs font-bold"> 👑 סופר-אדמין</span>
@@ -2545,7 +2554,7 @@
 							{#each adminsList as u (u.id)}
 								<div class="flex items-center justify-between gap-3 rounded-lg bg-black/20 px-3 py-2">
 									<div class="min-w-0 text-sm">
-										<span class="text-white font-bold">{u.nickname || u.username || u.email}</span>
+										<span class="text-white font-bold">{friendlyName(u) || u.email}</span>
 										<span class="text-gray-400" dir="ltr"> · {u.email}</span>
 										{#if u.app_role === 'super_admin'}
 											<span class="text-amber-300 text-xs font-bold"> 👑 סופר-אדמין</span>
@@ -2601,7 +2610,7 @@
 					<div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_auto] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,0.9fr)_auto] md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_auto] text-xs hover:bg-white/5">
 						<!-- שם -->
 						<div class="flex items-center min-w-0 px-2.5 py-1.5">
-							<span class="text-gray-100 font-bold truncate">{u.nickname || u.username || '—'}</span>
+							<span class="text-gray-100 font-bold truncate">{friendlyName(u) || '—'}</span>
 						</div>
 						<!-- אימייל -->
 						<div class="flex items-center min-w-0 px-2.5 py-1.5 border-r border-white/10">
