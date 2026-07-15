@@ -2596,29 +2596,45 @@
 					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white text-sm placeholder:text-gray-500"
 				/>
 
+				<!-- שורת משתמש כטבלה: כל שדה בטור נפרד, מיושר בין השורות, עם מפריד אנכי עדין בגבול הימני של כל טור -->
 				{#snippet userRow(u: RegisteredUser)}
-					<div class="flex items-center gap-2 px-2.5 py-1 text-xs hover:bg-white/5">
-						<span class="text-gray-100 font-bold flex-shrink-0 max-w-[35%] truncate">{u.nickname || u.username || '—'}</span>
-						<span class="text-gray-400 min-w-0 flex-1 truncate" dir="ltr">{u.email}</span>
-						{#if u.city}<span class="text-gray-500 flex-shrink-0 max-w-[22%] truncate hidden sm:inline">{u.city}</span>{/if}
-						{#if u.phone}<span class="text-gray-500 flex-shrink-0 hidden md:inline" dir="ltr">{u.phone}</span>{/if}
-						{#if u.app_role === 'super_admin'}
-							<span class="flex-shrink-0" title="סופר-אדמין">👑</span>
-						{:else if u.app_role === 'ch_admin'}
-							<span class="flex-shrink-0" title="אדמין תוכן">🛠️</span>
-						{/if}
-						{#if u.blocked}<span class="flex-shrink-0" title="חסום">🚫</span>{/if}
-						{#if u.app_role === 'ch_admin'}
-							<button
-								onclick={() => doSetAdminRole(u.email, 'user')}
-								class="px-2 py-0.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-[11px] font-bold flex-shrink-0"
-							>הסר</button>
-						{:else if u.app_role !== 'super_admin'}
-							<button
-								onclick={() => doSetAdminRole(u.email, 'ch_admin')}
-								class="px-2 py-0.5 rounded bg-green-600 hover:bg-green-700 text-white text-[11px] font-bold flex-shrink-0"
-							>מנה</button>
-						{/if}
+					<div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_auto] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,0.9fr)_auto] md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_auto] text-xs hover:bg-white/5">
+						<!-- שם -->
+						<div class="flex items-center min-w-0 px-2.5 py-1.5">
+							<span class="text-gray-100 font-bold truncate">{u.nickname || u.username || '—'}</span>
+						</div>
+						<!-- אימייל -->
+						<div class="flex items-center min-w-0 px-2.5 py-1.5 border-r border-white/10">
+							<span class="text-gray-400 truncate" dir="ltr">{u.email}</span>
+						</div>
+						<!-- עיר -->
+						<div class="hidden sm:flex items-center min-w-0 px-2.5 py-1.5 border-r border-white/10">
+							<span class="text-gray-500 truncate">{u.city || '—'}</span>
+						</div>
+						<!-- טלפון -->
+						<div class="hidden md:flex items-center min-w-0 px-2.5 py-1.5 border-r border-white/10">
+							<span class="text-gray-500 truncate" dir="ltr">{u.phone || '—'}</span>
+						</div>
+						<!-- סטטוס + פעולה -->
+						<div class="flex items-center gap-1.5 px-2.5 py-1.5 border-r border-white/10">
+							{#if u.app_role === 'super_admin'}
+								<span class="flex-shrink-0" title="סופר-אדמין">👑</span>
+							{:else if u.app_role === 'ch_admin'}
+								<span class="flex-shrink-0" title="אדמין תוכן">🛠️</span>
+							{/if}
+							{#if u.blocked}<span class="flex-shrink-0" title="חסום">🚫</span>{/if}
+							{#if u.app_role === 'ch_admin'}
+								<button
+									onclick={() => doSetAdminRole(u.email, 'user')}
+									class="px-2 py-0.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-[11px] font-bold flex-shrink-0"
+								>הסר</button>
+							{:else if u.app_role !== 'super_admin'}
+								<button
+									onclick={() => doSetAdminRole(u.email, 'ch_admin')}
+									class="px-2 py-0.5 rounded bg-green-600 hover:bg-green-700 text-white text-[11px] font-bold flex-shrink-0"
+								>מנה</button>
+							{/if}
+						</div>
 					</div>
 				{/snippet}
 
@@ -2627,7 +2643,7 @@
 				{:else if usersLoaded}
 					<!-- קבוצה 1: משתמשי חכמי העדה (מי שביצע פעולה באתר) -->
 					<div class="flex items-center justify-between gap-2 px-1">
-						<h3 class="text-sm font-black text-emerald-200">משתמשי חכמי העדה</h3>
+						<h3 class="text-lg font-black text-emerald-200">משתמשי חכמי העדה</h3>
 						<span class="text-xs text-gray-500">{filteredCommunity.length}{usersFilter.trim() ? ` / ${communityUsers.length}` : ''}</span>
 					</div>
 					{#if communityUsers.length === 0}
@@ -2651,7 +2667,7 @@
 						</button>
 					{:else}
 						<div class="flex items-center justify-between gap-2 px-1 pt-1">
-							<h3 class="text-sm font-black text-gray-300">רשומים מאתרים אחרים</h3>
+							<h3 class="text-lg font-black text-gray-300">רשומים מאתרים אחרים</h3>
 							<span class="text-xs text-gray-500">{filteredOthers.length}{usersFilter.trim() ? ` / ${otherUsers.length}` : ''}</span>
 						</div>
 						{#if otherUsers.length === 0}

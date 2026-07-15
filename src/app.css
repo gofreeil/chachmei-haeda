@@ -265,6 +265,8 @@ select option:checked {
 .text-teal-400 { color: #0f766e !important; }
 .text-green-100, .text-green-200, .text-green-300 { color: #166534 !important; }
 .text-green-400 { color: #15803d !important; }
+.text-emerald-100, .text-emerald-200, .text-emerald-300 { color: #065f46 !important; }
+.text-emerald-400 { color: #047857 !important; }
 .text-red-100, .text-red-200, .text-red-300 { color: #991b1b !important; }
 .text-pink-100, .text-pink-200, .text-pink-300 { color: #9d174d !important; }
 .text-orange-100, .text-orange-200, .text-orange-300 { color: #9a3412 !important; }
