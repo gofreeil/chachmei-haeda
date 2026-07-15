@@ -40,7 +40,7 @@
 		type HearingRequest
 	} from '$lib/services/hearings-service';
 	import { getCurrentUser, isChachmeiAdmin, isSuperAdmin, isLimitedChachmeiAdmin, strapiLogout, type StrapiUser } from '$lib/strapi';
-	import { listAdmins, listAllUsers, setAdminRole, type AdminUser, type RegisteredUser } from '$lib/services/admin-users-service';
+	import { listAdmins, listCommunityUsers, listOtherUsers, setAdminRole, type AdminUser, type RegisteredUser } from '$lib/services/admin-users-service';
 	import type { CharterEntry } from '$lib/data/charter';
 	import type { Hearing, Ruling, HearingStatus } from '$lib/data/hearings';
 	import type { QaItem } from '$lib/data/qa';
@@ -87,17 +87,27 @@
 	let adminsNotice = $state('');
 
 	// ── רשימת הרשומים (סופר-אדמין בלבד) ──
-	let allUsers = $state<RegisteredUser[]>([]);
+	// קבוצה 1: משתמשי חכמי העדה (מי שביצע פעולה באתר). קבוצה 2: שאר הרשומים —
+	// נטענים רק בלחיצה על הכפתור. השיוך מבוסס-פעילות כי אתר-ההרשמה אינו נשמר.
+	let communityUsers = $state<RegisteredUser[]>([]);
+	let othersCount = $state(0);
+	let otherUsers = $state<RegisteredUser[]>([]);
 	let usersLoaded = $state(false);
 	let usersLoading = $state(false);
+	let othersLoaded = $state(false);
+	let othersLoading = $state(false);
 	let usersFilter = $state('');
-	const filteredUsers = $derived.by(() => {
+	function matchUser(u: RegisteredUser, q: string): boolean {
+		return [u.nickname, u.username, u.email, u.city, u.phone]
+			.some((f) => (f ?? '').toLowerCase().includes(q));
+	}
+	const filteredCommunity = $derived.by(() => {
 		const q = usersFilter.trim().toLowerCase();
-		if (!q) return allUsers;
-		return allUsers.filter((u) =>
-			[u.nickname, u.username, u.email, u.city, u.phone]
-				.some((f) => (f ?? '').toLowerCase().includes(q))
-		);
+		return q ? communityUsers.filter((u) => matchUser(u, q)) : communityUsers;
+	});
+	const filteredOthers = $derived.by(() => {
+		const q = usersFilter.trim().toLowerCase();
+		return q ? otherUsers.filter((u) => matchUser(u, q)) : otherUsers;
 	});
 
 	// ── Data state ──
@@ -290,12 +300,29 @@
 	async function reloadUsers() {
 		usersLoading = true;
 		try {
-			allUsers = await listAllUsers();
+			const res = await listCommunityUsers();
+			communityUsers = res.users;
+			othersCount = res.othersCount;
 			usersLoaded = true;
+			// אם "שאר הרשומים" כבר נטענו פעם — מרעננים גם אותם
+			if (othersLoaded) await loadOtherUsers(true);
 		} catch (e: any) {
 			adminsNotice = '⚠️ שגיאה בטעינת הרשומים: ' + (e?.message ?? e);
 		} finally {
 			usersLoading = false;
+		}
+	}
+
+	async function loadOtherUsers(force = false) {
+		if (othersLoading || (othersLoaded && !force)) return;
+		othersLoading = true;
+		try {
+			otherUsers = await listOtherUsers();
+			othersLoaded = true;
+		} catch (e: any) {
+			adminsNotice = '⚠️ שגיאה בטעינת שאר הרשומים: ' + (e?.message ?? e);
+		} finally {
+			othersLoading = false;
 		}
 	}
 
@@ -1177,7 +1204,7 @@
 					class:hover:text-gray-200={activeTab !== 'users'}
 					onclick={openUsersTab}
 				>
-					👥 רשומים{usersLoaded ? ` (${allUsers.length})` : ''}
+					👥 רשומים{usersLoaded ? ` (${communityUsers.length + othersCount})` : ''}
 				</button>
 			{/if}
 		</div>
@@ -2544,7 +2571,7 @@
 					<div class="flex items-center justify-between gap-3 flex-wrap">
 						<div>
 							<h2 class="text-xl font-black text-emerald-200 mb-1">👥 רשומים לאתר</h2>
-							<p class="text-xs text-gray-400">כל המשתמשים הרשומים (חדשים תחילה). אפשר למנות אדמין ישירות מהרשימה.</p>
+							<p class="text-xs text-gray-400">מוצגים תחילה משתמשי חכמי העדה (שנרשמו כאן או ביצעו פעולה באתר), ואז אפשר לטעון את שאר הרשומים. אפשר למנות אדמין ישירות מהרשימה.</p>
 						</div>
 						<button
 							onclick={reloadUsers}
@@ -2566,39 +2593,74 @@
 					class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white text-sm placeholder:text-gray-500"
 				/>
 
+				{#snippet userRow(u: RegisteredUser)}
+					<div class="flex items-center gap-2 px-2.5 py-1 text-xs hover:bg-white/5">
+						<span class="text-gray-100 font-bold flex-shrink-0 max-w-[35%] truncate">{u.nickname || u.username || '—'}</span>
+						<span class="text-gray-400 min-w-0 flex-1 truncate" dir="ltr">{u.email}</span>
+						{#if u.city}<span class="text-gray-500 flex-shrink-0 max-w-[22%] truncate hidden sm:inline">{u.city}</span>{/if}
+						{#if u.phone}<span class="text-gray-500 flex-shrink-0 hidden md:inline" dir="ltr">{u.phone}</span>{/if}
+						{#if u.app_role === 'super_admin'}
+							<span class="flex-shrink-0" title="סופר-אדמין">👑</span>
+						{:else if u.app_role === 'ch_admin'}
+							<span class="flex-shrink-0" title="אדמין תוכן">🛠️</span>
+						{/if}
+						{#if u.blocked}<span class="flex-shrink-0" title="חסום">🚫</span>{/if}
+						{#if u.app_role === 'ch_admin'}
+							<button
+								onclick={() => doSetAdminRole(u.email, 'user')}
+								class="px-2 py-0.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-[11px] font-bold flex-shrink-0"
+							>הסר</button>
+						{:else if u.app_role !== 'super_admin'}
+							<button
+								onclick={() => doSetAdminRole(u.email, 'ch_admin')}
+								class="px-2 py-0.5 rounded bg-green-600 hover:bg-green-700 text-white text-[11px] font-bold flex-shrink-0"
+							>מנה</button>
+						{/if}
+					</div>
+				{/snippet}
+
 				{#if usersLoading && !usersLoaded}
 					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-300">⏳ טוען רשומים…</div>
-				{:else if allUsers.length === 0}
-					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-300">אין רשומים להצגה</div>
-				{:else}
-					<div class="text-xs text-gray-500 px-1">מציג {filteredUsers.length} מתוך {allUsers.length}</div>
-					<div class="rounded-xl border border-white/10 bg-white/5 divide-y divide-white/5 overflow-hidden">
-						{#each filteredUsers as u (u.id)}
-							<div class="flex items-center gap-2 px-2.5 py-1 text-xs hover:bg-white/5">
-								<span class="text-gray-100 font-bold flex-shrink-0 max-w-[35%] truncate">{u.nickname || u.username || '—'}</span>
-								<span class="text-gray-400 min-w-0 flex-1 truncate" dir="ltr">{u.email}</span>
-								{#if u.city}<span class="text-gray-500 flex-shrink-0 max-w-[22%] truncate hidden sm:inline">{u.city}</span>{/if}
-								{#if u.phone}<span class="text-gray-500 flex-shrink-0 hidden md:inline" dir="ltr">{u.phone}</span>{/if}
-								{#if u.app_role === 'super_admin'}
-									<span class="flex-shrink-0" title="סופר-אדמין">👑</span>
-								{:else if u.app_role === 'ch_admin'}
-									<span class="flex-shrink-0" title="אדמין תוכן">🛠️</span>
-								{/if}
-								{#if u.blocked}<span class="flex-shrink-0" title="חסום">🚫</span>{/if}
-								{#if u.app_role === 'ch_admin'}
-									<button
-										onclick={() => doSetAdminRole(u.email, 'user')}
-										class="px-2 py-0.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-[11px] font-bold flex-shrink-0"
-									>הסר</button>
-								{:else if u.app_role !== 'super_admin'}
-									<button
-										onclick={() => doSetAdminRole(u.email, 'ch_admin')}
-										class="px-2 py-0.5 rounded bg-green-600 hover:bg-green-700 text-white text-[11px] font-bold flex-shrink-0"
-									>מנה</button>
-								{/if}
-							</div>
-						{/each}
+				{:else if usersLoaded}
+					<!-- קבוצה 1: משתמשי חכמי העדה (מי שביצע פעולה באתר) -->
+					<div class="flex items-center justify-between gap-2 px-1">
+						<h3 class="text-sm font-black text-emerald-200">משתמשי חכמי העדה</h3>
+						<span class="text-xs text-gray-500">{filteredCommunity.length}{usersFilter.trim() ? ` / ${communityUsers.length}` : ''}</span>
 					</div>
+					{#if communityUsers.length === 0}
+						<div class="rounded-xl border border-white/10 bg-white/5 p-4 text-center text-xs text-gray-400">אין עדיין משתמשים עם פעילות באתר</div>
+					{:else}
+						<div class="rounded-xl border border-emerald-500/20 bg-white/5 divide-y divide-white/5 overflow-hidden">
+							{#each filteredCommunity as u (u.id)}
+								{@render userRow(u)}
+							{/each}
+						</div>
+					{/if}
+
+					<!-- קבוצה 2: שאר הרשומים (מאתרי gofreeil אחרים) — נטענים בלחיצה -->
+					{#if !othersLoaded}
+						<button
+							onclick={() => loadOtherUsers()}
+							disabled={othersLoading || othersCount === 0}
+							class="w-full py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-sm font-bold text-gray-200 disabled:opacity-50 transition-colors"
+						>
+							{othersLoading ? '⏳ טוען…' : othersCount === 0 ? 'אין רשומים נוספים' : `לשאר הרשומים (${othersCount}) ⌄`}
+						</button>
+					{:else}
+						<div class="flex items-center justify-between gap-2 px-1 pt-1">
+							<h3 class="text-sm font-black text-gray-300">רשומים מאתרים אחרים</h3>
+							<span class="text-xs text-gray-500">{filteredOthers.length}{usersFilter.trim() ? ` / ${otherUsers.length}` : ''}</span>
+						</div>
+						{#if otherUsers.length === 0}
+							<div class="rounded-xl border border-white/10 bg-white/5 p-4 text-center text-xs text-gray-400">אין רשומים נוספים</div>
+						{:else}
+							<div class="rounded-xl border border-white/10 bg-white/5 divide-y divide-white/5 overflow-hidden">
+								{#each filteredOthers as u (u.id)}
+									{@render userRow(u)}
+								{/each}
+							</div>
+						{/if}
+					{/if}
 				{/if}
 			</div>
 		{/if}

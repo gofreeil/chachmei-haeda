@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { strapiGoogleExchange, getCurrentUser } from '$lib/strapi';
+	import { strapiGoogleExchange, getCurrentUser, claimRegistrationOrigin } from '$lib/strapi';
 
 	let status = $state<'working' | 'error'>('working');
 	let errorMsg = $state('');
@@ -24,6 +24,8 @@
 
 			const me = await getCurrentUser();
 			if (!me) throw new Error('ההזדהות נכשלה - אין משתמש');
+			// מסמן אתר-הרשמה למשתמש חדש (הבקאנד מתעלם אם החשבון אינו חדש)
+			await claimRegistrationOrigin();
 			goto(returnTo);
 		} catch (e: any) {
 			errorMsg = e?.message ?? 'שגיאה בהזדהות עם Google';

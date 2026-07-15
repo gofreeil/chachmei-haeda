@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { strapiRegister, getCurrentUser } from '$lib/strapi';
+	import { strapiRegister, getCurrentUser, claimRegistrationOrigin } from '$lib/strapi';
 	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -41,6 +41,7 @@
 				email: email.trim().toLowerCase(),
 				password
 			});
+			await claimRegistrationOrigin();
 			goto('/profile');
 		} catch (e: any) {
 			const msg = e?.message ?? 'שגיאה בהרשמה';

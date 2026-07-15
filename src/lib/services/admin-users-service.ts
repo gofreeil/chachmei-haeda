@@ -2,9 +2,10 @@
 // admin-users-service — ניהול אדמינים ורשימת רשומים (סופר-אדמין בלבד)
 //
 // endpoints מותאמים בבקאנד (users-permissions extension):
-//   GET  /ch-admins?q=…       — רשימת אדמינים / חיפוש משתמש
-//   GET  /ch-users?q=…        — רשימת כל הרשומים (לתצוגה קומפקטית בפאנל)
-//   POST /ch-admins/set-role  — מינוי ch_admin או החזרה ל-user
+//   GET  /ch-admins?q=…             — רשימת אדמינים / חיפוש משתמש
+//   GET  /ch-users?scope=community  — רשומים ששייכים לחכמי העדה (+ othersCount)
+//   GET  /ch-users?scope=others     — שאר הרשומים (מאתרי gofreeil אחרים)
+//   POST /ch-admins/set-role        — מינוי ch_admin או החזרה ל-user
 // האכיפה (סופר-אדמין בלבד) נעשית בצד השרת.
 // ─────────────────────────────────────────────────────────────
 
@@ -35,11 +36,24 @@ export async function listAdmins(q?: string): Promise<AdminUser[]> {
 	return resp?.data ?? [];
 }
 
-/** כל המשתמשים הרשומים לאתר (חדשים תחילה). q — סינון אופציונלי בצד השרת. */
-export async function listAllUsers(q?: string): Promise<RegisteredUser[]> {
-	const params: Record<string, string> = {};
-	if (q?.trim()) params.q = q.trim();
-	const resp = await strapiGet<{ data: RegisteredUser[] }>('ch-users', params, { needAuth: true });
+/** רשומים ששייכים לחכמי העדה (מי שביצע פעולה באתר / אדמין), חדשים תחילה.
+ *  מחזיר גם את מספר "שאר הרשומים" — לתצוגה על הכפתור בלי לטעון אותם. */
+export async function listCommunityUsers(): Promise<{ users: RegisteredUser[]; othersCount: number }> {
+	const resp = await strapiGet<{ data: RegisteredUser[]; othersCount?: number }>(
+		'ch-users',
+		{ scope: 'community' },
+		{ needAuth: true }
+	);
+	return { users: resp?.data ?? [], othersCount: resp?.othersCount ?? 0 };
+}
+
+/** שאר הרשומים — כאלה שאין להם פעילות בחכמי העדה (הגיעו מאתרי gofreeil אחרים). */
+export async function listOtherUsers(): Promise<RegisteredUser[]> {
+	const resp = await strapiGet<{ data: RegisteredUser[] }>(
+		'ch-users',
+		{ scope: 'others' },
+		{ needAuth: true }
+	);
 	return resp?.data ?? [];
 }
 

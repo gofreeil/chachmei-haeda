@@ -231,6 +231,19 @@ export async function strapiRegister(input: {
 	return data;
 }
 
+/** מפתח האתר לתיוג אתר-ההרשמה בבקאנד (registered_site). */
+export const SITE_KEY = 'chachmei';
+
+/** מסמן בבקאנד שהמשתמש הנוכחי נרשם דרך אתר זה. best-effort — לא חוסם את זרימת ההרשמה.
+ *  הבקאנד מתייג רק חשבון חדש וללא ערך קיים, כך שבטוח לקרוא לזה גם אחרי התחברות. */
+export async function claimRegistrationOrigin(): Promise<void> {
+	try {
+		await strapiPost('ch-users/claim-origin', { site: SITE_KEY }, { needAuth: true, raw: true });
+	} catch {
+		/* מתעלמים — התיוג הוא נחמד-שיהיה, לא קריטי */
+	}
+}
+
 /** מחזיר את ה-URL להתחלת OAuth של Google דרך Strapi.
  *  שומר את returnTo ב-sessionStorage (Strapi v5 דורש callback מדויק בלי query params). */
 export function googleOAuthStartUrl(returnTo: string = '/profile'): string {
