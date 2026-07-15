@@ -2579,22 +2579,6 @@
 		{:else if activeTab === 'users'}
 			<!-- ───────────── רשימת הרשומים (סופר-אדמין) ───────────── -->
 			<div class="space-y-3">
-				<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4">
-					<div class="flex items-center justify-between gap-3 flex-wrap">
-						<div>
-							<h2 class="text-xl font-black text-emerald-200 mb-1">👥 רשומים לאתר</h2>
-							<p class="text-xs text-gray-400">מוצגים תחילה משתמשי חכמי העדה (שנרשמו כאן או ביצעו פעולה באתר), ואז אפשר לטעון את שאר הרשומים. אפשר למנות אדמין ישירות מהרשימה.</p>
-						</div>
-						<button
-							onclick={reloadUsers}
-							disabled={usersLoading}
-							class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold disabled:opacity-50 flex-shrink-0"
-						>
-							{usersLoading ? 'טוען…' : '↻ רענון'}
-						</button>
-					</div>
-				</div>
-
 				{#if adminsNotice}
 					<div class="rounded-lg border border-white/15 bg-white/10 px-4 py-2.5 text-sm text-gray-100">{adminsNotice}</div>
 				{/if}
