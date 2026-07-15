@@ -120,6 +120,8 @@
 
 	// ── Charter admin form ──
 	let charterFilter = $state<'all' | 'signed' | 'disqualified'>('all');
+	// איזו שורה פתחה את תפריט "עוד" (ערוך/פסול/מחק)
+	let openCharterMenu = $state<string | null>(null);
 	let disqualifyingId = $state<string | null>(null);
 	let disqualifyReason = $state('');
 	let disqualifyBy = $state('');
@@ -1336,123 +1338,124 @@
 
 		{:else if activeTab === 'charter'}
 			<div class="space-y-4">
-				<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-5">
-					<h2 class="text-xl font-black text-emerald-200 mb-2">✍️ חתימות אמנת UECC</h2>
-					<p class="text-sm text-gray-300">
+				<div class="rounded-2xl border border-[#d4be7f] bg-[#f8eecb]/60 p-5">
+					<h2 class="text-xl font-black text-emerald-800 mb-2">✍️ חתימות אמנת UECC</h2>
+					<p class="text-sm text-gray-600">
 						רשימת החתומים מתעדכנת אוטומטית מהטופס באתר. ניתן לפסול חתימה (תועבר ללשונית "פסולים" באתר), להחזיר חתימה פסולה או למחוק.
 					</p>
 				</div>
 
 				<div class="flex gap-2 flex-wrap">
-					<button onclick={() => (charterFilter = 'all')} class="px-3 py-1.5 rounded-full text-sm font-bold border {charterFilter === 'all' ? 'bg-emerald-500/30 border-emerald-400 text-white' : 'border-white/15 text-gray-300 hover:bg-white/10'}">
+					<button onclick={() => (charterFilter = 'all')} class="px-3 py-1.5 rounded-full text-sm font-bold border transition-colors {charterFilter === 'all' ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-[#d4be7f] text-gray-600 hover:bg-black/5'}">
 						הכל ({charterEntries.length})
 					</button>
-					<button onclick={() => (charterFilter = 'signed')} class="px-3 py-1.5 rounded-full text-sm font-bold border {charterFilter === 'signed' ? 'bg-emerald-500/30 border-emerald-400 text-white' : 'border-white/15 text-gray-300 hover:bg-white/10'}">
+					<button onclick={() => (charterFilter = 'signed')} class="px-3 py-1.5 rounded-full text-sm font-bold border transition-colors {charterFilter === 'signed' ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-[#d4be7f] text-gray-600 hover:bg-black/5'}">
 						חתומים ({charterEntries.filter(e => e.status === 'signed').length})
 					</button>
-					<button onclick={() => (charterFilter = 'disqualified')} class="px-3 py-1.5 rounded-full text-sm font-bold border {charterFilter === 'disqualified' ? 'bg-red-500/30 border-red-400 text-white' : 'border-white/15 text-gray-300 hover:bg-white/10'}">
+					<button onclick={() => (charterFilter = 'disqualified')} class="px-3 py-1.5 rounded-full text-sm font-bold border transition-colors {charterFilter === 'disqualified' ? 'bg-red-600 border-red-600 text-white' : 'border-[#d4be7f] text-gray-600 hover:bg-black/5'}">
 						פסולים ({charterEntries.filter(e => e.status === 'disqualified').length})
 					</button>
 				</div>
 
 				{#if filteredCharter.length === 0}
-					<div class="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-gray-400">
+					<div class="rounded-xl border border-[#d4be7f] bg-[#f8eecb]/40 p-8 text-center text-gray-500">
 						אין רשומות
 					</div>
 				{:else}
-					<div class="space-y-2">
+					<!-- רקע-לחיצה לסגירת תפריט "עוד" -->
+					{#if openCharterMenu !== null}
+						<button type="button" aria-label="סגור תפריט" class="fixed inset-0 z-20 cursor-default" onclick={() => (openCharterMenu = null)}></button>
+					{/if}
+					<div class="rounded-xl border border-[#d4be7f] bg-[#f8eecb]/60 divide-y divide-[#e4d29a] overflow-visible">
 						{#each filteredCharter as e (e.id)}
-							<div class="rounded-xl border p-4 {e.status === 'signed' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-red-500/30 bg-red-500/5'}">
-								<div class="flex items-start justify-between gap-3 flex-wrap">
-									<div class="min-w-0 flex-1">
-										<div class="flex items-center gap-2 flex-wrap">
-											<span class="font-bold text-white">{fmtAny(e.name)}</span>
-											<span class="text-xs px-2 py-0.5 rounded-full {e.status === 'signed' ? 'bg-emerald-500/30 text-emerald-100' : 'bg-red-500/30 text-red-100'}">
-												{e.status === 'signed' ? '✅ חתום' : '⛔ פסול'}
-											</span>
-										</div>
-										{#if fmtAny(e.role) || fmtAny(e.city)}
-											<div class="text-xs text-gray-300 mt-0.5">
-												{fmtAny(e.role)}{fmtAny(e.role) && fmtAny(e.city) ? ' • ' : ''}{fmtAny(e.city)}
+							<div class={e.status === 'signed' ? '' : 'bg-red-500/[0.04]'}>
+								<div class="flex items-center gap-2.5 px-3 py-2">
+									<span class="w-2 h-2 rounded-full flex-shrink-0 {e.status === 'signed' ? 'bg-emerald-500' : 'bg-red-500'}" title={e.status === 'signed' ? 'חתום' : 'פסול'}></span>
+									<span class="font-bold text-gray-900 text-sm whitespace-nowrap">{fmtAny(e.name)}</span>
+									{#if fmtAny(e.role) || fmtAny(e.city)}
+										<span class="text-xs text-gray-500 truncate hidden sm:inline">{fmtAny(e.role)}{fmtAny(e.role) && fmtAny(e.city) ? ' · ' : ''}{fmtAny(e.city)}</span>
+									{/if}
+									<span class="text-xs text-gray-400 whitespace-nowrap hidden md:inline">· {e.date}</span>
+									{#if e.status === 'disqualified' && e.disqualifiedReason}
+										<span class="text-xs text-red-600/80 italic truncate hidden lg:inline">"{fmtAny(e.disqualifiedReason)}"</span>
+									{/if}
+									<span class="flex-1 min-w-0"></span>
+									<div class="relative flex-shrink-0">
+										<button type="button" onclick={() => (openCharterMenu = openCharterMenu === e.id ? null : e.id)} class="px-2.5 py-1 rounded-md text-xs font-bold text-gray-600 bg-black/5 hover:bg-black/10 border border-[#d4be7f] flex items-center gap-1 transition-colors">
+											עוד <span class="text-[9px] opacity-60">▼</span>
+										</button>
+										{#if openCharterMenu === e.id}
+											<div class="absolute z-30 top-full left-0 mt-1 w-36 rounded-lg border border-black/10 bg-white shadow-xl py-1 overflow-hidden">
+												<button type="button" onclick={() => { openCharterMenu = null; startEditCharter(e); }} class="w-full flex items-center gap-2 text-right px-3 py-2 text-sm font-bold text-blue-700 hover:bg-blue-50 transition-colors">✏️ ערוך</button>
+												{#if e.status === 'signed'}
+													<button type="button" onclick={() => { openCharterMenu = null; startDisqualify(e); }} class="w-full flex items-center gap-2 text-right px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors">⛔ פסול</button>
+												{:else}
+													<button type="button" onclick={() => { openCharterMenu = null; doReinstate(e.id); }} class="w-full flex items-center gap-2 text-right px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-50 transition-colors">↩️ החזר</button>
+												{/if}
+												<button type="button" onclick={() => { openCharterMenu = null; doDeleteCharter(e.id); }} class="w-full flex items-center gap-2 text-right px-3 py-2 text-sm font-bold text-gray-500 hover:bg-gray-100 transition-colors">🗑️ מחק</button>
 											</div>
 										{/if}
-										{#if e.email || e.phone}
-											<div class="text-xs text-gray-500 mt-0.5" dir="ltr">{e.email ?? ''} {e.phone ?? ''}</div>
-										{/if}
-										<div class="text-xs text-gray-500 mt-0.5">חתם: {e.date}</div>
-										{#if e.status === 'disqualified' && e.disqualifiedReason}
-											<div class="text-xs text-red-200 mt-1 italic">"{fmtAny(e.disqualifiedReason)}"</div>
-										{/if}
-									</div>
-									<div class="flex gap-1 flex-shrink-0">
-										<button onclick={() => startEditCharter(e)} class="px-3 py-1.5 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold">ערוך</button>
-										{#if e.status === 'signed'}
-											<button onclick={() => startDisqualify(e)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">פסול</button>
-										{:else}
-											<button onclick={() => doReinstate(e.id)} class="px-3 py-1.5 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 text-xs font-bold">החזר</button>
-										{/if}
-										<button onclick={() => doDeleteCharter(e.id)} class="px-3 py-1.5 rounded bg-white/5 hover:bg-white/15 text-gray-200 text-xs font-bold">מחק</button>
 									</div>
 								</div>
 
 								{#if editingCharterId === e.id}
-									<div class="mt-3 pt-3 border-t border-white/10 space-y-2">
+									<div class="mx-3 mb-3 pt-3 border-t border-[#e4d29a] space-y-2">
 										<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
 											<label class="block">
-												<span class="text-xs text-gray-400">שם מלא</span>
-												<input type="text" bind:value={editCharterName} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-blue-400/40 text-white" />
+												<span class="text-xs text-gray-600">שם מלא</span>
+												<input type="text" bind:value={editCharterName} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-blue-500/50 text-gray-900" />
 											</label>
 											<label class="block">
-												<span class="text-xs text-gray-400">שם עסק / ארגון</span>
-												<input type="text" bind:value={editCharterBusiness} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+												<span class="text-xs text-gray-600">שם עסק / ארגון</span>
+												<input type="text" bind:value={editCharterBusiness} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
 											</label>
 											<label class="block">
-												<span class="text-xs text-gray-400">תפקיד</span>
-												<input type="text" bind:value={editCharterRole} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+												<span class="text-xs text-gray-600">תפקיד</span>
+												<input type="text" bind:value={editCharterRole} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
 											</label>
 											<label class="block">
-												<span class="text-xs text-gray-400">עיר</span>
-												<input type="text" bind:value={editCharterCity} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+												<span class="text-xs text-gray-600">עיר</span>
+												<input type="text" bind:value={editCharterCity} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
 											</label>
 											<label class="block">
-												<span class="text-xs text-gray-400">אימייל</span>
-												<input type="email" dir="ltr" bind:value={editCharterEmail} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+												<span class="text-xs text-gray-600">אימייל</span>
+												<input type="email" dir="ltr" bind:value={editCharterEmail} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
 											</label>
 											<label class="block">
-												<span class="text-xs text-gray-400">טלפון</span>
-												<input type="tel" dir="ltr" bind:value={editCharterPhone} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+												<span class="text-xs text-gray-600">טלפון</span>
+												<input type="tel" dir="ltr" bind:value={editCharterPhone} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
 											</label>
 											<label class="block">
-												<span class="text-xs text-gray-400">תאריך חתימה</span>
-												<input type="date" bind:value={editCharterDate} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" />
+												<span class="text-xs text-gray-600">תאריך חתימה</span>
+												<input type="date" bind:value={editCharterDate} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
 											</label>
 										</div>
 										<div class="flex gap-2">
 											<button onclick={() => saveEditCharter(e.id)} disabled={savingCharter} class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm font-bold">
 												{savingCharter ? 'שומר…' : '💾 שמור'}
 											</button>
-											<button onclick={() => (editingCharterId = null)} class="px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white text-sm font-bold">ביטול</button>
+											<button onclick={() => (editingCharterId = null)} class="px-4 py-2 rounded bg-black/5 hover:bg-black/10 text-gray-700 border border-[#d4be7f] text-sm font-bold">ביטול</button>
 										</div>
 									</div>
 								{/if}
 
 								{#if disqualifyingId === e.id}
-									<div class="mt-3 pt-3 border-t border-white/10 space-y-2">
+									<div class="mx-3 mb-3 pt-3 border-t border-[#e4d29a] space-y-2">
 										<input
 											type="text"
 											bind:value={disqualifyReason}
 											placeholder="סיבת פסילה (חובה)"
-											class="w-full px-3 py-2 rounded-lg bg-black/30 border border-red-400/40 text-white"
+											class="w-full px-3 py-2 rounded-lg bg-white border border-red-500/50 text-gray-900"
 										/>
 										<input
 											type="text"
 											bind:value={disqualifyBy}
 											placeholder="שם הפוסל"
-											class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white"
+											class="w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900"
 										/>
 										<div class="flex gap-2">
 											<button onclick={() => confirmDisqualify(e.id)} class="px-4 py-2 rounded bg-red-600 text-white text-sm font-bold">אשר פסילה</button>
-											<button onclick={() => (disqualifyingId = null)} class="px-4 py-2 rounded bg-white/10 text-white text-sm font-bold">ביטול</button>
+											<button onclick={() => (disqualifyingId = null)} class="px-4 py-2 rounded bg-black/5 hover:bg-black/10 text-gray-700 border border-[#d4be7f] text-sm font-bold">ביטול</button>
 										</div>
 									</div>
 								{/if}
