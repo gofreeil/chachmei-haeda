@@ -2239,7 +2239,7 @@
 								type="file"
 								accept="image/*"
 								onchange={onRabbiPhotoFile}
-								class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-amber-500/30 file:text-amber-100 file:font-bold hover:file:bg-amber-500/40"
+								class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-amber-500/30 file:text-amber-900 file:font-bold hover:file:bg-amber-500/40"
 							/>
 							<p class="text-xs text-gray-500 mt-1">התמונה תקטן אוטומטית ותישמר בדפדפן</p>
 						</div>
