@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { setJwt, getCurrentUser } from '$lib/strapi';
 
 	let { data } = $props();
@@ -16,7 +15,21 @@
 			// getCurrentUser רק "מחמם" את המשתמש; אם הקריאה בצד-לקוח נכשלת זמנית
 			// (רשת/CORS) — לא חוסמים את ההתחברות, כי הטוקן כבר אומת בצד-שרת.
 			try { await getCurrentUser(); } catch {}
-			goto(data.returnTo);
+			// פעם ראשונה בדפדפן הזה → welcome=new מפעיל את מסך "ברוכים המצטרפים";
+			// משתמש חוזר לא מקבל שום פרמטר ולא רואה מסך.
+			let target = data.returnTo;
+			try {
+				if (!localStorage.getItem('gofreeil-welcomed')) {
+					const u = new URL(data.returnTo, location.origin);
+					u.searchParams.set('welcome', 'new');
+					target = u.pathname + u.search + u.hash;
+				}
+			} catch {
+				/* localStorage חסום — ממשיכים בלי הברכה */
+			}
+			// טעינת-עמוד מלאה (ולא goto/SPA): ה-WelcomeScreen יושב ב-layout וכבר מונטה כאן,
+			// אז רק ניווט מלא ממנטֵ אותו מחדש ומפעיל את onMount שקורא את welcome=new מה-URL.
+			window.location.href = target;
 			return;
 		}
 		phase = data.status === 'not_registered' ? 'not_registered' : 'error';
