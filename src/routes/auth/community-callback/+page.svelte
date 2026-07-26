@@ -16,16 +16,20 @@
 			// (רשת/CORS) — לא חוסמים את ההתחברות, כי הטוקן כבר אומת בצד-שרת.
 			try { await getCurrentUser(); } catch {}
 			// פעם ראשונה בדפדפן הזה → welcome=new מפעיל את מסך "ברוכים המצטרפים";
-			// משתמש חוזר לא מקבל שום פרמטר ולא רואה מסך.
+			// משתמש חוזר מקבל welcome=back → מסך "ברוכים השבים" (עם רשת הלוגואים).
 			let target = data.returnTo;
+			let kind = 'back';
 			try {
-				if (!localStorage.getItem('gofreeil-welcomed')) {
-					const u = new URL(data.returnTo, location.origin);
-					u.searchParams.set('welcome', 'new');
-					target = u.pathname + u.search + u.hash;
-				}
+				if (!localStorage.getItem('gofreeil-welcomed')) kind = 'new';
 			} catch {
-				/* localStorage חסום — ממשיכים בלי הברכה */
+				/* localStorage חסום — נשאר 'back' */
+			}
+			try {
+				const u = new URL(data.returnTo, location.origin);
+				u.searchParams.set('welcome', kind);
+				target = u.pathname + u.search + u.hash;
+			} catch {
+				/* URL בעייתי — ממשיכים בלי הברכה */
 			}
 			// טעינת-עמוד מלאה (ולא goto/SPA): ה-WelcomeScreen יושב ב-layout וכבר מונטה כאן,
 			// אז רק ניווט מלא ממנטֵ אותו מחדש ומפעיל את onMount שקורא את welcome=new מה-URL.

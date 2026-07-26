@@ -20,6 +20,19 @@
 		if (user) goto(returnTo);
 	});
 
+	// מוסיף welcome=back ליעד — מפעיל את מסך "ברוכים השבים" אחרי ההתחברות.
+	// חובה ניווט מלא (window.location.href) ולא goto: ה-WelcomeScreen יושב ב-layout
+	// וקורא את welcome מה-URL רק ב-onMount, שרץ מחדש רק בטעינת-עמוד מלאה.
+	function withWelcome(dest: string): string {
+		try {
+			const u = new URL(dest, window.location.origin);
+			u.searchParams.set('welcome', 'back');
+			return `${u.pathname}${u.search}${u.hash}`;
+		} catch {
+			return '/?welcome=back';
+		}
+	}
+
 	// SSO: מפנים לקהילת "יוצאים לחירות", היא קובעת את העוגייה המשותפת gofreeil-auth
 	// על .gofreeil.com ומחזירה ל-callback. אותו JWT תקף כאן (אותו Strapi המשותף).
 	function loginWithCommunity() {
@@ -41,7 +54,7 @@
 				setTimeout(() => goto('/profile'), 1500);
 				return;
 			}
-			goto(returnTo);
+			window.location.href = withWelcome(returnTo);
 		} catch (e: any) {
 			const msg = e?.message ?? 'שגיאת התחברות';
 			if (isNetworkError(e)) {

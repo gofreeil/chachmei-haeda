@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 	import { strapiGoogleExchange, getCurrentUser, claimRegistrationOrigin } from '$lib/strapi';
 
 	let status = $state<'working' | 'error'>('working');
@@ -26,7 +25,24 @@
 			if (!me) throw new Error('ההזדהות נכשלה - אין משתמש');
 			// מסמן אתר-הרשמה למשתמש חדש (הבקאנד מתעלם אם החשבון אינו חדש)
 			await claimRegistrationOrigin();
-			goto(returnTo);
+			// פעם ראשונה בדפדפן הזה → welcome=new ("ברוכים המצטרפים");
+			// אחרת welcome=back ("ברוכים השבים"). ניווט מלא (לא goto):
+			// ה-WelcomeScreen יושב ב-layout וקורא את welcome מה-URL רק ב-onMount.
+			let target = returnTo;
+			let kind = 'back';
+			try {
+				if (!localStorage.getItem('gofreeil-welcomed')) kind = 'new';
+			} catch {
+				/* localStorage חסום — נשאר 'back' */
+			}
+			try {
+				const u = new URL(returnTo, location.origin);
+				u.searchParams.set('welcome', kind);
+				target = u.pathname + u.search + u.hash;
+			} catch {
+				/* URL בעייתי — ממשיכים בלי הברכה */
+			}
+			window.location.href = target;
 		} catch (e: any) {
 			errorMsg = e?.message ?? 'שגיאה בהזדהות עם Google';
 			status = 'error';
