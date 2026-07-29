@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { activity as staticActivity, type ActivityKind, type ActivityItem, type LocalizedText } from '$lib/data/activity';
 	import { loadActivity } from '$lib/services/activity-service';
@@ -126,9 +127,12 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{tFn('activity_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('activity_page_title')}
+	description="היכל המעשה — הפעילות של חכמי העדה לקידום שלום, צדק וקוד אתי בישראל: מפגשים, יזמות קהילתיות, פרסומים ועדכונים שוטפים."
+	path="/heichal-hamaaseh/activity"
+	keywords="היכל המעשה, פעילות חברתית, קידום שלום, יזמות קהילתיות"
+/>
 
 <section class="py-8">
 	<HeichalHeader subtitle={tFn('activity_header_subtitle')} />

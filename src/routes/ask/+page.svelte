@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { submitQuestion } from '$lib/services/qa-service';
@@ -50,9 +51,12 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{tFn('ask_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('ask_page_title')}
+	description="שאל את חכמי העדה — שליחת שאלה בהלכה, בממונות, בשלום בית או בענייני חיים וקבלת תשובה מחכמי העדה. השאלה והתשובה מתפרסמות בארכיון השו״ת."
+	path="/ask"
+	keywords="שאל רב, שאלה בהלכה, שו״ת, ייעוץ הלכתי, חכמי העדה"
+/>
 
 <section class="py-8">
 	<div class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-blue-500/15 p-6 md:p-8 shadow-[0_0_30px_rgba(99,102,241,0.15)] max-w-3xl mx-auto">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -30,10 +31,12 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{tFn('about_page_title')}</title>
-	<meta name="description" content={tFn('about_meta_description')} />
-</svelte:head>
+<Seo
+	title={tFn('about_page_title')}
+	description={tFn('about_meta_description')}
+	path="/about/revenue"
+	keywords="אודות חכמי העדה, הרבנים, דיינים מתנדבים, חזון בתי הפיוס"
+/>
 
 <section class="py-10 md:py-14 px-4 max-w-3xl mx-auto" dir="rtl" style="text-align: justify; text-justify: inter-word;">
 	<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-4xl md:text-5xl font-black text-transparent text-center" style="text-align: center;">

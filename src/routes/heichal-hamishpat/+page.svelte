@@ -6,6 +6,9 @@
 	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import RequestHearingForm from '$lib/components/RequestHearingForm.svelte';
+	import Seo from '$lib/components/Seo.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
+	import { serviceSchema, breadcrumbSchema } from '$lib/seo';
 
 	// tFn: reactive translation helper - $t forbidden in Svelte 5
 	let _loc = $state(get(locale));
@@ -141,30 +144,15 @@
 	];
 </script>
 
-<svelte:head>
-	<title>{tFn('mishpat_page_title')}</title>
-	<meta name="description" content={tFn('mishpat_page_description')} />
-
-	<!-- Open Graph / WhatsApp / Facebook -->
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content={tFn('mishpat_page_title')} />
-	<meta property="og:description" content={tFn('mishpat_og_description')} />
-	<meta property="og:image" content="https://chachmim.gofreeil.com/og-image.jpg?v=2" />
-	<meta property="og:image:secure_url" content="https://chachmim.gofreeil.com/og-image.jpg?v=2" />
-	<meta property="og:image:type" content="image/jpeg" />
-	<meta property="og:image:width" content="600" />
-	<meta property="og:image:height" content="600" />
-	<meta property="og:image:alt" content={tFn('mishpat_og_image_alt')} />
-	<meta property="og:url" content="https://chachmim.gofreeil.com/heichal-hamishpat" />
-	<meta property="og:site_name" content={tFn('mishpat_site_name')} />
-	<meta property="og:locale" content="he_IL" />
-
-	<!-- Twitter -->
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={tFn('mishpat_page_title')} />
-	<meta name="twitter:description" content={tFn('mishpat_twitter_description')} />
-	<meta name="twitter:image" content="https://chachmim.gofreeil.com/og-image.jpg?v=2" />
-</svelte:head>
+<!-- כל תגי ה-SEO (כולל canonical, OG ו-Twitter) יוצאים מרכיב <Seo> אחד,
+     כדי שלא ייווצרו תגים כפולים ושהכתובת הקנונית תמיד תהיה נכונה. -->
+<Seo
+	title={tFn('mishpat_page_title')}
+	description={tFn('mishpat_page_description')}
+	path="/heichal-hamishpat"
+	keywords="היכל המשפט, בוררות, דין תורה, פסקי דין, בקשה לדיון, פסק בורר, בית דין לממונות"
+/>
+<JsonLd data={[serviceSchema(), breadcrumbSchema([{ name: 'חכמי העדה', path: '/' }, { name: 'היכל המשפט', path: '/heichal-hamishpat' }])]} />
 
 <section class="py-8">
 	<header class="text-center mb-6">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { loadEntries, filterByStatus, loadMyEntry, selfUpdateSignatory } from '$lib/services/charter-service';
 	import { getCurrentUser, canEditAnyCharterEntry } from '$lib/strapi';
@@ -104,9 +105,12 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{tFn('charter_idx_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('charter_idx_page_title')}
+	description="אינדקס החתומים על הקוד האתי העולמי (UECC) — אנשים, עסקים וארגונים שהתחייבו לאמנת היושר, האחריות וכיבוד הזולת. חיפוש לפי שם ולפי תחום."
+	path="/charter-index"
+	keywords="קוד אתי, UECC, אמנת יושר, חתומים, עסקים אתיים"
+/>
 
 <section class="py-8">
 	<header class="text-center mb-6">

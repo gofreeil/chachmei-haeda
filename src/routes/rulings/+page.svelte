@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { rulings as staticRulings, pickLang, type Ruling } from '$lib/data/hearings';
 	import { loadRulings } from '$lib/services/hearings-service';
@@ -18,9 +19,12 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{tFn('rulings_page_head_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('rulings_page_head_title')}
+	description="פסקי דין של בתי הפיוס — הכרעות בבוררות ובגישור על פי דין תורה בסכסוכי ממון, שכירות, שכנים ושותפות. ארכיון פסקים חתומים, פתוח לעיון הציבור."
+	path="/rulings"
+	keywords="פסקי דין, פסק בורר, דין תורה, בוררות, ארכיון פסקים, חכמי העדה"
+/>
 
 <section class="py-8">
 	<header class="text-center mb-8">

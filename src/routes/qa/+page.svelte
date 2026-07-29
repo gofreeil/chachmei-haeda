@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import JsonLd from '$lib/components/JsonLd.svelte';
+	import { faqSchema, breadcrumbSchema } from '$lib/seo';
 	import { onMount } from 'svelte';
 	import { qa as staticQa, pickLang, type QaItem, type QaTopic } from '$lib/data/qa';
 	import { loadQa } from '$lib/services/qa-service';
@@ -43,11 +46,40 @@
 		const [y, m, day] = d.split('-');
 		return `${day}.${m}.${y}`;
 	}
+
+	/* ═══ SEO ═══
+	   FAQPage אמיתי מהשו"ת עצמו: כל שאלה שנענתה נכנסת ל-JSON-LD. זה מה שגורם
+	   לגוגל להציג את השאלות בתוצאות, ולמנועי AI לצטט את התשובות של חכמי העדה. */
+	const answeredQa = $derived(
+		sorted.filter((q) => pickLang(q.question, 'he') && pickLang(q.answer, 'he')).slice(0, 40)
+	);
+	const qaFaqSchema = $derived(
+		faqSchema(
+			answeredQa.map((q) => ({
+				q: pickLang(q.question, 'he'),
+				a: pickLang(q.answer, 'he')
+			}))
+		)
+	);
 </script>
 
-<svelte:head>
-	<title>{tFn('qa_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('qa_page_title')}
+	description="שאלות ותשובות מחכמי העדה — תשובות בהלכה ובענייני חיים: ממונות, שכנים, שלום בית, כשרות, שבת ומוסר. ניתן לשלוח שאלה חדשה ולקבל תשובה מהחכמים."
+	path="/qa"
+	keywords="שאלות ותשובות בהלכה, שו״ת, שאל רב, פסקי הלכה, חכמי העדה"
+/>
+{#if answeredQa.length > 0}
+	<JsonLd
+		data={[
+			qaFaqSchema,
+			breadcrumbSchema([
+				{ name: 'חכמי העדה', path: '/' },
+				{ name: 'שאלות ותשובות', path: '/qa' }
+			])
+		]}
+	/>
+{/if}
 
 <section class="py-8">
 	<header class="text-center mb-6">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import { addSignatory } from '$lib/services/charter-service';
@@ -106,9 +107,12 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{tFn('eth_code_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('eth_code_page_title')}
+	description="הקוד האתי העולמי UECC — אמנת יושר, אחריות וכיבוד הזולת לאנשים, לעסקים ולארגונים. קריאת הקוד המלא וחתימה מקוונת עליו."
+	path="/heichal-hamaaseh/ethical-code"
+	keywords="קוד אתי עולמי, UECC, אמנת יושר, אתיקה עסקית, חתימה על הקוד"
+/>
 
 <article class="prose-rtl max-w-none py-8 px-2 md:px-4">
 	<HeichalHeader subtitle={tFn('eth_code_header_subtitle')} />

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, pickLang, type Article } from '$lib/data/articles';
 	import { qa as staticQa, pickLang as pickLangQa, type QaItem } from '$lib/data/qa';
@@ -145,9 +146,12 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{tFn('articles_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('articles_page_title')}
+	description="היכל הרוח — מאמרים מחכמי העדה בהלכה, במוסר ובחברה: שלום בית, יחסי שכנים, ממונות, חינוך וזוגיות. כל מאמר מאושר בידי שלושה רבנים."
+	path="/articles"
+	keywords="מאמרים תורניים, היכל הרוח, מאמרי הלכה, שלום בית, מוסר, חכמי העדה"
+/>
 
 <section class="py-8">
 	<header class="text-center mb-6">

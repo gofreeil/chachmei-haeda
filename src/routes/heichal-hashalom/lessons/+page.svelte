@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -10,9 +11,12 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{tFn('shalom_lessons_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('shalom_lessons_page_title')}
+	description="שיעורים ומידע מהיכל השלום — שיעורי וידאו וטקסטים על שלום בית, יישוב מחלוקות, לשון הרע וקבלת האחר, מפי חכמי העדה."
+	path="/heichal-hashalom/lessons"
+	keywords="שיעורים, שלום בית, לשון הרע, יישוב מחלוקות, שיעורי תורה"
+/>
 
 <section class="py-8 max-w-4xl mx-auto">
 	<header class="text-center mb-8">

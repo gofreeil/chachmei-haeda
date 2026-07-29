@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { hearings as staticHearings, pickLang, type Hearing } from '$lib/data/hearings';
 	import { loadHearings } from '$lib/services/hearings-service';
@@ -24,9 +25,12 @@
 	const past = $derived(hearings.filter((h) => h.status !== 'מתוכנן'));
 </script>
 
-<svelte:head>
-	<title>{tFn('hearings_page_page_title')}</title>
-</svelte:head>
+<Seo
+	title={tFn('hearings_page_page_title')}
+	description="לוח דיוני הזום של בתי הפיוס — מועדי דיונים, הרכב הדיינים ואופן ההשתתפות. אפשר לבקש מועד לדיון בסכסוך שלכם, בהתנדבות ובלי עלות."
+	path="/hearings"
+	keywords="דיוני זום, לוח דיונים, בוררות, בקשה לדיון, בית דין, חכמי העדה"
+/>
 
 <section class="py-8">
 	<header class="text-center mb-8">
