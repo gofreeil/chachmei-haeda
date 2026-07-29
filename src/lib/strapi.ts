@@ -14,7 +14,10 @@ const JWT_STORAGE_KEY = 'chachmei-strapi-jwt';
 const LEGACY_SESSION_KEY = 'chachmei-strapi-jwt'; // היה ב-sessionStorage לפני
 
 function resolveExplicitUrl(): string | null {
-	const fromVite = (import.meta as any)?.env?.PUBLIC_STRAPI_URL as string | undefined;
+	// גישה סטטית ל-import.meta.env, לא דרך (import.meta as any)?.env: ה-module runner
+	// של Vite חוסם גישה דינמית ל-import.meta.env ב-SSR ("Dynamic access of
+	// import.meta.env is not supported"), וכל דף שנטען בשרת החזיר 500 ב-dev.
+	const fromVite = import.meta.env.PUBLIC_STRAPI_URL as string | undefined;
 	if (fromVite && fromVite.trim()) return fromVite.replace(/\/$/, '');
 	return null;
 }
