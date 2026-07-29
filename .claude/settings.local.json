@@ -327,7 +327,8 @@
       "PowerShell(Get-NetTCPConnection -LocalPort 5173 -ErrorAction SilentlyContinue)",
       "Bash(curl -sS -o /dev/null -w \"%{http_code}\" http://localhost:5173/giveaways)",
       "Bash(git --no-pager diff src/lib/giveawayCategories.ts)",
-      "Bash(git ls-remote *)"
+      "Bash(git ls-remote *)",
+      "Bash(ls \"D:\\\\Users\\\\User\\\\Documents\\\\GitHub\" 2>/dev/null | head -50)"
     ]
   }
 }
