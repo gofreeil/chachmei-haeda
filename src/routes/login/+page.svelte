@@ -81,6 +81,11 @@
 			<p class="mt-2 text-gray-300 text-sm">היכנס לחשבון שלך</p>
 		</header>
 
+		<!-- הודעה ברורה למשתמש חדש: בפעם הראשונה יש להירשם תחילה -->
+		<p class="mb-5 text-center text-amber-200 text-[13px] sm:text-sm font-bold leading-relaxed">
+			👋 פעם ראשונה כאן? יש להירשם תחילה — ואז ניתן להישאר מחובר במכשיר זה.
+		</p>
+
 		<div class="mb-3">
 			<GoogleSignInButton {returnTo} />
 		</div>
