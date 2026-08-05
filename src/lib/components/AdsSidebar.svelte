@@ -7,32 +7,13 @@
     $effect(() => locale.subscribe(l => (_loc = l)));
     const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
-    type ApprovedAd = {
-        id: string;
-        title: string;
-        subtitle: string;
-        cta: string;
-        hover: string;
-        gradient: string;
-        mainImage: string;
-    };
+    // נעילה מכוונת: הטור השמאלי מחזיק אך ורק אתרי "יוצאים לחירות".
+    // ענף approvedAds הוסר - הוא הועתק לכאן מאתר האם יחד עם הרכיב, אבל
+    // אין באתר הזה מערכת פרסומות בכלל, והקישור /ads/<id> שהוא בנה הוביל
+    // לנתיב שלא קיים. approvedAds?: never מונע החזרה שלו בשקט.
+    let {}: { approvedAds?: never } = $props();
 
-    let { approvedAds = [] }: { approvedAds?: ApprovedAd[] } = $props();
-
-    // Build merged list. Approved (user-submitted) ads come first, then static partner ads.
     let merged = $derived([
-        ...approvedAds.map(a => ({
-            id: a.id,
-            title: a.title,
-            description: a.subtitle,
-            cta: a.cta || a.title,
-            hover: a.hover || undefined,
-            href: `/ads/${a.id}`,
-            target: '_self' as const,
-            image: a.mainImage,
-            color: a.gradient,
-            imageHeight: undefined as string | undefined,
-        })),
         ...ads.map(a => ({
             id: String(a.id),
             title: a.title,

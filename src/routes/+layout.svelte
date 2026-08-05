@@ -100,7 +100,7 @@
 				</button>
 			</div>
 		</main>
-		<AdsSidebar approvedAds={[]} />
+		<AdsSidebar />
 	</div>
 
 	<Footer />
