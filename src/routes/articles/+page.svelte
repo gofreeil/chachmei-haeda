@@ -5,6 +5,7 @@
 	import { qa as staticQa, pickLang as pickLangQa, type QaItem } from '$lib/data/qa';
 	import { loadArticles } from '$lib/services/articles-service';
 	import { loadQa } from '$lib/services/qa-service';
+	import { triggerAdPopup } from '$lib/adPopupStore';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { t, locale } from 'svelte-i18n';
@@ -26,6 +27,13 @@
 	function fmtDate(d: string): string {
 		const [y, m, day] = d.split('-');
 		return `${day}.${m}.${y}`;
+	}
+
+	// בנייד: פרסומת ביניים קצרה בדרך לדף המאמר (כמו באתר הקהילה).
+	// triggerAdPopup מחזיר false בדסקטופ - ואז הקישור מנווט כרגיל.
+	function adThenGo(e: MouseEvent, href: string) {
+		if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+		if (triggerAdPopup(href)) e.preventDefault();
 	}
 
 	type Entry =
@@ -212,6 +220,7 @@
 					{#each searchPagedArticles as a (a.slug)}
 						<a
 							href="/articles/{a.slug}"
+							onclick={(e) => adThenGo(e, `/articles/${a.slug}`)}
 							class="block rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 hover:border-blue-400/70 transition-all p-5"
 						>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
