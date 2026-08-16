@@ -359,9 +359,6 @@
                             >
                                 {tFn("welcome")}
                             </p>
-                            <p class="text-xs text-gray-400 leading-tight">
-                                {tFn("app_description")}
-                            </p>
                         </div>
                     </a>
 
@@ -799,6 +796,13 @@
         </div>
     </div>
 </header>
+
+<!-- שורת המשנה בנייד — מחוץ להדר הדביק: היא נגללת עם הדף, וההדר נשאר
+     קומפקטי בלי טקסט שנשבר לשלוש שורות וגולש מגבולותיו. בדסקטופ תת-הכותרת
+     ממשיכה לשבת בתוך ההדר לצד הלוגו. -->
+<p class="md:hidden border-b border-amber-700/20 bg-[#e9d9ab] px-4 py-1.5 text-center text-xs font-bold text-blue-900">
+    {tFn("app_description")}
+</p>
 
 <!-- Cursor-following profile tooltip -->
 {#if showProfileTooltip}
