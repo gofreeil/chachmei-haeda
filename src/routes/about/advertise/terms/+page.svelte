@@ -1,0 +1,157 @@
+<script lang="ts">
+    // תנאי הפרסום — מקושרים מדף "פרסמו אצלנו" ומקופסת התשלום בבילדר,
+    // לפני שהמפרסם בוחר מסלול ומשלם. פורט מפינת האבדות (ערכה בהירה).
+    import { adPlans } from '$lib/adPlans';
+    import { SITE_NAME, CONTACT_EMAIL, canonical } from '$lib/seo';
+
+    const contactUrl = 'https://freedom.gofreeil.com';
+    const email = CONTACT_EMAIL;
+</script>
+
+<svelte:head>
+    <title>תנאי הפרסום — {SITE_NAME}</title>
+    <meta name="description" content="תנאי הפרסום באתר חכמי העדה — מה מותר ומה אסור לפרסם, תשלום מראש לפי מסלול, אישור מנהל, ותנאי ההסרה." />
+    <link rel="canonical" href={canonical('/about/advertise/terms')} />
+</svelte:head>
+
+<div class="mx-auto max-w-3xl px-4 py-8 md:py-12" dir="rtl">
+    <div class="rounded-3xl border border-[#d9c07a] bg-[#fffbe9] shadow-xl overflow-hidden">
+
+        <!-- כותרת -->
+        <div class="p-6 md:p-10 text-center">
+            <div class="text-5xl mb-4">📜</div>
+            <h1 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700 bg-clip-text text-transparent mb-3">
+                תנאי פרסום
+            </h1>
+            <p class="text-[#5b4a1e] text-base leading-relaxed max-w-xl mx-auto">
+                לפני בחירת מסלול ותשלום — כדאי לקרוא. שליחת פרסומת לאישור
+                מהווה הסכמה לתנאים שלהלן.
+            </p>
+        </div>
+
+        <!-- מה אסור לפרסם -->
+        <div class="mx-8 md:mx-12 border-t border-[#e6d194]"></div>
+        <section class="p-6 md:p-8">
+            <h2 class="text-xl font-black text-amber-950 mb-3">1. מה אסור לפרסם</h2>
+            <p class="text-[#4a3a14] text-sm md:text-base leading-relaxed mb-3">אין לפרסם:</p>
+            <ul class="space-y-2 mb-4">
+                <li class="text-sm md:text-base text-[#4a3a14] flex items-start gap-2 leading-relaxed">
+                    <span class="text-red-700 flex-shrink-0">✗</span> דברים שאינם חוקיים.
+                </li>
+                <li class="text-sm md:text-base text-[#4a3a14] flex items-start gap-2 leading-relaxed">
+                    <span class="text-red-700 flex-shrink-0">✗</span> מסרים פוליטיים.
+                </li>
+                <li class="text-sm md:text-base text-[#4a3a14] flex items-start gap-2 leading-relaxed">
+                    <span class="text-red-700 flex-shrink-0">✗</span> או כל תוכן מסית ומפלג.
+                </li>
+            </ul>
+            <p class="text-amber-800 font-black text-sm md:text-base">פרסום כזה לא יאושר!</p>
+            <p class="text-[#5b4a1e] text-sm leading-relaxed mt-3">
+                בנוסף, לא יאושרו תוכן פוגעני או מבזה, תוכן שאינו הולם אתר משפחתי,
+                הצגה מטעה של מוצר או שירות, ופרסום שאינו שלכם או שאין לכם זכות
+                להשתמש בו (תמונות, לוגו, שם מסחרי).
+            </p>
+        </section>
+
+        <!-- אישור המודעה -->
+        <div class="mx-8 md:mx-12 border-t border-[#e6d194]"></div>
+        <section class="p-6 md:p-8">
+            <h2 class="text-xl font-black text-amber-950 mb-3">2. אישור המודעה</h2>
+            <p class="text-[#4a3a14] text-sm md:text-base leading-relaxed">
+                כל פרסומת עוברת אישור ידני של מנהל לפני שהיא עולה לאוויר. ההחלטה
+                נתונה לשיקול דעת המערכת, ואין חובה לנמק דחייה. מודעה שנדחתה בגלל
+                תוכן — אפשר לתקן ולשלוח מחדש. אם מודעה נדחתה ולא ניתן לתקנה,
+                התשלום שהתקבל עבורה יוחזר במלואו.
+            </p>
+            <p class="text-[#5b4a1e] text-sm leading-relaxed mt-3">
+                תקופת הפרסום נספרת מרגע האישור ועליית המודעה לאוויר — לא מרגע
+                השליחה או התשלום.
+            </p>
+        </section>
+
+        <!-- תשלום ותקופת פרסום -->
+        <div class="mx-8 md:mx-12 border-t border-[#e6d194]"></div>
+        <section class="p-6 md:p-8">
+            <h2 class="text-xl font-black text-amber-950 mb-3">3. תשלום ותקופת פרסום</h2>
+            <p class="text-[#4a3a14] text-sm md:text-base leading-relaxed mb-4">
+                בוחרים מסלול ומשלמים מראש עבור כל התקופה:
+            </p>
+            <ul class="space-y-1.5 mb-4">
+                {#each adPlans as plan (plan.days)}
+                    <li class="flex items-baseline justify-between gap-3 rounded-xl bg-[#f7edcf] border border-[#e6d194] px-4 py-2">
+                        <span class="text-[#4a3a14] text-sm md:text-base">{plan.title}</span>
+                        <span class="text-amber-800 font-black text-sm md:text-base whitespace-nowrap">{plan.price} ₪</span>
+                    </li>
+                {/each}
+            </ul>
+            <p class="text-[#4a3a14] text-sm md:text-base leading-relaxed">
+                לא ניתן לקצר את תקופת הפירסום שנבחרה ושולמה מראש, אלא אם מדובר
+                בסיבות כח עליון חריגות - אז ניתן לפנות למערכת יוצאים לחירות.
+            </p>
+        </section>
+
+        <!-- אחריות המפרסם -->
+        <div class="mx-8 md:mx-12 border-t border-[#e6d194]"></div>
+        <section class="p-6 md:p-8">
+            <h2 class="text-xl font-black text-amber-950 mb-3">4. אחריות המפרסם לתוכן</h2>
+            <ul class="space-y-2">
+                <li class="text-sm md:text-base text-[#4a3a14] flex items-start gap-2 leading-relaxed">
+                    <span class="text-green-700 flex-shrink-0">✓</span>
+                    התוכן, התמונות והמחירים שבמודעה הם באחריותכם המלאה — נכונותם, עדכניותם וזכויות השימוש בהם.
+                </li>
+                <li class="text-sm md:text-base text-[#4a3a14] flex items-start gap-2 leading-relaxed">
+                    <span class="text-green-700 flex-shrink-0">✓</span>
+                    האתר אינו צד לעסקה בינכם לבין הגולשים, ואינו אחראי למוצר, לשירות או לתוצאותיהם.
+                </li>
+                <li class="text-sm md:text-base text-[#4a3a14] flex items-start gap-2 leading-relaxed">
+                    <span class="text-green-700 flex-shrink-0">✓</span>
+                    פרסום מודעה אינו המלצה של האתר על העסק המפרסם.
+                </li>
+            </ul>
+        </section>
+
+        <!-- מיקום והצגה -->
+        <div class="mx-8 md:mx-12 border-t border-[#e6d194]"></div>
+        <section class="p-6 md:p-8">
+            <h2 class="text-xl font-black text-amber-950 mb-3">5. מיקום והצגה</h2>
+            <p class="text-[#4a3a14] text-sm md:text-base leading-relaxed">
+                הפרסומת מוצגת בשתי במות: בדסקטופ בטור הימני, ובנייד בפופ-אפ
+                שנפתח לגולש. המודעות מתחלפות במחזור. המערכת אינה מתחייבת למספר
+                חשיפות, לסדר הצגה או למיקום קבוע, ורשאית לשנות את עיצוב האתר
+                ואת מיקום הפרסום. תקלה טכנית קצרה אינה נחשבת הפסקת פרסום;
+                הפסקה ממושכת תזכה בהארכה מקבילה של התקופה.
+            </p>
+        </section>
+
+        <!-- שינויים והסרה -->
+        <div class="mx-8 md:mx-12 border-t border-[#e6d194]"></div>
+        <section class="p-6 md:p-8">
+            <h2 class="text-xl font-black text-amber-950 mb-3">6. שינויים והסרה</h2>
+            <p class="text-[#4a3a14] text-sm md:text-base leading-relaxed">
+                עדכון פרטים במודעה פעילה (טלפון, שעות, מוצרים) — פונים למערכת
+                והשינוי ייכנס אחרי אישור. מודעה שמפרה את התנאים תוסר גם באמצע
+                התקופה וללא החזר, ובמקרה של הפרה חמורה נשמרת הזכות לסרב לפרסום
+                נוסף.
+            </p>
+        </section>
+
+        <!-- יצירת קשר -->
+        <div class="mx-8 md:mx-12 border-t border-[#e6d194]"></div>
+        <section class="p-6 md:p-8 text-center">
+            <p class="text-amber-800 font-black text-lg mb-4">בהצלחה 🍀</p>
+            <p class="text-sm text-[#5b4a1e] leading-relaxed">
+                לשאלות, שינויים או פנייה בסיבות כח עליון:
+                <a href={"mailto:" + email} class="underline hover:text-amber-900 transition-colors" dir="ltr">{email}</a>
+                <br />
+                מערכת <a href={contactUrl} target="_blank" rel="noopener noreferrer" class="underline hover:text-amber-900 transition-colors">יוצאים לחירות</a>
+            </p>
+            <a
+                href="/about/advertise/builder"
+                class="mt-6 inline-block rounded-2xl bg-gradient-to-r from-amber-600 to-orange-700 px-8 py-4 font-black text-white text-lg shadow-xl transition hover:opacity-90 hover:scale-[1.02]"
+            >
+                🎨 לעיצוב הפרסומת
+            </a>
+        </section>
+
+    </div>
+</div>
