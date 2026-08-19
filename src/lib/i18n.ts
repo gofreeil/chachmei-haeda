@@ -311,7 +311,7 @@ register('he', () => Promise.resolve({
     mobile_ads_banner_ad_peace_houses_summary: "עזרה בדין ופיוס בסיכסוכים",
     mobile_ads_banner_ad_neighborhood_committees_title: "ועדי שכונות",
     mobile_ads_banner_ad_neighborhood_committees_summary: "הצטרף לוועד השכונה שלך",
-    mobile_ads_banner_ad_purchasing_group_title: "קבוצת רכישה",
+    mobile_ads_banner_ad_purchasing_group_title: "רכישות קבוצתיות",
     mobile_ads_banner_ad_purchasing_group_summary: "הוזל את ההוצאות החודשיות",
     mobile_ads_banner_ad_home_growing_title: "גידול ביתי",
     mobile_ads_banner_ad_home_growing_summary: "מערכת לגידול ביתי (בקרוב)",

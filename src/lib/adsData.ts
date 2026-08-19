@@ -160,7 +160,7 @@ export const ads: Ad[] = [
     {
         id: 3,
         title: {
-            he: "קבוצת רכישה",
+            he: "רכישות קבוצתיות",
             en: "Group Purchasing",
             ru: "Закупочная группа"
         },
