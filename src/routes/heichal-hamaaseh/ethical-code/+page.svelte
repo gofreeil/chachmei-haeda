@@ -130,13 +130,7 @@
 			{tFn('eth_code_quote_avraham')}
 		</blockquote>
 
-		<p>{tFn('eth_code_yirah_lesson')}</p>
-
-		<p>{tFn('eth_code_hakarat_hatov')}</p>
-
-		<p>{tFn('eth_code_hachnasat_orchim')}</p>
-
-		<p>{tFn('eth_code_seed_humanity')}</p>
+		<p>{tFn('eth_code_talmud_zohar')}</p>
 
 		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">{tFn('eth_code_h2_central')}</h2>
 
@@ -168,7 +162,6 @@
 			<li>{tFn('eth_code_accepts_li_2')}</li>
 			<li>{tFn('eth_code_accepts_li_3')}</li>
 			<li>{tFn('eth_code_accepts_li_4')}</li>
-			<li>{tFn('eth_code_accepts_li_5')}</li>
 		</ul>
 
 		<div class="mt-8 mb-5 ms-0 me-auto h-0.5 w-48 md:w-64 bg-gradient-to-l from-amber-700/60 to-transparent" aria-hidden="true"></div>
@@ -177,19 +170,23 @@
 			{tFn('eth_code_derech_eretz_p1')} <strong class="text-blue-300">UECC</strong> {tFn('eth_code_derech_eretz_p2')}
 		</p>
 
+		<p>
+			{tFn('eth_code_business_yirah')}
+		</p>
+
 		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-8">{tFn('eth_code_h2_seven_mitzvot')}</h2>
 
 		<p>
 			{tFn('eth_code_seven_mitzvot_intro')}
 		</p>
 
+		<p class="font-bold text-red-300">
+			{tFn('eth_code_three_capital_note')}
+		</p>
+
 		<p class="text-xs text-gray-400 mt-4 mb-1">{tFn('eth_code_gemara_citation')}</p>
 		<p class="italic text-gray-200 text-xs md:text-sm leading-snug">
 			{tFn('eth_code_gemara_text')}
-		</p>
-
-		<p class="font-bold text-red-300">
-			{tFn('eth_code_three_capital_note')}
 		</p>
 
 		<div class="space-y-4 mt-6">
