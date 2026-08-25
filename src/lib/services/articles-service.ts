@@ -81,6 +81,6 @@ export async function saveArticleEdit(
 		await strapiPut(COLLECTION, article.documentId, payload);
 		return { ...article, title: payload.title, excerpt: payload.excerpt, body: payload.body };
 	}
-	const resp = await strapiPost<{ data: StrapiArticleAttrs }>(COLLECTION, payload);
+	const resp = await strapiPost<{ data: StrapiArticleAttrs }>(COLLECTION, payload, { needAuth: true });
 	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiArticleAttrs);
 }

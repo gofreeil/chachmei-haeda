@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import HeichalHeader from '$lib/components/HeichalHeader.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import { addSignatory } from '$lib/services/charter-service';
 	import { getCurrentUser } from '$lib/strapi';
 	import { t, locale } from 'svelte-i18n';
@@ -213,6 +214,8 @@
 			{tFn('eth_code_sources_footer')}
 		</p>
 	</footer>
+
+	<PageTextEditor prefixes={['eth_code_', 'charter_text_', 'charter_join_']} />
 
 	<section id="join" class="mt-10 scroll-mt-20">
 		<header class="text-center mb-6">
