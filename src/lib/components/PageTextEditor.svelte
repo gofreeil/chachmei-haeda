@@ -99,9 +99,6 @@
 		changedCount = 0;
 	}
 
-	// ICU: סוגריים מסולסלים בטקסט חופשי חייבים escaping כדי שלא ייקראו כמשתני-תבנית
-	const toIcu = (text: string) => text.replace(/[{}]/g, (m) => `'${m}'`);
-
 	async function saveAll() {
 		if (saving) return;
 		const changed = editableSpans()
@@ -115,8 +112,9 @@
 		error = '';
 		const loc = (get(locale) as string) || 'he';
 		try {
+			// נשמר בדיוק כפי שהוקלד — האתר מציג את המחרוזות כמו-שהן (בלי עיבוד ICU)
 			for (const c of changed) {
-				await saveTextOverride(c.key, loc, toIcu(c.value));
+				await saveTextOverride(c.key, loc, c.value);
 			}
 			savedOk = true;
 			// הדף קורא את התרגומים בזמן-רינדור — רענון מציג את הנוסח החדש בכל מקום
