@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { pickLang, type Article } from '$lib/data/articles';
-	import { loadArticles } from '$lib/services/articles-service';
+	import { pickLang, type Article, type LocalizedString } from '$lib/data/articles';
+	import { loadArticles, saveArticleEdit, type ArticleWithId } from '$lib/services/articles-service';
+	import { getCurrentUser, isSuperAdmin } from '$lib/strapi';
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import { articleSchema, breadcrumbSchema } from '$lib/seo';
@@ -13,20 +14,61 @@
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	let { data } = $props();
-	let a = $state<Article | null>(data.article);
+	let a = $state<ArticleWithId | null>(data.article);
 	let notFound = $state(false);
 
+	// ═══ עריכה במקום — סופר-אדמין ═══
+	let canEdit = $state(false);
+	let editing = $state(false);
+	let editTitle = $state('');
+	let editBody = $state('');
+	let saving = $state(false);
+	let editError = $state('');
+
 	onMount(async () => {
-		if (a) return;
+		// טוענים תמיד גם מהסטראפי: גרסת סטראפי דורסת את הסטטית (ומביאה documentId לעריכה)
 		try {
 			const all = await loadArticles();
 			const found = all.find((x) => x.slug === data.slug);
 			if (found) a = found;
-			else notFound = true;
+			else if (!a) notFound = true;
 		} catch {
-			notFound = true;
+			if (!a) notFound = true;
+		}
+		try {
+			canEdit = isSuperAdmin(await getCurrentUser());
+		} catch {
+			/* אורח — בלי עיפרון */
 		}
 	});
+
+	function startEdit() {
+		if (!a) return;
+		const loc = (_loc as string) || 'he';
+		editTitle = pickLang(a.title, loc);
+		editBody = pickLang(a.body, loc);
+		editError = '';
+		editing = true;
+	}
+
+	async function saveEdit() {
+		if (!a || saving) return;
+		saving = true;
+		editError = '';
+		const loc = (_loc as string) || 'he';
+		try {
+			const updated = await saveArticleEdit(a, {
+				title: { ...a.title, [loc]: editTitle } as LocalizedString,
+				body: { ...a.body, [loc]: editBody } as LocalizedString
+			});
+			a = updated;
+			editing = false;
+		} catch (e) {
+			editError = 'השמירה נכשלה. ' + (e instanceof Error ? e.message : '');
+		} finally {
+			saving = false;
+		}
+	}
 
 	/* ═══ SEO ═══
 	   דף מאמר הוא הדף שנתפס בגוגל לשאילתות תוכן ("שלום בית בעידן המודרני").
@@ -98,9 +140,61 @@
 			{/if}
 		</header>
 
-		<div class="space-y-4 text-gray-200 leading-relaxed text-base md:text-lg whitespace-pre-line">
-			{pickLang(a.body, _loc as string)}
-		</div>
+		{#if !editing}
+			<div class="space-y-4 text-gray-200 leading-relaxed text-base md:text-lg whitespace-pre-line">
+				{pickLang(a.body, _loc as string)}
+			</div>
+
+			{#if canEdit}
+				<div class="mt-6">
+					<button
+						type="button"
+						onclick={startEdit}
+						title="עריכת המאמר"
+						aria-label="עריכת המאמר"
+						class="text-lg opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+					>✏️</button>
+				</div>
+			{/if}
+		{:else}
+			<div class="rounded-xl border border-blue-400/40 bg-blue-500/5 p-4 space-y-3">
+				<div>
+					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="article-edit-title">כותרת</label>
+					<input
+						id="article-edit-title"
+						type="text"
+						bind:value={editTitle}
+						class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
+					/>
+				</div>
+				<div>
+					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="article-edit-body">תוכן המאמר</label>
+					<textarea
+						id="article-edit-body"
+						rows="20"
+						bind:value={editBody}
+						class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none leading-relaxed"
+					></textarea>
+				</div>
+				{#if editError}
+					<p class="text-sm font-bold text-red-300">{editError}</p>
+				{/if}
+				<div class="flex gap-2 justify-end">
+					<button
+						type="button"
+						onclick={() => (editing = false)}
+						disabled={saving}
+						class="px-4 py-2 rounded-lg border border-white/20 text-gray-200 hover:bg-white/10 transition-colors disabled:opacity-60"
+					>ביטול</button>
+					<button
+						type="button"
+						onclick={saveEdit}
+						disabled={saving}
+						class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors disabled:opacity-60"
+					>{saving ? 'שומר…' : 'שמירה'}</button>
+				</div>
+			</div>
+		{/if}
 
 	{:else if notFound}
 		<div class="mt-8 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-6 text-center">
