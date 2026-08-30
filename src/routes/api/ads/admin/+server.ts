@@ -10,6 +10,7 @@ import {
     setAdSlot,
     computeAdSlots,
     setAdDuration,
+    setAdExpiry,
     normalizeDurationDays,
     pauseAd,
     resumeAd,
@@ -42,7 +43,7 @@ function sumDays(st: AdStats | undefined): AdCounters {
 }
 
 export const GET: RequestHandler = async ({ request, setHeaders }) => {
-    await getAdminContext(request);
+    const { superAdmin } = await getAdminContext(request);
     setHeaders({ 'cache-control': 'private, no-store' });
 
     let raw: Awaited<ReturnType<typeof listAllForAdmin>> = [];
@@ -113,7 +114,7 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
         expired: ads.filter((a) => a.isExpired).length,
     };
 
-    return json({ ads, inventory, backendUnavailable });
+    return json({ ads, inventory, backendUnavailable, superAdmin });
 };
 
 // ---------- פעולות ----------
@@ -127,10 +128,11 @@ type ActionBody = {
     keepPrevious?: boolean;
     dir?: string;
     slot?: number;
+    expires?: string;
 };
 
 export const POST: RequestHandler = async ({ request }) => {
-    const { user } = await getAdminContext(request);
+    const { user, superAdmin } = await getAdminContext(request);
     const decidedBy = user.email || user.name || '';
 
     let body: ActionBody;
@@ -168,11 +170,26 @@ export const POST: RequestHandler = async ({ request }) => {
                 return json({ ok: true, message: 'הפרסומת הורדה מהאתר וחזרה לממתינות' });
             }
             case 'setDuration': {
+                // קציבה שמורה לסופר-אדמין (כמו חלון הקציבה שפותח אותה)
+                if (!superAdmin) throw error(403, 'קציבת תקופה שמורה לסופר-אדמין');
                 const days = normalizeDurationDays(body.days);
                 const r = await setAdDuration(id, days);
                 if (!r) throw error(404, 'הפרסומת לא נמצאה');
                 const suffix = r.daysLeft < 0 ? ' — התקופה כבר חלפה, הפרסומת ירדה מהאתר' : '';
                 return json({ ok: true, message: `${r.title}: ${days} ימים${suffix}` });
+            }
+            case 'setExpiry': {
+                // תאריך תפוגה שרירותי — הפרסומת יורדת בסוף היום שנבחר. שמור לסופר-אדמין
+                if (!superAdmin) throw error(403, 'קביעת תאריך תפוגה שמורה לסופר-אדמין');
+                const expires = String(body.expires ?? '');
+                if (!expires) throw error(400, 'חסר תאריך תפוגה');
+                const d = new Date(`${expires}T23:59:59`);
+                if (isNaN(d.getTime())) throw error(400, 'תאריך לא תקין');
+                const r = await setAdExpiry(id, d.toISOString());
+                if (!r) throw error(404, 'הפרסומת לא נמצאה');
+                const day = new Date(r.expiresAt).toLocaleDateString('he-IL');
+                const suffix = r.daysLeft < 0 ? ' — התאריך שנקבע כבר עבר, הפרסומת ירדה מהאתר' : '';
+                return json({ ok: true, message: `${r.title}: תפוגה נקבעה ל-${day}${suffix}` });
             }
             case 'pause': {
                 const r = await pauseAd(id);
