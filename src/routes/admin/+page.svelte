@@ -4,10 +4,17 @@
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
-	import { addArticle } from '$lib/services/articles-service';
-	import { addActivity } from '$lib/services/activity-service';
-	import { addNewsItem } from '$lib/services/news-service';
-	import { loadRabbis, addRabbi as addRabbiToBackend } from '$lib/services/rabbis-service';
+	import { addArticle, loadArticles, deleteArticle, type ArticleWithId } from '$lib/services/articles-service';
+	import { addActivity, loadActivity, deleteActivity, type ActivityWithId } from '$lib/services/activity-service';
+	import { addNewsItem, loadNews, deleteNewsItem, type NewsItem as BackendNewsItem } from '$lib/services/news-service';
+	import {
+		listBackendRabbis,
+		addRabbi as addRabbiToBackend,
+		updateRabbi,
+		deleteRabbiBackend,
+		saveRabbisOrder,
+		seedRabbis
+	} from '$lib/services/rabbis-service';
 	import { loadHomeConfig, saveHomeConfig } from '$lib/services/home-config-service';
 	import {
 		loadEntries as loadCharterEntries,
@@ -23,8 +30,10 @@
 		rejectSubmission,
 		deleteSubmission,
 		deleteQa,
+		updateQa,
 		loadQa as loadQaItems,
-		type QaSubmission
+		type QaSubmission,
+		type QaWithId
 	} from '$lib/services/qa-service';
 	import {
 		loadHearings,
@@ -36,6 +45,7 @@
 		updateHearing,
 		deleteHearing,
 		createRuling,
+		updateRuling,
 		deleteRuling,
 		type HearingRequest
 	} from '$lib/services/hearings-service';
@@ -43,28 +53,16 @@
 	import { listAdmins, listCommunityUsers, listOtherUsers, setAdminRole, type AdminUser, type RegisteredUser } from '$lib/services/admin-users-service';
 	import type { CharterEntry } from '$lib/data/charter';
 	import type { Hearing, Ruling, HearingStatus } from '$lib/data/hearings';
-	import type { QaItem } from '$lib/data/qa';
 
 	// Admin currently enters Hebrew only - mirror it to all 3 locales as a fallback
 	// until proper translation UI is added. pickLang() will fall back to .he anyway.
 	const toLoc = (s: string) => ({ he: s, en: s, ru: s });
 
 	const SESSION_KEY = 'chachmei-admin-session';
-	const ARTICLES_KEY = 'chachmei-custom-articles';
-	const ACTIVITY_KEY = 'chachmei-custom-activity';
-	const NEWS_KEY = 'chachmei-custom-news';
 	const CASES_KEY = 'chachmei-cases';
 	const HOME_VIDEO_KEY = 'chachmei-home-video-url';
 	const HOME_VIDEO_TITLE_KEY = 'chachmei-home-video-title';
 	const DEFAULT_HOME_VIDEO_TITLE = 'חכמי עדת ישראל פועלים להעלות שבטים אבודים לארץ';
-
-	type NewsItem = {
-		id: string;
-		title: string;
-		summary: string;
-		sourceUrl?: string;
-		date: string;
-	};
 
 	let isLoggedIn = $state(false);
 	let authChecking = $state(true);
@@ -133,7 +131,7 @@
 
 	// ── Data state ──
 	let charterEntries = $state<CharterEntry[]>([]);
-	let qaItems = $state<QaItem[]>([]);
+	let qaItems = $state<QaWithId[]>([]);
 	let qaSubmissions = $state<QaSubmission[]>([]);
 	let hearings = $state<Hearing[]>([]);
 	let rulings = $state<Ruling[]>([]);
@@ -163,6 +161,14 @@
 	let answerBy = $state('');
 	let answerTopicOverride = $state('');
 
+	// ── עריכת שו"ת שפורסם ──
+	let qaEditingId = $state<string | null>(null);
+	let qaEditAnswer = $state('');
+	let qaEditBy = $state('');
+	let qaEditTopic = $state('');
+	let qaEditNotice = $state('');
+	let qaSaving = $state(false);
+
 	// ── Hearings form ──
 	let hearingEditingId = $state<string | null>(null);
 	let hearingCaseName = $state('');
@@ -176,6 +182,7 @@
 	let hearingNotice = $state('');
 
 	// ── Rulings form ──
+	let rulingEditingId = $state<string | null>(null);
 	let rulingCaseRef = $state('');
 	let rulingCaseName = $state('');
 	let rulingDayan1 = $state('');
@@ -192,11 +199,15 @@
 		return v.he ?? v.en ?? '';
 	}
 
-	let customArticles = $state<Article[]>([]);
-	let customActivity = $state<ActivityItem[]>([]);
-	let customNews = $state<NewsItem[]>([]);
+	// תוכן שנטען מסטראפי — אותו מקור אמת לכל האדמינים בכל דפדפן
+	let managedArticles = $state<ArticleWithId[]>([]);
+	let managedActivity = $state<ActivityWithId[]>([]);
+	let backendNews = $state<BackendNewsItem[]>([]);
 	let pendingCases = $state<any[]>([]);
 	let rabbis = $state<Rabbi[]>([...defaultRabbis]);
+	// האם רשימת הדיינים כבר קיימת בסטראפי (ואז כל שינוי נשמר שם ישירות)
+	let rabbisSeeded = $state(false);
+	let rabbisBusy = $state(false);
 
 	// ───────────── טופס דיינים ─────────────
 	let rabbiName = $state('');
@@ -389,13 +400,16 @@
 
 	async function loadAdminContent() {
 		try {
-			const [c, q, s, h, r, hr] = await Promise.all([
+			const [c, q, s, h, r, hr, arts, acts, news] = await Promise.all([
 				loadCharterEntries(),
 				loadQaItems(),
 				loadAllSubmissions(),
 				loadHearings(),
 				loadRulings(),
-				loadHearingRequests()
+				loadHearingRequests(),
+				loadArticles(),
+				loadActivity(),
+				loadNews()
 			]);
 			charterEntries = c;
 			qaItems = q;
@@ -403,6 +417,10 @@
 			hearings = h;
 			rulings = r;
 			hearingRequests = hr;
+			// רק פריטים שיושבים בסטראפי ניתנים לניהול; הסטטיים מוצגים בנפרד לקריאה
+			managedArticles = arts.filter((a) => a.documentId);
+			managedActivity = acts.filter((a) => a.documentId);
+			backendNews = news;
 		} catch (e) {
 			console.warn('admin loadAdminContent failed', e);
 		}
@@ -410,12 +428,6 @@
 
 	async function loadAll() {
 		try {
-			const a = JSON.parse(localStorage.getItem(ARTICLES_KEY) || '[]');
-			if (Array.isArray(a)) customArticles = a;
-			const v = JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
-			if (Array.isArray(v)) customActivity = v;
-			const n = JSON.parse(localStorage.getItem(NEWS_KEY) || '[]');
-			if (Array.isArray(n)) customNews = n;
 			const c = JSON.parse(localStorage.getItem(CASES_KEY) || '[]');
 			if (Array.isArray(c)) pendingCases = c;
 			const hv = localStorage.getItem(HOME_VIDEO_KEY);
@@ -432,8 +444,11 @@
 		} catch {}
 		// Strapi מנצח על localStorage לרבנים וקונפיג בית
 		try {
-			const backendRabbis = await loadRabbis();
-			if (backendRabbis.length) rabbis = backendRabbis;
+			const backendRabbis = await listBackendRabbis();
+			if (backendRabbis.length) {
+				rabbis = backendRabbis;
+				rabbisSeeded = true;
+			}
 		} catch {}
 		try {
 			const cfg = await loadHomeConfig();
@@ -489,8 +504,22 @@
 		}
 	}
 
+	// זריעה חד-פעמית: כשהרשימה עוד לא בסטראפי, כל שינוי ראשון מעלה אותה במלואה
+	// לשם — ומאותו רגע כל שינוי נשמר ישירות בשרת ומופיע אצל כל האדמינים.
+	async function ensureRabbisSeeded() {
+		if (rabbisSeeded) return;
+		rabbis = await seedRabbis(rabbis);
+		rabbisSeeded = true;
+	}
+
+	async function refreshRabbis() {
+		rabbis = await listBackendRabbis();
+		persistRabbis();
+	}
+
 	async function submitRabbi(e: Event) {
 		e.preventDefault();
+		if (rabbisBusy) return;
 		const name = rabbiName.trim();
 		if (!name) {
 			rabbiNotice = '⚠️ יש למלא שם';
@@ -501,29 +530,41 @@
 		const nickname = rabbiNickname.trim() || undefined;
 		const city = rabbiCity.trim() || undefined;
 		const newRabbi: Rabbi = { id: editingRabbiId ?? genRabbiId(), name, photo, title, nickname, city };
-		let toBackend = true;
-		if (!editingRabbiId) {
-			try {
-				await addRabbiToBackend(newRabbi);
-			} catch {
-				toBackend = false;
+		rabbisBusy = true;
+		try {
+			if (editingRabbiId) {
+				if (rabbisSeeded) {
+					await updateRabbi(editingRabbiId, newRabbi);
+					await refreshRabbis();
+				} else {
+					rabbis = rabbis.map((x) => (x.id === editingRabbiId ? newRabbi : x));
+					await ensureRabbisSeeded();
+				}
+				rabbiNotice = '✅ הדיין עודכן באתר';
+			} else {
+				if (rabbisSeeded) {
+					await addRabbiToBackend(newRabbi, rabbis.length);
+					await refreshRabbis();
+				} else {
+					rabbis = [...rabbis, newRabbi];
+					await ensureRabbisSeeded();
+				}
+				rabbiNotice = '✅ הדיין נוסף לאתר';
 			}
+			persistRabbis();
+			rabbiName = '';
+			rabbiTitle = '';
+			rabbiNickname = '';
+			rabbiCity = '';
+			rabbiPhotoUrl = '';
+			editingRabbiId = null;
+			setTimeout(() => (rabbiNotice = ''), 4000);
+		} catch (err: any) {
+			// הטופס נשאר מלא — אפשר לנסות שוב בלי להקליד מחדש
+			rabbiNotice = '⚠️ השמירה נכשלה: ' + (err?.message ?? err);
+		} finally {
+			rabbisBusy = false;
 		}
-		if (editingRabbiId) {
-			rabbis = rabbis.map((x) => (x.id === editingRabbiId ? newRabbi : x));
-			rabbiNotice = '✅ הדיין עודכן (לעדכון בסטראפי - דרך פאנל האדמין של Strapi)';
-		} else {
-			rabbis = [...rabbis, newRabbi];
-			rabbiNotice = toBackend ? '✅ הדיין נוסף לסטראפי' : '⚠️ נשמר מקומית בלבד';
-		}
-		persistRabbis();
-		rabbiName = '';
-		rabbiTitle = '';
-		rabbiNickname = '';
-		rabbiCity = '';
-		rabbiPhotoUrl = '';
-		editingRabbiId = null;
-		setTimeout(() => (rabbiNotice = ''), 4000);
 	}
 
 	function editRabbi(r: Rabbi) {
@@ -547,32 +588,82 @@
 	}
 
 	async function deleteRabbi(id: string) {
-		if (!(await askConfirm('למחוק את הדיין?'))) return;
-		rabbis = rabbis.filter((x) => x.id !== id);
-		persistRabbis();
-		if (editingRabbiId === id) cancelEditRabbi();
+		if (rabbisBusy) return;
+		if (!(await askConfirm('למחוק את הדיין מהאתר?'))) return;
+		rabbisBusy = true;
+		try {
+			if (rabbisSeeded) {
+				await deleteRabbiBackend(id);
+				await refreshRabbis();
+			} else {
+				rabbis = rabbis.filter((x) => x.id !== id);
+				await ensureRabbisSeeded();
+				persistRabbis();
+			}
+			if (editingRabbiId === id) cancelEditRabbi();
+		} catch (err: any) {
+			rabbiNotice = '⚠️ המחיקה נכשלה: ' + (err?.message ?? err);
+		} finally {
+			rabbisBusy = false;
+		}
 	}
 
-	function removeRabbiPhoto(id: string) {
-		rabbis = rabbis.map((x) => (x.id === id ? { ...x, photo: undefined } : x));
-		persistRabbis();
+	async function removeRabbiPhoto(id: string) {
+		if (rabbisBusy) return;
+		rabbisBusy = true;
+		try {
+			rabbis = rabbis.map((x) => (x.id === id ? { ...x, photo: undefined } : x));
+			if (rabbisSeeded) {
+				const r = rabbis.find((x) => x.id === id);
+				if (r) await updateRabbi(id, r);
+			} else {
+				await ensureRabbisSeeded();
+			}
+			persistRabbis();
+		} catch (err: any) {
+			rabbiNotice = '⚠️ הסרת התמונה נכשלה: ' + (err?.message ?? err);
+		} finally {
+			rabbisBusy = false;
+		}
 	}
 
-	function moveRabbi(id: string, direction: -1 | 1) {
+	async function moveRabbi(id: string, direction: -1 | 1) {
+		if (rabbisBusy) return;
 		const i = rabbis.findIndex((x) => x.id === id);
 		const j = i + direction;
 		if (i < 0 || j < 0 || j >= rabbis.length) return;
 		const next = [...rabbis];
 		[next[i], next[j]] = [next[j], next[i]];
 		rabbis = next;
-		persistRabbis();
+		rabbisBusy = true;
+		try {
+			if (rabbisSeeded) await saveRabbisOrder(rabbis);
+			else await ensureRabbisSeeded();
+			persistRabbis();
+		} catch (err: any) {
+			rabbiNotice = '⚠️ שמירת הסדר נכשלה: ' + (err?.message ?? err);
+		} finally {
+			rabbisBusy = false;
+		}
 	}
 
 	async function resetRabbisToDefault() {
-		if (!(await askConfirm('לאפס לרשימת ברירת המחדל? (תמונות שהעלית יימחקו)'))) return;
-		rabbis = [...defaultRabbis];
-		persistRabbis();
-		cancelEditRabbi();
+		if (rabbisBusy) return;
+		if (!(await askConfirm('לאפס לרשימת ברירת המחדל? (תמונות שהעלית יימחקו — לכולם)'))) return;
+		rabbisBusy = true;
+		try {
+			if (rabbisSeeded) {
+				for (const r of rabbis) await deleteRabbiBackend(r.id);
+			}
+			rabbis = await seedRabbis([...defaultRabbis]);
+			rabbisSeeded = true;
+			persistRabbis();
+			cancelEditRabbi();
+		} catch (err: any) {
+			rabbiNotice = '⚠️ האיפוס נכשל: ' + (err?.message ?? err);
+		} finally {
+			rabbisBusy = false;
+		}
 	}
 
 	function handleLogout() {
@@ -717,6 +808,33 @@
 		catch (e: any) { alert('שגיאה: ' + (e?.message ?? e)); }
 	}
 
+	function startEditQa(q: QaWithId) {
+		qaEditingId = q.documentId ?? null;
+		qaEditAnswer = fmtAny(q.answer);
+		qaEditBy = fmtAny(q.answeredBy);
+		qaEditTopic = q.topic ?? 'אחר';
+		qaEditNotice = '';
+	}
+
+	async function saveEditQa() {
+		if (!qaEditingId) return;
+		if (!qaEditAnswer.trim()) { qaEditNotice = '⚠️ התשובה לא יכולה להיות ריקה'; return; }
+		qaSaving = true;
+		try {
+			await updateQa(qaEditingId, {
+				answer: qaEditAnswer.trim(),
+				answeredBy: qaEditBy.trim() || 'חכמי העדה',
+				topic: qaEditTopic.trim() || 'אחר'
+			});
+			qaEditingId = null;
+			await loadAdminContent();
+		} catch (e: any) {
+			qaEditNotice = '⚠️ השמירה נכשלה: ' + (e?.message ?? e);
+		} finally {
+			qaSaving = false;
+		}
+	}
+
 	// ───────────── ניהול דיונים ─────────────
 	function clearHearingForm() {
 		hearingEditingId = null;
@@ -749,22 +867,22 @@
 		}
 		const dayanim = [hearingDayan1, hearingDayan2, hearingDayan3].map(s => s.trim()).filter(Boolean);
 		try {
+			const wasEditing = Boolean(hearingEditingId);
 			if (hearingEditingId) {
 				await updateHearing(hearingEditingId, {
 					caseName: hearingCaseName.trim(), dayanim,
 					zoomLink: hearingZoom.trim(), date: hearingDate,
 					time: hearingTime.trim(), status: hearingStatus
 				});
-				hearingNotice = '✅ הדיון עודכן';
 			} else {
 				await createHearing({
 					caseName: hearingCaseName.trim(), dayanim,
 					zoomLink: hearingZoom.trim(), date: hearingDate,
 					time: hearingTime.trim(), status: hearingStatus
 				});
-				hearingNotice = '✅ הדיון נוסף';
 			}
 			clearHearingForm();
+			hearingNotice = wasEditing ? '✅ הדיון עודכן' : '✅ הדיון נוסף';
 			await loadAdminContent();
 			setTimeout(() => (hearingNotice = ''), 4000);
 		} catch (e: any) {
@@ -780,12 +898,26 @@
 
 	// ───────────── פסקי דין ─────────────
 	function clearRulingForm() {
+		rulingEditingId = null;
 		rulingCaseRef = '';
 		rulingCaseName = '';
 		rulingDayan1 = ''; rulingDayan2 = ''; rulingDayan3 = '';
 		rulingDate = '';
 		rulingSummary = '';
 		rulingDecision = '';
+		rulingNotice = '';
+	}
+
+	function startEditRuling(r: Ruling & { documentId?: string }) {
+		rulingEditingId = (r as any).documentId ?? r.id;
+		rulingCaseRef = r.caseId ?? '';
+		rulingCaseName = fmtAny(r.caseName);
+		rulingDayan1 = fmtAny(r.dayanim?.[0]);
+		rulingDayan2 = fmtAny(r.dayanim?.[1]);
+		rulingDayan3 = fmtAny(r.dayanim?.[2]);
+		rulingDate = r.date ?? '';
+		rulingSummary = fmtAny(r.summary);
+		rulingDecision = fmtAny(r.decision);
 		rulingNotice = '';
 	}
 
@@ -796,17 +928,20 @@
 			return;
 		}
 		const dayanim = [rulingDayan1, rulingDayan2, rulingDayan3].map(s => s.trim()).filter(Boolean);
+		const payload = {
+			caseRef: rulingCaseRef.trim() || undefined,
+			caseName: rulingCaseName.trim(),
+			dayanim,
+			date: rulingDate,
+			summary: rulingSummary.trim(),
+			decision: rulingDecision.trim()
+		};
 		try {
-			await createRuling({
-				caseRef: rulingCaseRef.trim() || undefined,
-				caseName: rulingCaseName.trim(),
-				dayanim,
-				date: rulingDate,
-				summary: rulingSummary.trim(),
-				decision: rulingDecision.trim()
-			});
-			rulingNotice = '✅ פסק הדין פורסם';
+			const wasEditing = Boolean(rulingEditingId);
+			if (rulingEditingId) await updateRuling(rulingEditingId, payload);
+			else await createRuling(payload);
 			clearRulingForm();
+			rulingNotice = wasEditing ? '✅ פסק הדין עודכן' : '✅ פסק הדין פורסם';
 			await loadAdminContent();
 			setTimeout(() => (rulingNotice = ''), 4000);
 		} catch (e: any) {
@@ -834,6 +969,56 @@
 
 	const pendingRequestsCount = $derived(hearingRequests.filter(r => r.status === 'pending').length);
 	const pendingQaCount = $derived(pendingSubmissions.length);
+
+	// ───────────── סרגל לשוניות מקובץ ─────────────
+	// הלשוניות מסודרות לפי תחומי עבודה כדי שאדמין חדש ימצא את דרכו מיד:
+	// פניות שדורשות טיפול, ניהול בית הדין, תוכן האתר, והרשאות/ניהול.
+	type TabDef = { id?: AdminTab; label: string; badge?: number; href?: string };
+	const tabGroups = $derived.by(() => {
+		const groups: { title: string; tabs: TabDef[] }[] = [];
+		groups.push({
+			title: 'פניות מהאתר',
+			tabs: [
+				{ id: 'qa-submissions', label: '❓ שאלות חדשות', badge: pendingQaCount },
+				{ id: 'hearing-requests', label: '📥 בקשות לדיון', badge: pendingRequestsCount },
+				// לשונית התאריכים מוצגת רק אם יש בקשות בדפדפן הזה — אחרת היא רק רעש
+				...(pendingCases.length > 0
+					? [{ id: 'dates' as AdminTab, label: '📅 אישור תאריכים', badge: pendingApprovalCount }]
+					: [])
+			]
+		});
+		groups.push({
+			title: 'בית הדין',
+			tabs: [
+				{ id: 'hearings', label: `⚖️ דיונים (${hearings.length})` },
+				{ id: 'rulings', label: `📜 פסקי דין (${rulings.length})` }
+			]
+		});
+		groups.push({
+			title: 'תוכן האתר',
+			tabs: [
+				{ id: 'articles', label: `📚 מאמרים (${managedArticles.length})` },
+				{ id: 'videos', label: '🎬 סרטונים / כתבות' },
+				{ id: 'news', label: `📰 חדשות (${backendNews.length})` },
+				{ id: 'qa', label: `💬 שו"ת (${qaItems.length})` },
+				{ id: 'rabbis', label: `👤 דיינים (${rabbis.length})` }
+			]
+		});
+		const mgmt: TabDef[] = [];
+		if (!isLimited) mgmt.push({ id: 'charter', label: `✍️ אמנה (${charterEntries.length})` });
+		if (isSuper) {
+			mgmt.push({ id: 'admins', label: '🛡️ אדמינים' });
+			mgmt.push({ id: 'users', label: `👥 רשומים${usersLoaded ? ` (${communityUsers.length + othersCount})` : ''}` });
+		}
+		mgmt.push({ label: '🪧 פרסומות', href: '/admin/ads' });
+		groups.push({ title: 'ניהול', tabs: mgmt });
+		return groups;
+	});
+
+	function selectTab(id: AdminTab) {
+		if (id === 'users') openUsersTab();
+		else activeTab = id;
+	}
 
 	// ───────────── ניהול מאמרים ─────────────
 	function slugify(s: string): string {
@@ -867,16 +1052,13 @@
 			approvedBy: approvedBy.map(toLoc),
 			...(tags.length > 0 ? { tags: tags.map(toLoc) } : {})
 		};
-		let toBackend = true;
 		try {
 			await addArticle(newArt);
-		} catch {
-			toBackend = false;
+		} catch (err: any) {
+			// הטופס נשאר מלא — לא מאבדים את מה שהוקלד
+			artNotice = '⚠️ הפרסום נכשל — בדקו את החיבור ונסו שוב';
+			return;
 		}
-		customArticles = [newArt, ...customArticles];
-		try {
-			localStorage.setItem(ARTICLES_KEY, JSON.stringify(customArticles));
-		} catch {}
 		artTitle = '';
 		artAuthor = '';
 		artDate = '';
@@ -886,18 +1068,19 @@
 		artApprover2 = '';
 		artApprover3 = '';
 		artTags = '';
-		artNotice = toBackend
-			? '✅ המאמר נוסף לסטראפי ומופיע באתר'
-			: '⚠️ נשמר מקומית בלבד (Strapi לא זמין)';
+		artNotice = '✅ המאמר פורסם ומופיע באתר';
+		await loadAdminContent();
 		setTimeout(() => (artNotice = ''), 4000);
 	}
 
-	async function deleteCustomArticle(slug: string) {
-		if (!(await askConfirm('למחוק את המאמר?'))) return;
-		customArticles = customArticles.filter((x) => x.slug !== slug);
+	async function doDeleteArticle(documentId: string) {
+		if (!(await askConfirm('למחוק את המאמר מהאתר?'))) return;
 		try {
-			localStorage.setItem(ARTICLES_KEY, JSON.stringify(customArticles));
-		} catch {}
+			await deleteArticle(documentId);
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה במחיקה: ' + (e?.message ?? e));
+		}
 	}
 
 	// ───────────── ניהול סרטונים/הודעות ─────────────
@@ -935,16 +1118,13 @@
 			...(vidImageUrl.trim() ? { imageUrl: vidImageUrl.trim() } : {}),
 			...(vidSourceUrl.trim() ? { sourceUrl: vidSourceUrl.trim() } : {})
 		};
-		let toBackend = true;
 		try {
 			await addActivity(newItem);
 		} catch {
-			toBackend = false;
+			// הטופס נשאר מלא — לא מאבדים את מה שהוקלד
+			vidNotice = '⚠️ הפרסום נכשל — בדקו את החיבור ונסו שוב';
+			return;
 		}
-		customActivity = [newItem, ...customActivity];
-		try {
-			localStorage.setItem(ACTIVITY_KEY, JSON.stringify(customActivity));
-		} catch {}
 		vidTitle = '';
 		vidAuthor = '';
 		vidDate = '';
@@ -953,18 +1133,19 @@
 		vidUrl = '';
 		vidImageUrl = '';
 		vidSourceUrl = '';
-		vidNotice = toBackend
-			? `✅ ה${vidKind} נוסף לסטראפי ומופיע באתר`
-			: `⚠️ נשמר מקומית בלבד (Strapi לא זמין)`;
+		vidNotice = `✅ ה${vidKind} פורסם ומופיע באתר`;
+		await loadAdminContent();
 		setTimeout(() => (vidNotice = ''), 4000);
 	}
 
-	async function deleteCustomActivity(slug: string) {
-		if (!(await askConfirm('למחוק את הפריט?'))) return;
-		customActivity = customActivity.filter((x) => x.slug !== slug);
+	async function doDeleteActivity(documentId: string) {
+		if (!(await askConfirm('למחוק את הפריט מהאתר?'))) return;
 		try {
-			localStorage.setItem(ACTIVITY_KEY, JSON.stringify(customActivity));
-		} catch {}
+			await deleteActivity(documentId);
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה במחיקה: ' + (e?.message ?? e));
+		}
 	}
 
 	// ───────────── ניהול חדשות לוקאליות ─────────────
@@ -974,42 +1155,33 @@
 			newsNotice = '⚠️ חובה למלא כותרת';
 			return;
 		}
-		const item: NewsItem = {
-			id: 'news-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-			title: newsTitle.trim(),
-			summary: newsSummary.trim(),
-			date: new Date().toISOString().slice(0, 10),
-			...(newsSourceUrl.trim() ? { sourceUrl: newsSourceUrl.trim() } : {})
-		};
-		let toBackend = true;
 		try {
 			await addNewsItem({
-				line1: item.title,
-				line2: item.summary || undefined,
-				sourceUrl: item.sourceUrl
+				line1: newsTitle.trim(),
+				line2: newsSummary.trim() || undefined,
+				sourceUrl: newsSourceUrl.trim() || undefined
 			});
 		} catch {
-			toBackend = false;
+			// הטופס נשאר מלא — לא מאבדים את מה שהוקלד
+			newsNotice = '⚠️ ההוספה נכשלה — בדקו את החיבור ונסו שוב';
+			return;
 		}
-		customNews = [item, ...customNews];
-		try {
-			localStorage.setItem(NEWS_KEY, JSON.stringify(customNews));
-		} catch {}
 		newsTitle = '';
 		newsSummary = '';
 		newsSourceUrl = '';
-		newsNotice = toBackend
-			? '✅ החדשה נוספה לסטראפי - תופיע בטיקר'
-			: '⚠️ נשמר מקומית בלבד (Strapi לא זמין)';
+		newsNotice = '✅ החדשה נוספה ותופיע בטיקר';
+		await loadAdminContent();
 		setTimeout(() => (newsNotice = ''), 5000);
 	}
 
-	async function deleteCustomNews(id: string) {
-		if (!(await askConfirm('למחוק את החדשה?'))) return;
-		customNews = customNews.filter((x) => x.id !== id);
+	async function doDeleteNews(id: string) {
+		if (!(await askConfirm('למחוק את החדשה מהטיקר?'))) return;
 		try {
-			localStorage.setItem(NEWS_KEY, JSON.stringify(customNews));
-		} catch {}
+			await deleteNewsItem(id);
+			await loadAdminContent();
+		} catch (e: any) {
+			alert('שגיאה במחיקה: ' + (e?.message ?? e));
+		}
 	}
 
 	// ───────────── אישור תאריכים ─────────────
@@ -1080,158 +1252,37 @@
 			</button>
 		</header>
 
-		<!-- לשוניות -->
-		<div class="flex gap-2 mb-6 border-b border-white/10 flex-wrap">
-			<button
-				class="relative px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'qa-submissions'}
-				class:text-white={activeTab === 'qa-submissions'}
-				class:text-gray-400={activeTab !== 'qa-submissions'}
-				class:hover:text-gray-200={activeTab !== 'qa-submissions'}
-				onclick={() => (activeTab = 'qa-submissions')}
-			>
-				❓ שאלות חדשות
-				{#if pendingQaCount > 0}
-					<span class="absolute -top-1 -left-1 min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-black flex items-center justify-center">
-						{pendingQaCount}
-					</span>
-				{/if}
-			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'qa'}
-				class:text-white={activeTab === 'qa'}
-				class:text-gray-400={activeTab !== 'qa'}
-				class:hover:text-gray-200={activeTab !== 'qa'}
-				onclick={() => (activeTab = 'qa')}
-			>
-				💬 שו"ת ({qaItems.length})
-			</button>
-			{#if !isLimited}
-				<!-- ניהול חתימות האמנה — לסופר-אדמין בלבד -->
-				<button
-					class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-					class:bg-purple-500={activeTab === 'charter'}
-					class:text-white={activeTab === 'charter'}
-					class:text-gray-400={activeTab !== 'charter'}
-					class:hover:text-gray-200={activeTab !== 'charter'}
-					onclick={() => (activeTab = 'charter')}
-				>
-					✍️ אמנה ({charterEntries.length})
-				</button>
-			{/if}
-			<button
-				class="relative px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'hearing-requests'}
-				class:text-white={activeTab === 'hearing-requests'}
-				class:text-gray-400={activeTab !== 'hearing-requests'}
-				class:hover:text-gray-200={activeTab !== 'hearing-requests'}
-				onclick={() => (activeTab = 'hearing-requests')}
-			>
-				📥 בקשות לדיון
-				{#if pendingRequestsCount > 0}
-					<span class="absolute -top-1 -left-1 min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-black flex items-center justify-center">
-						{pendingRequestsCount}
-					</span>
-				{/if}
-			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'hearings'}
-				class:text-white={activeTab === 'hearings'}
-				class:text-gray-400={activeTab !== 'hearings'}
-				class:hover:text-gray-200={activeTab !== 'hearings'}
-				onclick={() => (activeTab = 'hearings')}
-			>
-				⚖️ דיונים ({hearings.length})
-			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'rulings'}
-				class:text-white={activeTab === 'rulings'}
-				class:text-gray-400={activeTab !== 'rulings'}
-				class:hover:text-gray-200={activeTab !== 'rulings'}
-				onclick={() => (activeTab = 'rulings')}
-			>
-				📜 פסקי דין ({rulings.length})
-			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'articles'}
-				class:text-white={activeTab === 'articles'}
-				class:text-gray-400={activeTab !== 'articles'}
-				class:hover:text-gray-200={activeTab !== 'articles'}
-				onclick={() => (activeTab = 'articles')}
-			>
-				📚 מאמרים
-			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'videos'}
-				class:text-white={activeTab === 'videos'}
-				class:text-gray-400={activeTab !== 'videos'}
-				class:hover:text-gray-200={activeTab !== 'videos'}
-				onclick={() => (activeTab = 'videos')}
-			>
-				🎬 סרטונים / כתבות / הודעות
-			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'news'}
-				class:text-white={activeTab === 'news'}
-				class:text-gray-400={activeTab !== 'news'}
-				class:hover:text-gray-200={activeTab !== 'news'}
-				onclick={() => (activeTab = 'news')}
-			>
-				📰 חדשות
-			</button>
-			<button
-				class="relative px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'dates'}
-				class:text-white={activeTab === 'dates'}
-				class:text-gray-400={activeTab !== 'dates'}
-				class:hover:text-gray-200={activeTab !== 'dates'}
-				onclick={() => (activeTab = 'dates')}
-			>
-				📅 אישור תאריכים
-				{#if pendingApprovalCount > 0}
-					<span class="absolute -top-1 -left-1 min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-black flex items-center justify-center">
-						{pendingApprovalCount}
-					</span>
-				{/if}
-			</button>
-			<button
-				class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-				class:bg-purple-500={activeTab === 'rabbis'}
-				class:text-white={activeTab === 'rabbis'}
-				class:text-gray-400={activeTab !== 'rabbis'}
-				class:hover:text-gray-200={activeTab !== 'rabbis'}
-				onclick={() => (activeTab = 'rabbis')}
-			>
-				👤 דיינים
-			</button>
-			{#if isSuper}
-				<button
-					class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-					class:bg-purple-500={activeTab === 'admins'}
-					class:text-white={activeTab === 'admins'}
-					class:text-gray-400={activeTab !== 'admins'}
-					class:hover:text-gray-200={activeTab !== 'admins'}
-					onclick={() => (activeTab = 'admins')}
-				>
-					🛡️ אדמינים
-				</button>
-				<button
-					class="px-4 py-2.5 font-bold text-sm rounded-t-lg transition-colors"
-					class:bg-purple-500={activeTab === 'users'}
-					class:text-white={activeTab === 'users'}
-					class:text-gray-400={activeTab !== 'users'}
-					class:hover:text-gray-200={activeTab !== 'users'}
-					onclick={openUsersTab}
-				>
-					👥 רשומים{usersLoaded ? ` (${communityUsers.length + othersCount})` : ''}
-				</button>
-			{/if}
+		<!-- לשוניות מקובצות לפי תחומי עבודה -->
+		<div class="mb-6 flex flex-wrap items-stretch gap-x-4 gap-y-3">
+			{#each tabGroups as g (g.title)}
+				<div class="rounded-xl border border-white/10 bg-white/[0.03] px-2.5 pb-2 pt-1.5">
+					<div class="text-[11px] font-bold text-gray-500 mb-1.5 pr-1">{g.title}</div>
+					<div class="flex flex-wrap gap-1.5">
+						{#each g.tabs as tb (tb.label)}
+							{#if tb.href}
+								<a
+									href={tb.href}
+									class="px-3.5 py-2 rounded-lg text-sm font-bold bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+								>{tb.label} ←</a>
+							{:else}
+								<button
+									class="relative px-3.5 py-2 rounded-lg text-sm font-bold transition-colors {activeTab === tb.id
+										? 'bg-purple-600 text-white'
+										: 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'}"
+									onclick={() => selectTab(tb.id!)}
+								>
+									{tb.label}
+									{#if tb.badge}
+										<span class="absolute -top-1.5 -left-1.5 min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-black flex items-center justify-center">
+											{tb.badge}
+										</span>
+									{/if}
+								</button>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			{/each}
 		</div>
 
 		<!-- ───────────── תוכן הלשוניות ───────────── -->
@@ -1341,7 +1392,7 @@
 			<div class="space-y-3">
 				<div class="rounded-xl border border-white/10 bg-white/5 p-4">
 					<h2 class="text-lg font-black text-white">💬 שו"ת שפורסם</h2>
-					<p class="text-xs text-gray-400">מחיקה כאן מסירה את ה-Q&A מהאתר. לעריכה - דרך פאנל סטראפי.</p>
+					<p class="text-xs text-gray-400">אפשר לערוך את התשובה במקום או למחוק את ה-Q&A מהאתר.</p>
 				</div>
 				{#each qaItems as q (q.slug)}
 					<div class="rounded-xl border border-indigo-400/30 bg-indigo-500/5 p-4">
@@ -1351,10 +1402,55 @@
 								<p class="text-sm text-gray-300 mt-1 line-clamp-2">{fmtAny(q.question)}</p>
 								<p class="text-xs text-indigo-300 mt-2">{fmtAny(q.answeredBy)} · {q.answerDate}</p>
 							</div>
-							<button onclick={() => doDeleteQa((q as any).documentId ?? q.slug)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">
-								מחק
-							</button>
+							{#if q.documentId}
+								<div class="flex gap-1 flex-shrink-0">
+									<button onclick={() => startEditQa(q)} class="px-3 py-1.5 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold">
+										ערוך
+									</button>
+									<button onclick={() => doDeleteQa(q.documentId!)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">
+										מחק
+									</button>
+								</div>
+							{:else}
+								<span class="text-[10px] text-gray-500 flex-shrink-0">פריט מערכת</span>
+							{/if}
 						</div>
+
+						{#if qaEditingId && qaEditingId === q.documentId}
+							<div class="space-y-3 mt-3 pt-3 border-t border-white/10">
+								<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+									<input
+										type="text"
+										bind:value={qaEditBy}
+										placeholder="שם המשיב (רב/דיין)"
+										class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white"
+									/>
+									<input
+										type="text"
+										bind:value={qaEditTopic}
+										placeholder="נושא"
+										class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white"
+									/>
+								</div>
+								<textarea
+									bind:value={qaEditAnswer}
+									rows="5"
+									placeholder="התשובה"
+									class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white resize-y"
+								></textarea>
+								{#if qaEditNotice}
+									<p class="text-sm font-bold text-yellow-300">{qaEditNotice}</p>
+								{/if}
+								<div class="flex gap-2 flex-wrap">
+									<button onclick={saveEditQa} disabled={qaSaving} class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold">
+										{qaSaving ? 'שומר…' : '💾 שמור'}
+									</button>
+									<button onclick={() => (qaEditingId = null)} class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold">
+										ביטול
+									</button>
+								</div>
+							</div>
+						{/if}
 					</div>
 				{/each}
 			</div>
@@ -1597,7 +1693,9 @@
 		{:else if activeTab === 'rulings'}
 			<div class="space-y-6">
 				<div class="rounded-2xl border border-green-500/30 bg-green-500/5 p-5 md:p-6">
-					<h2 class="text-xl font-black text-green-200 mb-4">📜 פרסם פסק דין חדש</h2>
+					<h2 class="text-xl font-black text-green-200 mb-4">
+						{rulingEditingId ? '✏️ עריכת פסק דין' : '📜 פרסם פסק דין חדש'}
+					</h2>
 					<form onsubmit={submitRuling} class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-bold text-gray-300 mb-1.5">מזהה תיק (אופציונלי)</label>
@@ -1626,8 +1724,13 @@
 						{#if rulingNotice}
 							<p class="md:col-span-2 text-sm font-bold {rulingNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">{rulingNotice}</p>
 						{/if}
-						<div class="md:col-span-2">
-							<button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-black">פרסם פסק דין</button>
+						<div class="md:col-span-2 flex gap-2 flex-wrap">
+							<button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-black">
+								{rulingEditingId ? 'שמור שינויים' : 'פרסם פסק דין'}
+							</button>
+							{#if rulingEditingId}
+								<button type="button" onclick={clearRulingForm} class="px-4 py-2 rounded-xl bg-white/10 text-white font-bold">ביטול</button>
+							{/if}
 						</div>
 					</form>
 				</div>
@@ -1641,7 +1744,10 @@
 									<p class="text-xs text-gray-300 mt-1">{r.date} · {r.dayanim?.map(fmtAny).filter(Boolean).join(' · ')}</p>
 									<p class="text-sm text-gray-200 mt-2 line-clamp-2">{fmtAny(r.summary)}</p>
 								</div>
-								<button onclick={() => doDeleteRuling((r as any).documentId ?? r.id)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">מחק</button>
+								<div class="flex gap-1 flex-shrink-0">
+									<button onclick={() => startEditRuling(r as any)} class="px-3 py-1.5 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 text-xs font-bold">ערוך</button>
+									<button onclick={() => doDeleteRuling((r as any).documentId ?? r.id)} class="px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold">מחק</button>
+								</div>
 							</div>
 						</div>
 					{/each}
@@ -1762,30 +1868,30 @@
 					</form>
 				</div>
 
-				<!-- רשימת מאמרים שנוספו -->
+				<!-- המאמרים שבאתר (מכל האדמינים) -->
 				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-					<h2 class="text-xl font-black text-white mb-4">📝 מאמרים שהוספת ({customArticles.length})</h2>
-					{#if customArticles.length === 0}
-						<p class="text-gray-400 text-sm">עוד לא הוספת מאמרים. הוסף מאמר חדש בטופס למעלה.</p>
+					<h2 class="text-xl font-black text-white mb-4">📝 מאמרים שפורסמו באתר ({managedArticles.length})</h2>
+					{#if managedArticles.length === 0}
+						<p class="text-gray-400 text-sm">אין עדיין מאמרים שפורסמו. הוסף מאמר חדש בטופס למעלה.</p>
 					{:else}
 						<div class="space-y-2">
-							{#each customArticles as a}
+							{#each managedArticles as a (a.documentId)}
 								<div class="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
 									<div class="min-w-0 flex-1">
-										<div class="font-bold text-white text-sm">{a.title}</div>
-										<div class="text-xs text-gray-400">{a.author} • {a.date}</div>
+										<a href={'/articles/' + a.slug} target="_blank" rel="noopener" class="font-bold text-white text-sm hover:text-blue-300 hover:underline">{fmtAny(a.title)}</a>
+										<div class="text-xs text-gray-400">{fmtAny(a.author)} • {a.date}</div>
 										{#if a.tags && a.tags.length > 0}
 											<div class="mt-1.5 flex flex-wrap gap-1">
 												{#each a.tags as tag}
 													<span class="px-1.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-200 text-[10px] font-bold">
-														#{tag}
+														#{fmtAny(tag)}
 													</span>
 												{/each}
 											</div>
 										{/if}
 									</div>
 									<button
-										onclick={() => deleteCustomArticle(a.slug)}
+										onclick={() => doDeleteArticle(a.documentId!)}
 										class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold flex-shrink-0"
 									>
 										מחק
@@ -1802,7 +1908,7 @@
 					<div class="space-y-1.5">
 						{#each staticArticles as a}
 							<div class="text-xs text-gray-400 border-b border-white/5 pb-1.5">
-								{a.title} <span class="text-gray-600">- {a.author}, {a.date}</span>
+								{fmtAny(a.title)} <span class="text-gray-600">- {fmtAny(a.author)}, {a.date}</span>
 							</div>
 						{/each}
 					</div>
@@ -1958,7 +2064,7 @@
 								onchange={onActivityImageFile}
 								class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-teal-500/30 file:text-teal-100 file:font-bold hover:file:bg-teal-500/40"
 							/>
-							<p class="text-xs text-gray-500 mt-1">התמונה תקטן ותישמר בדפדפן</p>
+							<p class="text-xs text-gray-500 mt-1">התמונה תקטן ותישמר יחד עם הפריט</p>
 						</div>
 
 						<div>
@@ -2036,24 +2142,24 @@
 					</form>
 				</div>
 
-				<!-- רשימה -->
+				<!-- הפריטים שבאתר (מכל האדמינים) -->
 				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-					<h2 class="text-xl font-black text-white mb-4">📋 פריטים שהוספת ({customActivity.length})</h2>
-					{#if customActivity.length === 0}
-						<p class="text-gray-400 text-sm">עוד לא הוספת סרטונים/הודעות.</p>
+					<h2 class="text-xl font-black text-white mb-4">📋 פריטים שפורסמו באתר ({managedActivity.length})</h2>
+					{#if managedActivity.length === 0}
+						<p class="text-gray-400 text-sm">אין עדיין סרטונים/הודעות שפורסמו. הוסף פריט חדש בטופס למעלה.</p>
 					{:else}
 						<div class="space-y-2">
-							{#each customActivity as v}
+							{#each managedActivity as v (v.documentId)}
 								<div class="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
 									<div class="min-w-0">
 										<div class="font-bold text-white text-sm">
 											<span class="text-xs text-teal-300 ml-1">[{v.kind}]</span>
-											{v.title}
+											{fmtAny(v.title)}
 										</div>
-										<div class="text-xs text-gray-400">{v.author} • {v.date}</div>
+										<div class="text-xs text-gray-400">{fmtAny(v.author)} • {v.date}</div>
 									</div>
 									<button
-										onclick={() => deleteCustomActivity(v.slug)}
+										onclick={() => doDeleteActivity(v.documentId!)}
 										class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold flex-shrink-0"
 									>
 										מחק
@@ -2071,8 +2177,8 @@
 						{#each staticActivity as v}
 							<div class="text-xs text-gray-400 border-b border-white/5 pb-1.5">
 								<span class="text-gray-500">[{v.kind}]</span>
-								{v.title}
-								<span class="text-gray-600">- {v.author}, {v.date}</span>
+								{fmtAny(v.title)}
+								<span class="text-gray-600">- {fmtAny(v.author)}, {v.date}</span>
 							</div>
 						{/each}
 					</div>
@@ -2144,24 +2250,23 @@
 					</form>
 				</div>
 
-				<!-- רשימת חדשות לוקאליות -->
+				<!-- החדשות שבטיקר (מכל האדמינים) -->
 				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
-					<h2 class="text-xl font-black text-white mb-4">📋 חדשות לוקאליות ({customNews.length})</h2>
-					{#if customNews.length === 0}
-						<p class="text-gray-400 text-sm">עוד לא הוספת חדשות לוקאליות. הוסף חדשה בטופס למעלה.</p>
+					<h2 class="text-xl font-black text-white mb-4">📋 חדשות של חכמי העדה בטיקר ({backendNews.length})</h2>
+					{#if backendNews.length === 0}
+						<p class="text-gray-400 text-sm">אין עדיין חדשות לוקאליות בטיקר. הוסף חדשה בטופס למעלה.</p>
 					{:else}
 						<div class="space-y-2">
-							{#each customNews as n}
+							{#each backendNews as n (n.id)}
 								<div class="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
 									<div class="min-w-0 flex-1">
-										<div class="font-bold text-white text-sm">{n.title}</div>
-										{#if n.summary}
-											<div class="text-xs text-gray-300 mt-0.5">{n.summary}</div>
+										<div class="font-bold text-white text-sm">{fmtAny(n.line1)}</div>
+										{#if n.line2}
+											<div class="text-xs text-gray-300 mt-0.5">{fmtAny(n.line2)}</div>
 										{/if}
-										<div class="text-xs text-gray-500 mt-1">{n.date}</div>
 									</div>
 									<button
-										onclick={() => deleteCustomNews(n.id)}
+										onclick={() => doDeleteNews(n.id)}
 										class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-xs font-bold flex-shrink-0"
 									>
 										מחק
@@ -2179,6 +2284,7 @@
 					<h2 class="text-xl font-black text-amber-200 mb-2">👤 ניהול דיינים</h2>
 					<p class="text-sm text-gray-300 leading-relaxed">
 						הרשימה והתמונות מופיעות בדף <strong class="text-amber-300">"אודותנו"</strong>. אם לא מועלת תמונה לדיין, מוצגת דמות אנונימית כברירת מחדל.
+						כל שינוי (הוספה, עריכה, מחיקה וסדר) נשמר בשרת ומופיע באתר לכולם.
 					</p>
 				</div>
 
@@ -2241,7 +2347,7 @@
 								onchange={onRabbiPhotoFile}
 								class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-amber-500/30 file:text-amber-900 file:font-bold hover:file:bg-amber-500/40"
 							/>
-							<p class="text-xs text-gray-500 mt-1">התמונה תקטן אוטומטית ותישמר בדפדפן</p>
+							<p class="text-xs text-gray-500 mt-1">התמונה תקטן אוטומטית ותישמר באתר</p>
 						</div>
 
 						<div>
@@ -2280,9 +2386,10 @@
 						<div class="md:col-span-2 flex gap-2 flex-wrap">
 							<button
 								type="submit"
-								class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-900 font-black hover:opacity-90 transition-opacity"
+								disabled={rabbisBusy}
+								class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-900 font-black hover:opacity-90 transition-opacity disabled:opacity-50"
 							>
-								{editingRabbiId ? 'שמור שינויים' : 'הוסף דיין'}
+								{rabbisBusy ? 'שומר…' : editingRabbiId ? 'שמור שינויים' : 'הוסף דיין'}
 							</button>
 							{#if editingRabbiId}
 								<button

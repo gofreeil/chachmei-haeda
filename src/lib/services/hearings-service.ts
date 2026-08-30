@@ -209,6 +209,24 @@ export async function createRuling(input: {
 	});
 }
 
+export async function updateRuling(id: string, input: {
+	caseRef?: string;
+	caseName: string;
+	dayanim: string[];
+	date: string;
+	summary: string;
+	decision: string;
+}): Promise<void> {
+	await strapiPut(RULINGS, id, {
+		caseRef: input.caseRef,
+		caseName: { he: input.caseName, en: input.caseName, ru: input.caseName },
+		dayanim: input.dayanim.filter(Boolean).map((d) => ({ he: d, en: d, ru: d })),
+		rulingDate: input.date,
+		summary: { he: input.summary, en: input.summary, ru: input.summary },
+		decision: { he: input.decision, en: input.decision, ru: input.decision }
+	});
+}
+
 export async function deleteRuling(id: string): Promise<void> {
 	await strapiDelete(RULINGS, id);
 }

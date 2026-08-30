@@ -297,6 +297,7 @@
 </svelte:head>
 
 <div class="ads-admin" dir="rtl">
+    <a href="/admin" class="back-to-admin">→ חזרה לפאנל הניהול</a>
     <h1>📢 ניהול פרסומות</h1>
 
     {#if loading}
@@ -736,6 +737,18 @@
         color: #fff;
         margin: 0 0 1.25rem;
         text-align: center;
+    }
+    .back-to-admin {
+        display: inline-block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #93c5fd;
+        text-decoration: none;
+        margin-bottom: 0.25rem;
+    }
+    .back-to-admin:hover {
+        color: #bfdbfe;
+        text-decoration: underline;
     }
 
     .admin-alert {

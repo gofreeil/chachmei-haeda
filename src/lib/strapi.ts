@@ -169,7 +169,8 @@ export async function strapiDelete<T = any>(path: string, id: string | number): 
 		const txt = await res.text().catch(() => '');
 		throw new Error(`Strapi DELETE ${path}/${id} failed: ${res.status} ${txt.slice(0, 200)}`);
 	}
-	return res.json();
+	// מחיקה מוצלחת עשויה לחזור כ-204 בלי גוף — אסור שזה ייחשב כישלון
+	return res.json().catch(() => undefined as T);
 }
 
 /** Strapi 5 משטח attributes לתוך השורש של ה-object. גישה אחידה מחזירה תמיד object אחיד. */

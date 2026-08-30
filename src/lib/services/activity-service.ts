@@ -1,5 +1,5 @@
 import { activity as staticActivity, type ActivityItem, type ActivityKind, type LocalizedText } from '$lib/data/activity';
-import { safeStrapiList, strapiPost } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiDelete } from '$lib/strapi';
 
 const COLLECTION = 'ch-activity-items';
 
@@ -20,9 +20,13 @@ type StrapiActivityAttrs = {
 	order?: number;
 };
 
-function fromStrapi(item: StrapiActivityAttrs): ActivityItem {
+/** פריט פעילות עם מזהה הרשומה בסטראפי — נחוץ למחיקה מפאנל הניהול. */
+export type ActivityWithId = ActivityItem & { documentId?: string };
+
+function fromStrapi(item: StrapiActivityAttrs): ActivityWithId {
 	const kind = (typeof item.kind === 'string' ? item.kind : item.kind?.he ?? 'מאמר') as ActivityKind;
 	return {
+		documentId: item.documentId,
 		slug: item.slug ?? String(item.documentId ?? item.id ?? ''),
 		kind,
 		title: item.title ?? { he: '', en: '', ru: '' },
@@ -37,7 +41,7 @@ function fromStrapi(item: StrapiActivityAttrs): ActivityItem {
 	};
 }
 
-export async function loadActivity(): Promise<ActivityItem[]> {
+export async function loadActivity(): Promise<ActivityWithId[]> {
 	const list = await safeStrapiList<StrapiActivityAttrs>(COLLECTION, {
 		sort: 'activityDate:desc',
 		'pagination[pageSize]': 200
@@ -64,6 +68,11 @@ export async function addActivity(input: ActivityItem): Promise<ActivityItem> {
 	};
 	const resp = await strapiPost<{ data: StrapiActivityAttrs }>(COLLECTION, payload);
 	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiActivityAttrs);
+}
+
+/** מחיקת פריט פעילות מסטראפי — מסירה אותו מהאתר לכולם. */
+export async function deleteActivity(documentId: string): Promise<void> {
+	await strapiDelete(COLLECTION, documentId);
 }
 
 export async function latestActivityAsync(): Promise<ActivityItem | null> {

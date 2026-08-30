@@ -1,4 +1,4 @@
-import { safeStrapiList, strapiPost } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiDelete } from '$lib/strapi';
 import type { LocalizedText } from '$lib/data/qa';
 
 const COLLECTION = 'ch-news-items';
@@ -40,6 +40,11 @@ export async function loadNews(): Promise<NewsItem[]> {
 		'pagination[pageSize]': 200
 	});
 	return list.map(fromStrapi);
+}
+
+/** מחיקת חדשה מסטראפי — מסירה אותה מהטיקר לכולם. */
+export async function deleteNewsItem(id: string): Promise<void> {
+	await strapiDelete(COLLECTION, id);
 }
 
 export async function addNewsItem(input: { line1: string; line2?: string; sourceUrl?: string }): Promise<NewsItem> {

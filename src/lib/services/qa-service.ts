@@ -17,9 +17,13 @@ type StrapiQaAttrs = {
 	answerDate?: string;
 };
 
-function fromStrapi(item: StrapiQaAttrs): QaItem {
+/** שו"ת עם מזהה הרשומה בסטראפי — נחוץ לעריכה ומחיקה. פריט סטטי מגיע בלעדיו. */
+export type QaWithId = QaItem & { documentId?: string };
+
+function fromStrapi(item: StrapiQaAttrs): QaWithId {
 	const topic = typeof item.topic === 'string' ? item.topic : (item.topic?.he ?? 'אחר');
 	return {
+		documentId: item.documentId,
 		slug: item.slug ?? String(item.documentId ?? item.id ?? ''),
 		topic: topic as QaTopic,
 		question: item.question ?? { he: '', en: '', ru: '' },
@@ -31,7 +35,7 @@ function fromStrapi(item: StrapiQaAttrs): QaItem {
 	};
 }
 
-export async function loadQa(): Promise<QaItem[]> {
+export async function loadQa(): Promise<QaWithId[]> {
 	const list = await safeStrapiList<StrapiQaAttrs>(COLLECTION, {
 		sort: 'answerDate:desc',
 		'pagination[pageSize]': 200
@@ -127,6 +131,19 @@ export async function rejectSubmission(id: string): Promise<void> {
 
 export async function deleteSubmission(id: string): Promise<void> {
 	await strapiDelete(SUBMISSIONS, id);
+}
+
+/** עריכת שו"ת שכבר פורסם — עדכון התשובה/המשיב/הנושא במקום. */
+export async function updateQa(id: string, input: {
+	answer: string;
+	answeredBy: string;
+	topic: string;
+}): Promise<void> {
+	await strapiPut(COLLECTION, id, {
+		topic: input.topic,
+		answer: { he: input.answer, en: input.answer, ru: input.answer },
+		answeredBy: { he: input.answeredBy, en: input.answeredBy, ru: input.answeredBy }
+	});
 }
 
 export async function deleteQa(id: string): Promise<void> {

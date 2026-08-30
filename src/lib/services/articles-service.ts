@@ -1,5 +1,5 @@
 import { articles as staticArticles, type Article, type LocalizedString } from '$lib/data/articles';
-import { safeStrapiList, strapiPost, strapiPut } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiPut, strapiDelete } from '$lib/strapi';
 
 const COLLECTION = 'ch-articles';
 
@@ -44,6 +44,11 @@ export async function loadArticles(): Promise<ArticleWithId[]> {
 	const seenSlugs = new Set(fromBackend.map((a) => a.slug));
 	const fallback = staticArticles.filter((a) => !seenSlugs.has(a.slug));
 	return [...fromBackend, ...fallback];
+}
+
+/** מחיקת מאמר מסטראפי — מסירה אותו מהאתר לכולם. */
+export async function deleteArticle(documentId: string): Promise<void> {
+	await strapiDelete(COLLECTION, documentId);
 }
 
 export async function addArticle(input: Omit<Article, 'date'> & { date?: string }): Promise<Article> {
