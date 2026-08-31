@@ -15,14 +15,15 @@
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
-	const mitzvotKeys = [
+	const mitzvotKeys: { n: string; title: string; body: string; img: string; nodot?: boolean }[] = [
 		{ n: 'eth_code_mitzvah_1_n', title: 'eth_code_mitzvah_1_title', body: 'eth_code_mitzvah_1_body', img: '/images/051bb5c2afa0f882cb69274d1d2762f43c07ec83a3762e6a52c0fe31 (1).jpg' },
 		{ n: 'eth_code_mitzvah_2_n', title: 'eth_code_mitzvah_5_title', body: 'eth_code_mitzvah_5_body', img: '/images/598111f9fb5ce654ab97a14f7895e164e7bcce3dfca356213208dccd (1).jpg' },
 		{ n: 'eth_code_mitzvah_3_n', title: 'eth_code_mitzvah_3_title', body: 'eth_code_mitzvah_3_body', img: '/images/66d586997b1916c727e39b860ac1aaf1adcd7e09858c1f9652d8474e (1).jpg' },
 		{ n: 'eth_code_mitzvah_4_n', title: 'eth_code_mitzvah_4_title', body: 'eth_code_mitzvah_4_body', img: '/images/06906e45572ea20efba61c33ca2e0ee71d5f04fcb36dd24907a8f3e5 (1).jpg' },
 		{ n: 'eth_code_mitzvah_5_n', title: 'eth_code_mitzvah_2_title', body: 'eth_code_mitzvah_2_body', img: '/images/copyof_e9e782464b20dd1a78dc695f7f96d22bce0eaa7c3bd658140125d327.jpg' },
 		{ n: 'eth_code_mitzvah_6_n', title: 'eth_code_mitzvah_6_title', body: 'eth_code_mitzvah_6_body', img: '/images/425738cfb4e7e3542b6ae9a64e4f5ed4060d807af4cd440dad202f87 (1).jpg' },
-		{ n: 'eth_code_mitzvah_7_n', title: 'eth_code_mitzvah_7_title', body: 'eth_code_mitzvah_7_body', img: '/images/7262c95d28eb13b988331fd0f3903273eee17bec96ad1b22378e0bb3 (1).jpg' }
+		{ n: 'eth_code_mitzvah_7_n', title: 'eth_code_mitzvah_7_title', body: 'eth_code_mitzvah_7_body', img: '/images/7262c95d28eb13b988331fd0f3903273eee17bec96ad1b22378e0bb3 (1).jpg' },
+		{ n: 'eth_code_mitzvah_8_n', title: 'eth_code_mitzvah_8_title', body: 'eth_code_mitzvah_8_body', img: '/images/Copilot_20260825_172506.png', nodot: true }
 	];
 
 	let name = $state('');
@@ -127,15 +128,23 @@
 			{tFn('eth_code_intro_p2')}
 		</p>
 
-		<blockquote class="border-r-4 border-blue-400 pr-4 italic text-gray-300">
+		<p>
+			{tFn('eth_code_intro_p3')}
+		</p>
+
+		<blockquote class="italic text-gray-300">
 			{tFn('eth_code_quote_avraham')}
 		</blockquote>
 
-		<p>{tFn('eth_code_talmud_zohar')}</p>
+		<p>{tFn('eth_code_yirah_lesson')}</p>
+
+		<p>{tFn('eth_code_hakarat_hatov')}</p>
+
+		<p>{tFn('eth_code_hachnasat_orchim')}</p>
 
 		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">{tFn('eth_code_h2_central')}</h2>
 
-		<blockquote class="border-r-4 border-yellow-400 pr-4 italic text-gray-300">
+		<blockquote class="italic text-gray-300">
 			{tFn('eth_code_quote_devarim')}
 		</blockquote>
 
@@ -147,14 +156,14 @@
 			<strong class="text-yellow-300">"{tFn('eth_code_hatov_word')}"</strong> {tFn('eth_code_hatov_body')}
 		</p>
 
-		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-6">{tFn('eth_code_h2_practical')}</h2>
+		<div class="mt-8 mb-5 ms-0 me-auto h-0.5 w-48 md:w-64 bg-gradient-to-l from-amber-700/60 to-transparent" aria-hidden="true"></div>
 
 		<p>
-			{tFn('eth_code_practical_p1')}
+			{tFn('eth_code_derech_eretz_p1')} <strong class="text-blue-300">UECC</strong> {tFn('eth_code_derech_eretz_p2')}
 		</p>
 
 		<p>
-			{tFn('eth_code_practical_p2')}
+			{tFn('eth_code_aspiration_p1')} <strong class="text-blue-300">UECC</strong> {tFn('eth_code_aspiration_p2')}
 		</p>
 
 		<h3 class="text-sm md:text-base font-bold text-blue-300 mt-6">{tFn('eth_code_h3_who_accepts')}</h3>
@@ -163,17 +172,8 @@
 			<li>{tFn('eth_code_accepts_li_2')}</li>
 			<li>{tFn('eth_code_accepts_li_3')}</li>
 			<li>{tFn('eth_code_accepts_li_4')}</li>
+			<li>{tFn('eth_code_accepts_li_5')}</li>
 		</ul>
-
-		<div class="mt-8 mb-5 ms-0 me-auto h-0.5 w-48 md:w-64 bg-gradient-to-l from-amber-700/60 to-transparent" aria-hidden="true"></div>
-
-		<p>
-			{tFn('eth_code_derech_eretz_p1')} <strong class="text-blue-300">UECC</strong> {tFn('eth_code_derech_eretz_p2')}
-		</p>
-
-		<p>
-			{tFn('eth_code_business_yirah')}
-		</p>
 
 		<h2 class="text-base md:text-lg font-bold text-yellow-300 mt-8">{tFn('eth_code_h2_seven_mitzvot')}</h2>
 
@@ -195,7 +195,7 @@
 				<div class="rounded-xl border border-blue-500/20 bg-blue-900/10 p-3 md:p-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
 					<div class="flex-1 min-w-0">
 						<h4 class="text-sm md:text-base font-bold text-blue-300">
-							<span class="text-base text-yellow-400 ml-2">{tFn(m.n)}.</span>{tFn(m.title)}
+							<span class="text-base text-yellow-400 ml-2">{tFn(m.n)}{m.nodot ? '' : '.'}</span>{tFn(m.title)}
 						</h4>
 						<p class="mt-1.5 text-gray-300 leading-snug text-xs md:text-sm">{tFn(m.body)}</p>
 					</div>
