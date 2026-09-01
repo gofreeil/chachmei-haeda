@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { hearings as staticHearings, pickLang, type Hearing } from '$lib/data/hearings';
@@ -84,3 +85,5 @@
 		{/each}
 	</div>
 </section>
+
+<PageTextEditor prefixes={['hearings_']} />

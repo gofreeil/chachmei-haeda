@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { activity as staticActivity, type ActivityKind, type ActivityItem, type LocalizedText } from '$lib/data/activity';
@@ -588,6 +589,8 @@
 		></div>
 	</div>
 </section>
+
+<PageTextEditor prefixes={['activity_']} />
 
 <style>
 	/* === באנר "פדיון קרקעות" - ירוק === */

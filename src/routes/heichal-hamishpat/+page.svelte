@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { t, locale } from 'svelte-i18n';
@@ -481,3 +482,5 @@
 		</div>
 	</div>
 {/if}
+
+<PageTextEditor prefixes={['mishpat_']} />

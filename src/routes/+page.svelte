@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { latestAnswer, type QaItem } from '$lib/data/qa';
@@ -388,6 +389,8 @@
 		</div>
 	</div>
 </section>
+
+<PageTextEditor prefixes={['home_']} />
 
 <style>
 	:global(.ask-cta) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { rulings as staticRulings, pickLang, type Ruling } from '$lib/data/hearings';
@@ -61,3 +62,5 @@
 		{tFn('rulings_page_footer_note')}
 	</div>
 </section>
+
+<PageTextEditor prefixes={['rulings_']} />

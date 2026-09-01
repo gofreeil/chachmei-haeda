@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { loadEntries, filterByStatus, loadMyEntry, selfUpdateSignatory } from '$lib/services/charter-service';
@@ -329,3 +330,5 @@
 	{/if}
 
 </section>
+
+<PageTextEditor prefixes={['charter_idx_']} />

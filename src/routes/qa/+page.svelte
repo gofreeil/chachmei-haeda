@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import { faqSchema, breadcrumbSchema } from '$lib/seo';
@@ -140,3 +141,5 @@
 		</a>
 	</div>
 </section>
+
+<PageTextEditor prefixes={['qa_']} />

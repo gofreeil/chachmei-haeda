@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { articles as staticArticles, pickLang, type Article } from '$lib/data/articles';
@@ -402,6 +403,8 @@
 		{/if}
 	{/if}
 </section>
+
+<PageTextEditor prefixes={['articles_']} />
 
 <style>
 	:global(.ask-cta) {

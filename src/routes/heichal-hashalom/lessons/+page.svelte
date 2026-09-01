@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageTextEditor from '$lib/components/PageTextEditor.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
@@ -48,3 +49,5 @@
 		</a>
 	</div>
 </section>
+
+<PageTextEditor prefixes={['shalom_lessons_']} />
