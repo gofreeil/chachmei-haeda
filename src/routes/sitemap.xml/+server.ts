@@ -52,6 +52,7 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
         { loc: `${SITE_URL}/rulings`, changefreq: 'weekly', priority: '0.8' },
         { loc: `${SITE_URL}/hearings`, changefreq: 'daily', priority: '0.8' },
         { loc: `${SITE_URL}/charter-index`, changefreq: 'weekly', priority: '0.6' },
+        { loc: `${SITE_URL}/about`, changefreq: 'monthly', priority: '0.6' },
         { loc: `${SITE_URL}/about/revenue`, changefreq: 'monthly', priority: '0.5' },
     ];
 
