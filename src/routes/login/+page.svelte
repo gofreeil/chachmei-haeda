@@ -147,7 +147,7 @@
 				{:else}
 					<span class="text-lg" aria-hidden="true">🕊️</span>
 				{/if}
-				<span>יש לי חשבון באתר קהילת יוצאים לחירות</span>
+				<span>כניסה דרך קהילת יוצאים לחירות (חשבון קיים או קוד ב-SMS)</span>
 			</button>
 			<p class="text-center text-xs text-gray-400 mb-5 leading-relaxed">
 				חברות בקבוצות הווצאפ אינה חשבון באתר. אם עדיין אין לך חשבון, הכניסה עם Google למעלה יוצרת אחד בלחיצה.
