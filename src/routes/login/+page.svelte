@@ -4,11 +4,14 @@
 	import { strapiLogin, getCurrentUser, isChachmeiAdmin, isNetworkError, NETWORK_ERROR_MESSAGE_HE } from '$lib/strapi';
 	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 
+	let { data } = $props();
+
 	let identifier = $state('');
 	let password = $state('');
 	let submitting = $state(false);
 	let errorMsg = $state('');
 	let returnTo = $state('/profile');
+	let ssoLoading = $state(false);
 
 	onMount(async () => {
 		try {
@@ -35,10 +38,20 @@
 
 	// SSO: מפנים לקהילת "יוצאים לחירות", היא קובעת את העוגייה המשותפת gofreeil-auth
 	// על .gofreeil.com ומחזירה ל-callback. אותו JWT תקף כאן (אותו Strapi המשותף).
+	// מי שאין לו חשבון בקהילה לא מוחזר לכאן עם שגיאה: אתר הקהילה מציע לו שם
+	// כניסה בלחיצה (Google) ומחזיר אותו לכאן כבר מחובר.
 	function loginWithCommunity() {
+		ssoLoading = true;
 		const origin = window.location.origin;
 		const callback = `${origin}/auth/community-callback?returnTo=${encodeURIComponent(returnTo)}`;
 		window.location.href = `https://community.gofreeil.com/sso?callback=${encodeURIComponent(callback)}`;
+	}
+
+	// זוהה מראש לפי העוגייה המשותפת (data.ssoName): אין צורך לעבור דרך אתר
+	// הקהילה, ה-callback המקומי קורא את העוגייה ומקים סשן ישירות.
+	function continueAsCommunityUser() {
+		ssoLoading = true;
+		window.location.href = `/auth/community-callback?returnTo=${encodeURIComponent(returnTo)}`;
 	}
 
 	async function handleLogin(e: Event) {
@@ -81,26 +94,65 @@
 			<p class="mt-2 text-gray-300 text-sm">היכנס לחשבון שלך</p>
 		</header>
 
-		<!-- הודעה ברורה למשתמש חדש: בפעם הראשונה יש להירשם תחילה -->
-		<p class="mb-5 text-center text-amber-200 text-[13px] sm:text-sm font-bold leading-relaxed">
-			👋 פעם ראשונה כאן? יש להירשם תחילה — ואז ניתן להישאר מחובר במכשיר זה.
-		</p>
+		{#if data.ssoName}
+			<!-- זוהה מראש דרך יוצאים לחירות (עוגייה משותפת חיה) -->
+			<button
+				type="button"
+				onclick={continueAsCommunityUser}
+				disabled={ssoLoading}
+				class="w-full mb-2 flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black hover:opacity-90 transition-opacity shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+			>
+				{#if ssoLoading}
+					<span class="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin flex-shrink-0"></span>
+				{:else}
+					<span class="text-xl" aria-hidden="true">🕊️</span>
+				{/if}
+				<span>המשך כ-{data.ssoName}</span>
+			</button>
+			<p class="text-center text-xs text-gray-400 mb-5">
+				זוהית דרך יוצאים לחירות. לא את/ה? אפשר להיכנס עם חשבון אחר למטה.
+			</p>
+
+			<div class="relative mb-5">
+				<div class="absolute inset-0 flex items-center">
+					<div class="w-full border-t border-white/15"></div>
+				</div>
+				<div class="relative flex justify-center text-xs">
+					<span class="px-3 bg-blue-900/30 text-gray-400 font-bold">או</span>
+				</div>
+			</div>
+		{:else}
+			<!-- הודעה למשתמש חדש: הכניסה עם Google היא גם ההרשמה -->
+			<p class="mb-5 text-center text-amber-200 text-[13px] sm:text-sm font-bold leading-relaxed">
+				👋 פעם ראשונה כאן? כניסה עם Google יוצרת לך חשבון בלחיצה אחת.
+			</p>
+		{/if}
 
 		<div class="mb-3">
 			<GoogleSignInButton {returnTo} />
 		</div>
 
-		<button
-			type="button"
-			onclick={loginWithCommunity}
-			class="w-full mb-2 flex items-center justify-center gap-2.5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black hover:opacity-90 transition-opacity shadow-lg"
-		>
-			<span class="text-xl" aria-hidden="true">🕊️</span>
-			<span>התחבר דרך "יוצאים לחירות"</span>
-		</button>
-		<p class="text-center text-xs text-gray-400 mb-5">
-			רשום כבר בקהילה, בשכונה או באתר אחר של יוצאים לחירות? המערכת תזהה אותך אוטומטית.
-		</p>
+		{#if !data.ssoName}
+			<!-- יוצאים לחירות (SSO) - אפשרות משנית למי שכבר יש לו חשבון באתר הקהילה.
+			     חברי קבוצות הווצאפ בלי חשבון: הכפתור לא נכשל, אתר הקהילה מציע להם
+			     כניסה עם Google ומחזיר אותם לכאן מחוברים. -->
+			<button
+				type="button"
+				onclick={loginWithCommunity}
+				disabled={ssoLoading}
+				class="w-full mb-2 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-purple-400/40 bg-purple-500/10 text-purple-100 text-sm font-bold hover:bg-purple-500/20 hover:border-purple-400/60 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+			>
+				{#if ssoLoading}
+					<span class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin flex-shrink-0"></span>
+				{:else}
+					<span class="text-lg" aria-hidden="true">🕊️</span>
+				{/if}
+				<span>יש לי חשבון באתר קהילת יוצאים לחירות</span>
+			</button>
+			<p class="text-center text-xs text-gray-400 mb-5 leading-relaxed">
+				חברות בקבוצות הווצאפ אינה חשבון באתר. אם עדיין אין לך חשבון, הכניסה עם Google למעלה יוצרת אחד בלחיצה.
+			</p>
+		{/if}
 
 		<div class="relative mb-5">
 			<div class="absolute inset-0 flex items-center">

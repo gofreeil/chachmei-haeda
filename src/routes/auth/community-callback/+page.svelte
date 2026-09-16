@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { setJwt, getCurrentUser } from '$lib/strapi';
+	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
 
 	let { data } = $props();
 
@@ -54,18 +55,24 @@
 			</p>
 		{:else if phase === 'not_registered'}
 			<div class="text-5xl mb-4">🔒</div>
-			<h1 class="text-2xl font-black text-yellow-200 mb-2">עדיין אין לכם חשבון</h1>
-			<p class="text-gray-300 text-sm mb-6 leading-relaxed">
-				לא מצאנו אתכם ברשימת המשתמשים של יוצאים לחירות. ההרשמה לוקחת דקה, ומשם אתם מזוהים בכל אתרי הרשת — בלי להירשם שוב.
+			<h1 class="text-2xl font-black text-yellow-200 mb-2">עוד רגע ואתם בפנים</h1>
+			<p class="text-gray-300 text-sm mb-1 leading-relaxed">
+				אתם בקבוצות הווצאפ של יוצאים לחירות, אבל עדיין אין לכם חשבון באתר. זה בסדר גמור, ככה זה לכולם בפעם הראשונה.
+			</p>
+			<p class="text-gray-400 text-sm mb-6 leading-relaxed">
+				לחיצה אחת למטה יוצרת לכם חשבון, ומשם אתם מזוהים בכל אתרי יוצאים לחירות בלי להירשם שוב.
 			</p>
 			<div class="flex flex-col gap-2.5">
+				<!-- הרשמה בלחיצה: Google יוצר חשבון ומחזיר ליעד המקורי (google-callback
+				     מוסיף welcome=new בעצמו) - בלי לשלוח את המשתמש לטופס -->
+				<GoogleSignInButton returnTo={data.returnTo} />
 				<a
 					href="/signup?returnTo={encodeURIComponent(data.returnTo)}"
-					class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black hover:opacity-90 transition-opacity"
+					class="mt-1 text-sm text-gray-400 hover:text-gray-200 underline"
 				>
-					✨ הרשמה לחכמי העדה
+					מעדיפים אימייל וסיסמה? הרשמה ידנית
 				</a>
-				<a href="/login" class="mt-1 text-sm text-gray-400 hover:text-gray-200 underline">
+				<a href="/login?returnTo={encodeURIComponent(data.returnTo)}" class="text-sm text-gray-500 hover:text-gray-300 underline">
 					חזרה להתחברות
 				</a>
 			</div>
