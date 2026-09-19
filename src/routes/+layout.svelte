@@ -19,6 +19,7 @@
 	import { onMount } from "svelte";
 	import { getCurrentUser, strapiLogout, type StrapiUser } from "$lib/strapi";
 	import { refreshSignedCharter, hasSignedCharter } from "$lib/services/charter-service";
+	import { PARENT_BRAND } from "$lib/seo";
 
 	let { children } = $props();
 	let currentUser = $state<StrapiUser | null>(null);
@@ -67,7 +68,8 @@
 </script>
 
 <svelte:head>
-	<title>{tFn('layout_page_title')}</title>
+	<!-- כותרת גיבוי בלבד: כל דף ציבורי דורס אותה דרך <Seo> ($lib/components/Seo.svelte) -->
+	<title>{tFn('layout_page_title')} | {PARENT_BRAND}</title>
 	<link rel="icon" href="/favicon.png" type="image/png" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 </svelte:head>

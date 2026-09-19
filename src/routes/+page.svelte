@@ -13,7 +13,7 @@
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
-	import { websiteSchema, organizationSchema, serviceSchema, faqSchema } from '$lib/seo';
+	import { websiteSchema, organizationSchema, serviceSchema, faqSchema, PARENT_SITE } from '$lib/seo';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -116,17 +116,30 @@
 </script>
 
 <Seo
-	title="חכמי העדה — בית דין לבוררות, פיוס ושלום על פי תורת ישראל"
+	title="חכמי העדה — בית דין לבוררות ושלום על פי תורת ישראל"
 	description={SEO_DESCRIPTION}
 	path="/"
-	keywords="בית דין לבוררות, בתי הפיוס, דין תורה, גישור, פיוס, סכסוך שכנים, פסקי דין, שאלות ותשובות בהלכה, חכמי העדה, UECC"
+	keywords="יוצאים לחירות, חכמי העדה יוצאים לחירות, בית דין לבוררות, בתי הפיוס, דין תורה, גישור, פיוס, סכסוך שכנים, פסקי דין, שאלות ותשובות בהלכה, חכמי העדה, UECC"
 />
 <JsonLd data={schemas} />
 
 <section class="pt-4 pb-10 text-center">
 	<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl sm:text-4xl md:text-5xl font-black text-transparent inline-block pb-1">
-		{tFn('home_welcome_title')}
+		{tFn('home_welcome_title')}<span class="sr-only"> — {PARENT_SITE.name}</span>
 	</h1>
+	<!-- שיוך גלוי לתנועה-האם: טקסט אמיתי מעל הקפל (לא רק בפוטר) כדי שגוגל יקשר
+	     "יוצאים לחירות" לאתר. גלולה כהה — לא טקסט אפור על רקע בהיר. -->
+	<p class="mt-2">
+		<a
+			href={PARENT_SITE.url}
+			target="_blank"
+			rel="noopener"
+			class="inline-flex items-center gap-1.5 rounded-full border border-[#3b5794] bg-[#1c2f5a] px-4 py-1.5 text-xs md:text-sm font-semibold text-gray-200 shadow-md hover:bg-[#2a4379] hover:text-white transition-colors"
+		>
+			<span aria-hidden="true">👉</span>
+			מיזם של התנועה החברתית יוצאים לחירות
+		</a>
+	</p>
 	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label={tFn('home_read_more_about_us_aria')}>
 		<div class="mt-2 md:mt-6 flex justify-center">
 			<div class="h-40 w-40 md:h-56 md:w-56 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">

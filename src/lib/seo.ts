@@ -8,8 +8,11 @@
 export const SITE_URL = 'https://chachmim.gofreeil.com';
 export const SITE_NAME = 'חכמי העדה';
 export const SITE_TAGLINE = 'בית דין לבוררות ושלום על פי תורת ישראל';
+/** שם התנועה-האם. מצורף לכל <title> (ב-Seo.svelte), לתיאור ולסכימות — כדי שחיפוש
+ *  "יוצאים לחירות חכמי העדה" יגיע לכאן ולא לאתרים זרים בשם דומה. */
+export const PARENT_BRAND = 'יוצאים לחירות';
 export const SITE_DESCRIPTION =
-    'חכמי העדה — בתי הפיוס: בוררות, גישור ופתרון סכסוכים על פי תורת ישראל, בהתנדבות ובלי עלויות משפט. הגשת בקשה לדיון, פסקי דין ומאמרים מחכמי ישראל, שאלות ותשובות בהלכה וקוד אתי עולמי (UECC).';
+    'חכמי העדה של תנועת יוצאים לחירות — בתי הפיוס: בוררות, גישור ופתרון סכסוכים על פי תורת ישראל, בהתנדבות ובלי עלויות משפט. הגשת בקשה לדיון, פסקי דין ומאמרים מחכמי ישראל, שאלות ותשובות בהלכה וקוד אתי עולמי (UECC).';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 export const SITE_LOGO = `${SITE_URL}/og-image.jpg`;
 export const CONTACT_EMAIL = 'freedomhasbegun@gmail.com';
@@ -116,7 +119,13 @@ export function websiteSchema() {
         '@type': 'WebSite',
         '@id': `${SITE_URL}/#website`,
         name: SITE_NAME,
-        alternateName: ['בתי הפיוס', 'חכמי העדה בתי הפיוס', 'בית דין לבוררות ושלום'],
+        alternateName: [
+            'בתי הפיוס',
+            'חכמי העדה בתי הפיוס',
+            'חכמי העדה של יוצאים לחירות',
+            'יוצאים לחירות בתי הפיוס',
+            'בית דין לבוררות ושלום',
+        ],
         url: SITE_URL,
         description: SITE_DESCRIPTION,
         inLanguage: 'he-IL',
@@ -132,7 +141,7 @@ export function organizationSchema() {
         '@type': 'Organization',
         '@id': `${SITE_URL}/#organization`,
         name: SITE_NAME,
-        alternateName: 'בתי הפיוס',
+        alternateName: ['בתי הפיוס', 'חכמי העדה של יוצאים לחירות', 'חכמי העדה — יוצאים לחירות'],
         url: SITE_URL,
         logo: { '@type': 'ImageObject', url: SITE_LOGO },
         image: SITE_LOGO,
