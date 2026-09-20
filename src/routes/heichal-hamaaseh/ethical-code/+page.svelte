@@ -217,7 +217,7 @@
 
 	<PageTextEditor prefixes={['eth_code_', 'charter_text_', 'charter_join_']} />
 
-	<section id="join" class="mt-10 scroll-mt-20">
+	<section id="join" class="mt-10">
 		<header class="text-center mb-6">
 			<FancyHeading>
 				<h2 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl md:text-4xl font-black text-transparent inline-block pb-1">

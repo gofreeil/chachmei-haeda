@@ -300,7 +300,7 @@
 						{@const a = entry.item}
 						<article
 							id={a.slug}
-							class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
+							class="rounded-2xl border-2 border-blue-400/40 bg-gradient-to-br from-blue-500/10 to-purple-500/10 p-5 md:p-7"
 						>
 							<div class="flex items-center gap-3 mb-3 flex-wrap">
 								<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-500/30 border-2 border-blue-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(37,99,235,0.35)]">
@@ -341,7 +341,7 @@
 						{@const q = entry.item}
 						<article
 							id={q.slug}
-							class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-7 scroll-mt-24"
+							class="rounded-2xl border-2 border-indigo-400/40 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-5 md:p-7"
 						>
 							<div class="flex items-center gap-3 mb-3 flex-wrap">
 								<span class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-500/30 border-2 border-indigo-300/50 text-white font-black text-base md:text-lg shadow-[0_2px_8px_rgba(79,70,229,0.35)]">

@@ -467,3 +467,12 @@ main .space-y-6 > * + * { margin-top: 0.85rem !important; }
 main .space-y-5 > * + * { margin-top: 0.7rem !important; }
 main .space-y-4 > * + * { margin-top: 0.6rem !important; }
 main .space-y-3 > * + * { margin-top: 0.5rem !important; }
+
+/* ===== גלילה ליעד מתחת להדר הדביק =====
+   ההדר מודד את עצמו (use:headerHeight) וכותב --header-height על ה-:root.
+   כל קפיצה לעוגן / scrollIntoView / :target נעצרת מתחת להדר עם רווח נשימה,
+   ולא מדביקה את היעד לראש החלון מאחורי ההדר. זה המקום היחיד לפצות על ההדר —
+   scroll-mt / scroll-margin-top על אלמנטים מצטבר לזה, אז לא משתמשים בהם לשם כך. */
+html {
+    scroll-padding-top: calc(var(--header-height, 90px) + 1.25rem);
+}
