@@ -53,7 +53,7 @@
 		{
 			href: '/articles',
 			icon: '',
-			image: '/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif',
+			image: '/images/heichal-haruach.webp',
 			titleKey: 'heichalot_hall_ruach_title',
 			descKey: 'heichalot_hall_ruach_desc',
 			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
@@ -83,7 +83,8 @@
 			>
 				{#if h.image}
 					<div class="mb-2 md:mb-3 flex justify-center">
-						<img src={h.image} alt={tFn(h.titleKey)} class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
+						<!-- הכותרת שמתחת כבר נותנת את השם — alt ריק כדי שקורא מסך לא יקריא פעמיים -->
+						<img src={h.image} alt="" width="400" height="400" loading="lazy" decoding="async" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
 					</div>
 				{:else}
 					<div class="text-4xl md:text-5xl mb-2 md:mb-3 drop-shadow-lg">{h.icon}</div>

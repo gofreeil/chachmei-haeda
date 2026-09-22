@@ -130,9 +130,14 @@
 	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label={tFn('home_read_more_about_us_aria')}>
 		<div class="mt-2 md:mt-6 flex justify-center">
 			<div class="h-40 w-40 md:h-56 md:w-56 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">
+				<!-- ה-LCP של דף הבית: נטען מיד ובעדיפות גבוהה, בלי lazy -->
 				<img
-					src="/images/chachmei-logo.png"
+					src="/images/chachmei-logo.webp"
 					alt={tFn('home_logo_alt')}
+					width="512"
+					height="512"
+					fetchpriority="high"
+					decoding="async"
 					class="w-full h-full object-contain scale-[1.15]"
 					style="image-rendering: -webkit-optimize-contrast;"
 				/>
@@ -197,8 +202,9 @@
 					</div>
 					<div class="md:order-2">
 						{#if recentActivity.imageUrl}
-							<div class="rounded-xl overflow-hidden border border-amber-300/40 bg-black/20">
-								<img src={recentActivity.imageUrl} alt={pickLang(recentActivity.title, _loc)} class="w-full h-auto max-h-[320px] object-contain mx-auto" />
+							<!-- מידות התמונה לא ידועות מראש (תוכן שהמנהל העלה) — המכל מחזיק יחס קבוע כדי שהדף לא יקפוץ כשהיא נטענת -->
+							<div class="rounded-xl overflow-hidden border border-amber-300/40 bg-black/20 aspect-video max-h-[320px]">
+								<img src={recentActivity.imageUrl} alt={pickLang(recentActivity.title, _loc)} loading="lazy" decoding="async" class="w-full h-full object-contain mx-auto" />
 							</div>
 						{/if}
 						{#if recentActivity.videoUrl}
@@ -321,9 +327,14 @@
 		href="/ask"
 		class="ask-cta flex items-center justify-center gap-3 rounded-2xl border-2 p-4 md:p-5 transition-all group"
 	>
+		<!-- הכותרת שלצד התמונה כבר אומרת לאן הקישור מוביל — alt ריק -->
 		<img
-			src="/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif"
-			alt={tFn('home_logo_alt')}
+			src="/images/heichal-haruach.webp"
+			alt=""
+			width="400"
+			height="400"
+			loading="lazy"
+			decoding="async"
 			class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 object-cover rounded-full ring-2 ring-white/80 shadow-lg"
 		/>
 		<div class="text-center min-w-0">

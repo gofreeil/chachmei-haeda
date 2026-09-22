@@ -379,9 +379,14 @@
 				href="/ask"
 				class="ask-cta mt-8 flex items-center justify-center gap-3 rounded-2xl border-2 p-4 md:p-5 transition-all group"
 			>
+				<!-- הכותרת שלצד התמונה כבר אומרת לאן הקישור מוביל — alt ריק -->
 				<img
-					src="/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif"
-					alt={tFn('home_logo_alt')}
+					src="/images/heichal-haruach.webp"
+					alt=""
+					width="400"
+					height="400"
+					loading="lazy"
+					decoding="async"
 					class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 object-cover rounded-full ring-2 ring-white/80 shadow-lg"
 				/>
 				<div class="text-center min-w-0">

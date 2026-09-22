@@ -133,6 +133,7 @@
             <img
                 src={ad.image}
                 alt={pickLang(ad.title, _loc)}
+                decoding="async"
                 class="w-full h-full object-cover"
             />
             <div

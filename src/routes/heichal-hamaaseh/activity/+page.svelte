@@ -204,8 +204,9 @@
 						<!-- שמאל: מדיה -->
 						<div class="space-y-3 md:order-2">
 							{#if a.imageUrl}
-								<div class="rounded-xl overflow-hidden border border-white/10 bg-black/30">
-									<img src={a.imageUrl} alt={pickLang(a.title)} class="w-full h-auto max-h-[480px] object-contain mx-auto" />
+								<!-- מידות לא ידועות מראש (העלאה של המנהל) — יחס קבוע למכל כדי שהדף לא יקפוץ בטעינה -->
+								<div class="rounded-xl overflow-hidden border border-white/10 bg-black/30 aspect-video max-h-[480px]">
+									<img src={a.imageUrl} alt={pickLang(a.title)} loading="lazy" decoding="async" class="w-full h-full object-contain mx-auto" />
 								</div>
 							{/if}
 							{#if a.videoUrl}

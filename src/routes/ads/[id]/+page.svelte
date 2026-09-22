@@ -263,7 +263,8 @@
     }
     .al-link:hover { background: rgba(255, 255, 255, 0.3); }
 
-    .al-media { min-width: 0; }
+    /* min-height: התמונה מגיעה מהמפרסם במידות לא ידועות — שומרים מקום כדי שההירו לא יקפוץ כשהיא נטענת */
+    .al-media { min-width: 0; min-height: 12rem; }
     .al-media img {
         display: block;
         width: auto;

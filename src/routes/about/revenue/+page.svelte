@@ -78,7 +78,7 @@
 				<li class="flex items-center gap-3 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10">
 					<div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
 						{#if r.photo}
-							<img src={r.photo} alt={r.name} class="w-full h-full object-cover" loading="lazy" />
+							<img src={r.photo} alt="תמונתו של {r.name}" width="80" height="80" class="w-full h-full object-cover" loading="lazy" decoding="async" />
 						{:else}
 							<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 								<circle cx="32" cy="24" r="12" />

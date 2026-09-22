@@ -35,7 +35,7 @@ export const ads: Ad[] = [
             ru: "Пользуйтесь всеми преимуществами общины в вашем районе"
         },
         href: "https://community.gofreeil.com/",
-        image: "/images/community-neighborhood.png",
+        image: "/images/community-neighborhood.webp",
         color: "from-blue-500 to-purple-600"
     },
     {
@@ -61,7 +61,7 @@ export const ads: Ad[] = [
             ru: 'Легко найдите любой гмах!'
         },
         href: "https://gemach.gofreeil.com/",
-        image: "/images/gemach-harzi.png",
+        image: "/images/gemach-harzi.webp",
         color: "from-pink-600 via-fuchsia-600 to-purple-700",
     },
     {
@@ -82,7 +82,7 @@ export const ads: Ad[] = [
             ru: "Узнайте и присоединяйтесь к революции народного управления своими учреждениями"
         },
         href: "https://neighborhoods.gofreeil.com/",
-        image: "/images/news/vaadei-shchunot.png",
+        image: "/images/news/vaadei-shchunot.webp",
         color: "from-blue-600 to-cyan-600"
     },
     {
@@ -103,7 +103,7 @@ export const ads: Ad[] = [
             ru: "Контролируем власти, отстаиваем права жителей"
         },
         href: "https://criticism.gofreeil.com/",
-        image: "/images/mevaker-rashuyot.png",
+        image: "/images/mevaker-rashuyot.webp",
         color: "from-blue-700 to-indigo-700",
         imageHeight: "120px",
         imageScale: 1.2,
@@ -126,7 +126,7 @@ export const ads: Ad[] = [
             ru: "Народ оценивает власти и государственных служащих"
         },
         href: "https://rating.gofreeil.com/",
-        image: "/images/public-rating.jpeg",
+        image: "/images/public-rating.webp",
         color: "from-indigo-600 to-blue-600",
         imageHeight: "200px",
         imageScale: 0.9,
@@ -154,7 +154,7 @@ export const ads: Ad[] = [
             ru: "Выскажите своё мнение по актуальным вопросам"
         },
         href: "https://referendum.gofreeil.com/",
-        image: "/images/referendum.png",
+        image: "/images/referendum.webp",
         color: "from-purple-600 to-indigo-700"
     },
     {
@@ -175,7 +175,7 @@ export const ads: Ad[] = [
             ru: "Присоединяйтесь к нашей закупочной группе и сразу же сократите расходы!"
         },
         href: "https://groups.gofreeil.com/",
-        image: "/images/whatsapp_cta.png",
+        image: "/images/whatsapp_cta.webp",
         color: "from-green-800 to-emerald-900"
     },
     {
@@ -196,7 +196,7 @@ export const ads: Ad[] = [
             ru: "Ищете качественного специалиста в вашем районе?"
         },
         href: "https://index.gofreeil.com/",
-        image: "/images/professionals.png",
+        image: "/images/professionals.webp",
         color: "from-yellow-500 to-orange-500"
     },
     {
@@ -222,7 +222,7 @@ export const ads: Ad[] = [
             ru: "Наш магазин!"
         },
         href: "https://shop.gofreeil.com/",
-        image: "/images/freedom-store.png",
+        image: "/images/freedom-store.webp",
         color: "from-emerald-600 to-teal-700"
     }
 ];

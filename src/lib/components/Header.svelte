@@ -103,8 +103,8 @@
         {
             titleKey: 'header_nav_group_home_about',
             items: [
-                { href: '/', labelKey: 'header_nav_home', icon: '🏠', image: '/images/chachmei-logo.png' },
-                { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️', image: '/images/bati-hapius.png', imgStyle: 'object-position: top; transform: scale(1.15);' },
+                { href: '/', labelKey: 'header_nav_home', icon: '🏠', image: '/images/chachmei-logo.webp' },
+                { href: '/about/revenue', labelKey: 'header_nav_about', icon: 'ℹ️', image: '/images/bati-hapius.webp', imgStyle: 'object-position: top; transform: scale(1.15);' },
             ],
         },
         {
@@ -176,7 +176,7 @@
                     href: '/articles',
                     labelKey: 'header_nav_heichal_ruach',
                     icon: '',
-                    image: '/images/1124a5ea-412c-4c49-8d76-e4366711384d.jfif',
+                    image: '/images/heichal-haruach.webp',
                     bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
                     border: 'border-white',
                     shadow: 'shadow-[0_8px_24px_-4px_rgba(100,116,139,0.55),inset_0_2px_0_rgba(255,255,255,0.9)]',
@@ -343,8 +343,11 @@
                         <div class="relative">
                             <div class="h-12 w-12 rounded-full overflow-hidden flex-shrink-0">
                                 <img
-                                    src="/images/chachmei-logo.png"
+                                    src="/images/chachmei-logo.webp"
                                     alt={tFn('header_logo_alt')}
+                                    width="512"
+                                    height="512"
+                                    decoding="async"
                                     class="w-full h-full object-cover scale-[1.5]"
                                 />
                             </div>
@@ -400,7 +403,7 @@
                                                     >
                                                         {#if 'image' in item && item.image}
                                                             <div class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50 flex-shrink-0">
-                                                                <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
+                                                                <img src={item.image} alt="" width="80" height="80" loading="lazy" decoding="async" class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                             </div>
                                                         {:else}
                                                             <span class="text-2xl inline-block" aria-hidden="true">{item.icon}</span>
@@ -423,7 +426,7 @@
                                                             onclick={() => (showNavMenu = false)}
                                                         >
                                                             {#if 'image' in item && item.image}
-                                                                <img src={item.image} alt={tFn(item.labelKey)} class="w-10 h-10 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
+                                                                <img src={item.image} alt="" width="80" height="80" loading="lazy" decoding="async" class="w-10 h-10 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
                                                             {:else}
                                                                 <span class="text-2xl drop-shadow-lg" aria-hidden="true">{item.icon}</span>
                                                             {/if}
@@ -507,6 +510,9 @@
                                     <img
                                         src={currentUser.avatar_url}
                                         alt=""
+                                        width="36"
+                                        height="36"
+                                        decoding="async"
                                         class="h-9 w-9 rounded-full object-cover border-2 border-purple-500/40 shadow-lg"
                                     />
                                 {:else}
@@ -547,8 +553,11 @@
                     >
                         <div class="h-14 w-14 rounded-full overflow-hidden">
                             <img
-                                src="/images/chachmei-logo.png"
+                                src="/images/chachmei-logo.webp"
                                 alt={tFn('header_logo_alt')}
+                                width="512"
+                                height="512"
+                                decoding="async"
                                 class="w-full h-full object-contain scale-[1.15]"
                                 style="image-rendering: -webkit-optimize-contrast;"
                             />
@@ -616,7 +625,7 @@
                                             >
                                                 {#if 'image' in item && item.image}
                                                     <div class="w-20 h-20 rounded-full overflow-hidden ring-2 ring-amber-400/70 shadow-[0_8px_24px_rgba(120,53,15,0.5)] bg-amber-50 transition-transform duration-200 group-hover:scale-110 flex-shrink-0">
-                                                        <img src={item.image} alt={tFn(item.labelKey)} class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
+                                                        <img src={item.image} alt="" width="80" height="80" loading="lazy" decoding="async" class="w-full h-full object-cover" style={(item as any).imgStyle ?? 'transform: scale(1.4);'} />
                                                     </div>
                                                 {:else}
                                                     <span class="text-3xl inline-block transition-transform duration-200 group-hover:scale-110" aria-hidden="true">{item.icon}</span>
@@ -640,7 +649,7 @@
                                                         onclick={() => (showNavMenu = false)}
                                                     >
                                                         {#if 'image' in item && item.image}
-                                                            <img src={item.image} alt={tFn(item.labelKey)} class="w-12 h-12 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
+                                                            <img src={item.image} alt="" width="80" height="80" loading="lazy" decoding="async" class="w-12 h-12 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
                                                         {:else}
                                                             <span class="text-3xl drop-shadow-lg" aria-hidden="true">{item.icon}</span>
                                                         {/if}
@@ -763,6 +772,9 @@
                                     <img
                                         src={currentUser.avatar_url}
                                         alt=""
+                                        width="56"
+                                        height="56"
+                                        decoding="async"
                                         class="h-14 w-14 rounded-full object-cover border-2 border-purple-500/40
                                                shadow-lg hover:border-purple-400 transition-all"
                                     />

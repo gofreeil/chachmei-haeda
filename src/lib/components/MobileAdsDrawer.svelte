@@ -61,6 +61,13 @@
 	let open = $state(false);
 	let collapsed = $state(false);
 
+	// תמונות הפרסומות נכנסות ל-DOM רק אחרי שהגולש נגע בלשונית. loading="lazy"
+	// לבדו לא מספיק כאן: המגירה הסגורה יושבת ב-left שלילי *צמוד* לקצה המסך, וזה
+	// בתוך מרווח הטעינה-מראש של כרום - כך שהוא מוריד את כל התמונות בכל טעינת דף.
+	// (בדסקטופ הרכיב כולו lg:hidden, וגם מתוך display:none כרום מוריד.)
+	// הכרטיס עצמו והקישור נשארים ב-SSR, ורק ה-img נדחה, כדי לא לפגוע בסריקה.
+	let adImagesReady = $state(false);
+
 	// סגירה מלאה: חזרה למצב ההתחלתי (לא לקולאפס)
 	function closeAll() {
 		open = false;
@@ -113,6 +120,7 @@
 	});
 
 	function onTabTouchStart(e: TouchEvent) {
+		adImagesReady         = true;
 		tabTouchStartX        = e.touches[0].clientX;
 		tabTouchStartY        = e.touches[0].clientY;
 		tabDragStartClientY   = e.touches[0].clientY;
@@ -229,6 +237,7 @@
 	}
 
 	function onTabClick() {
+		adImagesReady = true;
 		// אם touchend כבר טיפל (swipe / tap על מובייל), לדלג כדי שה-click המסונתז לא יפתח שוב
 		if (tabSwipeHandled) {
 			tabSwipeHandled = false;
@@ -294,7 +303,7 @@
 					<!-- תמונה + מעגל מילוי -->
 					<div class="relative flex-shrink-0">
 						{#if layoutUser.avatar_url}
-							<img src={layoutUser.avatar_url} alt="avatar"
+							<img src={layoutUser.avatar_url} alt="" width="64" height="64" decoding="async"
 								class="w-16 h-16 rounded-full object-cover border-2 border-purple-500/40" />
 						{:else}
 							<div class="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center border-2 border-gray-600">
@@ -334,7 +343,13 @@
 
 					<!-- יתרה -->
 					<div class="flex-shrink-0 flex flex-col items-center gap-1 mr-auto">
-						<img src="/images/wallet.png" alt={tFn('mobile_ads_drawer_wallet_alt')} class="w-10 h-10 object-contain" />
+						<!-- גם זו תמונה כבדה בתוך המגירה הסגורה - ראה adImagesReady.
+						     העטיפה w-10 h-10 שומרת על המקום כך שאין קפיצת תצוגה. -->
+						<div class="w-10 h-10 flex-shrink-0">
+							{#if adImagesReady}
+								<img src="/images/wallet.webp" alt={tFn('mobile_ads_drawer_wallet_alt')} width="400" height="267" class="w-full h-full object-contain" loading="lazy" decoding="async" />
+							{/if}
+						</div>
 						<span class="text-green-400 text-xs font-black">{layoutUser.balance ?? 0}₪</span>
 					</div>
 
@@ -343,7 +358,7 @@
 			{:else if currentUser}
 			<a href="/profile" class="profile-btn" onclick={closeAll}>
 				{#if currentUser.avatar_url}
-				<img src={currentUser.avatar_url} alt="avatar" class="profile-avatar" />
+				<img src={currentUser.avatar_url} alt="" width="40" height="40" decoding="async" class="profile-avatar" />
 				{:else}
 				<span class="profile-avatar-placeholder">👤</span>
 				{/if}
@@ -386,12 +401,18 @@
 				onclick={closeAll}
 			>
 				<div class="benefit-img-wrap">
-					<img
-						src={ad.image}
-						alt={pickLang(ad.title, _loc)}
-						class="benefit-img"
-						decoding="async"
-					/>
+					<!-- ראה adImagesReady. הריבוע 88px שמסביב קבוע וה-img בתוכו absolute,
+					     ולכן אין קפיצת תצוגה כשהתמונה נכנסת; loading="lazy" מדלג בנוסף
+					     על הכרטיסים שנמצאים מתחת לגלילה ברשימה. -->
+					{#if adImagesReady}
+						<img
+							src={ad.image}
+							alt={pickLang(ad.title, _loc)}
+							class="benefit-img"
+							decoding="async"
+							loading="lazy"
+						/>
+					{/if}
 				</div>
 				<div class="benefit-body">
 					<p class="benefit-title">{pickLang(ad.title, _loc)}</p>

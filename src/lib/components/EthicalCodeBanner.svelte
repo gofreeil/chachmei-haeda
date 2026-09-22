@@ -38,10 +38,13 @@
 					{/each}
 				</ul>
 				<img
-					src="/images/ethical-code-banner.jpg"
+					src="/images/ethical-code-banner.webp"
 					alt={tFn('eth_banner_img_alt')}
+					width="400"
+					height="400"
 					class="flex-shrink-0 w-24 h-24 rounded-xl object-contain border-2 border-amber-700/40 shadow"
 					loading="lazy"
+					decoding="async"
 				/>
 			</div>
 		</a>
@@ -80,10 +83,13 @@
 		>
 			<div class="flex items-start gap-5 md:gap-8">
 				<img
-					src="/images/ethical-code-banner.jpg"
+					src="/images/ethical-code-banner.webp"
 					alt={tFn('eth_banner_img_alt')}
+					width="400"
+					height="400"
 					class="flex-shrink-0 w-32 h-32 md:w-52 md:h-52 rounded-xl object-contain border-2 border-amber-700/40 shadow relative z-10 -mb-4 md:-mb-2"
 					loading="lazy"
+					decoding="async"
 				/>
 				<div class="flex-1 min-w-0">
 					<div class="flex items-center justify-between gap-2 flex-wrap mb-1.5">

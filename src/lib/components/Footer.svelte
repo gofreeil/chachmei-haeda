@@ -52,11 +52,12 @@
                     class="flex-shrink-0 hover:scale-105 transition-transform border-2 border-amber-500/50 shadow-lg"
                     style="border-radius: 1rem; overflow: hidden;"
                 >
-                    <!-- תמונה כבדה (כ-1.1MB) שיושבת בתחתית כל דף - lazy כדי שלא
-                         תיטען לפני התוכן שהגולש באמת רואה. -->
+                    <!-- יושבת בתחתית כל דף - lazy כדי שלא תיטען לפני התוכן שהגולש באמת רואה. -->
                     <img
-                        src="/images/yotzim-lecherut.png"
+                        src="/images/yotzim-lecherut.webp"
                         alt={tFn("footer_brand_image_alt")}
+                        width="400"
+                        height="228"
                         class="h-16 md:h-20 w-auto block"
                         loading="lazy"
                         decoding="async"

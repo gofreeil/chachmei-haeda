@@ -78,6 +78,7 @@
             <img
                 src={popup.ad.image}
                 alt={pickLang(popup.ad.title, _loc)}
+                decoding="async"
                 class="w-full h-full object-cover"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
