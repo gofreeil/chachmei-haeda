@@ -24,10 +24,8 @@
 	let { children } = $props();
 	let currentUser = $state<StrapiUser | null>(null);
 
-	// מסתירים את הבאנר בעמודי auth (לא קשור להצטרפות לקוד), בעמוד הקוד עצמו,
-	// וכן למי שכבר חתם על הקוד האתי (hasSignedCharter)
+	// מסתירים את הבאנר בעמודי auth (לא קשור להצטרפות לקוד) ובעמוד הקוד עצמו
 	const hideEthicalBanner = $derived(
-		$hasSignedCharter ||
 		page.url.pathname.startsWith('/heichal-hamaaseh/ethical-code') ||
 		page.url.pathname.startsWith('/login') ||
 		page.url.pathname.startsWith('/signup')
