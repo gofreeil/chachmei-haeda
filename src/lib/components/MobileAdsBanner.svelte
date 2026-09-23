@@ -35,6 +35,12 @@
             color: 'from-green-600 to-emerald-600'
         },
         {
+            titleKey: 'mobile_ads_banner_ad_home_growing_title',
+            summaryKey: 'mobile_ads_banner_ad_home_growing_summary',
+            url: 'https://www.melecshop.com/page/free',
+            color: 'from-teal-500 to-teal-600'
+        },
+        {
             titleKey: 'mobile_ads_banner_ad_qualified_pros_title',
             summaryKey: 'mobile_ads_banner_ad_qualified_pros_summary',
             url: 'https://index.gofreeil.com/',
