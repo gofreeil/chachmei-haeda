@@ -638,54 +638,6 @@
                         </div>
                     {/if}
 
-                    <!-- שכפל פרסומת (סופר-אדמין): אותה פרסומת גם במקומות נוספים — למשל
-                         2 ו-6 (אותה רביעייה), כך שהיא נשארת באותה משבצת ולא מתחלפת בסבב.
-                         תג ⧉ = שכפול קיים; לחיצה עליו מבטלת אותו -->
-                    {#if superAdmin && ad.status === 'approved' && typeof ad.slot === 'number'}
-                        {@const dup = dupOptions(ad)}
-                        {#if (ad.extraSlots ?? []).length + dup.same.length + dup.rest.length > 0}
-                            <div class="slot-row">
-                                {#each ad.extraSlots ?? [] as n (n)}
-                                    <button type="button" class="slot-badge" disabled={busy}
-                                            style="background:{slotOptionBg(n)};border-color:rgba(0,0,0,0.2);color:#111;cursor:pointer"
-                                            title="שכפול במקום {n} (רביעייה {slotGroupLetter(n)}׳ · המשבצת ה{slotPosName(n)} בטור) — לחיצה מבטלת את השכפול"
-                                            onclick={() => act('removeExtraSlot', { id: ad.id, slot: n })}>
-                                        ⧉ {n} · {slotGroupLetter(n)}׳ <span style="color:#b91c1c">✕</span>
-                                    </button>
-                                {/each}
-                                {#if dup.same.length + dup.rest.length > 0}
-                                    <select class="duration-select" aria-label="שכפל פרסומת" disabled={busy}
-                                            onchange={(e) => onDupPick(e, ad)}>
-                                        <option value="" selected disabled>⧉ שכפל פרסומת</option>
-                                        {#if dup.same.length > 1}
-                                            <option value="same" style="background:#fff;color:#111;font-weight:700">
-                                                ★ קבועה בכל הרביעייה ({dup.same.join(', ')})
-                                            </option>
-                                        {/if}
-                                        {#if dup.same.length > 0}
-                                            <optgroup label="★ אותה רביעייה (אותה משבצת)">
-                                                {#each dup.same as n (n)}
-                                                    <option value={n} style="background:{slotOptionBg(n)};color:#111">
-                                                        {n} · {slotPosName(n)}
-                                                    </option>
-                                                {/each}
-                                            </optgroup>
-                                        {/if}
-                                        {#each groupSlotOptions(dup.rest) as grp (grp.letter)}
-                                            <optgroup label="— רביעייה {grp.letter}׳ —">
-                                                {#each grp.nums as n (n)}
-                                                    <option value={n} style="background:{slotOptionBg(n)};color:#111">
-                                                        {n} · {slotPosName(n)}
-                                                    </option>
-                                                {/each}
-                                            </optgroup>
-                                        {/each}
-                                    </select>
-                                {/if}
-                            </div>
-                        {/if}
-                    {/if}
-
                     <div class="ad-actions">
                         {#if ad.status === 'approved'}
                             <a href="/ads/{ad.id}" target="_blank" class="a-btn ghost">פתח את דף הנחיתה ↗</a>
@@ -751,6 +703,53 @@
                                 <button type="button" class="a-btn reject" disabled={busy}
                                         onclick={() => act('reject', { id: ad.id, reason: rejectReason[ad.id] ?? '' })}>❌ דחה</button>
                             </div>
+                        {/if}
+                        <!-- שכפל פרסומת (סופר-אדמין): אותה פרסומת גם במקומות נוספים — למשל
+                             2 ו-6 (אותה רביעייה), כך שהיא נשארת באותה משבצת ולא מתחלפת בסבב.
+                             תג ⧉ = שכפול קיים; לחיצה עליו מבטלת אותו -->
+                        {#if superAdmin && ad.status === 'approved' && typeof ad.slot === 'number'}
+                            {@const dup = dupOptions(ad)}
+                            {#if (ad.extraSlots ?? []).length + dup.same.length + dup.rest.length > 0}
+                                <div style="display: contents">
+                                    {#each ad.extraSlots ?? [] as n (n)}
+                                        <button type="button" class="slot-badge" disabled={busy}
+                                                style="background:{slotOptionBg(n)};border-color:rgba(0,0,0,0.2);color:#111;cursor:pointer"
+                                                title="שכפול במקום {n} (רביעייה {slotGroupLetter(n)}׳ · המשבצת ה{slotPosName(n)} בטור) — לחיצה מבטלת את השכפול"
+                                                onclick={() => act('removeExtraSlot', { id: ad.id, slot: n })}>
+                                            ⧉ {n} · {slotGroupLetter(n)}׳ <span style="color:#b91c1c">✕</span>
+                                        </button>
+                                    {/each}
+                                    {#if dup.same.length + dup.rest.length > 0}
+                                        <select class="duration-select" aria-label="שכפל פרסומת" disabled={busy}
+                                                onchange={(e) => onDupPick(e, ad)}>
+                                            <option value="" selected disabled>⧉ שכפל פרסומת</option>
+                                            {#if dup.same.length > 1}
+                                                <option value="same" style="background:#fff;color:#111;font-weight:700">
+                                                    ★ קבועה בכל הרביעייה ({dup.same.join(', ')})
+                                                </option>
+                                            {/if}
+                                            {#if dup.same.length > 0}
+                                                <optgroup label="★ אותה רביעייה (אותה משבצת)">
+                                                    {#each dup.same as n (n)}
+                                                        <option value={n} style="background:{slotOptionBg(n)};color:#111">
+                                                            {n} · {slotPosName(n)}
+                                                        </option>
+                                                    {/each}
+                                                </optgroup>
+                                            {/if}
+                                            {#each groupSlotOptions(dup.rest) as grp (grp.letter)}
+                                                <optgroup label="— רביעייה {grp.letter}׳ —">
+                                                    {#each grp.nums as n (n)}
+                                                        <option value={n} style="background:{slotOptionBg(n)};color:#111">
+                                                            {n} · {slotPosName(n)}
+                                                        </option>
+                                                    {/each}
+                                                </optgroup>
+                                            {/each}
+                                        </select>
+                                    {/if}
+                                </div>
+                            {/if}
                         {/if}
                     </div>
                 </div>
