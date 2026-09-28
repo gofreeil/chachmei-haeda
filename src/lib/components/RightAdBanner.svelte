@@ -87,7 +87,7 @@
     <div class="ads-stage">
         {#each groups as grp, gi}
         <div class="space-y-3 ads-group" class:active={gi === safeGroup}>
-        {#each grp as item, index (item.kind === 'real' ? item.ad.id : `${gi}-${index}`)}
+        {#each grp as item, index (item.kind === 'real' ? `${item.ad.id}-${index}` : `${gi}-${index}`)}
             {#if item.kind === 'real'}
                 {@const st = styleOf(item.ad)}
                 {@const cornerSide = logoCornerSide(st, Boolean(item.ad.logo))}

@@ -8,7 +8,10 @@ import {
     unapproveAd,
     moveApprovedAd,
     setAdSlot,
+    addAdExtraSlot,
+    removeAdExtraSlot,
     computeAdSlots,
+    computeAdExtraSlots,
     setAdDuration,
     setAdExpiry,
     normalizeDurationDays,
@@ -63,6 +66,8 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
     // המספר הקבוע של כל מודעה מאושרת בלוח (1..16) — חישוב בזיכרון בלבד,
     // בלי כתיבה ל-Strapi; ההצמדה נעשית בפעולות הניהול עצמן.
     const slotMap = computeAdSlots(raw.filter((a) => a.status === 'approved'));
+    // שכפל פרסומת — המקומות הנוספים האפקטיביים (1-based) של כל מודעה
+    const extraMap = computeAdExtraSlots(raw.filter((a) => a.status === 'approved'));
     // סדר הלוח בין המודעות *שבאוויר* — לחצי ההחלפה (מי שכנה של מי, והקצוות)
     const liveOrder = raw
         .filter((a) => a.status === 'approved')
@@ -100,6 +105,8 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
             isPaused,
             // מספר המקום הקבוע בלוח (1..16) — מה שהבורר "⇄ העבר" משנה
             slot: slotMap.get(a.id) ?? null,
+            // שכפל פרסומת — גובר על extraSlots הגולמי (0-based) של הרשומה
+            extraSlots: extraMap.get(a.id) ?? [],
             slotIndex: liveOrder.indexOf(a.id),
             slotTotal: liveOrder.length,
         };
@@ -127,7 +134,8 @@ type ActionBody = {
     durationDays?: number;
     keepPrevious?: boolean;
     dir?: string;
-    slot?: number;
+    /** מספר מקום; בשכפול גם 'same' = כל המקומות הפנויים באותה רביעייה */
+    slot?: number | string;
     expires?: string;
 };
 
@@ -215,6 +223,23 @@ export const POST: RequestHandler = async ({ request }) => {
                         ? `"${r.title}" עברה למקום ${r.slot}, ו"${r.swappedTitle}" עברה למקום ${r.swappedSlot}`
                         : `"${r.title}" עברה למקום ${r.slot}`,
                 });
+            }
+            // שכפל פרסומת: אותה פרסומת במקום נוסף בטור (סופר-אדמין)
+            case 'addExtraSlot': {
+                if (!superAdmin) throw error(403, 'שכפל פרסומת שמור לסופר-אדמין');
+                const r = await addAdExtraSlot(id, body.slot === 'same' ? 'same' : Number(body.slot));
+                if (!r) throw error(404, 'הפרסומת לא נמצאה');
+                if (!r.ok) throw error(409, r.error);
+                return json({
+                    ok: true,
+                    message: `"${r.title}" שוכפלה גם ${r.slots.length > 1 ? 'למקומות' : 'למקום'} ${r.slots.join(', ')}`,
+                });
+            }
+            case 'removeExtraSlot': {
+                if (!superAdmin) throw error(403, 'שכפל פרסומת שמור לסופר-אדמין');
+                const r = await removeAdExtraSlot(id, Number(body.slot));
+                if (!r) throw error(404, 'השכפול לא נמצא');
+                return json({ ok: true, message: `השכפול של "${r.title}" במקום ${r.slot} בוטל` });
             }
             default:
                 throw error(400, 'פעולה לא מוכרת');
