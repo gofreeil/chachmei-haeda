@@ -6,8 +6,9 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { getJwt } from '$lib/strapi';
-    import { statusView, fmtDate, needsRenewal, type AdStatusKind } from '$lib/adOwner';
+    import { statusView, fmtDate, needsRenewal, isExpired, type AdStatusKind } from '$lib/adOwner';
     import { adImgFit, parseAdImageFit } from '$lib/adImageFit';
+    import MyAdAdminActions from '$lib/components/MyAdAdminActions.svelte';
 
     interface OwnerAd {
         id: string;
@@ -21,6 +22,9 @@
         editedAt: string | null;
         expiresAt: string | null;
         rejectionReason: string;
+        requestedDurationDays: number | null;
+        paused: boolean;
+        replacesTitle: string;
         totals: { impressions: number; clicks: number; landing: number; leads: number };
     }
 
@@ -28,8 +32,21 @@
     let loadFailed = $state(false);
     let ads = $state<OwnerAd[]>([]);
     let userEmail = $state('');
+    // קיצורי הניהול בכרטיסים — לאדמין בלבד (השרת בודק שוב בכל פעולה)
+    let isAdmin = $state(false);
+    // תוצאת קיצור ניהול אחרון — מוצגת מעל הרשימה
+    let actionResult = $state<{ message?: string; error?: string } | null>(null);
 
-    onMount(async () => {
+    onMount(() => {
+        void loadAds();
+    });
+
+    async function afterAction(r: { message?: string; error?: string }) {
+        actionResult = r;
+        if (r.message) await loadAds();
+    }
+
+    async function loadAds() {
         const jwt = getJwt();
         if (!jwt) {
             void goto(`/login?returnTo=${encodeURIComponent('/about/advertise/manage')}`);
@@ -47,13 +64,14 @@
             const data = await res.json();
             ads = Array.isArray(data.ads) ? data.ads : [];
             userEmail = data.user?.email ?? '';
+            isAdmin = data.isAdmin === true;
             loadFailed = Boolean(data.loadFailed);
         } catch {
             loadFailed = true;
         } finally {
             loading = false;
         }
-    });
+    }
 
     const TONE: Record<string, string> = {
         amber: 'border-amber-600/40 bg-amber-500/10 text-amber-800',
@@ -78,6 +96,13 @@
         </a>
     </div>
 
+    <!-- תוצאת קיצור ניהול (אישור/דחייה/השהיה...) — מעל הרשימה -->
+    {#if actionResult?.message}
+        <p class="mb-4 rounded-xl border border-emerald-600/40 bg-emerald-500/10 px-4 py-2.5 text-sm font-bold text-emerald-800">{actionResult.message}</p>
+    {:else if actionResult?.error}
+        <p class="mb-4 rounded-xl border border-rose-600/40 bg-rose-500/10 px-4 py-2.5 text-sm font-bold text-rose-800">{actionResult.error}</p>
+    {/if}
+
     {#if loading}
         <div class="rounded-2xl border border-[#d9c07a] bg-[#fffbe9] px-6 py-12 text-center shadow-sm">
             <p class="text-sm font-bold text-[#5b4a1e]">⏳ טוען את הפרסומות שלך…</p>
@@ -98,7 +123,8 @@
     {:else}
         <div class="flex flex-col gap-4">
             {#each ads as ad (ad.id)}
-                {@const sv = statusView(ad.status as AdStatusKind, ad.expiresAt)}
+                {@const sv = statusView(ad.status as AdStatusKind, ad.expiresAt, ad.paused)}
+                {@const live = ad.status === 'approved' && !ad.paused && !isExpired('approved', ad.expiresAt)}
                 <article class="overflow-hidden rounded-2xl border border-[#d9c07a] bg-[#fffbe9] transition-all hover:border-amber-700/50 hover:bg-[#fdf6dd]">
                     <a href="/about/advertise/manage/{ad.id}" class="flex items-stretch gap-4 p-4">
                         <div class="min-w-0 flex-1">
@@ -112,7 +138,11 @@
                             {#if ad.subtitle}
                                 <p class="mt-1 line-clamp-2 text-sm text-[#5b4a1e]">{ad.subtitle}</p>
                             {/if}
-                            <p class="mt-1 text-xs text-[#8a7443]">{sv.hint}{ad.expiresAt ? ` · עד ${fmtDate(ad.expiresAt)}` : ''}</p>
+                            <p class="mt-1 text-xs text-[#8a7443]">
+                                {sv.hint}{ad.expiresAt ? ` · עד ${fmtDate(ad.expiresAt)}` : ''}
+                                <!-- "עדכון ל..." רק כל עוד ממתינה — אחרי האישור היא *היא* הפרסומת -->
+                                {#if ad.status === 'pending' && ad.replacesTitle}· עדכון ל"{ad.replacesTitle}"{/if}
+                            </p>
 
                             <dl class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs">
                                 <div class="flex items-baseline gap-1.5">
@@ -147,6 +177,12 @@
                             {/if}
                         </div>
                     </a>
+                    <!-- שורת הפעולות מחוץ לקישור -->
+                    {#if isAdmin || live}
+                        <div class="border-t border-[#d9c07a]/70 px-4 py-2">
+                            <MyAdAdminActions {ad} {isAdmin} {live} onDone={afterAction} />
+                        </div>
+                    {/if}
                 </article>
             {/each}
         </div>

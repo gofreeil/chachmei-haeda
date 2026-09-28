@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireUser } from '$lib/server/adsAdmin';
+import { requireUser, roleOf } from '$lib/server/adsAdmin';
 import { getOwnerAssets } from '$lib/server/ownerAssets';
 
 // "הנכסים שלי" — הפרסומות שהמשתמש המחובר שלח (עם המדדים שלהן).
@@ -12,6 +12,9 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
     const assets = await getOwnerAssets(user);
     return json({
         user: { name: user.name, email: user.email },
+        // קיצורי הניהול ברשימה — לכל אדמין. רק תצוגה: הפעולות עצמן עוברות
+        // ב-/api/ads/admin, שבודק את ההרשאה מחדש בכל קריאה
+        isAdmin: roleOf(user) !== null,
         ...assets,
     });
 };

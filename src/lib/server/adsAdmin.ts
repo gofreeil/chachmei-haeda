@@ -71,7 +71,7 @@ export async function requireUser(request: Request): Promise<AuthedUser> {
     return user;
 }
 
-function roleOf(user: AuthedUser): AdminRole | null {
+export function roleOf(user: AuthedUser): AdminRole | null {
     if (user.email.toLowerCase() === OWNER_EMAIL) return 'super_admin';
     return user.appRole === 'super_admin' || user.appRole === 'ch_admin'
         ? user.appRole
