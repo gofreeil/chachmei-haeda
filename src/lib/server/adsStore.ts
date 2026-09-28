@@ -136,6 +136,8 @@ export interface ApprovedAdPublic {
     adStyle: AdStyle | null;
     /** מספר המקום בלוח (1..16) — נקבע במסך הניהול, מחושב תמיד בשרת */
     slot: number;
+    /** כרטיס מוצר מחנות החירות (מסונכרן מקהילה בשכונה) - מוצג בלי רצועת המחיר */
+    shop: boolean;
 }
 
 // ----- הצורה השטוחה של Strapi 5 באוסף submitted-ads -----
@@ -743,6 +745,7 @@ export async function listApproved(): Promise<ApprovedAdPublic[]> {
                 // המספר בלוח (1-based) — הלקוח מציב לפיו את המודעה בדיוק
                 // במקום שנקבע לה, והחורים ביניהם נשארים משבצות פנויות
                 slot: (slots.get(a.id) ?? 0) + 1,
+                shop: Boolean((a.landing as Record<string, unknown>)._shopProduct),
             }));
         approvedCache = { at: Date.now(), list };
         return list;

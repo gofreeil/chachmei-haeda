@@ -73,23 +73,38 @@
             {countdown}
         </button>
 
-        <!-- Ad image -->
-        <div class="relative h-44 w-full">
+        <!-- Ad image. בלי CTA (כרטיס מוצר מהחנות) - התמונה היא הקישור -->
+        {#snippet adImage(src: string, alt: string)}
             <img
-                src={popup.ad.image}
-                alt={pickLang(popup.ad.title, _loc)}
+                {src}
+                {alt}
                 decoding="async"
                 class="w-full h-full object-cover"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-        </div>
+        {/snippet}
+        {#if pickLang(popup.ad.cta, _loc)}
+            <div class="relative h-44 w-full">
+                {@render adImage(popup.ad.image, pickLang(popup.ad.title, _loc))}
+            </div>
+        {:else}
+            <a href={popup.ad.href}
+               target="_blank"
+               rel="noopener noreferrer"
+               aria-label={pickLang(popup.ad.title, _loc)}
+               onclick={() => closeAdPopup()}
+               class="relative block h-44 w-full">
+                {@render adImage(popup.ad.image, pickLang(popup.ad.title, _loc))}
+            </a>
+        {/if}
 
         <!-- Ad content -->
         <div class="bg-[#0f172a] p-4">
             <h3 class="text-lg font-black bg-gradient-to-r {popup.ad.color} bg-clip-text text-transparent mb-1 leading-tight">
                 {pickLang(popup.ad.title, _loc)}
             </h3>
-            <p class="text-gray-300 text-sm mb-3 leading-snug">{pickLang(popup.ad.description, _loc)}</p>
+            <p class="text-gray-300 text-sm leading-snug" class:mb-3={!!pickLang(popup.ad.cta, _loc)}>{pickLang(popup.ad.description, _loc)}</p>
+            {#if pickLang(popup.ad.cta, _loc)}
             <a
                 href={popup.ad.href}
                 target="_blank"
@@ -100,6 +115,7 @@
             >
                 ← {pickLang(popup.ad.cta, _loc)}
             </a>
+            {/if}
         </div>
     </div>
 </div>

@@ -31,6 +31,8 @@ export interface ApprovedAd {
     adStyle?: AdStyle | null;
     /** מספר המקום בלוח (1..16) — נקבע במסך הניהול; חסר בקאש ישן */
     slot?: number;
+    /** כרטיס מוצר מחנות החירות - בלי רצועת המחיר בתחתית */
+    shop?: boolean;
 }
 
 export type AdSlot =
@@ -113,7 +115,8 @@ if (browser) {
                 id: 100000 + i,
                 title: heb(a.title),
                 description: heb(a.subtitle),
-                cta: heb(a.cta || 'לפרטים'),
+                // כרטיס מוצר מהחנות - בלי כפתור המחיר (התמונה היא הקישור)
+                cta: heb(a.shop ? '' : (a.cta || 'לפרטים')),
                 href: `/ads/${a.id}`,
                 image: a.mainImage,
                 color: 'from-blue-500 to-purple-600',
