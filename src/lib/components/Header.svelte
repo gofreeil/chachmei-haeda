@@ -24,6 +24,7 @@
         { name: "русский", code: "ru", flag: "ru" },
         { name: "Español", code: "es", flag: "es" },
         { name: "پښتو", code: "ps", flag: "af" },
+        { name: "Deutsch", code: "de", flag: "de" },
     ];
 
     let showLangDropdown = $state(false);
@@ -527,13 +528,13 @@
                                     href="/login"
                                     class="px-2.5 py-1.5 rounded-lg bg-white/70 hover:bg-white/85 text-xs font-bold text-gray-900 transition-colors whitespace-nowrap"
                                 >
-                                    התחבר
+                                    {tFn('login_register')}
                                 </a>
                                 <a
                                     href="/signup"
                                     class="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
                                 >
-                                    הירשם
+                                    {tFn('register_btn')}
                                 </a>
                             </div>
                         {/if}
@@ -794,13 +795,13 @@
                                 href="/login"
                                 class="px-4 py-2 rounded-lg bg-white/70 hover:bg-white/85 text-sm font-bold text-gray-900 transition-colors"
                             >
-                                התחבר
+                                {tFn('login_register')}
                             </a>
                             <a
                                 href="/signup"
                                 class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
                             >
-                                הירשם
+                                {tFn('register_btn')}
                             </a>
                         </div>
                     {/if}

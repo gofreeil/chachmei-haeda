@@ -14,6 +14,8 @@
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
+	// כיוון בלוק האמנה: עברית/פשטו = RTL, שאר השפות (כולל גרמנית) = LTR — כמו בדף /about
+	const textDir = $derived(_loc && !['he', 'ps'].includes(_loc.slice(0, 2)) ? 'ltr' : 'rtl');
 
 	// w/h = המידות האמיתיות של קובצי ה-WebP (800x450; האחרון 800x533) — כדי שהדפדפן ישמור מקום לפני הטעינה
 	const mitzvotKeys: { n: string; title: string; body: string; img: string; w?: number; h?: number; nodot?: boolean }[] = [
@@ -232,17 +234,17 @@
 
 		<div class="rounded-t-2xl border-2 border-b-0 border-amber-700/40 bg-amber-50/70 p-5 md:p-7 shadow-sm">
 			<h3 class="text-lg md:text-xl font-bold text-amber-900 mb-4 text-center">{tFn('charter_text_title')}</h3>
-			<div class="text-sm md:text-base text-gray-900 leading-relaxed text-right whitespace-pre-line" dir="rtl">{tFn('charter_text_full')}</div>
+			<div class="text-sm md:text-base text-gray-900 leading-relaxed text-start whitespace-pre-line" dir={textDir}>{tFn('charter_text_full')}</div>
 
-			<div class="mt-5 pt-4 border-t border-amber-700/30 text-sm md:text-base text-gray-900 leading-relaxed text-right" dir="rtl">
-				<h4 class="font-bold text-amber-900 mb-2">תנאי ההסרה מהאמנה:</h4>
-				<ol class="list-decimal pr-6 space-y-1">
-					<li>מי שנתבע על ידי חברו, ולא הגיע לדין ללא סיבה סבירה.</li>
-					<li>הגיע לדין אך מסרב לקיימו באופן שרירותי ללא הגשת ערעור.</li>
-					<li>עבר על אחת מאיסורי "ייהרג ובל יעבור" שהם: גילוי עריות (אשת איש ופדופיליה), שפיכות דמים (במזיד), עבודה זרה (לשם אלילות).</li>
+			<div class="mt-5 pt-4 border-t border-amber-700/30 text-sm md:text-base text-gray-900 leading-relaxed text-start" dir={textDir}>
+				<h4 class="font-bold text-amber-900 mb-2">{tFn('eth_code_removal_title')}</h4>
+				<ol class="list-decimal ps-6 space-y-1">
+					<li>{tFn('eth_code_removal_1')}</li>
+					<li>{tFn('eth_code_removal_2')}</li>
+					<li>{tFn('eth_code_removal_3')}</li>
 				</ol>
 				<p class="mt-3">
-					העובר על אחת מאלו יוסר מרשימת האמנה, עסקו יוחרם בקהילתנו — כולל העסקת פועלים, משא ומתן עימו וכן כל כיוצא בזה. סיבת הסרתו תפורסם בפומבי ותהיה נגישה ב<a href="/charter-index" class="underline text-amber-900 hover:text-amber-700">אינדקס הקוד האתי המוסרי</a>.
+					{tFn('eth_code_removal_consequence_prefix')}<a href="/charter-index" class="underline text-amber-900 hover:text-amber-700">{tFn('eth_code_removal_link')}</a>.
 				</p>
 			</div>
 		</div>
@@ -251,7 +253,7 @@
 			{#if prefilled && !showCelebration}
 				<div class="flex items-center gap-2 rounded-lg border border-green-700/40 bg-green-100/70 px-3 py-2 text-sm text-green-900" transition:fade={{ duration: 300 }}>
 					<span>✓</span>
-					<span>מילאנו עבורך את הפרטים מהחשבון שלך — אפשר לעדכן אם משהו השתנה.</span>
+					<span>{tFn('eth_code_prefilled_notice')}</span>
 				</div>
 			{/if}
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">

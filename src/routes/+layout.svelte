@@ -55,6 +55,10 @@
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
+	// שפת המסמך עוקבת אחרי שפת הממשק (קוראי מסך, הגייה, איות) — הכיוון נשאר RTL כמו בשאר השפות
+	$effect(() => {
+		document.documentElement.lang = (_loc || 'he').slice(0, 2);
+	});
 	const tFn = (k: string) => {
 		void _loc;
 		return get(t)(k) as string;

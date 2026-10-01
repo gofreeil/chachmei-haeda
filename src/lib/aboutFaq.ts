@@ -24,7 +24,7 @@ export interface AboutContent {
     faq: FaqItem[];
 }
 
-export type AboutLocale = 'he' | 'en' | 'ru' | 'es' | 'ps';
+export type AboutLocale = 'he' | 'en' | 'ru' | 'es' | 'ps' | 'de';
 
 export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
     he: {
@@ -253,6 +253,52 @@ export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
             {
                 q: 'نړیوال اخلاقي کوډ (UECC) څه دی او ولې یې لاسلیک کوو؟',
                 a: 'نړیوال اخلاقي کوډ د صداقت او مسؤلیت منشور دی چې کسان، سوداګرۍ او سازمانونه یې پر ځان مني. د هغه لاسلیک د اورېدنې د غوښتنې وړاندې کولو او په سایټ کې د شخصي برخې پرانیستلو شرط دی، او لاسلیک کوونکي د منشور په عامه شاخص کې ښکاري. په دې توګه د روغې جوړې د کورونو او د «یوتسیم لحیروت» د شبکې په چوکاټ کې د ټولو فعالینو ترمنځ د انصاف ګډ بنسټ رامنځته کېږي.',
+            },
+        ],
+    },
+
+    de: {
+        title: 'Über uns',
+        intro:
+            'Chachmei HaEda – Versöhnungshäuser (chachmim.gofreeil.com) ist ein Beit Din für Schiedsverfahren und Frieden nach der Tora Israels: ehrenamtliche Schiedsverfahren, Mediation und Streitbeilegung – ohne Gebühren und ohne Prozesskosten. Neben dem Versöhnungshaus veröffentlicht die Website Urteile, Artikel der Weisen Israels, halachische Fragen und Antworten sowie den weltweiten Ethikkodex (UECC). Die Website gehört zum Netzwerk der sozialen Bewegung „Yotzim LaCherut“ („Aufbruch in die Freiheit“).',
+        faqTitle: 'Fragen und Antworten',
+        moreLink: 'Die Rabbiner und Richter, die Vision und das Arbeitsmodell',
+        faq: [
+            {
+                q: 'Was ist „Chachmei HaEda – Versöhnungshäuser“ und was ist sein Ziel?',
+                a: 'Chachmei HaEda – Versöhnungshäuser (chachmim.gofreeil.com) ist ein Beit Din für Schiedsverfahren und Frieden nach der Tora Israels. Das Ziel ist, Streitparteien zu ermöglichen, vor ehrenamtlichen Richtern (Dayanim) und Lehrautoritäten im Einvernehmen beider Seiten zu einer Entscheidung und zur Versöhnung zu gelangen – ohne Anwaltskosten und ohne jahrelanges Warten vor Gericht. Darüber hinaus möchte die Website den Frieden im Land fördern und Israel den Begriff „Chachmei HaEda“ zurückgeben – einen gemeinsamen Ort für alle Strömungen und Gruppierungen.',
+            },
+            {
+                q: 'Für wen ist die Website gedacht?',
+                a: 'Für alle Menschen in Israel, die in einem Streit stehen und die Versöhnung dem Rechtsstreit vorziehen: Nachbarschaftsstreitigkeiten, finanzielle und geschäftliche Auseinandersetzungen, Miete, Partnerschaft, üble Nachrede, Hausfrieden und Familienkonflikte sowie Meinungsverschiedenheiten in Hausgemeinschaften und Organisationen. Ebenso für alle, die eine Antwort in der Halacha oder Orientierung in Lebensfragen suchen und den weltweiten Ethikkodex unterzeichnen möchten – als Privatperson, Unternehmen oder Organisation.',
+            },
+            {
+                q: 'Was findet man auf der Website und was kann man dort tun?',
+                a: 'Die Website besteht aus vier Hallen. In der Halle des Rechts stellt man einen Verhandlungsantrag und sieht den Verhandlungskalender und das Urteilsarchiv ein; die Halle des Friedens bietet Vorträge und Empfehlungen für den Hausfrieden und zur Vermeidung von Streit; in der Halle des Geistes werden Artikel der Weisen von Chachmei HaEda veröffentlicht, jeder von drei Rabbinern genehmigt, außerdem ein Archiv halachischer Fragen und Antworten mit der Möglichkeit, eine neue Frage zu stellen; und die Halle der Tat zeigt die öffentliche Tätigkeit sowie den weltweiten Ethikkodex (UECC) mit dem Verzeichnis seiner Unterzeichner.',
+            },
+            {
+                q: 'Ist die Nutzung der Website kostenpflichtig?',
+                a: 'Nein. Die Richter arbeiten ehrenamtlich, und die Verhandlung im Versöhnungshaus, das Stellen einer halachischen Frage, das Lesen der Urteile und Artikel sowie die Unterzeichnung des Ethikkodex sind kostenlos – ohne Gebühren und ohne Prozesskosten. Nur die gewerbliche Werbung auf der Website (auf der Seite „Bei uns werben“) ist ein kostenpflichtiger Dienst, und auch sie wird erst nach Freigabe durch einen Administrator veröffentlicht.',
+            },
+            {
+                q: 'Wie stellt man einen Verhandlungsantrag?',
+                a: 'Man betritt die Halle des Rechts, klickt auf „Verhandlungsantrag“, füllt die Angaben der Parteien und eine Kurzdarstellung des Streits aus und wählt einen Termin im Verhandlungskalender. Vor dem Absenden des Antrags bestätigt man den Ethikkodex und die Zustimmung zum Schiedsverfahren. Die Gegenseite wird eingeladen, der Verhandlung zuzustimmen – ein Schiedsverfahren setzt die Zustimmung beider Seiten voraus –, und nach der Genehmigung durch das Beit Din wird der Termin festgelegt. Die Verhandlung findet per Zoom oder persönlich statt, das Urteil ergeht schriftlich und kann als Schiedsspruch bestätigt werden.',
+            },
+            {
+                q: 'Wer steht hinter der Website?',
+                a: 'Das Versöhnungshaus wird von einem Zusammenschluss von Richtern (Dayanim) und Lehrautoritäten aus dem ganzen Land betrieben, die sich ehrenamtlich zusammengeschlossen haben, um das Gebot der Tora zu erfüllen: „Richter und Amtsleute sollst du dir einsetzen.“ Die Website gehört zum Netzwerk der sozialen Bewegung „Yotzim LaCherut“ (gofreeil.com) und übernimmt darin die Aufgabe der Streitbeilegung, der halachischen Entscheidung und des gemeinsamen Ethikkodex für alle Websites des Netzwerks.',
+            },
+            {
+                q: 'Worin unterscheidet sich das Versöhnungshaus von einem Gericht oder einer Mediationsstelle?',
+                a: 'Das Verfahren beruht auf der Zustimmung beider Seiten und zielt auf Versöhnung statt auf den Sieg einer Partei. Es wird ehrenamtlich und kostenlos durchgeführt – ohne Anwälte, ohne Gebühren und ohne lange Wartezeiten. Die Verhandlung findet nach der Tora Israels statt, die Urteile werden transparent im Archiv der Website veröffentlicht, und alle Beteiligten nehmen den weltweiten Ethikkodex als gemeinsame Grundlage ihres Handelns auf sich.',
+            },
+            {
+                q: 'Wie nimmt man Kontakt auf oder meldet ein Problem?',
+                a: 'Über den Link „Kontakt“ am Ende jeder Seite, der eine E-Mail an freedomhasbegun@gmail.com sendet. Halachische Fragen oder Fragen zu Lebensthemen sendet man über das Formular „Chachmei HaEda fragen“, und einen Streit, der verhandelt werden soll, reicht man über „Verhandlungsantrag“ in der Halle des Rechts ein.',
+            },
+            {
+                q: 'Was ist der weltweite Ethikkodex (UECC) und warum unterzeichnet man ihn?',
+                a: 'Der weltweite Ethikkodex ist eine Charta der Redlichkeit und Verantwortung, die Menschen, Unternehmen und Organisationen auf sich nehmen. Seine Unterzeichnung ist Voraussetzung für das Stellen eines Verhandlungsantrags und für die Eröffnung des persönlichen Bereichs auf der Website; die Unterzeichner erscheinen im öffentlichen Verzeichnis der Charta. So entsteht eine gemeinsame Grundlage der Fairness zwischen allen, die im Rahmen der Versöhnungshäuser und des Netzwerks „Yotzim LaCherut“ tätig sind.',
             },
         ],
     },

@@ -476,3 +476,10 @@ main .space-y-3 > * + * { margin-top: 0.5rem !important; }
 html {
     scroll-padding-top: calc(var(--header-height, 90px) + 1.25rem);
 }
+
+/* גרמנית: פריסת האתר נשארת RTL אבל הטקסט LTR — כיוון הפסקה נקבע לפי התו החזק הראשון
+   (unicode-bidi: plaintext), כדי שפיסוק וחיצים לא יקפצו לצד הלא-נכון ושורות יתיישרו
+   כמו טקסט לטיני. תוכן בעברית שמוצג בתוך הממשק הגרמני (למשל מאמרים) נשאר RTL. */
+html:lang(de) :is(p, h1, h2, h3, h4, h5, h6, li, label, summary, figcaption, blockquote, td, th, dt, dd, a, button, span) {
+    unicode-bidi: plaintext;
+}

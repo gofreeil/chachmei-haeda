@@ -235,13 +235,13 @@
 					href="/signup"
 					class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black hover:scale-105 transition-transform"
 				>
-					✨ הרשם / התחבר
+					{tFn('profile_signup_login_cta')}
 				</a>
 				<a
 					href="/heichal-hamaaseh/ethical-code#join"
 					class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black hover:scale-105 transition-transform"
 				>
-					✍️ חתימה על האמנה
+					{tFn('profile_sign_charter_cta')}
 				</a>
 			</div>
 			<p class="text-xs text-gray-500 mt-6">

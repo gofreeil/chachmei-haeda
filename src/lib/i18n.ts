@@ -944,6 +944,51 @@ register('he', () => Promise.resolve({
     profile_welcome_msg_from: "מערכת חכמי העדה",
     profile_welcome_msg_topic: "ברוך הבא",
     profile_welcome_msg_body: "אזור אישי זה הוא הבית שלך - כאן תקבל הודעות מבית הדין, סטטוס התיקים שלך ופסקי דין רלוונטיים.",
+
+    // ── התחברות/הרשמה, הקוד האתי, ומפתחות שהיו חסרים (נוספו עם הגרמנית) ──
+    auth_login_page_title: "התחברות - חכמי העדה",
+    auth_login_heading: "התחברות",
+    auth_login_subtitle: "היכנס לחשבון שלך",
+    auth_sso_continue_as: "המשך כ-",
+    auth_sso_identified_note: "זוהית דרך יוצאים לחירות. לא את/ה? אפשר להיכנס עם חשבון אחר למטה.",
+    auth_first_time_note: "👋 פעם ראשונה כאן? כניסה עם Google יוצרת לך חשבון בלחיצה אחת.",
+    auth_sso_community_btn: "כניסה דרך קהילת יוצאים לחירות (חשבון קיים או קוד ב-SMS)",
+    auth_whatsapp_note: "חברות בקבוצות הווצאפ אינה חשבון באתר. אם עדיין אין לך חשבון, הכניסה עם Google למעלה יוצרת אחד בלחיצה.",
+    auth_or_email: "או עם דוא\"ל וסיסמה",
+    auth_identifier_label: "דוא\"ל או שם משתמש",
+    auth_logging_in: "מתחבר...",
+    auth_no_account_yet: "עוד אין לך חשבון?",
+    auth_same_account_prefix: "🔗 אותו חשבון פועל גם באתר ",
+    auth_err_no_admin: "אין לך הרשאת ניהול. פונה לפרופיל...",
+    auth_err_login_failed: "שגיאת התחברות",
+    auth_err_invalid_credentials: "שם משתמש או סיסמה לא תקפים",
+    auth_err_network: "לא הצלחנו להתחבר לשרת. בדקו את חיבור האינטרנט ונסו שוב. אם מותקן חוסם פרסומות או הרחבת פרטיות — כבו אותו עבור אתר זה, או נסו דפדפן/רשת אחרת.",
+    auth_signup_page_title: "הרשמה - חכמי העדה",
+    auth_signup_heading: "הרשמה לאתר",
+    auth_signup_subtitle: "פתיחת חשבון משתמש - לחתימה על האמנה, שליחת שאלות ומעקב אחר תיקים",
+    auth_signup_google: "הירשם עם Google",
+    auth_username_placeholder: "לדוגמה: yossi_cohen",
+    auth_confirm_placeholder: "הקלד שוב את הסיסמה",
+    auth_err_password_short: "הסיסמה חייבת להכיל לפחות 6 תווים",
+    auth_err_password_mismatch: "הסיסמאות אינן תואמות",
+    auth_err_register_failed: "שגיאה בהרשמה",
+    auth_err_email_taken: "האימייל כבר רשום במערכת. נסה להתחבר.",
+    auth_err_username_taken: "שם המשתמש תפוס. בחר אחר.",
+    eth_code_removal_title: "תנאי ההסרה מהאמנה:",
+    eth_code_removal_1: "מי שנתבע על ידי חברו, ולא הגיע לדין ללא סיבה סבירה.",
+    eth_code_removal_2: "הגיע לדין אך מסרב לקיימו באופן שרירותי ללא הגשת ערעור.",
+    eth_code_removal_3: "עבר על אחת מאיסורי \"ייהרג ובל יעבור\" שהם: גילוי עריות (אשת איש ופדופיליה), שפיכות דמים (במזיד), עבודה זרה (לשם אלילות).",
+    eth_code_removal_consequence_prefix: "העובר על אחת מאלו יוסר מרשימת האמנה, עסקו יוחרם בקהילתנו — כולל העסקת פועלים, משא ומתן עימו וכן כל כיוצא בזה. סיבת הסרתו תפורסם בפומבי ותהיה נגישה ב",
+    eth_code_removal_link: "אינדקס הקוד האתי המוסרי",
+    eth_code_prefilled_notice: "מילאנו עבורך את הפרטים מהחשבון שלך — אפשר לעדכן אם משהו השתנה.",
+    ask_submitted_title: "תודה! השאלה התקבלה.",
+    ask_submitted_body: "חכמי העדה יבחנו את השאלה ויחזרו אליך בהקדם.",
+    ask_submit_another: "שאל שאלה נוספת",
+    ask_btn_submitting: "שולח...",
+    charter_idx_loading: "טוען חתימות...",
+    charter_join_save_failed: "שגיאה בשמירה. אנא נסו שוב.",
+    profile_signup_login_cta: "✨ הרשם / התחבר",
+    profile_sign_charter_cta: "✍️ חתימה על האמנה",
 }));
 
 register('en', () => Promise.resolve({
@@ -4604,6 +4649,9 @@ register('ps', () => Promise.resolve({
     profile_welcome_msg_topic: "ښه راغلاست",
     profile_welcome_msg_body: "دا شخصي ساحه ستاسو کور دی - دلته به تاسو د بیت دین څخه پیغامونه، د خپلو قضیو حالت، او اړوندې پرېکړې ترلاسه کړئ.",
 }));
+
+// גרמנית — קובץ נפרד שנטען בעצלות (רק כשנבחרה שפה זו), כדי לא להגדיל את החבילה הראשית
+register('de', () => import('./i18n.de').then((m) => m.default));
 
 
 init({

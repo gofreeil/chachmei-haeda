@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { strapiLogin, getCurrentUser, isChachmeiAdmin, isNetworkError, NETWORK_ERROR_MESSAGE_HE } from '$lib/strapi';
+	import { strapiLogin, getCurrentUser, isChachmeiAdmin, isNetworkError } from '$lib/strapi';
 	import GoogleSignInButton from '$lib/components/GoogleSignInButton.svelte';
+	import { t, locale } from 'svelte-i18n';
+	import { get } from 'svelte/store';
+
+	let _loc = $state(get(locale));
+	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	let { data } = $props();
 
@@ -63,17 +69,17 @@
 			await strapiLogin(identifier.trim(), password);
 			const me = await getCurrentUser();
 			if (returnTo.startsWith('/admin') && !isChachmeiAdmin(me)) {
-				errorMsg = 'אין לך הרשאת ניהול. פונה לפרופיל...';
+				errorMsg = tFn('auth_err_no_admin');
 				setTimeout(() => goto('/profile'), 1500);
 				return;
 			}
 			window.location.href = withWelcome(returnTo);
 		} catch (e: any) {
-			const msg = e?.message ?? 'שגיאת התחברות';
+			const msg = e?.message ?? tFn('auth_err_login_failed');
 			if (isNetworkError(e)) {
-				errorMsg = NETWORK_ERROR_MESSAGE_HE;
+				errorMsg = tFn('auth_err_network');
 			} else {
-				errorMsg = msg.toLowerCase().includes('invalid') ? 'שם משתמש או סיסמה לא תקפים' : msg;
+				errorMsg = msg.toLowerCase().includes('invalid') ? tFn('auth_err_invalid_credentials') : msg;
 			}
 			submitting = false;
 		}
@@ -81,7 +87,7 @@
 </script>
 
 <svelte:head>
-	<title>התחברות - חכמי העדה</title>
+	<title>{tFn('auth_login_page_title')}</title>
 </svelte:head>
 
 <section class="py-12 max-w-md mx-auto px-4">
@@ -89,9 +95,9 @@
 		<header class="text-center mb-6">
 			<div class="text-5xl mb-3">👤</div>
 			<h1 class="bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-3xl font-black text-transparent">
-				התחברות
+				{tFn('auth_login_heading')}
 			</h1>
-			<p class="mt-2 text-gray-300 text-sm">היכנס לחשבון שלך</p>
+			<p class="mt-2 text-gray-300 text-sm">{tFn('auth_login_subtitle')}</p>
 		</header>
 
 		{#if data.ssoName}
@@ -107,10 +113,10 @@
 				{:else}
 					<span class="text-xl" aria-hidden="true">🕊️</span>
 				{/if}
-				<span>המשך כ-{data.ssoName}</span>
+				<span>{tFn('auth_sso_continue_as')}{data.ssoName}</span>
 			</button>
 			<p class="text-center text-xs text-gray-400 mb-5">
-				זוהית דרך יוצאים לחירות. לא את/ה? אפשר להיכנס עם חשבון אחר למטה.
+				{tFn('auth_sso_identified_note')}
 			</p>
 
 			<div class="relative mb-5">
@@ -118,18 +124,18 @@
 					<div class="w-full border-t border-white/15"></div>
 				</div>
 				<div class="relative flex justify-center text-xs">
-					<span class="px-3 bg-blue-900/30 text-gray-400 font-bold">או</span>
+					<span class="px-3 bg-blue-900/30 text-gray-400 font-bold">{tFn('or')}</span>
 				</div>
 			</div>
 		{:else}
 			<!-- הודעה למשתמש חדש: הכניסה עם Google היא גם ההרשמה -->
 			<p class="mb-5 text-center text-amber-200 text-[13px] sm:text-sm font-bold leading-relaxed">
-				👋 פעם ראשונה כאן? כניסה עם Google יוצרת לך חשבון בלחיצה אחת.
+				{tFn('auth_first_time_note')}
 			</p>
 		{/if}
 
 		<div class="mb-3">
-			<GoogleSignInButton {returnTo} />
+			<GoogleSignInButton {returnTo} label={tFn('continue_google')} />
 		</div>
 
 		{#if !data.ssoName}
@@ -147,10 +153,10 @@
 				{:else}
 					<span class="text-lg" aria-hidden="true">🕊️</span>
 				{/if}
-				<span>כניסה דרך קהילת יוצאים לחירות (חשבון קיים או קוד ב-SMS)</span>
+				<span>{tFn('auth_sso_community_btn')}</span>
 			</button>
 			<p class="text-center text-xs text-gray-400 mb-5 leading-relaxed">
-				חברות בקבוצות הווצאפ אינה חשבון באתר. אם עדיין אין לך חשבון, הכניסה עם Google למעלה יוצרת אחד בלחיצה.
+				{tFn('auth_whatsapp_note')}
 			</p>
 		{/if}
 
@@ -159,13 +165,13 @@
 				<div class="w-full border-t border-white/15"></div>
 			</div>
 			<div class="relative flex justify-center text-xs">
-				<span class="px-3 bg-blue-900/30 text-gray-400 font-bold">או עם דוא"ל וסיסמה</span>
+				<span class="px-3 bg-blue-900/30 text-gray-400 font-bold">{tFn('auth_or_email')}</span>
 			</div>
 		</div>
 
 		<form onsubmit={handleLogin} class="space-y-4">
 			<div>
-				<label class="block text-sm font-bold text-blue-200 mb-1.5" for="li-ident">דוא"ל או שם משתמש</label>
+				<label class="block text-sm font-bold text-blue-200 mb-1.5" for="li-ident">{tFn('auth_identifier_label')}</label>
 				<input
 					id="li-ident"
 					type="text"
@@ -179,7 +185,7 @@
 			</div>
 
 			<div>
-				<label class="block text-sm font-bold text-blue-200 mb-1.5" for="li-pw">סיסמה</label>
+				<label class="block text-sm font-bold text-blue-200 mb-1.5" for="li-pw">{tFn('password_label')}</label>
 				<input
 					id="li-pw"
 					type="password"
@@ -200,16 +206,16 @@
 				disabled={submitting}
 				class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-black text-lg hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
 			>
-				{submitting ? 'מתחבר...' : 'התחבר'}
+				{submitting ? tFn('auth_logging_in') : tFn('login_register')}
 			</button>
 		</form>
 
 		<p class="mt-6 text-center text-sm text-gray-400">
-			עוד אין לך חשבון?
-			<a href="/signup" class="text-blue-300 hover:text-blue-200 underline font-bold">הירשם כאן</a>
+			{tFn('auth_no_account_yet')}
+			<a href="/signup" class="text-blue-300 hover:text-blue-200 underline font-bold">{tFn('register_here')}</a>
 		</p>
 		<p class="mt-3 text-center text-xs text-gray-500">
-			🔗 אותו חשבון פועל גם באתר <a href="https://community-il.gofreeil.com" class="text-blue-300/80 underline">קהילה בשכונה</a>
+			{tFn('auth_same_account_prefix')}<a href="https://community-il.gofreeil.com" class="text-blue-300/80 underline">{tFn('profile_site_community')}</a>
 		</p>
 	</div>
 </section>
