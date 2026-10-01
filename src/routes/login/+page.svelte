@@ -18,6 +18,12 @@
 	let errorMsg = $state('');
 	let returnTo = $state('/profile');
 	let ssoLoading = $state(false);
+	let badCreds = $state(false);
+
+	// האימייל שהוקלד נשלח לדף השחזור - לא צריך להקליד אותו פעמיים.
+	const forgotHref = $derived(
+		identifier.includes('@') ? `/forgot-password?email=${encodeURIComponent(identifier.trim())}` : '/forgot-password'
+	);
 
 	onMount(async () => {
 		try {
@@ -65,6 +71,7 @@
 		if (submitting) return;
 		submitting = true;
 		errorMsg = '';
+		badCreds = false;
 		try {
 			await strapiLogin(identifier.trim(), password);
 			const me = await getCurrentUser();
@@ -79,7 +86,8 @@
 			if (isNetworkError(e)) {
 				errorMsg = tFn('auth_err_network');
 			} else {
-				errorMsg = msg.toLowerCase().includes('invalid') ? tFn('auth_err_invalid_credentials') : msg;
+				badCreds = msg.toLowerCase().includes('invalid');
+				errorMsg = badCreds ? tFn('auth_err_invalid_credentials') : msg;
 			}
 			submitting = false;
 		}
@@ -195,10 +203,21 @@
 					placeholder="••••••••"
 					class="w-full px-3 py-2.5 rounded-lg bg-black/40 border border-white/15 text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
 				/>
+				<div class="mt-1.5 text-left">
+					<a href={forgotHref} class="text-sm text-blue-300 hover:text-blue-200 underline">שכחתי סיסמה</a>
+				</div>
 			</div>
 
 			{#if errorMsg}
-				<p class="text-red-300 text-sm font-bold">{errorMsg}</p>
+				<div>
+					<p class="text-red-300 text-sm font-bold">{errorMsg}</p>
+					{#if badCreds}
+						<ul class="mt-2 list-disc space-y-1 pr-5 text-xs leading-relaxed text-gray-300">
+							<li>נרשמתם בעבר עם <strong>Google</strong>? אז אין לכם סיסמה — היכנסו עם כפתור Google שלמעלה.</li>
+							<li>שכחתם את הסיסמה? <a href={forgotHref} class="font-bold text-blue-300 underline">שלחו לי קישור לבחירת סיסמה חדשה</a></li>
+						</ul>
+					{/if}
+				</div>
 			{/if}
 
 			<button
