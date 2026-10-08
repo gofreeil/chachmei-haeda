@@ -18,6 +18,9 @@
 
     let { currentUser, onLogout, onShowAuth }: Props = $props();
 
+    // תמונת הפרופיל לא נטענה (קישור שפג / חסום) → חוזרים לאות הראשונה
+    let avatarBroken = $state(false);
+
     let languages = [
         { name: "עברית", code: "he", flag: "il" },
         { name: "English", code: "en", flag: "us" },
@@ -507,9 +510,11 @@
 
                         {#if currentUser}
                             <a href="/profile" class="relative group flex-shrink-0" aria-label="{tFn('header_profile_aria_user')} – {currentUser.username ?? tFn('header_user_fallback')}">
-                                {#if currentUser.avatar_url}
+                                {#if currentUser.avatar_url && !avatarBroken}
                                     <img
                                         src={currentUser.avatar_url}
+                                        referrerpolicy="no-referrer"
+                                        onerror={() => (avatarBroken = true)}
                                         alt=""
                                         width="36"
                                         height="36"
@@ -769,9 +774,11 @@
                                 onmouseleave={() => showProfileTooltip = false}
                                 onmousemove={handleProfileMouseMove}
                             >
-                                {#if currentUser.avatar_url}
+                                {#if currentUser.avatar_url && !avatarBroken}
                                     <img
                                         src={currentUser.avatar_url}
+                                        referrerpolicy="no-referrer"
+                                        onerror={() => (avatarBroken = true)}
                                         alt=""
                                         width="56"
                                         height="56"
