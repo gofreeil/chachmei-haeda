@@ -55,6 +55,6 @@ export async function addNewsItem(input: { line1: string; line2?: string; source
 		active: true,
 		order: 100
 	};
-	const resp = await strapiPost<{ data: StrapiNewsAttrs }>(COLLECTION, payload);
+	const resp = await strapiPost<{ data: StrapiNewsAttrs }>(COLLECTION, payload, { needAuth: true });
 	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiNewsAttrs);
 }

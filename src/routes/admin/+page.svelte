@@ -49,7 +49,7 @@
 		deleteRuling,
 		type HearingRequest
 	} from '$lib/services/hearings-service';
-	import { getCurrentUser, isChachmeiAdmin, isSuperAdmin, isLimitedChachmeiAdmin, strapiLogout, type StrapiUser } from '$lib/strapi';
+	import { getCurrentUser, isChachmeiAdmin, isSuperAdmin, isLimitedChachmeiAdmin, strapiLogout, saveErrorMessageHe, type StrapiUser } from '$lib/strapi';
 	import { listAdmins, listCommunityUsers, listOtherUsers, setAdminRole, type AdminUser, type RegisteredUser } from '$lib/services/admin-users-service';
 	import type { CharterEntry } from '$lib/data/charter';
 	import type { Hearing, Ruling, HearingStatus } from '$lib/data/hearings';
@@ -286,7 +286,7 @@
 		try {
 			await saveHomeConfig({ homeVideoUrl: trimmed, homeVideoTitle: trimmedTitle });
 		} catch (err) {
-			homeVideoNotice = '⚠️ נשמר מקומית בלבד (Strapi לא זמין)';
+			homeVideoNotice = '⚠️ נשמר מקומית בלבד — ' + saveErrorMessageHe(err);
 			setTimeout(() => (homeVideoNotice = ''), 4000);
 			return;
 		}
@@ -1021,13 +1021,23 @@
 	}
 
 	// ───────────── ניהול מאמרים ─────────────
+	// ה-slug נשמר בשדה uid בסטראפי, שמקבל רק A-Z a-z 0-9 - _ . ~ (עברית נדחית בשגיאת
+	// אימות) — לכן כותרת עברית מתועתקת לאותיות לטיניות, כמו ה-slugs הסטטיים.
+	const HEB_TO_LATIN: Record<string, string> = {
+		א: 'a', ב: 'b', ג: 'g', ד: 'd', ה: 'h', ו: 'v', ז: 'z', ח: 'ch', ט: 't', י: 'y',
+		כ: 'k', ך: 'k', ל: 'l', מ: 'm', ם: 'm', נ: 'n', ן: 'n', ס: 's', ע: 'a', פ: 'p',
+		ף: 'f', צ: 'tz', ץ: 'tz', ק: 'k', ר: 'r', ש: 'sh', ת: 't'
+	};
 	function slugify(s: string): string {
 		return s
 			.trim()
-			.replace(/[^֐-׿a-zA-Z0-9\s-]/g, '')
+			.replace(/[א-ת]/g, (c) => HEB_TO_LATIN[c] ?? '')
+			.replace(/[^a-zA-Z0-9\s-]/g, '')
 			.replace(/\s+/g, '-')
+			.replace(/-+/g, '-')
+			.replace(/^-|-$/g, '')
 			.toLowerCase()
-			.slice(0, 60) || `art-${Date.now()}`;
+			.slice(0, 60) || `art-${Date.now().toString(36)}`;
 	}
 
 	async function submitArticle(e: Event) {
@@ -1056,7 +1066,7 @@
 			await addArticle(newArt);
 		} catch (err: any) {
 			// הטופס נשאר מלא — לא מאבדים את מה שהוקלד
-			artNotice = '⚠️ הפרסום נכשל — בדקו את החיבור ונסו שוב';
+			artNotice = '⚠️ הפרסום נכשל — ' + saveErrorMessageHe(err);
 			return;
 		}
 		artTitle = '';
@@ -1120,9 +1130,9 @@
 		};
 		try {
 			await addActivity(newItem);
-		} catch {
+		} catch (err) {
 			// הטופס נשאר מלא — לא מאבדים את מה שהוקלד
-			vidNotice = '⚠️ הפרסום נכשל — בדקו את החיבור ונסו שוב';
+			vidNotice = '⚠️ הפרסום נכשל — ' + saveErrorMessageHe(err);
 			return;
 		}
 		vidTitle = '';
@@ -1161,9 +1171,9 @@
 				line2: newsSummary.trim() || undefined,
 				sourceUrl: newsSourceUrl.trim() || undefined
 			});
-		} catch {
+		} catch (err) {
 			// הטופס נשאר מלא — לא מאבדים את מה שהוקלד
-			newsNotice = '⚠️ ההוספה נכשלה — בדקו את החיבור ונסו שוב';
+			newsNotice = '⚠️ ההוספה נכשלה — ' + saveErrorMessageHe(err);
 			return;
 		}
 		newsTitle = '';

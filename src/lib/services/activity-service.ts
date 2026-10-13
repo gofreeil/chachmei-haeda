@@ -66,7 +66,7 @@ export async function addActivity(input: ActivityItem): Promise<ActivityItem> {
 		sourceUrl: input.sourceUrl,
 		tags: input.tags ?? []
 	};
-	const resp = await strapiPost<{ data: StrapiActivityAttrs }>(COLLECTION, payload);
+	const resp = await strapiPost<{ data: StrapiActivityAttrs }>(COLLECTION, payload, { needAuth: true });
 	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiActivityAttrs);
 }
 

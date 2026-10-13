@@ -118,7 +118,7 @@ export async function publishAnswer(input: {
 		answer: { he: input.answer, en: input.answer, ru: input.answer },
 		answeredBy: { he: input.answeredBy, en: input.answeredBy, ru: input.answeredBy },
 		answerDate: new Date().toISOString().slice(0, 10)
-	});
+	}, { needAuth: true });
 }
 
 export async function markSubmissionAnswered(id: string, qaSlug: string): Promise<void> {

@@ -62,7 +62,7 @@ export async function addArticle(input: Omit<Article, 'date'> & { date?: string 
 		approvedBy: input.approvedBy ?? [],
 		tags: input.tags ?? []
 	};
-	const resp = await strapiPost<{ data: StrapiArticleAttrs }>(COLLECTION, payload);
+	const resp = await strapiPost<{ data: StrapiArticleAttrs }>(COLLECTION, payload, { needAuth: true });
 	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiArticleAttrs);
 }
 

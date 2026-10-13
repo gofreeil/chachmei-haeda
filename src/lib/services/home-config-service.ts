@@ -1,4 +1,4 @@
-import { safeStrapiSingle, strapiPost } from '$lib/strapi';
+import { safeStrapiSingle, strapiPutSingle } from '$lib/strapi';
 
 const SINGLE = 'ch-home-config';
 
@@ -17,9 +17,9 @@ export async function loadHomeConfig(): Promise<HomeConfig> {
 	};
 }
 
-/** העלאת קונפיג חדש (PUT דרך POST של ה-single type). */
+/** שמירת הקונפיג — PUT על ה-single type (ל-single type אין POST בסטראפי). */
 export async function saveHomeConfig(input: HomeConfig): Promise<void> {
-	await strapiPost(SINGLE, {
+	await strapiPutSingle(SINGLE, {
 		homeVideoUrl: input.homeVideoUrl?.trim() || null,
 		homeVideoTitle: input.homeVideoTitle?.trim() || null
 	});

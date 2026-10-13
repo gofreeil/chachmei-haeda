@@ -125,6 +125,40 @@ export async function strapiGet<T = any>(
 	return res.json();
 }
 
+/** תשובת-שגיאה מהשרת (לא כשל-רשת) — נושאת את קוד ה-HTTP ואת הודעת Strapi, כדי
+ *  שהממשק יבחין בין "אין הרשאה" / "נתון לא תקין" לבין בעיית חיבור אמיתית. */
+export class StrapiError extends Error {
+	status: number;
+	serverMessage: string;
+	constructor(message: string, status: number, serverMessage: string) {
+		super(message);
+		this.status = status;
+		this.serverMessage = serverMessage;
+	}
+}
+
+async function responseError(label: string, res: Response): Promise<StrapiError> {
+	const txt = await res.text().catch(() => '');
+	let serverMessage = '';
+	try {
+		serverMessage = JSON.parse(txt)?.error?.message ?? '';
+	} catch {}
+	return new StrapiError(`Strapi ${label} failed: ${res.status} ${txt.slice(0, 200)}`, res.status, serverMessage);
+}
+
+/** הודעה בעברית לכשל שמירה/פרסום — לפי הסיבה בפועל, ולא תמיד "בדקו את החיבור". */
+export function saveErrorMessageHe(e: unknown): string {
+	if (isNetworkError(e)) return NETWORK_ERROR_MESSAGE_HE;
+	if (e instanceof StrapiError) {
+		if (e.status === 401) return 'פג תוקף ההתחברות — התנתקו, התחברו מחדש ונסו שוב';
+		if (e.status === 403) return 'לחשבון הזה אין הרשאת פרסום בשרת — פנו לסופר-אדמין';
+		if (e.status === 413) return 'התוכן או התמונה גדולים מדי — נסו תמונה קטנה יותר';
+		if (e.status >= 502) return 'שרת התוכן לא זמין כרגע — נסו שוב בעוד כמה דקות';
+		return `השרת דחה את השמירה (${e.status})${e.serverMessage ? ': ' + e.serverMessage : ''}`;
+	}
+	return e instanceof Error ? e.message : String(e);
+}
+
 export async function strapiPost<T = any>(
 	path: string,
 	data: any,
@@ -137,10 +171,7 @@ export async function strapiPost<T = any>(
 		headers: buildHeaders(opts.needAuth ?? false),
 		body
 	});
-	if (!res.ok) {
-		const txt = await res.text().catch(() => '');
-		throw new Error(`Strapi POST ${path} failed: ${res.status} ${txt.slice(0, 200)}`);
-	}
+	if (!res.ok) throw await responseError(`POST ${path}`, res);
 	return res.json();
 }
 
@@ -155,20 +186,25 @@ export async function strapiPut<T = any>(
 		headers: buildHeaders(true),
 		body: JSON.stringify({ data })
 	});
-	if (!res.ok) {
-		const txt = await res.text().catch(() => '');
-		throw new Error(`Strapi PUT ${path}/${id} failed: ${res.status} ${txt.slice(0, 200)}`);
-	}
+	if (!res.ok) throw await responseError(`PUT ${path}/${id}`, res);
+	return res.json();
+}
+
+/** עדכון single type (PUT /api/<path>, בלי מזהה) — יוצר אותו אם עוד לא קיים. */
+export async function strapiPutSingle<T = any>(path: string, data: any): Promise<T> {
+	const res = await fetch(`${BASE_URL}/api/${path}`, {
+		method: 'PUT',
+		headers: buildHeaders(true),
+		body: JSON.stringify({ data })
+	});
+	if (!res.ok) throw await responseError(`PUT ${path}`, res);
 	return res.json();
 }
 
 export async function strapiDelete<T = any>(path: string, id: string | number): Promise<T> {
 	const url = `${BASE_URL}/api/${path}/${id}`;
 	const res = await fetch(url, { method: 'DELETE', headers: buildHeaders(true) });
-	if (!res.ok) {
-		const txt = await res.text().catch(() => '');
-		throw new Error(`Strapi DELETE ${path}/${id} failed: ${res.status} ${txt.slice(0, 200)}`);
-	}
+	if (!res.ok) throw await responseError(`DELETE ${path}/${id}`, res);
 	// מחיקה מוצלחת עשויה לחזור כ-204 בלי גוף — אסור שזה ייחשב כישלון
 	return res.json().catch(() => undefined as T);
 }

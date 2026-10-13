@@ -62,7 +62,7 @@ function toPayload(r: Rabbi, order?: number) {
 
 export async function addRabbi(r: Rabbi, order = 100): Promise<Rabbi> {
 	const payload = toPayload(r, order);
-	const resp = await strapiPost<{ data: StrapiRabbiAttrs }>(COLLECTION, payload);
+	const resp = await strapiPost<{ data: StrapiRabbiAttrs }>(COLLECTION, payload, { needAuth: true });
 	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiRabbiAttrs);
 }
 
@@ -83,7 +83,7 @@ export async function saveRabbisOrder(rabbis: Rabbi[]): Promise<void> {
  *  כפי שנשמרה, עם documentId-ים אמיתיים בתור id. */
 export async function seedRabbis(rabbis: Rabbi[]): Promise<Rabbi[]> {
 	for (let i = 0; i < rabbis.length; i++) {
-		await strapiPost(COLLECTION, toPayload(rabbis[i], i));
+		await strapiPost(COLLECTION, toPayload(rabbis[i], i), { needAuth: true });
 	}
 	return listBackendRabbis();
 }

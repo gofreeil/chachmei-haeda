@@ -166,7 +166,7 @@ export async function createHearing(input: {
 		hearingDate: input.date,
 		hearingTime: input.time,
 		status: STATUS_MAP_TO_BACKEND[input.status]
-	});
+	}, { needAuth: true });
 }
 
 export async function updateHearing(id: string, input: Partial<{
@@ -206,7 +206,7 @@ export async function createRuling(input: {
 		rulingDate: input.date,
 		summary: { he: input.summary, en: input.summary, ru: input.summary },
 		decision: { he: input.decision, en: input.decision, ru: input.decision }
-	});
+	}, { needAuth: true });
 }
 
 export async function updateRuling(id: string, input: {
