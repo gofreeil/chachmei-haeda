@@ -231,7 +231,7 @@
 
 		<p class="mt-6 text-center text-sm text-gray-400">
 			{tFn('auth_no_account_yet')}
-			<a href="/signup" class="text-blue-300 hover:text-blue-200 underline font-bold">{tFn('register_here')}</a>
+			<a href="/signup?returnTo={encodeURIComponent(returnTo)}" class="text-blue-300 hover:text-blue-200 underline font-bold">{tFn('register_here')}</a>
 		</p>
 		<p class="mt-3 text-center text-xs text-gray-500">
 			{tFn('auth_same_account_prefix')}<a href="https://community-il.gofreeil.com" class="text-blue-300/80 underline">{tFn('profile_site_community')}</a>

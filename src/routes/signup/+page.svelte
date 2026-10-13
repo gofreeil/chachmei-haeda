@@ -16,10 +16,16 @@
 	let confirmPassword = $state('');
 	let submitting = $state(false);
 	let errorMsg = $state('');
+	// יעד החזרה (הבקשה שבגללה נשלחו להירשם) — כמו בדף ההתחברות
+	let returnTo = $state('');
 
 	onMount(async () => {
+		try {
+			const ret = new URLSearchParams(window.location.search).get('returnTo') ?? '';
+			if (ret.startsWith('/') && !ret.startsWith('//') && ret !== '/profile') returnTo = ret;
+		} catch {}
 		const user = await getCurrentUser();
-		if (user) goto('/profile');
+		if (user) goto(returnTo || '/profile');
 	});
 
 	async function handleSubmit(e: Event) {
@@ -42,7 +48,15 @@
 				password
 			});
 			await claimRegistrationOrigin();
-			goto('/profile');
+			if (returnTo) {
+				// הגיעו מבקשה: ניווט מלא עם welcome=new — מסך הפתיחה מציג
+				// "השלמת את ההרשמה, כעת תועבר לבקשתך הראשונה" (ראו $lib/authIntent)
+				const u = new URL(returnTo, window.location.origin);
+				u.searchParams.set('welcome', 'new');
+				window.location.href = `${u.pathname}${u.search}${u.hash}`;
+			} else {
+				goto('/profile');
+			}
 		} catch (e: any) {
 			const msg = e?.message ?? tFn('auth_err_register_failed');
 			if (isNetworkError(e)) {
@@ -74,7 +88,7 @@
 		</header>
 
 		<div class="mb-5">
-			<GoogleSignInButton label={tFn('auth_signup_google')} />
+			<GoogleSignInButton returnTo={returnTo || '/profile'} label={tFn('auth_signup_google')} />
 		</div>
 
 		<div class="relative mb-5">
@@ -158,7 +172,7 @@
 
 		<p class="mt-6 text-center text-sm text-gray-400">
 			{tFn('already_registered')}
-			<a href="/login" class="text-blue-300 hover:text-blue-200 underline font-bold">{tFn('login_here')}</a>
+			<a href={returnTo ? `/login?returnTo=${encodeURIComponent(returnTo)}` : '/login'} class="text-blue-300 hover:text-blue-200 underline font-bold">{tFn('login_here')}</a>
 		</p>
 		<p class="mt-3 text-center text-xs text-gray-500">
 			{tFn('auth_same_account_prefix')}<a href="https://community-il.gofreeil.com" class="text-blue-300/80 underline">{tFn('profile_site_community')}</a>
