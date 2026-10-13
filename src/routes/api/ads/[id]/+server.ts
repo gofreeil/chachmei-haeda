@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getAd, isAdOwner, updateAdContent, normalizeLanding } from '$lib/server/adsStore';
 import { ownerCandidateKeys } from '$lib/server/ownership';
+import { notifyAdminsAdEdited } from '$lib/server/adsNotify';
 import { adPayloadIssue } from '$lib/server/adBudget';
 import { requireUser } from '$lib/server/adsAdmin';
 
@@ -60,6 +61,16 @@ export const PUT: RequestHandler = async ({ params, request }) => {
         }
         throw error(502, 'העדכון נכשל — נסו שוב בעוד רגע');
     }
+
+    // העריכה לא עוברת אישור (מודעה מאושרת מתעדכנת באתר מיד) — הצוות חייב
+    // לדעת עליה. best-effort: כשל בהתראה לא מפיל את העריכה.
+    await notifyAdminsAdEdited({
+        adTitle: payload.title,
+        previousTitle: ad.title,
+        status: ad.status,
+        editorName: user.name,
+        editorEmail: user.email,
+    });
 
     return json({ ok: true, id: params.id, status: ad.status });
 };
