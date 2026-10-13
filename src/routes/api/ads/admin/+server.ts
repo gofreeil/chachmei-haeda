@@ -1,4 +1,5 @@
 import { json, error, isHttpError } from '@sveltejs/kit';
+import { failReason } from '$lib/server/strapiClient.js';
 import type { RequestHandler } from './$types';
 import { getAdminContext } from '$lib/server/adsAdmin';
 import {
@@ -247,6 +248,6 @@ export const POST: RequestHandler = async ({ request }) => {
     } catch (err) {
         if (isHttpError(err)) throw err;
         console.error(`admin/ads action "${body.action}" failed:`, err);
-        throw error(502, 'הפעולה נכשלה — נסו שוב');
+        throw error(502, `הפעולה נכשלה: ${failReason(err)}`);
     }
 };
