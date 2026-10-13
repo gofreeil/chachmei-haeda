@@ -68,6 +68,12 @@
 	// הכרטיס עצמו והקישור נשארים ב-SSR, ורק ה-img נדחה, כדי לא לפגוע בסריקה.
 	let adImagesReady = $state(false);
 
+	// רשת ביטחון: הדגל נדלק גם אם המגירה נפתחה ממסלול שאינו הלשונית (דיפ-לינק,
+	// כפתור עתידי במקום אחר). בלי זה מסלול כזה היה פותח מגירה עם ריבועים ריקים.
+	$effect(() => {
+		if (open) adImagesReady = true;
+	});
+
 	// סגירה מלאה: חזרה למצב ההתחלתי (לא לקולאפס)
 	function closeAll() {
 		open = false;
@@ -277,9 +283,9 @@
 	<!-- Drawer -->
 	<div class="drawer"
 		role="dialog"
-		aria-modal="true"
+		aria-modal={open}
 		aria-label={tFn('mobile_ads_drawer_dialog_aria')}
-		aria-hidden={!open}
+		inert={!open || undefined}
 		ontouchstart={onDrawerTouchStart}
 		ontouchend={onDrawerTouchEnd}
 	>
@@ -406,11 +412,12 @@
 					     על הכרטיסים שנמצאים מתחת לגלילה ברשימה. -->
 					{#if adImagesReady}
 						<img
-							src={ad.image}
+							src={ad.thumb}
 							alt={pickLang(ad.title, _loc)}
 							class="benefit-img"
 							decoding="async"
 							loading="lazy"
+							fetchpriority="low"
 						/>
 					{/if}
 				</div>

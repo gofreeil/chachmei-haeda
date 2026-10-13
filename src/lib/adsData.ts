@@ -10,6 +10,7 @@ export interface Ad {
     cta: LocalizedText;
     href: string;
     image: string;
+    thumb: string;
     color: string;
     imageHeight?: string;   // גובה מותאם לתמונה (ברירת מחדל: auto)
     imageScale?: number;    // זום על התמונה (ברירת מחדל: 1)
@@ -36,6 +37,7 @@ export const ads: Ad[] = [
         },
         href: "https://community.gofreeil.com/",
         image: "/images/community-neighborhood.webp",
+        thumb: "/images/community-neighborhood-thumb.webp",
         color: "from-blue-500 to-purple-600"
     },
     {
@@ -62,6 +64,7 @@ export const ads: Ad[] = [
         },
         href: "https://gemach.gofreeil.com/",
         image: "/images/gemach-harzi.webp",
+        thumb: "/images/gemach-harzi-thumb.webp",
         color: "from-pink-600 via-fuchsia-600 to-purple-700",
     },
     {
@@ -83,6 +86,7 @@ export const ads: Ad[] = [
         },
         href: "https://neighborhoods.gofreeil.com/",
         image: "/images/news/vaadei-shchunot.webp",
+        thumb: "/images/news/vaadei-shchunot-thumb.webp",
         color: "from-blue-600 to-cyan-600"
     },
     {
@@ -104,6 +108,7 @@ export const ads: Ad[] = [
         },
         href: "https://criticism.gofreeil.com/",
         image: "/images/mevaker-rashuyot.webp",
+        thumb: "/images/mevaker-rashuyot-thumb.webp",
         color: "from-blue-700 to-indigo-700",
         imageHeight: "120px",
         imageScale: 1.2,
@@ -127,6 +132,7 @@ export const ads: Ad[] = [
         },
         href: "https://rating.gofreeil.com/",
         image: "/images/public-rating.webp",
+        thumb: "/images/public-rating-thumb.webp",
         color: "from-indigo-600 to-blue-600",
         imageHeight: "200px",
         imageScale: 0.9,
@@ -155,6 +161,7 @@ export const ads: Ad[] = [
         },
         href: "https://referendum.gofreeil.com/",
         image: "/images/referendum.webp",
+        thumb: "/images/referendum-thumb.webp",
         color: "from-purple-600 to-indigo-700"
     },
     {
@@ -176,6 +183,7 @@ export const ads: Ad[] = [
         },
         href: "https://groups.gofreeil.com/",
         image: "/images/whatsapp_cta.webp",
+        thumb: "/images/whatsapp_cta-thumb.webp",
         color: "from-green-800 to-emerald-900"
     },
     {
@@ -197,6 +205,7 @@ export const ads: Ad[] = [
         },
         href: "https://index.gofreeil.com/",
         image: "/images/professionals.webp",
+        thumb: "/images/professionals-thumb.webp",
         color: "from-yellow-500 to-orange-500"
     },
     {
@@ -223,6 +232,7 @@ export const ads: Ad[] = [
         },
         href: "https://shop.gofreeil.com/",
         image: "/images/freedom-store.webp",
+        thumb: "/images/freedom-store-thumb.webp",
         color: "from-emerald-600 to-teal-700"
     }
 ];
