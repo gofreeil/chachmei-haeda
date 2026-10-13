@@ -13,6 +13,8 @@ import {
     removeAdExtraSlot,
     computeAdSlots,
     computeAdExtraSlots,
+    computeSchedules,
+    removeAd,
     setAdDuration,
     setAdExpiry,
     normalizeDurationDays,
@@ -122,7 +124,7 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
         expired: ads.filter((a) => a.isExpired).length,
     };
 
-    return json({ ads, inventory, backendUnavailable, superAdmin });
+    return json({ ads, inventory, schedules: computeSchedules(raw.filter((a) => a.status === 'approved')), backendUnavailable, superAdmin });
 };
 
 // ---------- פעולות ----------
@@ -241,6 +243,12 @@ export const POST: RequestHandler = async ({ request }) => {
                 const r = await removeAdExtraSlot(id, Number(body.slot));
                 if (!r) throw error(404, 'השכפול לא נמצא');
                 return json({ ok: true, message: `השכפול של "${r.title}" במקום ${r.slot} בוטל` });
+            }
+            // מחיקה לצמיתות שמורה לסופר-אדמין; אדמין שמונה מוריד מהאתר ולא מוחק
+            case 'remove': {
+                if (!superAdmin) throw error(403, 'מחיקה שמורה לסופר-אדמין');
+                await removeAd(id);
+                return json({ ok: true, message: 'נמחקה לצמיתות' });
             }
             default:
                 throw error(400, 'פעולה לא מוכרת');
