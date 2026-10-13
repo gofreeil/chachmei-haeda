@@ -119,7 +119,8 @@ function fromStrapi(item: StrapiCharterAttrs): CharterEntry {
 export async function loadEntries(): Promise<CharterEntry[]> {
 	const list = await safeStrapiList<StrapiCharterAttrs>(COLLECTION, {
 		sort: 'signedDate:desc',
-		'pagination[pageSize]': 200
+		// maxLimit של השרת = 1000 — מעבר ל-200 החתימות האחרונות פשוט נחתכו בשקט
+		'pagination[pageSize]': 1000
 	});
 	if (list.length === 0) return [...initialCharterEntries];
 	return list.map(fromStrapi);

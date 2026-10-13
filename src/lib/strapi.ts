@@ -190,17 +190,6 @@ export async function strapiPut<T = any>(
 	return res.json();
 }
 
-/** עדכון single type (PUT /api/<path>, בלי מזהה) — יוצר אותו אם עוד לא קיים. */
-export async function strapiPutSingle<T = any>(path: string, data: any): Promise<T> {
-	const res = await fetch(`${BASE_URL}/api/${path}`, {
-		method: 'PUT',
-		headers: buildHeaders(true),
-		body: JSON.stringify({ data })
-	});
-	if (!res.ok) throw await responseError(`PUT ${path}`, res);
-	return res.json();
-}
-
 export async function strapiDelete<T = any>(path: string, id: string | number): Promise<T> {
 	const url = `${BASE_URL}/api/${path}/${id}`;
 	const res = await fetch(url, { method: 'DELETE', headers: buildHeaders(true) });

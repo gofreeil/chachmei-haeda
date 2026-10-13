@@ -7,7 +7,6 @@
 	import { loadArticles } from '$lib/services/articles-service';
 	import { latestActivityAsync } from '$lib/services/activity-service';
 	import { loadQa } from '$lib/services/qa-service';
-	import { loadHomeConfig } from '$lib/services/home-config-service';
 	import NewsTicker from '$lib/components/NewsTicker.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
@@ -28,43 +27,13 @@
 	let recentActivity = $state(latestActivity());
 
 	let allArticles = $state<Article[]>(staticArticles);
-	const DEFAULT_HOME_VIDEO = 'https://youtu.be/9ioV_PeaqWE?si=WN00o8ByG65ZOvQ4';
-	let homeVideoUrl = $state<string>(DEFAULT_HOME_VIDEO);
-	let homeVideoTitle = $state<string>('');
-
-	function toEmbedUrl(url: string): string {
-		if (!url) return '';
-		const t = url.trim();
-		// youtu.be/ID
-		let m = t.match(/youtu\.be\/([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		// youtube.com/watch?v=ID
-		m = t.match(/[?&]v=([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		// already embed
-		m = t.match(/youtube\.com\/embed\/([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		// shorts/ID
-		m = t.match(/youtube\.com\/shorts\/([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		return t;
-	}
-
-	let embedVideoUrl = $derived(toEmbedUrl(homeVideoUrl));
 
 	onMount(async () => {
 		try {
-			const savedVid = localStorage.getItem('chachmei-home-video-url');
-			if (savedVid !== null) homeVideoUrl = savedVid;
-			const savedTitle = localStorage.getItem('chachmei-home-video-title');
-			if (savedTitle !== null) homeVideoTitle = savedTitle;
-		} catch {}
-		try {
-			const [arts, act, qa, cfg] = await Promise.all([
+			const [arts, act, qa] = await Promise.all([
 				loadArticles(),
 				latestActivityAsync(),
-				loadQa(),
-				loadHomeConfig()
+				loadQa()
 			]);
 			if (arts.length) allArticles = arts;
 			if (act) recentActivity = act;
@@ -73,8 +42,6 @@
 			if (answered.length) {
 				recentQa = [...answered].sort((a, b) => b.answerDate.localeCompare(a.answerDate))[0];
 			}
-			if (cfg.homeVideoUrl) homeVideoUrl = cfg.homeVideoUrl;
-			if (cfg.homeVideoTitle) homeVideoTitle = cfg.homeVideoTitle;
 		} catch {}
 	});
 

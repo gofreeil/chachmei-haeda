@@ -15,7 +15,6 @@
 		saveRabbisOrder,
 		seedRabbis
 	} from '$lib/services/rabbis-service';
-	import { loadHomeConfig, saveHomeConfig } from '$lib/services/home-config-service';
 	import {
 		loadEntries as loadCharterEntries,
 		disqualifyEntry,
@@ -60,9 +59,6 @@
 
 	const SESSION_KEY = 'chachmei-admin-session';
 	const CASES_KEY = 'chachmei-cases';
-	const HOME_VIDEO_KEY = 'chachmei-home-video-url';
-	const HOME_VIDEO_TITLE_KEY = 'chachmei-home-video-title';
-	const DEFAULT_HOME_VIDEO_TITLE = 'חכמי עדת ישראל פועלים להעלות שבטים אבודים לארץ';
 
 	let isLoggedIn = $state(false);
 	let authChecking = $state(true);
@@ -256,52 +252,15 @@
 	let vidSourceUrl = $state('');
 	let vidNotice = $state('');
 
-	// ───────────── סרטון דף הבית ─────────────
-	let homeVideoUrl = $state('');
-	let homeVideoTitle = $state(DEFAULT_HOME_VIDEO_TITLE);
-	let homeVideoNotice = $state('');
-
+	/** קישור יוטיוב → כתובת הטמעה. קישור שאינו יוטיוב מחזיר '' — באתר הוא היה
+	 *  מוצג כחלון סרטון שבור (רוב האתרים חוסמים הטמעה ב-iframe). */
 	function toEmbedUrl(url: string): string {
-		if (!url) return '';
 		const t = url.trim();
-		let m = t.match(/youtu\.be\/([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		m = t.match(/[?&]v=([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		m = t.match(/youtube\.com\/embed\/([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		m = t.match(/youtube\.com\/shorts\/([\w-]{6,})/);
-		if (m) return `https://www.youtube.com/embed/${m[1]}`;
-		return t;
-	}
-
-	async function saveHomeVideo(e: Event) {
-		e.preventDefault();
-		const trimmed = homeVideoUrl.trim();
-		const trimmedTitle = homeVideoTitle.trim();
-		try {
-			localStorage.setItem(HOME_VIDEO_KEY, trimmed);
-			localStorage.setItem(HOME_VIDEO_TITLE_KEY, trimmedTitle);
-		} catch {}
-		try {
-			await saveHomeConfig({ homeVideoUrl: trimmed, homeVideoTitle: trimmedTitle });
-		} catch (err) {
-			homeVideoNotice = '⚠️ נשמר מקומית בלבד — ' + saveErrorMessageHe(err);
-			setTimeout(() => (homeVideoNotice = ''), 4000);
-			return;
-		}
-		homeVideoNotice = trimmed ? '✅ הסרטון והכותרת נשמרו ויופיעו בדף הבית' : '✅ הסרטון הוסר מדף הבית';
-		setTimeout(() => (homeVideoNotice = ''), 4000);
-	}
-
-	async function clearHomeVideo() {
-		if (!(await askConfirm('להסיר את הסרטון מדף הבית?'))) return;
-		homeVideoUrl = '';
-		try {
-			localStorage.removeItem(HOME_VIDEO_KEY);
-		} catch {}
-		homeVideoNotice = '✅ הסרטון הוסר מדף הבית';
-		setTimeout(() => (homeVideoNotice = ''), 4000);
+		const m =
+			t.match(/youtu\.be\/([\w-]{6,})/) ??
+			t.match(/youtube\.com\/.*[?&]v=([\w-]{6,})/) ??
+			t.match(/youtube\.com\/(?:embed|shorts|live)\/([\w-]{6,})/);
+		return m ? `https://www.youtube.com/embed/${m[1]}` : '';
 	}
 
 	onMount(async () => {
@@ -430,10 +389,6 @@
 		try {
 			const c = JSON.parse(localStorage.getItem(CASES_KEY) || '[]');
 			if (Array.isArray(c)) pendingCases = c;
-			const hv = localStorage.getItem(HOME_VIDEO_KEY);
-			if (hv) homeVideoUrl = hv;
-			const hvt = localStorage.getItem(HOME_VIDEO_TITLE_KEY);
-			if (hvt !== null) homeVideoTitle = hvt;
 			const r = localStorage.getItem(RABBIS_STORAGE_KEY);
 			if (r) {
 				const parsed = JSON.parse(r);
@@ -442,18 +397,13 @@
 				}
 			}
 		} catch {}
-		// Strapi מנצח על localStorage לרבנים וקונפיג בית
+		// Strapi מנצח על localStorage לרבנים
 		try {
 			const backendRabbis = await listBackendRabbis();
 			if (backendRabbis.length) {
 				rabbis = backendRabbis;
 				rabbisSeeded = true;
 			}
-		} catch {}
-		try {
-			const cfg = await loadHomeConfig();
-			if (cfg.homeVideoUrl) homeVideoUrl = cfg.homeVideoUrl;
-			if (cfg.homeVideoTitle) homeVideoTitle = cfg.homeVideoTitle;
 		} catch {}
 	}
 
@@ -1115,7 +1065,11 @@
 			vidNotice = '⚠️ חובה להזין קישור לסרטון';
 			return;
 		}
-		const embeddedVideo = vidUrl.trim() ? toEmbedUrl(vidUrl.trim()) : '';
+		const embeddedVideo = vidUrl.trim() ? toEmbedUrl(vidUrl) : '';
+		if (vidUrl.trim() && !embeddedVideo) {
+			vidNotice = '⚠️ הקישור לסרטון אינו קישור יוטיוב תקין — העתיקו את הקישור מכפתור "שיתוף" ביוטיוב';
+			return;
+		}
 		const newItem: ActivityItem = {
 			slug: slugify(vidTitle) + '-' + Math.floor(Math.random() * 1000),
 			kind: vidKind,
@@ -1926,84 +1880,6 @@
 			</div>
 		{:else if activeTab === 'videos'}
 			<div class="space-y-6">
-				<!-- סרטון בדף הבית -->
-				<div class="rounded-2xl border-2 border-cyan-500/40 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 p-5 md:p-6">
-					<h2 class="text-xl font-black text-cyan-200 mb-2">🎥 סרטון יוטיוב בדף הבית</h2>
-					<p class="text-sm text-gray-300 mb-4">
-						הסרטון יוצג מתחת לכותרת "📡 הפעילות שלנו" בדף הבית. ניתן להזין קישור רגיל מיוטיוב - הוא יומר אוטומטית להטמעה.
-					</p>
-					<form onsubmit={saveHomeVideo} class="space-y-3">
-						<div>
-							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="home-vid-title">כותרת מעל הסרטון</label>
-							<input
-								id="home-vid-title"
-								type="text"
-								bind:value={homeVideoTitle}
-								placeholder="לדוגמה: חכמי עדת ישראל פועלים להעלות שבטים אבודים לארץ"
-								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-cyan-400 focus:outline-none text-right"
-							/>
-							<p class="text-xs text-gray-500 mt-1">
-								הכותרת תוצג מעל הסרטון בדף הבית. השאר ריק כדי להסתיר.
-							</p>
-						</div>
-						<div>
-							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="home-vid-url">קישור ליוטיוב</label>
-							<input
-								id="home-vid-url"
-								type="url"
-								bind:value={homeVideoUrl}
-								dir="ltr"
-								placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX"
-								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-cyan-400 focus:outline-none text-right"
-							/>
-							<p class="text-xs text-gray-500 mt-1">
-								תומך בפורמטים: youtube.com/watch?v=… , youtu.be/… , youtube.com/embed/… , youtube.com/shorts/…
-							</p>
-						</div>
-
-						{#if homeVideoUrl.trim()}
-							<div class="rounded-lg border border-white/10 bg-black/30 p-3">
-								<p class="text-xs font-bold text-gray-400 mb-2">תצוגה מקדימה:</p>
-								<div class="relative w-full max-w-md mx-auto" style="padding-top: 56.25%; max-width: 28rem;">
-									<iframe
-										src={toEmbedUrl(homeVideoUrl)}
-										title="תצוגה מקדימה"
-										class="absolute inset-0 w-full h-full rounded"
-										frameborder="0"
-										allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
-										allowfullscreen
-									></iframe>
-								</div>
-								<p class="text-xs text-gray-500 mt-2 break-all" dir="ltr">{toEmbedUrl(homeVideoUrl)}</p>
-							</div>
-						{/if}
-
-						{#if homeVideoNotice}
-							<p class="text-sm font-bold {homeVideoNotice.startsWith('✅') ? 'text-green-300' : 'text-yellow-300'}">
-								{homeVideoNotice}
-							</p>
-						{/if}
-
-						<div class="flex gap-2 flex-wrap">
-							<button
-								type="submit"
-								class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-black hover:opacity-90 transition-opacity"
-							>
-								שמור
-							</button>
-							{#if homeVideoUrl.trim()}
-								<button
-									type="button"
-									onclick={clearHomeVideo}
-									class="px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-200 font-bold"
-								>
-									הסר סרטון
-								</button>
-							{/if}
-						</div>
-					</form>
-				</div>
-
 				<!-- טופס הוספה -->
 				<div class="rounded-2xl border border-teal-500/30 bg-teal-500/5 p-5 md:p-6">
 					<h2 class="text-xl font-black text-teal-200 mb-4">➕ הוספת סרטון / הודעה / כתבה</h2>
@@ -2061,7 +1937,7 @@
 								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none text-right"
 							/>
 							<p class="text-xs text-gray-500 mt-1">
-								תומך בפורמטים: youtube.com/watch?v=… , youtu.be/… , youtube.com/embed/… , youtube.com/shorts/… - הקישור יומר אוטומטית להטמעה
+								תומך בפורמטים: youtube.com/watch?v=… , youtu.be/… , youtube.com/embed/… , youtube.com/shorts/… , youtube.com/live/… - הקישור יומר אוטומטית להטמעה
 							</p>
 						</div>
 
