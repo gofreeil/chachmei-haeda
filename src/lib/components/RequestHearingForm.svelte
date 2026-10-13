@@ -2,7 +2,9 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import FancyHeading from './FancyHeading.svelte';
-	import { submitHearingRequest } from '$lib/services/hearings-service';
+	import CaseBoard from './CaseBoard.svelte';
+	import { openCase, type CaseView } from '$lib/services/hearings-service';
+	import { getCurrentUser, type StrapiUser } from '$lib/strapi';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
@@ -18,7 +20,10 @@
 	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
 
 	// ───────────────── חתימה על UECC (פרופיל קיים) ─────────────────
-	let isRegistered = $state(false);
+	// פתיחת תיק — רק למשתמש רשום ומחובר (JWT), שנרשם בשרת כתובע.
+	let authUser = $state<StrapiUser | null>(null);
+	let authChecked = $state(false);
+	const isRegistered = $derived(!!authUser);
 	let hasAcceptedUECC = $state(false);
 	let userName = $state('');
 	let userPhone = $state('');
@@ -46,15 +51,11 @@
 	let signerEmail = $state('');
 
 	// ───────────────── מצב אישורים (אחרי שמירה) ─────────────────
-	let saved = $state(false);
-	let caseId = $state('');
-	let approvals = $state({
-		plaintiff: false,
-		defendant: false,
-		beitDin: false
-	});
-
-	const allApproved = $derived(approvals.plaintiff && approvals.defendant && approvals.beitDin);
+	// התיק כפי שהשרת החזיר — האישורים עצמם עוברים רק דרך השרת (CaseBoard)
+	let caseView = $state<CaseView | null>(null);
+	const saved = $derived(!!caseView);
+	let submitting = $state(false);
+	let submitError = $state('');
 	let draftLoaded = $state(false);
 	let draftRestoredNotice = $state(false);
 
@@ -63,7 +64,6 @@
 		try {
 			const user = JSON.parse(localStorage.getItem('chachmei-user') || 'null');
 			if (user) {
-				isRegistered = true;
 				hasAcceptedUECC = !!user.uecc;
 				userName = user.name || '';
 				userPhone = user.phone || '';
@@ -86,7 +86,22 @@
 			if (preferredDate && !proposedDate) proposedDate = preferredDate;
 		} catch {}
 		draftLoaded = true;
+		getCurrentUser().then((u) => {
+			authUser = u;
+			authChecked = true;
+			if (!u) return;
+			if (!userName) userName = u.nickname || (u.username?.includes('_') ? '' : u.username) || '';
+			if (!userEmail) userEmail = u.email || '';
+			if (!userPhone) userPhone = u.phone || '';
+			if (!plaintiffName && userName) plaintiffName = userName;
+			if (!plaintiffPhone && userPhone) plaintiffPhone = userPhone;
+		});
 	});
+
+	function goLogin() {
+		// הטיוטה כבר שמורה ב-localStorage — חוזרים לטופס אחרי ההתחברות
+		window.location.href = `/login?returnTo=${encodeURIComponent('/heichal-hamishpat?open=request-hearing')}`;
+	}
 
 	// ───────────────── שמירה אוטומטית של טיוטה ─────────────────
 	$effect(() => {
@@ -125,7 +140,11 @@
 	function onSubmitDraft(e: Event) {
 		e.preventDefault();
 		if (!readyToSubmit()) return;
-		if (isRegistered && hasAcceptedUECC) {
+		if (!isRegistered) {
+			goLogin();
+			return;
+		}
+		if (hasAcceptedUECC) {
 			finalizeCase();
 		} else {
 			signerName = userName || plaintiffName || '';
@@ -150,7 +169,6 @@
 				})
 			);
 		} catch {}
-		isRegistered = true;
 		hasAcceptedUECC = true;
 		userName = signerName;
 		userPhone = signerPhone;
@@ -162,31 +180,10 @@
 	}
 
 	async function finalizeCase() {
-		caseId = 'C-' + Math.floor(100000 + Math.random() * 900000);
-		approvals = { plaintiff: true, defendant: false, beitDin: false };
-
-		const description = [
-			subject,
-			details ? `\n\n${details}` : '',
-			`\n\nכינוי הדיון: ${nickname}`,
-			plaintiffPhone ? `\nטלפון תובע: ${plaintiffPhone}` : '',
-			defendantPhone ? `\nטלפון נתבע: ${defendantPhone}` : '',
-			proposedDate ? `\nתאריך מוצע: ${proposedDate}` : '',
-			`\nמזהה מקומי: ${caseId}`
-		].join('');
-
-		await submitHearingRequest({
-			requesterName: plaintiffName,
-			requesterPhone: plaintiffPhone,
-			requesterEmail: userEmail,
-			oppositeParty: defendantName,
-			caseDescription: description
-		});
-
+		submitting = true;
+		submitError = '';
 		try {
-			const cases = JSON.parse(localStorage.getItem('chachmei-cases') || '[]');
-			cases.push({
-				id: caseId,
+			const view = await openCase({
 				nickname,
 				plaintiffName,
 				plaintiffPhone,
@@ -194,15 +191,39 @@
 				defendantPhone,
 				subject,
 				details,
-				proposedDate,
-				approvals: { ...approvals },
-				createdAt: new Date().toISOString()
+				proposedDate
 			});
-			localStorage.setItem('chachmei-cases', JSON.stringify(cases));
-			localStorage.removeItem('chachmei-hearing-draft');
-		} catch {}
-		saved = true;
-		scrollToTop();
+			try {
+				const cases = JSON.parse(localStorage.getItem('chachmei-cases') || '[]');
+				cases.push({
+					id: view.caseRef,
+					docId: view.id,
+					nickname,
+					plaintiffName,
+					plaintiffPhone,
+					defendantName,
+					defendantPhone,
+					subject,
+					details,
+					proposedDate,
+					approvals: { ...view.approvals },
+					createdAt: new Date().toISOString()
+				});
+				localStorage.setItem('chachmei-cases', JSON.stringify(cases));
+				localStorage.removeItem('chachmei-hearing-draft');
+			} catch {}
+			caseView = view;
+			scrollToTop();
+		} catch (e) {
+			if ((e as { status?: number })?.status === 401) {
+				authUser = null;
+				submitError = tFn('req_hearing_login_required');
+			} else {
+				submitError = tFn('req_hearing_submit_error');
+			}
+		} finally {
+			submitting = false;
+		}
 	}
 
 	function scrollToTop() {
@@ -230,8 +251,7 @@
 
 	function resetForm() {
 		clearDraft();
-		approvals = { plaintiff: false, defendant: false, beitDin: false };
-		saved = false;
+		caseView = null;
 		openDrawer = 'nickname';
 	}
 </script>
@@ -256,86 +276,20 @@
 
 	{#if saved}
 		<!-- ───────────── מצב לאחר שמירה - לוח אישורים ───────────── -->
-		<div class="rounded-2xl border border-blue-500/30 bg-blue-500/5 p-6 md:p-8">
-			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-bold text-blue-300">{tFn('req_hearing_case_label')} #{caseId}</h2>
-				<span class="text-sm text-gray-600">{nickname}</span>
-			</div>
-
-			<p class="text-gray-800 mb-5">
-				{tFn('req_hearing_proposed_date_prefix')} <strong class="text-amber-700">{proposedDate}</strong> {tFn('req_hearing_proposed_date_suffix')}
-			</p>
-
-			<div class="space-y-3">
-				<div class="flex items-center justify-between rounded-xl border border-amber-400/40 bg-white/60 p-4">
-					<div>
-						<div class="font-bold text-gray-900">1. {tFn('req_hearing_plaintiff_label')}</div>
-						<div class="text-sm text-gray-600">{plaintiffName}</div>
-					</div>
-					{#if approvals.plaintiff}
-						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
-					{:else}
-						<button
-							onclick={() => (approvals.plaintiff = true)}
-							class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-gray-900 text-sm font-bold"
-						>
-							{tFn('req_hearing_approve_date_btn')}
-						</button>
-					{/if}
-				</div>
-
-				<div class="flex items-center justify-between rounded-xl border border-amber-400/40 bg-white/60 p-4">
-					<div>
-						<div class="font-bold text-gray-900">2. {tFn('req_hearing_defendant_label')}</div>
-						<div class="text-sm text-gray-600">{defendantName}</div>
-					</div>
-					{#if approvals.defendant}
-						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
-					{:else}
-						<button
-							onclick={() => (approvals.defendant = true)}
-							class="px-4 py-2 rounded-lg bg-white/70 hover:bg-white/80 text-gray-900 text-sm font-bold"
-							title={tFn('req_hearing_awaiting_defendant_title')}
-						>
-							{tFn('req_hearing_awaiting_approval_btn')}
-						</button>
-					{/if}
-				</div>
-
-				<div class="flex items-center justify-between rounded-xl border border-amber-400/40 bg-white/60 p-4">
-					<div>
-						<div class="font-bold text-gray-900">3. {tFn('req_hearing_beit_din_label')}</div>
-						<div class="text-sm text-gray-600">{tFn('req_hearing_beit_din_rabbis')}</div>
-					</div>
-					{#if approvals.beitDin}
-						<span class="text-green-400 font-bold">{tFn('req_hearing_approved_mark')}</span>
-					{:else}
-						<button
-							onclick={() => (approvals.beitDin = true)}
-							class="px-4 py-2 rounded-lg bg-white/70 hover:bg-white/80 text-gray-900 text-sm font-bold"
-							title={tFn('req_hearing_awaiting_beit_din_title')}
-						>
-							{tFn('req_hearing_awaiting_approval_btn')}
-						</button>
-					{/if}
-				</div>
-			</div>
-
-			{#if allApproved}
-				<div class="mt-6 rounded-xl border-2 border-green-500/40 bg-green-500/10 p-5 text-center">
-					<div class="text-4xl mb-2">🎉</div>
-					<p class="text-green-200 font-bold text-lg">{tFn('req_hearing_all_approved_msg')}</p>
-				</div>
-			{:else}
-				<div class="mt-6 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-center text-sm text-yellow-200">
-					{tFn('req_hearing_awaiting_others_msg')}
-				</div>
-			{/if}
-
+		{#if caseView}
+			<CaseBoard view={caseView} onChange={(v) => (caseView = v)} />
+		{/if}
+		<div class="mt-3 flex gap-2">
+			<a
+				href="/case/{caseView?.id}"
+				class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-center hover:opacity-90"
+			>
+				{tFn('case_page_link')}
+			</a>
 			<button
 				type="button"
 				onclick={resetForm}
-				class="mt-6 w-full py-3 rounded-xl bg-white/70 hover:bg-white/80 text-gray-900 font-bold transition-colors"
+				class="flex-1 py-2.5 rounded-xl bg-white/70 hover:bg-white/80 text-gray-900 font-bold transition-colors"
 			>
 				{tFn('req_hearing_open_another_case')}
 			</button>
@@ -405,17 +359,31 @@
 			<button
 				type="button"
 				onclick={signAndFinalize}
-				disabled={!signerName.trim() || !signerPhone.trim() || !regUECC || !regArbitration}
+				disabled={submitting || !signerName.trim() || !signerPhone.trim() || !regUECC || !regArbitration}
 				class="mt-6 w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-gray-900 font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
 			>
-				{tFn('req_hearing_sign_and_lock_btn')}
+				{submitting ? tFn('req_hearing_submitting') : tFn('req_hearing_sign_and_lock_btn')}
 			</button>
+			{#if submitError}
+				<p class="mt-3 text-sm text-red-700 text-center">{submitError}</p>
+			{/if}
 		</div>
 	{:else}
 		<!-- ───────────── המגירות (Accordion) ───────────── -->
 		{#if isRegistered && hasAcceptedUECC}
 			<div class="mb-5 rounded-xl border border-green-500/30 bg-green-500/5 p-3 text-center text-sm text-green-300">
 				{tFn('req_hearing_logged_in_prefix')}<strong>{userName}</strong>{tFn('req_hearing_logged_in_suffix')}
+			</div>
+		{:else if authChecked && !isRegistered}
+			<div class="mb-5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-3 flex items-center justify-between gap-3">
+				<span class="text-sm text-gray-800">{tFn('req_hearing_login_required')}</span>
+				<button
+					type="button"
+					onclick={goLogin}
+					class="shrink-0 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:opacity-90"
+				>
+					{tFn('req_hearing_login_btn')}
+				</button>
 			</div>
 		{:else}
 			<div class="mb-5 rounded-xl border border-blue-500/30 bg-blue-500/5 p-3 text-center text-sm text-blue-200">
@@ -586,15 +554,22 @@
 
 			<button
 				type="submit"
-				disabled={!readyToSubmit()}
+				disabled={submitting || !readyToSubmit()}
 				class="w-full py-4 mt-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-gray-900 font-black text-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01] transition-transform"
 			>
-				{#if isRegistered && hasAcceptedUECC}
+				{#if submitting}
+					{tFn('req_hearing_submitting')}
+				{:else if !isRegistered}
+					{tFn('req_hearing_login_btn')}
+				{:else if hasAcceptedUECC}
 					{tFn('req_hearing_submit_to_rabbis_btn')}
 				{:else}
 					{tFn('req_hearing_continue_to_signature_btn')}
 				{/if}
 			</button>
+			{#if submitError}
+				<p class="text-sm text-red-700 text-center">{submitError}</p>
+			{/if}
 		</form>
 	{/if}
 </div>

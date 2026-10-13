@@ -16,7 +16,7 @@ const SITE_NAME = 'חכמי העדה';
 const ADMIN_ROLES = ['super_admin'];
 
 /** מזהי כל הנמענים ב-Strapi המשותף. שגיאה כאן מחזירה [] ולא מפילה כלום. */
-async function resolveAdminUserIds(): Promise<number[]> {
+export async function resolveAdminUserIds(roles: readonly string[] = ADMIN_ROLES): Promise<number[]> {
     const ids = new Set<number>();
     const notifyEmail = (env.ADS_NOTIFY_EMAIL ?? '').trim().toLowerCase();
     if (notifyEmail) {
@@ -31,7 +31,7 @@ async function resolveAdminUserIds(): Promise<number[]> {
     }
     try {
         const params: Record<string, string> = { 'pagination[limit]': '100' };
-        ADMIN_ROLES.forEach((r, i) => { params[`filters[app_role][$in][${i}]`] = r; });
+        roles.forEach((r, i) => { params[`filters[app_role][$in][${i}]`] = r; });
         const users = await strapiGet<Array<{ id: number }>>('/api/users', params);
         if (Array.isArray(users)) {
             for (const u of users) if (u?.id) ids.add(u.id);

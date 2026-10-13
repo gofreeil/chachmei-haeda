@@ -6,7 +6,7 @@ import {
 	type LocalizedString,
 	type Ruling
 } from '$lib/data/hearings';
-import { safeStrapiList, strapiPost, strapiPut, strapiDelete } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiPut, strapiDelete, getJwt, StrapiError } from '$lib/strapi';
 
 const HEARINGS = 'ch-hearings';
 const RULINGS = 'ch-rulings';
@@ -114,6 +114,65 @@ export async function submitHearingRequest(input: {
 	} catch (e) {
 		return { ok: false, error: e instanceof Error ? e.message : String(e) };
 	}
+}
+
+// ───────────────────── תיקים עם אישור צדדים ─────────────────────
+// עוברים דרך /api/hearing-cases של האתר (לא ה-proxy): שם השרת בודק מול ה-JWT
+// מי המשתמש, וכל צד יכול לאשר רק בשם עצמו.
+
+export type CaseParty = 'plaintiff' | 'defendant' | 'beitDin';
+export type DefendantBlock = 'login' | 'plaintiff' | 'name' | 'phone' | 'done';
+
+export interface CaseView {
+	id: string;
+	caseRef: string;
+	nickname: string;
+	subject: string;
+	details: string;
+	proposedDate: string;
+	plaintiffName: string;
+	defendantName: string;
+	defendantPhone: string;
+	approvals: Record<CaseParty, boolean>;
+	status: string;
+	viewer: { role: CaseParty | 'other' | null; name: string; isAdmin: boolean } | null;
+	can: Record<CaseParty, boolean>;
+	defendantBlock: DefendantBlock | null;
+}
+
+async function caseFetch(path: string, init: RequestInit = {}): Promise<CaseView> {
+	const jwt = getJwt();
+	const res = await fetch(`/api/hearing-cases${path}`, {
+		...init,
+		headers: {
+			'Content-Type': 'application/json',
+			...(jwt ? { Authorization: `Bearer ${jwt}` } : {})
+		}
+	});
+	const data = await res.json().catch(() => null);
+	if (!res.ok) throw new StrapiError(data?.message || `HTTP ${res.status}`, res.status, data?.message ?? '');
+	return data as CaseView;
+}
+
+export function openCase(input: {
+	nickname: string;
+	plaintiffName: string;
+	plaintiffPhone: string;
+	defendantName: string;
+	defendantPhone: string;
+	subject: string;
+	details: string;
+	proposedDate: string;
+}): Promise<CaseView> {
+	return caseFetch('', { method: 'POST', body: JSON.stringify(input) });
+}
+
+export function fetchCase(id: string): Promise<CaseView> {
+	return caseFetch(`/${encodeURIComponent(id)}`);
+}
+
+export function approveCaseAs(id: string, party: CaseParty): Promise<CaseView> {
+	return caseFetch(`/${encodeURIComponent(id)}/approve`, { method: 'POST', body: JSON.stringify({ party }) });
 }
 
 // ───────────────────────── Admin ─────────────────────────

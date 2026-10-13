@@ -141,6 +141,7 @@ export interface StrapiMe {
     username: string;
     email: string;
     name?: string | null;
+    nickname?: string | null;
     phone?: string | null;
     city?: string | null;
     /** תפקיד ניהולי ברשת (super_admin / ch_admin / ...) — לשערת האדמין */
