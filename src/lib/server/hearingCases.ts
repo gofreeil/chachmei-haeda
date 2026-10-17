@@ -260,8 +260,10 @@ async function findDefendantAccounts(meta: CaseMeta): Promise<UserRow[]> {
     const params: Record<string, string> = { 'pagination[limit]': '100' };
     let i = 0;
     if (want.length >= 9) params[`filters[$or][${i++}][phone][$contains]`] = want.slice(-4);
+    // רק שדות שקיימים בסכמת user: סינון לפי שדה לא-קיים (name) נדחה ב-400
+    // ("Invalid key"), וה-catch למטה היה מחזיר [] — אף נתבע לא היה מקבל הודעה
     if (word.length >= 2) {
-        for (const f of ['nickname', 'name', 'username']) params[`filters[$or][${i++}][${f}][$containsi]`] = word;
+        for (const f of ['nickname', 'username']) params[`filters[$or][${i++}][${f}][$containsi]`] = word;
     }
     if (i === 0) return [];
     const users = await strapiGet<UserRow[]>('/api/users', params).catch(() => []);
