@@ -50,7 +50,10 @@ const handle: RequestHandler = async ({ params, request, url }) => {
 	const cd = upstream.headers.get('content-disposition');
 	if (cd) outHeaders.set('content-disposition', cd);
 
-	const body = await upstream.arrayBuffer();
+	// 204/205/304 חייבים גוף null — אחרת new Response זורק, וכל מחיקה (Strapi מחזיר
+	// 204) הגיעה לדפדפן כ-500 למרות שבוצעה בשרת.
+	const nullBody = upstream.status === 204 || upstream.status === 205 || upstream.status === 304;
+	const body = nullBody ? null : await upstream.arrayBuffer();
 	return new Response(body, { status: upstream.status, headers: outHeaders });
 };
 
