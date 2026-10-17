@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { hearings as staticHearings, rulings as staticRulings, pickLang, type Hearing, type Ruling } from '$lib/data/hearings';
-	import { loadHearings, loadRulings } from '$lib/services/hearings-service';
+	import { loadHearings, loadRulings, fetchMyCases, type CaseView } from '$lib/services/hearings-service';
 	import { getCurrentUser, strapiLogout, isChachmeiAdmin, isSuperAdmin, type StrapiUser } from '$lib/strapi';
 	import { hasSignedCharter, refreshSignedCharter } from '$lib/services/charter-service';
 	import { goto } from '$app/navigation';
@@ -36,6 +36,10 @@
 		proposedDate: string;
 		approvals: { plaintiff: boolean; defendant: boolean; beitDin: boolean };
 		createdAt: string;
+		/** תיק מהשרת: דף התיק, ותפקיד הצופה בו */
+		link?: string;
+		asDefendant?: boolean;
+		awaitingMe?: boolean;
 	};
 
 	type Message = {
@@ -45,6 +49,7 @@
 		body: string;
 		date: string;
 		read: boolean;
+		link?: string;
 	};
 
 	type Tab = 'overview' | 'messages' | 'cases' | 'rulings' | 'profile';
@@ -56,6 +61,9 @@
 	let cases = $state<CaseRecord[]>([]);
 	let messages = $state<Message[]>([]);
 	let activeTab = $state<Tab>('overview');
+	// תיקים מהשרת (כתובע וכנתבע); null = לא נטענו, ואז מוצגים המקומיים
+	let serverCases = $state<CaseView[] | null>(null);
+	let readSummons = $state<string[]>([]);
 
 	// דיונים/פסקי דין - מקור-אמת מהבאקאנד, עם נפילה לנתונים הסטטיים
 	let hearings = $state<Hearing[]>(staticHearings);
@@ -76,6 +84,10 @@
 		// קודם בודקים אם המשתמש מחובר ל-Strapi (Google/local)
 		strapiUser = await getCurrentUser();
 		refreshSignedCharter().then(() => (charterChecked = true));
+		if (strapiUser) fetchMyCases().then((list) => (serverCases = list)).catch(() => {});
+		try {
+			readSummons = JSON.parse(localStorage.getItem('chachmei-read-summons') || '[]');
+		} catch {}
 
 		// טוענים דיונים/פסקי דין מהבאקאנד (fallback לסטטי בתוך השירות)
 		loadHearings().then((h) => { if (h.length) hearings = h; }).catch(() => {});
@@ -133,14 +145,49 @@
 	const isLoggedIn = $derived(!!user?.name || !!strapiUser);
 	const initial = $derived((user?.name || '?').charAt(0));
 	const avatarUrl = $derived(strapiUser?.avatar_url || user?.avatar_url || '');
-	const unreadCount = $derived(messages.filter((m) => !m.read).length);
+	const shownCases = $derived<CaseRecord[]>(
+		serverCases
+			? serverCases.map((v) => ({
+					id: v.caseRef,
+					nickname: v.nickname,
+					plaintiffName: v.plaintiffName,
+					defendantName: v.defendantName,
+					subject: v.subject,
+					proposedDate: v.proposedDate,
+					approvals: v.approvals,
+					createdAt: v.createdAt ?? '',
+					link: `/case/${v.id}`,
+					asDefendant: v.viewer?.role === 'defendant',
+					awaitingMe: v.viewer?.role === 'defendant' ? !v.approvals.defendant : v.can.plaintiff
+				}))
+			: cases
+	);
+	// זימון לדין תורה — הודעה לכל תיק שבו הצופה נתבע ועוד לא אישר
+	const summons = $derived<Message[]>(
+		shownCases
+			.filter((c) => c.asDefendant && !c.approvals.defendant)
+			.map((c) => ({
+				id: `summons-${c.id}`,
+				from: tFn('profile_summons_from'),
+				topic: `${tFn('profile_summons_topic')} · ${tFn('profile_case_number')} ${c.id}`,
+				body: tFn('profile_summons_body')
+					.replace('{plaintiff}', c.plaintiffName)
+					.replace('{subject}', c.subject)
+					.replace('{date}', c.proposedDate),
+				date: c.createdAt,
+				read: readSummons.includes(`summons-${c.id}`),
+				link: c.link
+			}))
+	);
+	const allMessages = $derived([...summons, ...messages]);
+	const unreadCount = $derived(allMessages.filter((m) => !m.read).length);
 
 	// סינון פסקי דין/דיונים ששייכים למשתמש (לפי שם)
 	const myRulings = $derived(
 		isLoggedIn
 			? rulings.filter((r) => {
 					const name = pickLang(r.caseName, _loc);
-					return name.includes(user!.name) || cases.some((c) => name.includes(c.nickname));
+					return name.includes(user!.name) || shownCases.some((c) => name.includes(c.nickname));
 				})
 			: []
 	);
@@ -148,7 +195,7 @@
 		isLoggedIn
 			? hearings.filter((h) => {
 					const name = pickLang(h.caseName, _loc);
-					return name.includes(user!.name) || cases.some((c) => name.includes(c.nickname));
+					return name.includes(user!.name) || shownCases.some((c) => name.includes(c.nickname));
 				})
 			: []
 	);
@@ -171,8 +218,10 @@
 
 	function markAllRead() {
 		messages = messages.map((m) => ({ ...m, read: true }));
+		readSummons = [...new Set([...readSummons, ...summons.map((m) => m.id)])];
 		try {
 			localStorage.setItem('chachmei-messages', JSON.stringify(messages));
+			localStorage.setItem('chachmei-read-summons', JSON.stringify(readSummons));
 		} catch {}
 	}
 
@@ -202,6 +251,7 @@
 		strapiUser = null;
 		cases = [];
 		messages = [];
+		serverCases = null;
 		goto('/');
 	}
 
@@ -278,7 +328,7 @@
 						{#if user?.arbitration}
 							<span class="px-2.5 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300">⚖️ {tFn('profile_arbitration_consent')}</span>
 						{/if}
-						<span class="px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-gray-300">📂 {cases.length} {tFn('profile_cases_label')}</span>
+						<span class="px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-gray-300">📂 {shownCases.length} {tFn('profile_cases_label')}</span>
 					</div>
 				</div>
 				<button
@@ -290,6 +340,17 @@
 				</button>
 			</div>
 		</div>
+
+		<!-- ───────────── זימון לדין תורה שממתין לאישור הנתבע ───────────── -->
+		{#each summons as s (s.id)}
+			<a
+				href={s.link}
+				class="flex items-center justify-between gap-2 flex-wrap mb-3 px-4 py-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
+			>
+				<span class="text-sm text-amber-200 font-bold">⚖️ {s.topic}</span>
+				<span class="text-xs px-3 py-1 rounded-lg bg-amber-500/25 text-amber-100 font-bold">{tFn('profile_summons_cta')}</span>
+			</a>
+		{/each}
 
 		<!-- ───────────── טאבים ───────────── -->
 		<div class="flex gap-1 md:gap-2 mb-4 overflow-x-auto pb-1" role="tablist">
@@ -319,7 +380,7 @@
 					<div class="text-3xl mb-2">✉️</div>
 					<div class="font-bold text-white text-lg">{tFn('profile_card_messages')}</div>
 					<div class="text-sm text-gray-400 mt-1">
-						{messages.length} {tFn('profile_messages_total')}{unreadCount ? ` · ${unreadCount} ${tFn('profile_messages_unread')}` : ''}
+						{allMessages.length} {tFn('profile_messages_total')}{unreadCount ? ` · ${unreadCount} ${tFn('profile_messages_unread')}` : ''}
 					</div>
 				</button>
 				<button
@@ -328,7 +389,7 @@
 				>
 					<div class="text-3xl mb-2">📂</div>
 					<div class="font-bold text-white text-lg">{tFn('profile_card_cases')}</div>
-					<div class="text-sm text-gray-400 mt-1">{cases.length} {tFn('profile_cases_open')}</div>
+					<div class="text-sm text-gray-400 mt-1">{shownCases.length} {tFn('profile_cases_open')}</div>
 				</button>
 				<button
 					onclick={() => (activeTab = 'rulings')}
@@ -382,13 +443,13 @@
 						<button onclick={markAllRead} class="text-sm text-blue-300 hover:text-blue-200">{tFn('profile_mark_all_read')}</button>
 					{/if}
 				</div>
-				{#if messages.length === 0}
+				{#if allMessages.length === 0}
 					<div class="text-center py-12">
 						<div class="text-5xl mb-3">📭</div>
 						<p class="text-gray-400">{tFn('profile_no_messages')}</p>
 					</div>
 				{:else}
-					{#each messages as msg}
+					{#each allMessages as msg}
 						<div
 							class="rounded-2xl border p-4 transition-colors {msg.read
 								? 'border-white/10 bg-white/5'
@@ -407,6 +468,9 @@
 								<span class="text-gray-500 text-xs flex-shrink-0">{formatDate(msg.date)}</span>
 							</div>
 							<p class="text-gray-300 text-sm leading-relaxed bg-white/5 rounded-xl px-4 py-3">{msg.body}</p>
+							{#if msg.link}
+								<a href={msg.link} class="inline-block mt-2 me-2 text-xs px-3 py-1 rounded-lg bg-amber-500/25 text-amber-100 font-bold hover:bg-amber-500/35">{tFn('profile_summons_cta')}</a>
+							{/if}
 							{#if !msg.read}
 								<span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200">{tFn('profile_msg_new_badge')}</span>
 							{/if}
@@ -423,21 +487,34 @@
 					<h2 class="text-lg font-bold text-white">📂 {tFn('profile_my_cases')}</h2>
 					<a href="/heichal-hamishpat?open=request-hearing" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 font-bold">+ {tFn('profile_new_case')}</a>
 				</div>
-				{#if cases.length === 0}
+				{#if shownCases.length === 0}
 					<div class="text-center py-12">
 						<div class="text-5xl mb-3">📭</div>
 						<p class="text-gray-400">{tFn('profile_no_cases')}</p>
 						<a href="/heichal-hamishpat?open=request-hearing" class="inline-block mt-4 px-5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold hover:scale-105 transition-transform">⚖️ {tFn('profile_open_first_case')}</a>
 					</div>
 				{:else}
-					{#each cases as c}
+					{#each shownCases as c}
 						{@const status = caseStatus(c)}
 						<div class="rounded-2xl border border-white/10 bg-white/5 p-4">
 							<div class="flex items-start justify-between gap-2 flex-wrap mb-2">
 								<div class="flex-1 min-w-0">
-									<h3 class="font-bold text-white">{c.nickname || c.subject}</h3>
+									<h3 class="font-bold text-white">
+										{c.nickname || c.subject}
+										{#if c.link}<span class="text-xs font-normal text-gray-400">· {c.asDefendant ? tFn('profile_defendant') : tFn('profile_plaintiff')}</span>{/if}
+									</h3>
 									<p class="text-sm text-gray-400">{tFn('profile_case_number')} #{c.id} · {c.subject}</p>
 								</div>
+								{#if c.link}
+									<a
+										href={c.link}
+										class="text-xs px-3 py-1 rounded-lg font-bold whitespace-nowrap {c.awaitingMe
+											? 'bg-amber-500/25 text-amber-100 hover:bg-amber-500/35'
+											: 'bg-blue-500/20 text-blue-200 hover:bg-blue-500/30'}"
+									>
+										{c.awaitingMe ? tFn('profile_summons_cta') : tFn('profile_open_case')}
+									</a>
+								{/if}
 								<span
 									class="text-xs px-2.5 py-1 rounded-full whitespace-nowrap {status.color === 'green'
 										? 'bg-green-500/15 border border-green-500/30 text-green-300'

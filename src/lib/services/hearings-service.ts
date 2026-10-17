@@ -130,6 +130,7 @@ export interface CaseView {
 	subject: string;
 	details: string;
 	proposedDate: string;
+	createdAt?: string;
 	plaintiffName: string;
 	defendantName: string;
 	defendantPhone: string;
@@ -140,7 +141,7 @@ export interface CaseView {
 	defendantBlock: DefendantBlock | null;
 }
 
-async function caseFetch(path: string, init: RequestInit = {}): Promise<CaseView> {
+async function caseFetch<T = CaseView>(path: string, init: RequestInit = {}): Promise<T> {
 	const jwt = getJwt();
 	const res = await fetch(`/api/hearing-cases${path}`, {
 		...init,
@@ -151,7 +152,12 @@ async function caseFetch(path: string, init: RequestInit = {}): Promise<CaseView
 	});
 	const data = await res.json().catch(() => null);
 	if (!res.ok) throw new StrapiError(data?.message || `HTTP ${res.status}`, res.status, data?.message ?? '');
-	return data as CaseView;
+	return data as T;
+}
+
+/** התיקים שלי מהשרת — כתובע וכנתבע */
+export function fetchMyCases(): Promise<CaseView[]> {
+	return caseFetch<CaseView[]>('');
 }
 
 export function openCase(input: {

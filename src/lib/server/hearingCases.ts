@@ -239,8 +239,81 @@ export async function createCase(viewer: CaseViewer, raw: Partial<NewCaseInput>,
     });
     const id = String(res?.data?.documentId ?? '');
     if (!id) throw error(502, 'שמירת התיק נכשלה');
-    await notifyAdminsNewCase(meta, `${siteOrigin}/case/${id}`);
+    const link = `${siteOrigin}/case/${id}`;
+    await Promise.all([notifyAdminsNewCase(meta, link), notifyDefendant(meta, link)]);
     return publicView({ id, status: 'pending', meta }, viewer);
+}
+
+interface UserRow {
+    id: number;
+    username?: string | null;
+    name?: string | null;
+    nickname?: string | null;
+    phone?: string | null;
+}
+
+/** חשבונות שנראים כמו הנתבע: הטלפון תואם, או השם תואם בלי טלפון סותר */
+async function findDefendantAccounts(meta: CaseMeta): Promise<UserRow[]> {
+    const want = phoneKey(meta.defendantPhone);
+    const target = normalizeName(meta.defendantName);
+    const word = target.split(' ').sort((a, b) => b.length - a.length)[0] ?? '';
+    const params: Record<string, string> = { 'pagination[limit]': '100' };
+    let i = 0;
+    if (want.length >= 9) params[`filters[$or][${i++}][phone][$contains]`] = want.slice(-4);
+    if (word.length >= 2) {
+        for (const f of ['nickname', 'name', 'username']) params[`filters[$or][${i++}][${f}][$containsi]`] = word;
+    }
+    if (i === 0) return [];
+    const users = await strapiGet<UserRow[]>('/api/users', params).catch(() => []);
+    const byPhone: UserRow[] = [];
+    const byName: UserRow[] = [];
+    for (const u of Array.isArray(users) ? users : []) {
+        if (!u?.id || String(u.id) === meta.plaintiffUserId) continue;
+        const have = phoneKey(u.phone ?? '');
+        if (want.length >= 9 && have === want) { byPhone.push(u); continue; }
+        if (want && have && want !== have) continue;
+        const names = [u.nickname, u.name, PROVIDER_USERNAME.test(u.username ?? '') ? '' : u.username];
+        if (target && names.some((n) => normalizeName(n ?? '') === target)) byName.push(u);
+    }
+    // שם נפוץ בלי טלפון לא מספיק כדי להציף זרים בהודעות
+    return [...byPhone, ...(byName.length <= 3 ? byName : [])];
+}
+
+/**
+ * הזימון לנתבע: SMS לנייד שהתובע הקליד, והודעה לתיבה של כל חשבון שנראה
+ * כמו הנתבע (שם/טלפון). מי שכבר קיבל SMS לנייד שלו לא מקבל גם הודעת-תיבה —
+ * ה-lifecycle של messages שולח SMS לאדמינים, וכך נמנע SMS כפול.
+ * best-effort: התיק כבר נשמר.
+ */
+async function notifyDefendant(meta: CaseMeta, link: string): Promise<void> {
+    const text =
+        `⚖️ זומנת לדין תורה בבית הדין חכמי העדה\n` +
+        `${meta.plaintiffName} פתח/ה נגדך תיק ${meta.caseRef}: ${meta.subject}\n` +
+        `מועד מוצע: ${meta.proposedDate}\n` +
+        `לצפייה ולאישור המועד: ${link}`;
+    let smsPhone = '';
+    if (phoneKey(meta.defendantPhone).length >= 9) {
+        try {
+            const res = await strapiPost<{ ok?: boolean; results?: Array<{ ok: boolean; error?: string }> }>(
+                '/api/admin/sms/send',
+                { recipients: [{ phone: meta.defendantPhone }], message: text }
+            );
+            if (res?.results?.[0]?.ok) smsPhone = phoneKey(meta.defendantPhone);
+            else console.warn('[cases] defendant SMS not sent:', res?.results?.[0]?.error ?? 'unknown');
+        } catch (err) {
+            console.warn('[cases] defendant SMS failed:', err instanceof Error ? err.message : err);
+        }
+    }
+    try {
+        const accounts = await findDefendantAccounts(meta);
+        await Promise.all(
+            accounts
+                .filter((u) => !smsPhone || phoneKey(u.phone ?? '') !== smsPhone)
+                .map((u) => strapiPost('/api/messages', { data: { receiver: u.id, content: text, read: false } }))
+        );
+    } catch (err) {
+        console.warn('[cases] defendant inbox notification failed:', err instanceof Error ? err.message : err);
+    }
 }
 
 /**
@@ -274,6 +347,28 @@ export async function getCaseView(id: string, viewer: CaseViewer | null) {
     const c = await loadCase(id);
     if (!c) throw error(404, 'התיק לא נמצא');
     return publicView(c, viewer);
+}
+
+/** התיקים של הצופה — כתובע, או כנתבע (שם או טלפון תואמים) — לפרופיל */
+export async function listMyCases(viewer: CaseViewer) {
+    const res = await strapiGet<{ data: StrapiRequest[] }>(ENDPOINT, {
+        'filters[documentsNotes][$contains]': '"_case":1',
+        sort: 'createdAt:desc',
+        'pagination[pageSize]': '200',
+    }).catch(() => ({ data: [] as StrapiRequest[] }));
+    const myPhone = phoneKey(viewer.phone);
+    const out: CaseView[] = [];
+    for (const r of res?.data ?? []) {
+        const meta = parseMeta(r.documentsNotes);
+        if (!meta || !r.documentId) continue;
+        const mine =
+            meta.plaintiffUserId === viewer.id ||
+            meta.approvals.defendant?.userId === viewer.id ||
+            nameMatches(viewer, meta.defendantName) ||
+            (myPhone.length >= 9 && phoneKey(meta.defendantPhone) === myPhone);
+        if (mine) out.push(publicView({ id: r.documentId, status: r.status ?? 'pending', meta }, viewer));
+    }
+    return out;
 }
 
 export async function approveCase(id: string, party: Party, viewer: CaseViewer) {
@@ -312,10 +407,13 @@ export async function approveCase(id: string, party: Party, viewer: CaseViewer) 
 function publicView(c: { id: string; status: string; meta: CaseMeta }, viewer: CaseViewer | null) {
     const { meta } = c;
     const isPlaintiff = !!viewer && viewer.id === meta.plaintiffUserId;
+    const myPhone = phoneKey(viewer?.phone ?? '');
     const isDefendant =
         !!viewer &&
         (meta.approvals.defendant?.userId === viewer.id ||
-            (!isPlaintiff && nameMatches(viewer, meta.defendantName)));
+            (!isPlaintiff &&
+                (nameMatches(viewer, meta.defendantName) ||
+                    (myPhone.length >= 9 && phoneKey(meta.defendantPhone) === myPhone))));
     const role: Party | 'other' | null = !viewer
         ? null
         : isPlaintiff
@@ -333,6 +431,7 @@ function publicView(c: { id: string; status: string; meta: CaseMeta }, viewer: C
         subject: meta.subject,
         details: isPlaintiff || isDefendant || viewer?.isAdmin ? meta.details : '',
         proposedDate: meta.proposedDate,
+        createdAt: meta.createdAt,
         plaintiffName: meta.plaintiffName,
         defendantName: meta.defendantName,
         // לשיתוף מהיר בוואטסאפ/SMS — רק לתובע שהקליד אותו
