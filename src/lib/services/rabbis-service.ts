@@ -1,5 +1,5 @@
 import { defaultRabbis, type Rabbi } from '$lib/data/rabbis';
-import { safeStrapiList, strapiPost, strapiPut, strapiDelete } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiPut, strapiDelete, jsonText } from '$lib/strapi';
 
 const COLLECTION = 'ch-rabbis';
 
@@ -51,10 +51,10 @@ export async function listBackendRabbis(): Promise<Rabbi[]> {
 
 function toPayload(r: Rabbi, order?: number) {
 	return {
-		rabbiName: r.name,
-		rabbiTitle: r.title ?? null,
-		rabbiNickname: r.nickname ?? null,
-		rabbiCity: r.city ?? null,
+		rabbiName: jsonText(r.name),
+		rabbiTitle: r.title ? jsonText(r.title) : null,
+		rabbiNickname: r.nickname ? jsonText(r.nickname) : null,
+		rabbiCity: r.city ? jsonText(r.city) : null,
 		photo: r.photo ?? null,
 		...(order !== undefined ? { order } : {})
 	};

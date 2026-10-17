@@ -1,5 +1,5 @@
 import { qa as staticQa, type QaItem, type QaTopic, type LocalizedText } from '$lib/data/qa';
-import { safeStrapiList, strapiPost, strapiPut, strapiDelete } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiPut, strapiDelete, jsonText } from '$lib/strapi';
 
 const COLLECTION = 'ch-qa-items';
 const SUBMISSIONS = 'ch-question-submissions';
@@ -111,7 +111,7 @@ export async function publishAnswer(input: {
 }): Promise<void> {
 	await strapiPost(COLLECTION, {
 		slug: input.slug,
-		topic: input.topic,
+		topic: jsonText(input.topic),
 		question: { he: input.question, en: input.question, ru: input.question },
 		asker: { he: input.asker, en: input.asker, ru: input.asker },
 		askDate: input.askDate,
@@ -140,7 +140,7 @@ export async function updateQa(id: string, input: {
 	topic: string;
 }): Promise<void> {
 	await strapiPut(COLLECTION, id, {
-		topic: input.topic,
+		topic: jsonText(input.topic),
 		answer: { he: input.answer, en: input.answer, ru: input.answer },
 		answeredBy: { he: input.answeredBy, en: input.answeredBy, ru: input.answeredBy }
 	});

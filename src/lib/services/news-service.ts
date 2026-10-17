@@ -1,4 +1,4 @@
-import { safeStrapiList, strapiPost, strapiDelete } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiDelete, jsonText } from '$lib/strapi';
 import type { LocalizedText } from '$lib/data/qa';
 
 const COLLECTION = 'ch-news-items';
@@ -49,8 +49,8 @@ export async function deleteNewsItem(id: string): Promise<void> {
 
 export async function addNewsItem(input: { line1: string; line2?: string; sourceUrl?: string }): Promise<NewsItem> {
 	const payload = {
-		line1: input.line1,
-		line2: input.line2,
+		line1: jsonText(input.line1),
+		line2: input.line2 ? jsonText(input.line2) : undefined,
 		sourceUrl: input.sourceUrl,
 		active: true,
 		order: 100

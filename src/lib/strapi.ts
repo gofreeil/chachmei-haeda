@@ -146,6 +146,12 @@ async function responseError(label: string, res: Response): Promise<StrapiError>
 	return new StrapiError(`Strapi ${label} failed: ${res.status} ${txt.slice(0, 200)}`, res.status, serverMessage);
 }
 
+/** ערך לשדה מסוג json בסטראפי. מחרוזת חשופה נדחית ב-Postgres כ-JSON לא תקין (500),
+ *  לכן עוטפים אותה כטקסט רב-לשוני — הקוראים כבר מוציאים ממנו את .he */
+export function jsonText(s: string): { he: string; en: string; ru: string } {
+	return { he: s, en: s, ru: s };
+}
+
 /** הודעה בעברית לכשל שמירה/פרסום — לפי הסיבה בפועל, ולא תמיד "בדקו את החיבור". */
 export function saveErrorMessageHe(e: unknown): string {
 	if (isNetworkError(e)) return NETWORK_ERROR_MESSAGE_HE;

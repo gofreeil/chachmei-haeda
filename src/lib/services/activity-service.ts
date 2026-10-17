@@ -1,5 +1,5 @@
 import { activity as staticActivity, type ActivityItem, type ActivityKind, type LocalizedText } from '$lib/data/activity';
-import { safeStrapiList, strapiPost, strapiDelete } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiDelete, jsonText } from '$lib/strapi';
 
 const COLLECTION = 'ch-activity-items';
 
@@ -55,7 +55,7 @@ export async function loadActivity(): Promise<ActivityWithId[]> {
 export async function addActivity(input: ActivityItem): Promise<ActivityItem> {
 	const payload = {
 		slug: input.slug,
-		kind: input.kind,
+		kind: jsonText(input.kind),
 		title: input.title,
 		author: input.author,
 		activityDate: input.date ?? new Date().toISOString().slice(0, 10),
