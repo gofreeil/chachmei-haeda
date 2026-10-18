@@ -31,6 +31,13 @@
     let inventory = $state({ totalSlots: AD_SLOT_COUNT, occupied: 0, freeNow: 0, pending: 0, expired: 0 });
     // חלון הקציבה שמור לסופר-אדמין — השרת מחזיר את הדגל ב-GET
     let superAdmin = $state(false);
+    // האשפה: נמחקו (שחזור) ופג תוקפן (חידוש) — מהשרת, החדשות בראש
+    let trash = $state<any[]>([]);
+    // תצוגה מקדימה מהאשפה: הכרטיס המלא (פגות נמצאות ב-allAds), ולמחוקות — נתוני האשפה
+    let trashPreview = $state<any>(null);
+    function openTrashPreview(t: any) {
+        trashPreview = allAds.find((a) => String(a.id) === t.id) ?? t;
+    }
     // חלון הקציבה: פרטי התקופה והתשלום + קציבה במסלולים או תאריך שרירותי
     let durationModal = $state<any | null>(null);
     let expiryPick = $state('');
@@ -71,6 +78,7 @@
             if (!res.ok) throw new Error(String(res.status));
             const data = await res.json();
             allAds = data.ads ?? [];
+            trash = data.trash ?? [];
             schedules = data.schedules ?? [];
             inventory = data.inventory ?? inventory;
             backendUnavailable = Boolean(data.backendUnavailable);
@@ -120,7 +128,7 @@
         }
     }
 
-    let tab = $state<'pending' | 'approved' | 'rejected'>('pending');
+    let tab = $state<'pending' | 'approved' | 'rejected' | 'trash'>('pending');
 
     // תקופות שאפשר לקצוב למודעה שכבר באוויר (נספרות מיום האישור)
     const DURATION_OPTIONS = [7, 14, 30, 60, 90, 180, 365];
@@ -135,7 +143,7 @@
             .sort((x: any, y: any) => (x.slot ?? 9999) - (y.slot ?? 9999))
     );
     let rejected = $derived(allAds.filter((a: any) => a.status === 'rejected'));
-    let shown    = $derived(tab === 'pending' ? pending : tab === 'approved' ? approved : rejected);
+    let shown    = $derived(tab === 'pending' ? pending : tab === 'approved' ? approved : tab === 'rejected' ? rejected : []);
 
     /** המודעות שתופסות משבצת כרגע — לפי הקרוב להתפנות */
     let active = $derived(
@@ -585,7 +593,7 @@
                                             {#if superAdmin}
                                                 <button type="button" disabled={busy}
                                                         class="px-2.5 py-1 rounded-lg bg-red-600/20 border border-red-500/40 text-red-300 text-[11px] font-black hover:bg-red-600/30 whitespace-nowrap"
-                                                        onclick={() => act('remove', { id: s.id }, `למחוק לצמיתות את "${s.title}"?`)}>
+                                                        onclick={() => act('remove', { id: s.id }, `להעביר את "${s.title}" לאשפה? אפשר לשחזר אותה משם.`)}>
                                                     🗑 מחק
                                                 </button>
                                             {/if}
@@ -717,9 +725,60 @@
         <button type="button" class="tab-btn" class:active={tab === 'rejected'} onclick={() => (tab = 'rejected')}>
             ❌ נדחו ({rejected.length})
         </button>
+        <button type="button" class="tab-btn" class:active={tab === 'trash'} onclick={() => (tab = 'trash')}
+                title="פרסומות שנמחקו או שפג תוקפן — לשחזור או לחידוש">
+            🗑 אשפה ({trash.length})
+        </button>
     </div>
 
-    {#if shown.length === 0}
+    {#if tab === 'trash'}
+        <!-- אשפה: נמחקה = שחזור למצב הקודם (המקום והתוקף נשמרו); פגה = חידוש לתקופה חדשה -->
+        {#if trash.length === 0}
+            <p class="empty">האשפה ריקה.</p>
+        {/if}
+        <div class="trash-list">
+            {#each trash as t (t.id)}
+                <div class="trash-row">
+                    <span class="trash-body">
+                        <button type="button" class="ad-title-btn trash-title" onclick={() => openTrashPreview(t)}
+                                title="תצוגה מקדימה של הפרסומת">{t.title}</button>
+                        <span class="trash-meta">
+                            <span class="status-pill {t.kind === 'deleted' ? 'rejected' : 'pending'}">{t.kind === 'deleted' ? 'נמחקה' : 'פג התוקף'}</span>
+                            {fmtDate(t.at)} · {t.advertiserName}
+                        </span>
+                    </span>
+                    <span class="trash-actions">
+                        {#if t.kind === 'deleted'}
+                            {#if superAdmin}
+                                <button type="button" class="a-btn approve" disabled={busy} title="חזרה למצב שלפני המחיקה"
+                                        onclick={() => act('restore', { id: t.id })}>♻ שחזר</button>
+                                <button type="button" class="a-btn reject" disabled={busy}
+                                        onclick={() => act('purge', { id: t.id }, `למחוק לצמיתות את "${t.title}"? אין דרך חזרה.`)}>✕ מחק לצמיתות</button>
+                            {/if}
+                        {:else}
+                            <button type="button" class="a-btn approve" disabled={busy} title="פרסום מחדש לתקופה חדשה מהיום, באותו מקום בלוח"
+                                        onclick={() => act('approve', { id: t.id, durationDays: t.requestedDurationDays })}>♻ חדש</button>
+                            {#if superAdmin}
+                                <button type="button" class="a-btn ghost" disabled={busy} title="העברה לאשפה — אפשר לשחזר"
+                                        onclick={() => act('remove', { id: t.id })}>🗑 מחק</button>
+                            {/if}
+                        {/if}
+                    </span>
+                </div>
+            {/each}
+        </div>
+        {#if trashPreview}
+            <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+            <div class="trash-preview-backdrop" role="presentation" onclick={() => (trashPreview = null)}>
+                <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+                <div class="trash-preview-dialog" role="dialog" aria-modal="true" aria-label="תצוגה מקדימה של הפרסומת"
+                     tabindex="-1" onclick={(e) => e.stopPropagation()}>
+                    <AdCardPreview ad={trashPreview} />
+                    <button type="button" class="a-btn ghost" onclick={() => (trashPreview = null)}>✕ סגור</button>
+                </div>
+            </div>
+        {/if}
+    {:else if shown.length === 0}
         <p class="empty">אין פרסומות בקטגוריה הזו.</p>
     {/if}
 
@@ -1514,6 +1573,37 @@
     }
     .a-btn.approve { background: #16a34a; color: #fff; }
     .a-btn.approve:hover { background: #22c55e; }
+
+    /* האשפה — שורה קומפקטית לכל פרסומת */
+    .trash-list { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; }
+    .trash-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .trash-body { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+    .trash-title { font-size: 0.95rem; text-align: right; }
+    .trash-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: #9ca3af; }
+    .trash-actions { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .trash-actions form { margin: 0; }
+    .trash-preview-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        overflow-y: auto;
+    }
+    .trash-preview-dialog { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; margin: auto 0; }
     .a-btn.reject { background: rgba(239, 68, 68, 0.85); color: #fff; }
     .a-btn.reject:hover { background: #ef4444; }
     .a-btn.ghost {

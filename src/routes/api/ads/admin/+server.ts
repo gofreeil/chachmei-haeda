@@ -15,6 +15,9 @@ import {
     computeAdExtraSlots,
     computeSchedules,
     removeAd,
+    trashAd,
+    restoreAd,
+    computeTrash,
     setAdDuration,
     setAdExpiry,
     normalizeDurationDays,
@@ -54,8 +57,12 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
 
     let raw: Awaited<ReturnType<typeof listAllForAdmin>> = [];
     let backendUnavailable = false;
+    // האשפה: מה שנמחק (לשחזור) ומאושרות שפג תוקפן (לחידוש)
+    let trash: ReturnType<typeof computeTrash> = [];
     try {
-        raw = await listAllForAdmin();
+        const all = await listAllForAdmin({ withDeleted: true });
+        trash = computeTrash(all);
+        raw = all.filter((a) => !a.deletedAt);
     } catch (err) {
         console.error('admin/ads load failed:', err);
         backendUnavailable = true;
@@ -124,7 +131,7 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
         expired: ads.filter((a) => a.isExpired).length,
     };
 
-    return json({ ads, inventory, schedules: computeSchedules(raw.filter((a) => a.status === 'approved')), backendUnavailable, superAdmin });
+    return json({ trash, ads, inventory, schedules: computeSchedules(raw.filter((a) => a.status === 'approved')), backendUnavailable, superAdmin });
 };
 
 // ---------- פעולות ----------
@@ -245,7 +252,22 @@ export const POST: RequestHandler = async ({ request }) => {
                 return json({ ok: true, message: `השכפול של "${r.title}" במקום ${r.slot} בוטל` });
             }
             // מחיקה לצמיתות שמורה לסופר-אדמין; אדמין שמונה מוריד מהאתר ולא מוחק
+            // "מחק" = לאשפה (אפשר לשחזר)
             case 'remove': {
+                if (!superAdmin) throw error(403, 'מחיקה שמורה לסופר-אדמין');
+                const r = await trashAd(id);
+                if (!r) throw error(404, 'הפרסומת לא נמצאה');
+                return json({ ok: true, message: `"${r.title}" הועברה לאשפה — אפשר לשחזר אותה משם` });
+            }
+            // שחזור מהאשפה — למצב שלפני המחיקה (המקום בלוח והתוקף נשמרו)
+            case 'restore': {
+                if (!superAdmin) throw error(403, 'שחזור שמור לסופר-אדמין');
+                const r = await restoreAd(id);
+                if (!r) throw error(404, 'הפרסומת לא נמצאה באשפה');
+                return json({ ok: true, message: `"${r.title}" שוחזרה ✅` });
+            }
+            // ריקון מהאשפה — מחיקה לצמיתות, בלי דרך חזרה
+            case 'purge': {
                 if (!superAdmin) throw error(403, 'מחיקה שמורה לסופר-אדמין');
                 await removeAd(id);
                 return json({ ok: true, message: 'נמחקה לצמיתות' });
