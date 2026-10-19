@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireUser } from '$lib/server/adsAdmin';
+import { requireUser, roleOf } from '$lib/server/adsAdmin';
 import { getAd, isAdOwner } from '$lib/server/adsStore';
 import { getAdStats, type AdStats } from '$lib/server/adStats';
 import { ownerCandidateKeys } from '$lib/server/ownership';
@@ -9,14 +9,15 @@ import { planFor } from '$lib/adPlans';
 const STATS_DAYS = 14;
 
 // דף ניהול הנכס של המפרסם: מדדים, עריכה מחדש וחידוש הפרסום.
-// רק מי ששלח את המודעה רואה אותה (אימות מול submitted_by בכל קריאה).
+// רק מי ששלח את המודעה רואה אותה (אימות מול submitted_by בכל קריאה) —
+// וגם סופר-אדמין, שמגיע לכאן מכפתור "ערוך" במסך ניהול הפרסומות.
 export const GET: RequestHandler = async ({ params, request, setHeaders }) => {
     setHeaders({ 'cache-control': 'private, no-store' });
     const user = await requireUser(request);
 
     const ad = await getAd(params.id);
     if (!ad) throw error(404, 'הפרסומת לא נמצאה');
-    if (!isAdOwner(ownerCandidateKeys(user), ad)) {
+    if (!isAdOwner(ownerCandidateKeys(user), ad) && roleOf(user) !== 'super_admin') {
         throw error(403, 'רק מי שהעלה את הפרסומת יכול לנהל אותה. אם זו הפרסומת שלך — התחברו עם החשבון שממנו נשלחה.');
     }
 

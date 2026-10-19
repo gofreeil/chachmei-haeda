@@ -4,11 +4,12 @@ import { getAd, isAdOwner, updateAdContent, normalizeLanding } from '$lib/server
 import { ownerCandidateKeys } from '$lib/server/ownership';
 import { notifyAdminsAdEdited } from '$lib/server/adsNotify';
 import { adPayloadIssue } from '$lib/server/adBudget';
-import { requireUser } from '$lib/server/adsAdmin';
+import { requireUser, roleOf } from '$lib/server/adsAdmin';
 
 // עריכה מחדש של מודעה קיימת בידי המפרסם שהעלה אותה (דשבורד הנכס →
-// הבונה → שלב השליחה). תוכן בלבד: הסטטוס, התוקף, המסלול והתשלום
-// נשארים כפי שהאדמין קבע, ורק edited_at מתעדכן.
+// הבונה → שלב השליחה), או בידי סופר-אדמין (מסך ניהול הפרסומות → "ערוך").
+// תוכן בלבד: הסטטוס, התוקף, המסלול, התשלום והבעלות נשארים כפי שהיו,
+// ורק edited_at מתעדכן.
 // הזיהוי: Authorization Bearer, מאומת בשרת מול /users/me.
 export const PUT: RequestHandler = async ({ params, request }) => {
     const user = await requireUser(request).catch(() => null);
@@ -16,7 +17,8 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
     const ad = await getAd(params.id);
     if (!ad) throw error(404, 'הפרסומת לא נמצאה');
-    if (!isAdOwner(ownerCandidateKeys(user), ad)) {
+    const isOwner = isAdOwner(ownerCandidateKeys(user), ad);
+    if (!isOwner && roleOf(user) !== 'super_admin') {
         throw error(403, 'אין לך הרשאה לערוך את הפרסומת הזו');
     }
 
@@ -64,13 +66,16 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
     // העריכה לא עוברת אישור (מודעה מאושרת מתעדכנת באתר מיד) — הצוות חייב
     // לדעת עליה. best-effort: כשל בהתראה לא מפיל את העריכה.
-    await notifyAdminsAdEdited({
-        adTitle: payload.title,
-        previousTitle: ad.title,
-        status: ad.status,
-        editorName: user.name,
-        editorEmail: user.email,
-    });
+    // עריכה של סופר-אדמין לא מתריעה - הוא עצמו הצוות
+    if (isOwner) {
+        await notifyAdminsAdEdited({
+            adTitle: payload.title,
+            previousTitle: ad.title,
+            status: ad.status,
+            editorName: user.name,
+            editorEmail: user.email,
+        });
+    }
 
     return json({ ok: true, id: params.id, status: ad.status });
 };
