@@ -2,7 +2,7 @@
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import CaseShare from './CaseShare.svelte';
-	import { approveCaseAs, type CaseParty, type CaseView } from '$lib/services/hearings-service';
+	import { approveCaseAs, setCaseMeet, type CaseParty, type CaseView } from '$lib/services/hearings-service';
 
 	// לוח האישורים של תיק: כל צד מאשר רק בשם עצמו. מה מותר למי — מגיע מהשרת
 	// (view.can / view.defendantBlock), כאן רק מציגים ושולחים.
@@ -38,6 +38,27 @@
 					? tFn('case_block_phone')
 					: ''
 	);
+
+	// חדר המפגש (איתניום): בית הדין פותח/סוגר, הצדדים מצטרפים דרך /case/<id>/meet
+	let meetBusy = $state(false);
+	let meetError = $state('');
+	const meetSince = $derived(
+		view.meet?.openedAt
+			? new Date(view.meet.openedAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+			: ''
+	);
+
+	async function meetAction(action: 'open' | 'close') {
+		meetBusy = true;
+		meetError = '';
+		try {
+			onChange(await setCaseMeet(view.id, action));
+		} catch (e) {
+			meetError = (e as { serverMessage?: string })?.serverMessage || tFn('case_meet_error');
+		} finally {
+			meetBusy = false;
+		}
+	}
 
 	async function approve(party: CaseParty) {
 		busy = party;
@@ -115,6 +136,52 @@
 		<div class="mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-3 text-center text-sm text-yellow-800">
 			{tFn('req_hearing_awaiting_others_msg')}
 		</div>
+	{/if}
+
+	{#if view.meet}
+		<div class="mt-3 rounded-xl border border-indigo-400/40 bg-indigo-500/5 p-3 flex items-center justify-between gap-2 flex-wrap">
+			<div class="min-w-0">
+				<div class="font-bold text-indigo-800">🎥 {tFn('case_meet_title')}</div>
+				<div class="text-xs text-gray-600">
+					{#if view.meet.open}
+						{tFn('case_meet_open_since').replace('{time}', meetSince)}
+					{:else if view.meet.canManage}
+						{view.meet.configured === false ? tFn('case_meet_not_configured') : tFn('case_meet_closed_admin')}
+					{:else}
+						{tFn('case_meet_closed_party')}
+					{/if}
+				</div>
+			</div>
+			<div class="flex items-center gap-2 shrink-0">
+				{#if view.meet.open}
+					<a href="/case/{view.id}/meet" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold">
+						{view.meet.canManage ? tFn('case_meet_enter_host') : tFn('case_meet_join')}
+					</a>
+					{#if view.meet.canManage}
+						<button
+							type="button"
+							onclick={() => meetAction('close')}
+							disabled={meetBusy}
+							class="px-3 py-2 rounded-lg bg-white/80 hover:bg-white text-gray-700 text-xs font-bold disabled:opacity-50"
+						>
+							{meetBusy ? '…' : tFn('case_meet_close_btn')}
+						</button>
+					{/if}
+				{:else if view.meet.canManage}
+					<button
+						type="button"
+						onclick={() => meetAction('open')}
+						disabled={meetBusy || view.meet.configured === false}
+						class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold disabled:opacity-50"
+					>
+						{meetBusy ? '…' : tFn('case_meet_open_btn')}
+					</button>
+				{/if}
+			</div>
+		</div>
+		{#if meetError}
+			<p class="mt-1 text-sm text-red-700 text-center">{meetError}</p>
+		{/if}
 	{/if}
 
 	{#if view.viewer?.role === 'plaintiff' && !view.approvals.defendant}

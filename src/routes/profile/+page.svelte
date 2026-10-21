@@ -40,6 +40,8 @@
 		link?: string;
 		asDefendant?: boolean;
 		awaitingMe?: boolean;
+		/** חדר המפגש של התיק פתוח עכשיו */
+		meetLink?: string;
 	};
 
 	type Message = {
@@ -158,7 +160,8 @@
 					createdAt: v.createdAt ?? '',
 					link: `/case/${v.id}`,
 					asDefendant: v.viewer?.role === 'defendant',
-					awaitingMe: v.viewer?.role === 'defendant' ? !v.approvals.defendant : v.can.plaintiff
+					awaitingMe: v.viewer?.role === 'defendant' ? !v.approvals.defendant : v.can.plaintiff,
+					meetLink: v.meet?.open ? `/case/${v.id}/meet` : undefined
 				}))
 			: cases
 	);
@@ -505,6 +508,14 @@
 									</h3>
 									<p class="text-sm text-gray-400">{tFn('profile_case_number')} #{c.id} · {c.subject}</p>
 								</div>
+								{#if c.meetLink}
+									<a
+										href={c.meetLink}
+										class="text-xs px-3 py-1 rounded-lg font-bold whitespace-nowrap bg-indigo-500/30 text-indigo-100 hover:bg-indigo-500/40"
+									>
+										🎥 {tFn('case_meet_join')}
+									</a>
+								{/if}
 								{#if c.link}
 									<a
 										href={c.link}

@@ -139,6 +139,23 @@ export interface CaseView {
 	viewer: { role: CaseParty | 'other' | null; name: string; isAdmin: boolean } | null;
 	can: Record<CaseParty, boolean>;
 	defendantBlock: DefendantBlock | null;
+	/** חדר המפגש באיתניום — רק לבית הדין ולצדדים; null לשאר */
+	meet: CaseMeetState | null;
+}
+
+export interface CaseMeetState {
+	open: boolean;
+	openedAt: string | null;
+	canManage: boolean;
+	/** לבית הדין: האם פרטי חשבון איתניום מוגדרים בשרת */
+	configured: boolean | null;
+}
+
+export interface CaseMeetEntry {
+	role: 'host' | 'participant';
+	url: string;
+	caseRef: string;
+	nickname: string;
 }
 
 async function caseFetch<T = CaseView>(path: string, init: RequestInit = {}): Promise<T> {
@@ -179,6 +196,16 @@ export function fetchCase(id: string): Promise<CaseView> {
 
 export function approveCaseAs(id: string, party: CaseParty): Promise<CaseView> {
 	return caseFetch(`/${encodeURIComponent(id)}/approve`, { method: 'POST', body: JSON.stringify({ party }) });
+}
+
+/** בית הדין פותח/סוגר את חדר המפגש של התיק */
+export function setCaseMeet(id: string, action: 'open' | 'close'): Promise<CaseView> {
+	return caseFetch(`/${encodeURIComponent(id)}/meet`, { method: 'POST', body: JSON.stringify({ action }) });
+}
+
+/** הקישור האישי לכניסה לחדר (מנחה לבית הדין, משתתף לצדדים) */
+export function fetchCaseMeetEntry(id: string): Promise<CaseMeetEntry> {
+	return caseFetch<CaseMeetEntry>(`/${encodeURIComponent(id)}/meet`);
 }
 
 // ───────────────────────── Admin ─────────────────────────

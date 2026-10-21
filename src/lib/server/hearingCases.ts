@@ -13,6 +13,8 @@
 //   • אישור הנתבע — רק משתמש מחובר שאינו התובע, ששמו בחשבון (כינוי/שם משתמש)
 //     תואם לשם הנתבע שהתובע הקליד; וכשלשניהם יש טלפון — גם הטלפון חייב להתאים.
 //   • אישור בית הדין — אדמין של חכמי העדה בלבד.
+//   • חדר מפגש וירטואלי (איתניום) — בית הדין פותח וסוגר; נכנסים רק בית הדין
+//     והצדדים בתיק (הנתבע — אחרי שאישר, רק החשבון שאישר).
 // שום דגל מהדפדפן לא נחשב.
 // ============================================================
 
@@ -20,6 +22,16 @@ import { error } from '@sveltejs/kit';
 import { strapiGet, strapiPost, strapiPut, getStrapiMe, StrapiContentTypeError } from './strapiClient';
 import { roleOf, ADMIN_ROLES } from './adsAdmin';
 import { resolveAdminUserIds } from './adsNotify';
+import {
+    createRoom,
+    eitaniumConfigured,
+    EitaniumError,
+    type EitaniumRoom,
+    hostEntryUrl,
+    openSecret,
+    participantEntryUrl,
+    sealSecret,
+} from './eitanium';
 
 const ENDPOINT = '/api/ch-hearing-requests';
 
@@ -44,6 +56,30 @@ interface CaseMeta {
     defendantPhone: string;
     approvals: Record<Party, Approval | null>;
     createdAt: string;
+    meet?: CaseMeet | null;
+}
+
+/** חדר המפגש של התיק באיתניום */
+interface CaseMeet {
+    /** meet_schedule_id באיתניום */
+    id: number;
+    openedAt: string;
+    openedBy: string;
+    closedAt?: string;
+    /** MeetSecret מוצפן — הקישורים כוללים סיסמה וטוקן מנחה */
+    sealed: string;
+}
+
+interface MeetSecret {
+    joinUrl: string;
+    hostUrl: string;
+}
+
+// טוקן המנחה של איתניום תקף 30 שעות מהפתיחה — אחרי זה פותחים חדר חדש
+const MEET_TTL_MS = 28 * 60 * 60 * 1000;
+
+function meetIsOpen(meet: CaseMeet | null | undefined): meet is CaseMeet {
+    return !!meet && !meet.closedAt && Date.now() - Date.parse(meet.openedAt) < MEET_TTL_MS;
 }
 
 interface StrapiRequest {
@@ -126,6 +162,26 @@ function phoneKey(s: string): string {
 function nameMatches(viewer: CaseViewer, defendantName: string): boolean {
     const target = normalizeName(defendantName);
     return !!target && viewer.names.some((n) => normalizeName(n) === target);
+}
+
+/** האם הצופה הוא התובע / הנתבע — אותו כלל שקובע מה הוא רואה בדף התיק */
+function partiesOf(meta: CaseMeta, viewer: CaseViewer | null): { isPlaintiff: boolean; isDefendant: boolean } {
+    if (!viewer) return { isPlaintiff: false, isDefendant: false };
+    const isPlaintiff = viewer.id === meta.plaintiffUserId;
+    const myPhone = phoneKey(viewer.phone);
+    const isDefendant =
+        meta.approvals.defendant?.userId === viewer.id ||
+        (!isPlaintiff &&
+            (nameMatches(viewer, meta.defendantName) ||
+                (myPhone.length >= 9 && phoneKey(meta.defendantPhone) === myPhone)));
+    return { isPlaintiff, isDefendant };
+}
+
+/** מי נכנס לחדר כצד: התובע, והנתבע — אחרי שאישר רק החשבון שאישר */
+function isMeetParty(meta: CaseMeta, viewer: CaseViewer): boolean {
+    if (viewer.id === meta.plaintiffUserId) return true;
+    if (meta.approvals.defendant) return meta.approvals.defendant.userId === viewer.id;
+    return partiesOf(meta, viewer).isDefendant;
 }
 
 export function defendantBlock(meta: CaseMeta, viewer: CaseViewer | null): DefendantBlock | null {
@@ -403,19 +459,96 @@ export async function approveCase(id: string, party: Party, viewer: CaseViewer) 
     return publicView({ ...c, status, meta }, viewer);
 }
 
+// ───────────────────────── חדר מפגש ─────────────────────────
+
+async function saveMeta(id: string, meta: CaseMeta): Promise<void> {
+    await strapiPut(`${ENDPOINT}/${encodeURIComponent(id)}`, { data: { documentsNotes: JSON.stringify(meta) } });
+}
+
+/** בית הדין פותח חדר מפגש באיתניום; חדר פתוח קיים מוחזר כמו-שהוא */
+export async function openCaseMeet(id: string, viewer: CaseViewer, siteOrigin: string) {
+    if (!viewer.isAdmin) throw error(403, 'רק בית הדין יכול לפתוח חדר מפגש');
+    const c = await loadCase(id);
+    if (!c) throw error(404, 'התיק לא נמצא');
+    const { meta } = c;
+    if (meetIsOpen(meta.meet) && openSecret<MeetSecret>(meta.meet.sealed)) return publicView(c, viewer);
+
+    // הנושא גלוי באיתניום גם בלי סיסמה — רק מספר תיק ותו אקראי, בלי שמות
+    let room: EitaniumRoom;
+    try {
+        room = await createRoom(`ChachmeiHaeda ${meta.caseRef} ${Math.random().toString(36).slice(2, 8)}`);
+    } catch (e) {
+        if (e instanceof EitaniumError) {
+            console.warn(`[cases] eitanium room failed (${e.code}):`, e.message);
+            throw error(e.code === 'config' ? 503 : 502, e.message);
+        }
+        throw e;
+    }
+    meta.meet = {
+        id: room.meetId,
+        openedAt: new Date().toISOString(),
+        openedBy: viewer.display,
+        sealed: sealSecret({ joinUrl: room.joinUrl, hostUrl: room.hostUrl } satisfies MeetSecret),
+    };
+    await saveMeta(c.id, meta);
+    await notifyPartiesMeetOpen(meta, `${siteOrigin}/case/${c.id}/meet`);
+    return publicView(c, viewer);
+}
+
+export async function closeCaseMeet(id: string, viewer: CaseViewer) {
+    if (!viewer.isAdmin) throw error(403, 'רק בית הדין יכול לסגור את החדר');
+    const c = await loadCase(id);
+    if (!c) throw error(404, 'התיק לא נמצא');
+    if (c.meta.meet && !c.meta.meet.closedAt) {
+        c.meta.meet.closedAt = new Date().toISOString();
+        await saveMeta(c.id, c.meta);
+    }
+    return publicView(c, viewer);
+}
+
+/** הכניסה לחדר: בית הדין כמנחה, הצדדים כמשתתפים. כל אחד מקבל את הקישור שלו בלבד. */
+export async function caseMeetEntry(id: string, viewer: CaseViewer) {
+    const c = await loadCase(id);
+    if (!c) throw error(404, 'התיק לא נמצא');
+    const { meta } = c;
+    const isHost = viewer.isAdmin;
+    if (!isHost && !isMeetParty(meta, viewer)) throw error(403, 'רק הצדדים בתיק ובית הדין נכנסים לחדר המפגש');
+    if (!meetIsOpen(meta.meet)) throw error(409, 'חדר המפגש סגור כרגע — בית הדין יפתח אותו בזמן המפגש');
+    const secret = openSecret<MeetSecret>(meta.meet.sealed);
+    if (!secret) throw error(410, 'החדר פג — בית הדין צריך לפתוח חדר חדש');
+    return {
+        role: isHost ? ('host' as const) : ('participant' as const),
+        url: isHost ? hostEntryUrl(secret.hostUrl, viewer.display) : participantEntryUrl(secret.joinUrl, viewer.display),
+        caseRef: meta.caseRef,
+        nickname: meta.nickname,
+    };
+}
+
+/** הודעה לתיבה של התובע ושל הנתבע שאישר — best-effort, החדר כבר נפתח */
+async function notifyPartiesMeetOpen(meta: CaseMeta, link: string): Promise<void> {
+    const receivers = [meta.plaintiffUserId, meta.approvals.defendant?.userId]
+        .map((v) => Number(v))
+        .filter((v, i, all) => v > 0 && all.indexOf(v) === i);
+    if (receivers.length === 0) return;
+    const content =
+        `🎥 בית הדין חכמי העדה פתח את חדר המפגש לתיק ${meta.caseRef}\n` +
+        `${meta.subject}\n` +
+        `להצטרפות: ${link}`;
+    try {
+        await Promise.all(receivers.map((receiver) =>
+            strapiPost('/api/messages', { data: { receiver, content, read: false } })
+        ));
+    } catch (err) {
+        console.warn('[cases] meet-open notification failed:', err instanceof Error ? err.message : err);
+    }
+}
+
 // ───────────────────────── תצוגה ─────────────────────────
 
 /** מה שהדפדפן מקבל: בלי טלפונים ומזהי משתמשים; הפירוט רק לצדדים ולבית הדין */
 function publicView(c: { id: string; status: string; meta: CaseMeta }, viewer: CaseViewer | null) {
     const { meta } = c;
-    const isPlaintiff = !!viewer && viewer.id === meta.plaintiffUserId;
-    const myPhone = phoneKey(viewer?.phone ?? '');
-    const isDefendant =
-        !!viewer &&
-        (meta.approvals.defendant?.userId === viewer.id ||
-            (!isPlaintiff &&
-                (nameMatches(viewer, meta.defendantName) ||
-                    (myPhone.length >= 9 && phoneKey(meta.defendantPhone) === myPhone))));
+    const { isPlaintiff, isDefendant } = partiesOf(meta, viewer);
     const role: Party | 'other' | null = !viewer
         ? null
         : isPlaintiff
@@ -451,6 +584,16 @@ function publicView(c: { id: string; status: string; meta: CaseMeta }, viewer: C
             beitDin: !!viewer?.isAdmin && !meta.approvals.beitDin,
         },
         defendantBlock: block,
+        // מצב חדר המפגש — רק לבית הדין ולצדדים, בלי הקישורים עצמם (הם ב-caseMeetEntry)
+        meet:
+            viewer && (viewer.isAdmin || isMeetParty(meta, viewer))
+                ? {
+                      open: meetIsOpen(meta.meet),
+                      openedAt: meetIsOpen(meta.meet) ? meta.meet.openedAt : null,
+                      canManage: viewer.isAdmin,
+                      configured: viewer.isAdmin ? eitaniumConfigured() : null,
+                  }
+                : null,
     };
 }
 
