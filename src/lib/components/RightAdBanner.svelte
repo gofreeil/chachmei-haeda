@@ -32,6 +32,15 @@
         return parseAdStyle(ad.adStyle) ?? legacyAdStyle(ad.title);
     }
 
+    // באתר הזה html { font-size: 17.5px } ובקהילה בשכונה 16px. כדי שהכרטיס
+    // ייראה זהה בפיקסל (ולא מוגדל ב-9%, עם לוגו שנשאר 36px) כל מידות
+    // הכרטיס והטור כתובות בפיקסלים - הערכים המחושבים של קהילה בשכונה
+    // (1rem = 16px). גם גודל הסלוגן, ש-adStyleVars כותב ב-rem, מוחלף כאן
+    // לפיקסלים מאותו מספר.
+    function cardVars(st: AdStyle): string {
+        return `${adStyleVars(st)}--sub-size:${st.subFontSize * 16}px;`;
+    }
+
     const PER_GROUP = 4;     // כמה מקומות (מודעות ופנויים) נראים בו-זמנית
     const VIEW_MS = 7000;    // כמה זמן כל קבוצה נשארת על המסך
 
@@ -83,7 +92,7 @@
 <!-- RightAdBanner.svelte -->
 <aside
     aria-label={tFn('right_ad_aside_label')}
-    class="{visibilityClass} w-36 flex-shrink-0 sticky top-4 h-fit pb-8 text-center"
+    class="{visibilityClass} w-[144px] flex-shrink-0 sticky top-4 h-fit pb-8 text-center"
 >
     <h4
         class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2 px-2"
@@ -94,7 +103,7 @@
          שקיפות איטי בין השכבות — בלי רגע ריק ובלי קפיצות תוכן. -->
     <div class="ads-stage">
         {#each groups as grp, gi}
-        <div class="space-y-3 ads-group" class:active={gi === safeGroup}>
+        <div class="space-y-[12px] ads-group" class:active={gi === safeGroup}>
         {#each grp as item, index (item.kind === 'real' ? `${item.ad.id}-${index}` : `${gi}-${index}`)}
             {#if item.kind === 'real'}
                 {@const ad = item.ad}
@@ -108,8 +117,8 @@
                     href="/ads/{ad.id}"
                     onclick={() => trackAdClick(ad.id)}
                     aria-label="{ad.title} – {ad.subtitle}"
-                    class="block overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 group relative"
-                    style={adStyleVars(st)}
+                    class="block overflow-hidden rounded-[8px] shadow-lg transition-transform hover:scale-105 group relative"
+                    style={cardVars(st)}
                 >
                     <!-- aspect-[144/450] = בדיוק היחס שהבילדר מציג בתצוגה החיה
                          (live-demo-img-wrap). המפרסם מכוון שם מיקום וזום על מסגרת
@@ -162,23 +171,23 @@
                         <div
                             class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-[1500ms] flex items-center justify-center bg-black/60 backdrop-blur-sm"
                         >
-                            <div class="relative z-10 text-center px-3">
-                                <h3 class="text-white font-bold text-sm mb-1">{ad.title}</h3>
-                                <p class="text-gray-200 text-xs">{ad.subtitle}</p>
+                            <div class="relative z-10 text-center px-[12px]">
+                                <h3 class="text-white font-bold text-[14px] leading-[20px] mb-[4px]">{ad.title}</h3>
+                                <p class="text-gray-200 text-[12px] leading-[16px]">{ad.subtitle}</p>
                             </div>
                         </div>
                     </div>
                     <!-- כרטיס מוצר מהחנות - בלי רצועת המחיר ("₪.. · לצפייה בחנות").
                          גם פרסומת שטקסט הכפתור שלה נמחק מוצגת בלי רצועה -->
                     {#if !ad.shop && ad.cta}
-                    <div class="relative group/cta {ctaColor.cls} p-2.5 text-center" style={ctaColor.style}>
-                        <p class="text-white font-bold text-xs leading-tight">{ad.cta || ad.title}</p>
+                    <div class="relative group/cta {ctaColor.cls} p-[10px] text-center" style={ctaColor.style}>
+                        <p class="text-white font-bold text-[12px] leading-tight">{ad.cta || ad.title}</p>
                         {#if ad.hover}
                             <!-- pre-line + w-max: משפט בשורה אחת נשאר בשורה אחת, אבל ירידות שורה
                                  שהמפרסם הקליד נשמרות, וטקסט ארוך נגמר ב-max-w במקום לגלוש -->
-                            <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/cta:block
-                                         bg-gray-900 text-white text-xs font-bold rounded-lg px-3 py-1.5
-                                         whitespace-pre-line w-max max-w-[15rem] text-center
+                            <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] hidden group-hover/cta:block
+                                         bg-gray-900 text-white text-[12px] leading-[16px] font-bold rounded-[8px] px-[12px] py-[6px]
+                                         whitespace-pre-line w-max max-w-[240px] text-center
                                          border border-white/10 shadow-xl pointer-events-none z-50">
                                 {ad.hover}
                             </span>
@@ -291,7 +300,7 @@
         inset-inline: 0;
         top: 0;
         z-index: 5;
-        padding: 0.55rem 0.7rem 0.85rem;
+        padding: 8.8px 11.2px 13.6px;
         text-align: center;
         background: linear-gradient(
             180deg,
@@ -347,7 +356,7 @@
         inset-inline: 0;
         bottom: 0;
         z-index: 4;
-        padding: 0.55rem 0.7rem 1.1rem;
+        padding: 8.8px 11.2px 17.6px;
         text-align: var(--sub-align, right);
         pointer-events: none;
     }
@@ -355,7 +364,7 @@
         margin: 0;
         color: rgba(255, 255, 255, 0.95);
         font-weight: 600;
-        font-size: var(--sub-size, 0.88rem);
+        font-size: var(--sub-size, 14.08px);
         line-height: var(--sub-lh, 1.3);
         text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     }
@@ -374,7 +383,7 @@
         margin: 0;
         color: white;
         font-weight: 900;
-        font-size: 1.15rem;
+        font-size: 18.4px;
         line-height: 1.15;
         letter-spacing: 0.005em;
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85), 0 1px 2px rgba(0, 0, 0, 0.95);

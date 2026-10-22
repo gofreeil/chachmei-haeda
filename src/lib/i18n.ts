@@ -1,4 +1,5 @@
 import { register, init } from 'svelte-i18n';
+import * as advertiseBuilder from './translations/advertiseBuilder';
 
 register('he', () => Promise.resolve({
     welcome: "חכמי העדה",
@@ -4842,6 +4843,12 @@ register('ps', () => Promise.resolve({
 
 // גרמנית — קובץ נפרד שנטען בעצלות (רק כשנבחרה שפה זו), כדי לא להגדיל את החבילה הראשית
 register('de', () => import('./i18n.de').then((m) => m.default));
+
+// בונה הפרסומות — אותן שפות (he/en/ru) ואותם מפתחות advertise.* של "קהילה בשכונה";
+// es/ps/de נופלות לעברית. svelte-i18n ממזג את כל הטוענים של אותה שפה.
+register('he', () => Promise.resolve(advertiseBuilder.he));
+register('en', () => Promise.resolve(advertiseBuilder.en));
+register('ru', () => Promise.resolve(advertiseBuilder.ru));
 
 
 init({

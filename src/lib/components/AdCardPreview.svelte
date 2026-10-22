@@ -33,8 +33,9 @@
 </script>
 
 <!-- אותו כרטיס בדיוק של RightAdBanner (וגם של הטור הימני ב"קהילה בשכונה"):
-     רוחב 144px, תמונה ביחס 144/450 ורצועת CTA רק כשיש לה טקסט -->
-<div class="w-36 overflow-hidden rounded-lg shadow-lg relative bg-gray-900" style={adStyleVars(st)}>
+     רוחב 144px, תמונה ביחס 144/450 ורצועת CTA רק כשיש לה טקסט. המידות
+     בפיקסלים - ערכי 1rem=16px של קהילה בשכונה (כאן 1rem=17.5px) -->
+<div class="w-[144px] overflow-hidden rounded-[8px] shadow-lg relative bg-gray-900" style="{adStyleVars(st)}--sub-size:{st.subFontSize * 16}px;">
     <div class="relative overflow-hidden w-full aspect-[144/450]" use:logoClearance={ad}>
         {#if ad.mainImage}
             <div class="absolute inset-0 overflow-hidden">
@@ -64,8 +65,8 @@
         {/if}
     </div>
     {#if ad.cta}
-        <div class="{ctaColor.cls} p-2.5 text-center" style={ctaColor.style}>
-            <p class="text-white font-bold text-xs leading-tight">{ad.cta}</p>
+        <div class="{ctaColor.cls} p-[10px] text-center" style={ctaColor.style}>
+            <p class="text-white font-bold text-[12px] leading-tight">{ad.cta}</p>
         </div>
     {/if}
 </div>
@@ -82,7 +83,7 @@
         inset-inline: 0;
         top: 0;
         z-index: 5;
-        padding: 0.55rem 0.7rem 0.85rem;
+        padding: 8.8px 11.2px 13.6px;
         text-align: center;
         background: linear-gradient(
             180deg,
@@ -138,7 +139,7 @@
         inset-inline: 0;
         bottom: 0;
         z-index: 4;
-        padding: 0.55rem 0.7rem 1.1rem;
+        padding: 8.8px 11.2px 17.6px;
         text-align: var(--sub-align, right);
         pointer-events: none;
     }
@@ -146,7 +147,7 @@
         margin: 0;
         color: rgba(255, 255, 255, 0.95);
         font-weight: 600;
-        font-size: var(--sub-size, 0.88rem);
+        font-size: var(--sub-size, 14.08px);
         line-height: var(--sub-lh, 1.3);
         text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     }
@@ -165,7 +166,7 @@
         margin: 0;
         color: white;
         font-weight: 900;
-        font-size: 1.15rem;
+        font-size: 18.4px;
         line-height: 1.15;
         letter-spacing: 0.005em;
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85), 0 1px 2px rgba(0, 0, 0, 0.95);
