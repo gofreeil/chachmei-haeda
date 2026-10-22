@@ -16,6 +16,7 @@
         RENEW_WARNING_DAYS, type AdStatusKind,
     } from '$lib/adOwner';
     import { adImgFit, parseAdImageFit } from '$lib/adImageFit';
+    import { parseAdStyle, DEFAULT_AD_STYLE } from '$lib/adStyle';
 
     let loading = $state(true);
     let loadError = $state('');
@@ -92,25 +93,34 @@
 
     function editInBuilder() {
         const adv = (lp.advantages ?? []) as string[];
+        // העיצוב שנשמר עם המודעה חוזר לבונה במלואו (כמו ב"קהילה בשכונה").
+        // מודעה ותיקה בלי עיצוב (null) נשארת על כללי ברירת המחדל של הבונה.
+        const st = parseAdStyle(ad.adStyle);
+        const design = st ?? DEFAULT_AD_STYLE;
         const draft = {
             logo: ad.logo ?? '',
             logoOriginal: ad.logo ?? '',
-            hasCircleCrop: false,
-            logoShape: 'square',
-            logoPosition: 'right',
-            logoPositionExplicit: false,
+            hasCircleCrop: design.logoShape === 'circle',
+            logoShape: design.logoShape,
+            logoPosition: design.logoAnchor,
+            logoPositionExplicit: Boolean(st),
+            logoFreeX: design.logoX,
+            logoFreeY: design.logoY,
             mainImage: ad.mainImage ?? '',
             mainImageObjectX: ad.mainImageFit?.x ?? 50,
             mainImageObjectY: ad.mainImageFit?.y ?? 50,
             mainImageZoom: ad.mainImageFit?.z ?? 1,
             title: ad.title ?? '',
-            titleColor: '#ffffff',
-            titleOffsetY: 0,
+            titleColor: design.titleColor,
+            titleOffsetY: design.titleOffsetY,
             subtitle: ad.subtitle ?? '',
+            subFontSize: design.subFontSize,
+            subLineHeight: design.subLineHeight,
+            subAlign: design.subAlign,
             hoverText: ad.hoverText ?? '',
             cta: ad.cta ?? '',
             gradient: ad.gradient ?? '',
-            diagHeight: 12,
+            diagHeight: design.bandHeight,
             landingHeadline: lp.headline ?? '',
             landingPitch: lp.pitch ?? '',
             landingExtended: lp.extended ?? '',

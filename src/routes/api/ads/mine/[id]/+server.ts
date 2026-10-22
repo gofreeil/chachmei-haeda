@@ -38,6 +38,8 @@ export const GET: RequestHandler = async ({ params, request, setHeaders }) => {
             logo: ad.logo,
             mainImage: ad.mainImage,
             mainImageFit: ad.mainImageFit,
+            // העיצוב מהבילדר - בלעדיו "ערוך" היה מאפס לוגו, רצועה וטיפוגרפיה
+            adStyle: ad.adStyle,
             landing: ad.landing,
             submittedAt: ad.submittedAt,
             editedAt: ad.editedAt,

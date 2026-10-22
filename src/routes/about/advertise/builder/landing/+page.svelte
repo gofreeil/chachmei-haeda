@@ -9,6 +9,7 @@
         shrinkAdPayload, heaviestImageLabel,
     } from "$lib/adPayloadBudget";
     import { getAdIntent, clearAdIntent } from "$lib/adIntent";
+    import { DEFAULT_AD_STYLE, parseAdStyle } from "$lib/adStyle";
 
     // עורך דף הנחיתה + שליחה סופית - פורט מקבוצות רכישה (במקור מ"קהילה בשכונה").
     // חולק את אותה טיוטת localStorage עם ה-builder הראשי.
@@ -71,6 +72,10 @@
     let logo = $state("");
     let logoShape = $state(/** @type {'square' | 'circle'} */ ("square"));
     let gradient = $state("linear-gradient(135deg, #f59e0b, #ea580c)");
+    // העיצוב שנקבע בבילדר (לוגו, רצועה, כותרת, טיפוגרפיית הסלוגן) — נקרא
+    // מהטיוטה ונשלח עם המודעה; בלעדיו המודעה שהתפרסמה נבנתה מברירות המחדל
+    /** @type {import("$lib/adStyle").AdStyle} */
+    let adStyleFromDraft = $state({ ...DEFAULT_AD_STYLE });
 
     // ===== גרירת קבצים =====
     let isDraggingLandingImage = $state(false);
@@ -110,6 +115,7 @@
         return {
             title, subtitle, hoverText, cta, gradient,
             logo, mainImage, mainImageFit,
+            adStyle: adStyleFromDraft,
             landing: {
                 headline: landingHeadline,
                 pitch: landingPitch,
@@ -373,6 +379,18 @@
                     logo = d.logo ?? "";
                     logoShape = d.logoShape ?? "square";
                     gradient = d.gradient ?? gradient;
+                    adStyleFromDraft = parseAdStyle({
+                        logoShape:     d.logoShape,
+                        logoAnchor:    d.logoPosition,
+                        logoX:         d.logoFreeX,
+                        logoY:         d.logoFreeY,
+                        bandHeight:    d.diagHeight,
+                        titleOffsetY:  d.titleOffsetY,
+                        titleColor:    d.titleColor,
+                        subFontSize:   d.subFontSize,
+                        subLineHeight: d.subLineHeight,
+                        subAlign:      d.subAlign,
+                    }) ?? { ...DEFAULT_AD_STYLE };
                 }
             } catch {}
             // טיוטה ישנה שחורגת מהתקציב מכווצת מיד — לא מחכים לכישלון בסוף
