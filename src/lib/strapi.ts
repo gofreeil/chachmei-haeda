@@ -64,6 +64,20 @@ export interface StrapiUser {
 	avatar_url?: string;
 }
 
+/**
+ * שם לתצוגה: כינוי → שם → username → החלק שלפני ה-@ במייל.
+ * username שנוצר בהתחברות חברתית (google_1164…, facebook_123…) הוא מזהה ולא שם — מדלגים עליו.
+ */
+export function friendlyUserName(
+	u?: { nickname?: string | null; name?: string | null; username?: string | null; email?: string | null } | null
+): string {
+	for (const raw of [u?.nickname, u?.name, u?.username]) {
+		const s = (raw ?? '').trim();
+		if (s && !s.includes('@') && !/^[a-z][a-z0-9]*[_-]\d{5,}$/i.test(s)) return s;
+	}
+	return (u?.email ?? '').split('@')[0].trim();
+}
+
 export function getJwt(): string | null {
 	if (typeof localStorage === 'undefined') return null;
 	try {

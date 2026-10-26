@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { friendlyUserName } from '$lib/strapi';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
@@ -31,7 +32,7 @@
 	}
 
 	interface Props {
-		currentUser?: { username: string; avatar_url?: string | null };
+		currentUser?: { username: string; email?: string | null; nickname?: string | null; avatar_url?: string | null };
 		layoutUser?: LayoutUser | null;
 	}
 	let { currentUser, layoutUser }: Props = $props();
@@ -341,7 +342,7 @@
 					<!-- שם + הודעות -->
 					<div class="flex flex-col gap-1 min-w-0">
 						<span class="text-white font-black text-base truncate">
-							{layoutUser.nickname || layoutUser.name || currentUser.username}
+							{friendlyUserName({ ...layoutUser, username: currentUser.username, email: layoutUser.email ?? currentUser.email })}
 						</span>
 						<span class="text-orange-400 text-xs font-bold">📩 {tFn('mobile_ads_drawer_personal_messages')}</span>
 						<span class="text-gray-400 text-xs">{tFn('mobile_ads_drawer_to_personal_area')}</span>
@@ -369,7 +370,7 @@
 				<span class="profile-avatar-placeholder">👤</span>
 				{/if}
 				<div class="profile-btn-text">
-					<span class="profile-btn-name">{currentUser.username}</span>
+					<span class="profile-btn-name">{friendlyUserName(currentUser)}</span>
 					<span class="profile-btn-sub">{tFn('mobile_ads_drawer_to_my_personal_area')}</span>
 				</div>
 			</a>

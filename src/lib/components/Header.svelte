@@ -5,6 +5,7 @@
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
     import { page } from '$app/state';
+    import { friendlyUserName } from '$lib/strapi';
 
     interface Props {
         currentUser?: any;
@@ -509,7 +510,7 @@
                         </div>
 
                         {#if currentUser}
-                            <a href="/profile" class="relative group flex-shrink-0" aria-label="{tFn('header_profile_aria_user')} – {currentUser.username ?? tFn('header_user_fallback')}">
+                            <a href="/profile" class="relative group flex-shrink-0" aria-label="{tFn('header_profile_aria_user')} – {friendlyUserName(currentUser) || tFn('header_user_fallback')}">
                                 {#if currentUser.avatar_url && !avatarBroken}
                                     <img
                                         src={currentUser.avatar_url}
@@ -523,7 +524,7 @@
                                     />
                                 {:else}
                                     <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-blue-500 shadow-lg border border-white/10" aria-hidden="true">
-                                        <span class="font-bold text-white text-xs">{currentUser.username?.charAt(0) || "U"}</span>
+                                        <span class="font-bold text-white text-xs">{friendlyUserName(currentUser).charAt(0).toUpperCase() || "U"}</span>
                                     </div>
                                 {/if}
                             </a>
@@ -763,7 +764,7 @@
             {#if true}
                 <div class="flex items-center gap-4">
                     {#if currentUser}
-                        {@const userName = currentUser.username ?? "U"}
+                        {@const userName = friendlyUserName(currentUser) || "U"}
                         <div class="flex items-center gap-3">
                             <!-- תמונת פרופיל עם hover -->
                             <a
