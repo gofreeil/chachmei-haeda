@@ -356,6 +356,22 @@
 			</a>
 		{/each}
 
+		{#if isChachmeiAdmin(strapiUser)}
+			<!-- קישור לפאנל ניהול האתר — מוצג רק לאדמינים, מתחת ל-Hero ומעל הטאבים -->
+			<a href="/admin" class="admin-banner mb-4">
+				<span class="admin-banner__icon" aria-hidden="true">🔧</span>
+				<span class="admin-banner__text">
+					<span class="admin-banner__title">
+						{tFn('profile_admin_panel_title')}
+						<span class="admin-banner__badge">
+							{#if isSuperAdmin(strapiUser)}👑 {tFn('profile_admin_super_badge')}{:else}🤝 {tFn('profile_admin_limited_badge')}{/if}
+						</span>
+					</span>
+					<span class="admin-banner__sub">{tFn('profile_admin_panel_sub')}</span>
+				</span>
+			</a>
+		{/if}
+
 		<!-- ───────────── טאבים ───────────── -->
 		<div class="flex gap-1 md:gap-2 mb-4 overflow-x-auto pb-1" role="tablist">
 			{#each tabs as tab}
@@ -412,29 +428,6 @@
 					<div class="text-sm text-gray-400 mt-1 truncate">{user?.phone || tFn('profile_no_phone')}</div>
 				</button>
 			</div>
-
-			{#if isChachmeiAdmin(strapiUser)}
-				<!-- קישור לפאנל ניהול האתר — מוצג רק לאדמינים -->
-				<a
-					href="/admin"
-					class="block rounded-2xl border border-purple-500/40 bg-purple-900/20 hover:bg-purple-900/30 transition-colors p-5 mt-4"
-				>
-					<div class="flex items-center gap-4">
-						<div class="text-3xl">🔧</div>
-						<div class="min-w-0">
-							<div class="font-bold text-white text-lg">
-								{tFn('profile_admin_panel_title')}
-								{#if isSuperAdmin(strapiUser)}
-									<span class="mr-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold align-middle">👑 {tFn('profile_admin_super_badge')}</span>
-								{:else}
-									<span class="mr-1 px-2 py-0.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-xs font-bold align-middle">🤝 {tFn('profile_admin_limited_badge')}</span>
-								{/if}
-							</div>
-							<div class="text-sm text-gray-400 mt-1">{tFn('profile_admin_panel_sub')}</div>
-						</div>
-					</div>
-				</a>
-			{/if}
 
 		{/if}
 
@@ -658,3 +651,51 @@
 		{/if}
 	{/if}
 </section>
+
+<style>
+	.admin-banner {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.6rem 1rem;
+		border-radius: 1rem;
+		border: 2px solid #fbbf24;
+		background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+		color: #2b1300;
+		text-decoration: none;
+		box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+	}
+	.admin-banner:hover {
+		filter: brightness(1.06);
+	}
+	.admin-banner__icon {
+		flex-shrink: 0;
+		font-size: 1.6rem;
+	}
+	.admin-banner__text {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.admin-banner__title {
+		font-weight: 900;
+		font-size: 1.1rem;
+		color: #2b1300;
+	}
+	.admin-banner__badge {
+		margin-inline-start: 0.4rem;
+		padding: 0.1rem 0.5rem;
+		border-radius: 9999px;
+		background: rgba(43, 19, 0, 0.15);
+		border: 1px solid rgba(43, 19, 0, 0.35);
+		font-size: 0.72rem;
+		font-weight: 700;
+		vertical-align: middle;
+	}
+	.admin-banner__sub {
+		font-size: 0.82rem;
+		font-weight: 600;
+		color: #451a03;
+	}
+</style>
