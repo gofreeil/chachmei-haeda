@@ -211,18 +211,29 @@ export function fetchCaseMeetEntry(id: string): Promise<CaseMeetEntry> {
 	return caseFetch<CaseMeetEntry>(`/${encodeURIComponent(id)}/meet`);
 }
 
-export interface OpenMeet {
+export interface RoomCase {
 	id: string;
 	caseRef: string;
 	nickname: string;
 	subject: string;
-	openedAt: string;
-	role: 'host' | 'participant';
+	plaintiffName: string;
+	defendantName: string;
+	proposedDate: string;
+	approved: boolean;
+	open: boolean;
+	openedAt: string | null;
 }
 
-/** החדרים הפתוחים שהמשתמש נכנס אליהם — בית הדין: כולם; צד: רק בתיקים שלו */
-export function fetchOpenMeets(): Promise<OpenMeet[]> {
-	return caseFetch<OpenMeet[]>('/meets');
+export interface RoomBoard {
+	/** בית הדין — פותח/נכנס כמנחה/סוגר; אחרת צד בתיקים שלו */
+	host: boolean;
+	configured: boolean | null;
+	cases: RoomCase[];
+}
+
+/** לוח חדרי הדיון — בית הדין: כל התיקים; צד: רק התיקים שלו */
+export function fetchRoomBoard(): Promise<RoomBoard> {
+	return caseFetch<RoomBoard>('/rooms');
 }
 
 /** החדר עצמו חי באזור "חדר הדיון הוירטואלי" בהיכל המשפט */

@@ -524,29 +524,62 @@ export async function caseMeetEntry(id: string, viewer: CaseViewer) {
     };
 }
 
-/** החדרים הפתוחים שהצופה נכנס אליהם — לבית הדין כולם, לצד רק בתיקים שלו (לחדר הדיון בהיכל המשפט) */
-export async function listOpenMeets(viewer: CaseViewer) {
+/** שורה בלוח חדרי הדיון — בלי סודות, רק מה שבית הדין/הצד כבר רואים בדף התיק */
+export interface RoomCase {
+    id: string;
+    caseRef: string;
+    nickname: string;
+    subject: string;
+    plaintiffName: string;
+    defendantName: string;
+    proposedDate: string;
+    /** שלושת הצדדים אישרו את המועד */
+    approved: boolean;
+    open: boolean;
+    openedAt: string | null;
+}
+
+/**
+ * לוח חדרי הדיון בהיכל המשפט: לבית הדין — כל התיקים (פתיחה/כניסה/סגירה משם),
+ * לצד — רק התיקים שהוא נכנס לחדר שלהם. סדר: חדרים פתוחים, מאושרים, ממתינים;
+ * בתוך כל קבוצה — מועדים קרובים קודם, אחריהם מועדים שעברו מהחדש לישן.
+ */
+export async function roomBoard(viewer: CaseViewer) {
     const res = await strapiGet<{ data: StrapiRequest[] }>(ENDPOINT, {
-        // רק תיקים שנפתח בהם חדר אי-פעם
-        'filters[documentsNotes][$contains]': '"sealed":"',
-        sort: 'updatedAt:desc',
+        'filters[documentsNotes][$contains]': '"_case":1',
+        sort: 'createdAt:desc',
         'pagination[pageSize]': '200',
     }).catch(() => ({ data: [] as StrapiRequest[] }));
-    const out: Array<{ id: string; caseRef: string; nickname: string; subject: string; openedAt: string; role: 'host' | 'participant' }> = [];
+    const cases: RoomCase[] = [];
     for (const r of res?.data ?? []) {
         const meta = parseMeta(r.documentsNotes);
-        if (!meta || !r.documentId || !meetIsOpen(meta.meet)) continue;
+        if (!meta || !r.documentId) continue;
         if (!viewer.isAdmin && !isMeetParty(meta, viewer)) continue;
-        out.push({
+        const a = meta.approvals;
+        const meet = meetIsOpen(meta.meet) ? meta.meet : null;
+        cases.push({
             id: r.documentId,
             caseRef: meta.caseRef,
             nickname: meta.nickname,
             subject: meta.subject,
-            openedAt: meta.meet.openedAt,
-            role: viewer.isAdmin ? 'host' : 'participant',
+            plaintiffName: meta.plaintiffName,
+            defendantName: meta.defendantName,
+            proposedDate: meta.proposedDate,
+            approved: !!(a.plaintiff && a.defendant && a.beitDin),
+            open: !!meet,
+            openedAt: meet?.openedAt ?? null,
         });
     }
-    return out.sort((a, b) => b.openedAt.localeCompare(a.openedAt));
+    const today = new Date().toISOString().slice(0, 10);
+    const tier = (c: RoomCase) => (c.open ? 0 : c.approved ? 1 : 2);
+    cases.sort((x, y) => {
+        if (tier(x) !== tier(y)) return tier(x) - tier(y);
+        const xPast = x.proposedDate < today;
+        const yPast = y.proposedDate < today;
+        if (xPast !== yPast) return xPast ? 1 : -1;
+        return xPast ? y.proposedDate.localeCompare(x.proposedDate) : x.proposedDate.localeCompare(y.proposedDate);
+    });
+    return { host: viewer.isAdmin, configured: viewer.isAdmin ? eitaniumConfigured() : null, cases };
 }
 
 /** הכתובת של חדר הדיון באתר — האזור "חדר הדיון הוירטואלי" בהיכל המשפט */

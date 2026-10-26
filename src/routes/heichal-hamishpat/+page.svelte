@@ -12,10 +12,11 @@
 	import { serviceSchema, breadcrumbSchema } from '$lib/seo';
 	import { getJwt } from '$lib/strapi';
 	import {
-		fetchOpenMeets,
+		fetchRoomBoard,
 		fetchCaseMeetEntry,
+		setCaseMeet,
 		meetPagePath,
-		type OpenMeet,
+		type RoomBoard,
 		type CaseMeetEntry
 	} from '$lib/services/hearings-service';
 
@@ -91,9 +92,16 @@
 	});
 
 	// ───────────── חדר הדיון הוירטואלי (איתניום) ─────────────
-	// כשיש למשתמש חדר פתוח — החדר האמיתי מוטמע כאן; אחרת מוצגת ההדגמה.
+	// בית הדין: לוח כל התיקים — פתיחת חדר נכנסת אליו מיד, כאן. צד בתיק: מצב
+	// התיקים שלו וכניסה כשהחדר פתוח. מי שלא מחובר / בלי תיקים: ההדגמה.
 	// ?room=<תיק> (מדף התיק, מהפרופיל, מההודעה) נכנס ישר לחדר של אותו תיק.
-	let openMeets = $state<OpenMeet[]>([]);
+	const ROOMS_PREVIEW = 6;
+	let board = $state<RoomBoard | null>(null);
+	let boardLoading = $state(false);
+	let showAllRooms = $state(false);
+	let rowBusy = $state('');
+	let boardError = $state('');
+	const shownRooms = $derived(board ? (showAllRooms ? board.cases : board.cases.slice(0, ROOMS_PREVIEW)) : []);
 	let room = $state<CaseMeetEntry | null>(null);
 	let roomCaseId = $state('');
 	let roomBusy = $state(false);
@@ -127,10 +135,56 @@
 		}
 	}
 
+	async function loadBoard() {
+		if (!getJwt()) return;
+		boardLoading = true;
+		try {
+			board = await fetchRoomBoard();
+		} catch {
+			board = null;
+		} finally {
+			boardLoading = false;
+		}
+	}
+
+	/** בית הדין: פותח את החדר ונכנס אליו מיד, באותו מקום */
+	async function openAndEnter(caseId: string) {
+		rowBusy = caseId;
+		boardError = '';
+		try {
+			await setCaseMeet(caseId, 'open');
+			await joinRoom(caseId);
+			loadBoard();
+		} catch (e) {
+			boardError = (e as { serverMessage?: string })?.serverMessage || tFn('case_meet_error');
+		} finally {
+			rowBusy = '';
+		}
+	}
+
+	async function closeRoom(caseId: string) {
+		rowBusy = caseId;
+		boardError = '';
+		try {
+			await setCaseMeet(caseId, 'close');
+			if (roomCaseId === caseId) room = null;
+			await loadBoard();
+		} catch (e) {
+			boardError = (e as { serverMessage?: string })?.serverMessage || tFn('case_meet_error');
+		} finally {
+			rowBusy = '';
+		}
+	}
+
+	function leaveRoom() {
+		room = null;
+		loadBoard();
+	}
+
 	onMount(() => {
 		const roomId = page.url.searchParams.get('room');
 		if (roomId) joinRoom(roomId);
-		if (getJwt()) fetchOpenMeets().then((list) => (openMeets = list)).catch(() => {});
+		loadBoard();
 	});
 
 	function statusColor(s: CaseStatus): string {
@@ -307,7 +361,7 @@
 					<div class="flex items-center gap-2 shrink-0">
 						<!-- באותה לשונית: החדר המוטמע נסגר ונכנסים לאיתניום פעם אחת, בלי משתתף כפול -->
 						<a href={room.url} class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold">⛶ {tFn('case_meet_fullscreen')}</a>
-						<button type="button" onclick={() => (room = null)} class="px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-gray-700 font-bold">
+						<button type="button" onclick={leaveRoom} class="px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-gray-700 font-bold">
 							{tFn('case_meet_leave')}
 						</button>
 					</div>
@@ -338,22 +392,77 @@
 					{/if}
 				</div>
 			{/if}
-			{#each openMeets as m (m.id)}
-				<div class="max-w-4xl mx-auto mb-2 rounded-xl border-2 border-green-500/50 bg-green-500/10 p-3 flex items-center justify-between gap-2 flex-wrap">
-					<div class="min-w-0">
-						<p class="font-bold text-green-800">🟢 {tFn('mishpat_room_live_now')} · #{m.caseRef}</p>
-						<p class="text-xs text-gray-700 truncate">{m.nickname} · {m.subject}</p>
+			{#if board && (board.host || board.cases.length > 0)}
+				<div class="max-w-4xl mx-auto rounded-2xl border-2 border-indigo-400/40 bg-white/60 p-3 md:p-4">
+					<div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
+						<h3 class="font-black text-indigo-800">{board.host ? tFn('mishpat_rooms_admin_title') : tFn('mishpat_rooms_my_title')}</h3>
+						{#if board.host && board.configured === false}
+							<span class="text-xs font-bold text-red-700">{tFn('case_meet_not_configured')}</span>
+						{/if}
 					</div>
-					<button
-						type="button"
-						onclick={() => joinRoom(m.id)}
-						disabled={roomBusy}
-						class="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold disabled:opacity-50"
-					>
-						{m.role === 'host' ? tFn('case_meet_enter_host') : tFn('case_meet_join')}
-					</button>
+					{#if board.cases.length === 0}
+						<p class="text-sm text-gray-600 text-center py-2">{tFn('mishpat_rooms_none_admin')}</p>
+					{/if}
+					<div class="space-y-1.5">
+						{#each shownRooms as c (c.id)}
+							<div class="rounded-xl border p-2.5 flex items-center justify-between gap-2 flex-wrap {c.open ? 'border-green-500/60 bg-green-500/10' : 'border-amber-400/40 bg-white/70'}">
+								<div class="min-w-0">
+									<p class="font-bold text-gray-900 truncate">#{c.caseRef} · {c.nickname}</p>
+									<p class="text-xs text-gray-600 truncate">
+										{c.plaintiffName} ⚖️ {c.defendantName} · 📅 {c.proposedDate} ·
+										<span class="font-bold {c.open ? 'text-green-700' : c.approved ? 'text-indigo-700' : 'text-amber-700'}">
+											{c.open ? `🟢 ${tFn('mishpat_room_live_now')}` : c.approved ? tFn('mishpat_room_status_approved') : tFn('mishpat_room_status_pending')}
+										</span>
+									</p>
+								</div>
+								<div class="flex items-center gap-2 shrink-0">
+									{#if c.open}
+										<button
+											type="button"
+											onclick={() => joinRoom(c.id)}
+											disabled={roomBusy || rowBusy !== ''}
+											class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold disabled:opacity-50"
+										>
+											{board.host ? tFn('case_meet_enter_host') : tFn('case_meet_join')}
+										</button>
+										{#if board.host}
+											<button
+												type="button"
+												onclick={() => closeRoom(c.id)}
+												disabled={rowBusy !== ''}
+												class="px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white text-gray-700 text-xs font-bold disabled:opacity-50"
+											>
+												{rowBusy === c.id ? '…' : tFn('case_meet_close_btn')}
+											</button>
+										{/if}
+									{:else if board.host}
+										<button
+											type="button"
+											onclick={() => openAndEnter(c.id)}
+											disabled={rowBusy !== '' || roomBusy || board.configured === false}
+											class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold disabled:opacity-50"
+										>
+											{rowBusy === c.id ? '…' : tFn('case_meet_open_btn')}
+										</button>
+									{:else}
+										<span class="text-xs text-gray-600">{tFn('mishpat_room_party_wait')}</span>
+									{/if}
+								</div>
+							</div>
+						{/each}
+					</div>
+					{#if board.cases.length > ROOMS_PREVIEW && !showAllRooms}
+						<button type="button" onclick={() => (showAllRooms = true)} class="mt-2 text-sm font-bold text-indigo-700 hover:underline">
+							{tFn('mishpat_rooms_show_all').replace('{n}', String(board.cases.length))}
+						</button>
+					{/if}
+					{#if boardError}
+						<p class="mt-2 text-sm text-red-700 text-center">{boardError}</p>
+					{/if}
 				</div>
-			{/each}
+			{:else if boardLoading}
+				<p class="text-center text-gray-600 text-sm py-6">{tFn('mishpat_rooms_loading')}</p>
+			{:else}
 
 		<div class="relative rounded-2xl border-4 border-gray-800 bg-gradient-to-br from-gray-900 to-slate-900 p-3 md:p-5 shadow-2xl max-w-4xl mx-auto">
 			<!-- חלון וידאו ראשי + סייד-בר -->
@@ -422,6 +531,7 @@
 				</div>
 			</div>
 		</div>
+			{/if}
 		{/if}
 
 		<p class="mt-4 text-center text-gray-700 text-xs md:text-sm font-bold">
