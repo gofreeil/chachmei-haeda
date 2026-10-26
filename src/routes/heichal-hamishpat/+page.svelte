@@ -514,23 +514,13 @@
 					{/if}
 				</div>
 			</div>
-		</div>
-
-		{#if room}
-			<p class="text-xs text-gray-600 mt-1 text-center">{tFn('case_meet_hint')}</p>
-			{#if !room.caseRef && room.role === 'host' && general}
-				<p class="mt-1 text-xs text-center">
-					<span class="text-gray-700">{tFn('mishpat_room_general_hint')}</span>
-					<a href={inviteWhatsapp} target="_blank" rel="noopener" class="font-bold text-green-700 hover:underline">{tFn('mishpat_room_invite_whatsapp')}</a>
-				</p>
-			{/if}
-		{:else if board && (board.host || board.cases.length > 0)}
-			<!-- לוח החדרים — מתחת למסגרת: בית הדין פותח/נכנס/סוגר, צד רואה את התיקים שלו -->
-			<div class="max-w-4xl mx-auto mt-3 rounded-2xl border-2 border-indigo-400/40 bg-white/60 p-3 md:p-4">
+{#if !room && board && (board.host || board.cases.length > 0)}
+			<!-- לוח החדרים — בתוך המסגרת, מתחת לבר הבקרה: בית הדין פותח/נכנס/סוגר, צד רואה את התיקים שלו -->
+			<div class="mt-3 md:mt-4 rounded-xl border border-white/10 bg-black/30 p-2 md:p-3">
 				<div class="flex items-center justify-between gap-2 mb-2 flex-wrap">
-					<h3 class="font-black text-indigo-800">{board.host ? tFn('mishpat_rooms_admin_title') : tFn('mishpat_rooms_my_title')}</h3>
+					<h3 class="font-black text-indigo-200">{board.host ? tFn('mishpat_rooms_admin_title') : tFn('mishpat_rooms_my_title')}</h3>
 					{#if board.host && board.configured === false}
-						<span class="text-xs font-bold text-red-700">{tFn('case_meet_not_configured')}</span>
+						<span class="text-xs font-bold text-red-300">{tFn('case_meet_not_configured')}</span>
 					{:else if board.host && !general}
 						<button
 							type="button"
@@ -546,8 +536,8 @@
 				{#if board.host && general}
 					<div class="mb-1.5 rounded-xl border border-green-500/60 bg-green-500/10 p-2.5 flex items-center justify-between gap-2 flex-wrap">
 						<div class="min-w-0">
-							<p class="font-bold text-gray-900 truncate">{tFn('mishpat_room_general')}</p>
-							<p class="text-xs font-bold text-green-700">🟢 {tFn('case_meet_open_since').replace('{time}', generalSince)}</p>
+							<p class="font-bold text-white truncate">{tFn('mishpat_room_general')}</p>
+							<p class="text-xs font-bold text-green-300">🟢 {tFn('case_meet_open_since').replace('{time}', generalSince)}</p>
 						</div>
 						<div class="flex items-center gap-2 shrink-0 flex-wrap">
 							<button
@@ -558,26 +548,26 @@
 							>
 								{tFn('case_meet_enter_host')}
 							</button>
-							<button type="button" onclick={copyInvite} class="px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white text-indigo-700 text-xs font-bold">
+							<button type="button" onclick={copyInvite} class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-indigo-300 text-xs font-bold">
 								{inviteCopied ? tFn('mishpat_room_invite_copied') : tFn('mishpat_room_invite_copy')}
 							</button>
-							<button type="button" onclick={closeGeneral} class="px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white text-gray-700 text-xs font-bold">
+							<button type="button" onclick={closeGeneral} class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-bold">
 								{tFn('case_meet_close_btn')}
 							</button>
 						</div>
 					</div>
 				{/if}
 				{#if board.cases.length === 0}
-					<p class="text-sm text-gray-600 text-center py-1">{tFn('mishpat_rooms_none_admin')}</p>
+					<p class="text-sm text-gray-300 text-center py-1">{tFn('mishpat_rooms_none_admin')}</p>
 				{/if}
 				<div class="space-y-1.5">
 					{#each shownRooms as c (c.id)}
-						<div class="rounded-xl border p-2.5 flex items-center justify-between gap-2 flex-wrap {c.open ? 'border-green-500/60 bg-green-500/10' : 'border-amber-400/40 bg-white/70'}">
+						<div class="rounded-xl border p-2.5 flex items-center justify-between gap-2 flex-wrap {c.open ? 'border-green-500/60 bg-green-500/10' : 'border-amber-400/40 bg-white/5'}">
 							<div class="min-w-0">
-								<p class="font-bold text-gray-900 truncate">#{c.caseRef} · {c.nickname}</p>
-								<p class="text-xs text-gray-600 truncate">
+								<p class="font-bold text-white truncate">#{c.caseRef} · {c.nickname}</p>
+								<p class="text-xs text-gray-300 truncate">
 									{c.plaintiffName} ⚖️ {c.defendantName} · 📅 {c.proposedDate} ·
-									<span class="font-bold {c.open ? 'text-green-700' : c.approved ? 'text-indigo-700' : 'text-amber-700'}">
+									<span class="font-bold {c.open ? 'text-green-300' : c.approved ? 'text-indigo-300' : 'text-amber-300'}">
 										{c.open ? `🟢 ${tFn('mishpat_room_live_now')}` : c.approved ? tFn('mishpat_room_status_approved') : tFn('mishpat_room_status_pending')}
 									</span>
 								</p>
@@ -597,7 +587,7 @@
 											type="button"
 											onclick={() => closeRoom(c.id)}
 											disabled={rowBusy !== ''}
-											class="px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white text-gray-700 text-xs font-bold disabled:opacity-50"
+											class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-bold disabled:opacity-50"
 										>
 											{rowBusy === c.id ? '…' : tFn('case_meet_close_btn')}
 										</button>
@@ -612,24 +602,35 @@
 										{rowBusy === c.id ? '…' : tFn('case_meet_open_btn')}
 									</button>
 								{:else}
-									<span class="text-xs text-gray-600">{tFn('mishpat_room_party_wait')}</span>
+									<span class="text-xs text-gray-300">{tFn('mishpat_room_party_wait')}</span>
 								{/if}
 							</div>
 						</div>
 					{/each}
 				</div>
 				{#if board.cases.length > ROOMS_PREVIEW && !showAllRooms}
-					<button type="button" onclick={() => (showAllRooms = true)} class="mt-2 text-sm font-bold text-indigo-700 hover:underline">
+					<button type="button" onclick={() => (showAllRooms = true)} class="mt-2 text-sm font-bold text-indigo-300 hover:underline">
 						{tFn('mishpat_rooms_show_all').replace('{n}', String(board.cases.length))}
 					</button>
 				{/if}
 				{#if boardError}
-					<p class="mt-2 text-sm text-red-700 text-center">{boardError}</p>
+					<p class="mt-2 text-sm text-red-300 text-center">{boardError}</p>
 				{/if}
 			</div>
-		{:else if boardLoading}
-			<p class="text-center text-gray-600 text-sm mt-3">{tFn('mishpat_rooms_loading')}</p>
-		{/if}
+{:else if !room && boardLoading}
+			<p class="text-center text-gray-300 text-sm mt-3">{tFn('mishpat_rooms_loading')}</p>
+{/if}
+		</div>
+
+		{#if room}
+			<p class="text-xs text-gray-600 mt-1 text-center">{tFn('case_meet_hint')}</p>
+			{#if !room.caseRef && room.role === 'host' && general}
+				<p class="mt-1 text-xs text-center">
+					<span class="text-gray-700">{tFn('mishpat_room_general_hint')}</span>
+					<a href={inviteWhatsapp} target="_blank" rel="noopener" class="font-bold text-green-700 hover:underline">{tFn('mishpat_room_invite_whatsapp')}</a>
+				</p>
+			{/if}
+{/if}
 
 		<p class="mt-4 text-center text-gray-700 text-xs md:text-sm font-bold">
 			{tFn('mishpat_recording_notice')}
