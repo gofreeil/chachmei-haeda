@@ -5,8 +5,9 @@
 	import { get } from 'svelte/store';
 	import { fetchCaseMeetEntry, type CaseMeetEntry } from '$lib/services/hearings-service';
 
-	// חדר המפגש של התיק (איתניום) מוטמע בתוך האתר. הקישור האישי מגיע מהשרת לפי
-	// ה-JWT: בית הדין נכנס כמנחה, הצדדים כמשתתפים — ואף אחד אחר לא מקבל קישור.
+	// חדר המפגש של התיק (איתניום) מוטמע בתוך האתר; רק "מסך מלא" יוצא לאיתניום.
+	// הקישור האישי מגיע מהשרת לפי ה-JWT: בית הדין נכנס כמנחה, הצדדים כמשתתפים —
+	// ואף אחד אחר לא מקבל קישור.
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
@@ -42,7 +43,8 @@
 		</h1>
 		<div class="flex items-center gap-3 shrink-0">
 			{#if entry}
-				<a href={entry.url} target="_blank" rel="noopener" class="text-indigo-700 font-bold hover:underline">{tFn('case_meet_new_window')} ↗</a>
+				<!-- באותה לשונית: החדר המוטמע נסגר ונכנסים לאיתניום פעם אחת, בלי משתתף כפול -->
+				<a href={entry.url} class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold">⛶ {tFn('case_meet_fullscreen')}</a>
 			{/if}
 			<a href="/case/{caseId}" class="text-gray-700 font-bold hover:underline">{tFn('case_meet_back')}</a>
 		</div>
