@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import HebrewDateInput from '$lib/components/HebrewDateInput.svelte';
+	import PdfAttach from '$lib/components/PdfAttach.svelte';
+	import type { PdfRef } from '$lib/pdfAttachment';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
@@ -187,6 +190,7 @@
 	let rulingDate = $state('');
 	let rulingSummary = $state('');
 	let rulingDecision = $state('');
+	let rulingPdf = $state<PdfRef | null>(null);
 	let rulingNotice = $state('');
 
 	function fmtAny(v: any): string {
@@ -230,6 +234,7 @@
 	let artApprover2 = $state('');
 	let artApprover3 = $state('');
 	let artTags = $state('');
+	let artPdf = $state<PdfRef | null>(null);
 	let artNotice = $state('');
 
 	// ניתוח שורת תגיות חופשית: "#שבטאפרים #גיור" / "שבטאפרים, גיור" / "שבטאפרים גיור"
@@ -855,6 +860,7 @@
 		rulingDate = '';
 		rulingSummary = '';
 		rulingDecision = '';
+		rulingPdf = null;
 		rulingNotice = '';
 	}
 
@@ -868,6 +874,7 @@
 		rulingDate = r.date ?? '';
 		rulingSummary = fmtAny(r.summary);
 		rulingDecision = fmtAny(r.decision);
+		rulingPdf = r.pdf ?? null;
 		rulingNotice = '';
 	}
 
@@ -884,7 +891,8 @@
 			dayanim,
 			date: rulingDate,
 			summary: rulingSummary.trim(),
-			decision: rulingDecision.trim()
+			decision: rulingDecision.trim(),
+			pdf: rulingPdf
 		};
 		try {
 			const wasEditing = Boolean(rulingEditingId);
@@ -990,6 +998,23 @@
 			.slice(0, 60) || `art-${Date.now().toString(36)}`;
 	}
 
+	/** טקסט שחולץ מ-PDF → גוף המאמר. שדות ריקים אחרים (כותרת/תקציר) מקבלים הצעה — תמיד ניתנת לעריכה. */
+	async function applyArticleText(text: string) {
+		if (artBody.trim() && !(await askConfirm('בשדה "גוף המאמר" כבר יש טקסט. להחליף אותו בטקסט שחולץ מה-PDF?'))) return;
+		artBody = text;
+		const firstLine = text.split(/\r?\n/, 1)[0].trim();
+		if (!artTitle.trim() && firstLine && firstLine.length <= 90) artTitle = firstLine;
+		if (!artExcerpt.trim()) {
+			const flat = text.replace(/\s+/g, ' ').trim();
+			artExcerpt = flat.length > 220 ? flat.slice(0, 220).replace(/\s+\S*$/, '') + '…' : flat;
+		}
+	}
+
+	async function applyRulingText(text: string) {
+		if (rulingDecision.trim() && !(await askConfirm('בשדה "החלטה" כבר יש טקסט. להחליף אותו בטקסט שחולץ מה-PDF?'))) return;
+		rulingDecision = text;
+	}
+
 	async function submitArticle(e: Event) {
 		e.preventDefault();
 		if (!artTitle.trim() || !artAuthor.trim() || !artExcerpt.trim() || !artBody.trim()) {
@@ -1009,6 +1034,7 @@
 			date: artDate || new Date().toISOString().slice(0, 10),
 			excerpt: toLoc(artExcerpt.trim()),
 			body: toLoc(artBody.trim()),
+			pdf: artPdf,
 			approvedBy: approvedBy.map(toLoc),
 			...(tags.length > 0 ? { tags: tags.map(toLoc) } : {})
 		};
@@ -1028,6 +1054,7 @@
 		artApprover2 = '';
 		artApprover3 = '';
 		artTags = '';
+		artPdf = null;
 		artNotice = '✅ המאמר פורסם ומופיע באתר';
 		await loadAdminContent();
 		setTimeout(() => (artNotice = ''), 4000);
@@ -1510,7 +1537,7 @@
 											</label>
 											<label class="block">
 												<span class="text-xs text-gray-600">תאריך חתימה</span>
-												<input type="date" bind:value={editCharterDate} class="mt-0.5 w-full px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
+												<HebrewDateInput bind:value={editCharterDate} yearsBack={10} yearsForward={1} class="mt-0.5 px-3 py-2 rounded-lg bg-white border border-[#d4be7f] text-gray-900" />
 											</label>
 										</div>
 										<div class="flex gap-2">
@@ -1609,7 +1636,7 @@
 						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">קישור Zoom</label>
 							<input type="url" bind:value={hearingZoom} dir="ltr" placeholder="https://zoom.us/j/..." class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white text-right" /></div>
 						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">תאריך *</label>
-							<input type="date" bind:value={hearingDate} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+							<HebrewDateInput bind:value={hearingDate} yearsBack={5} class="px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
 						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">שעה</label>
 							<input type="time" bind:value={hearingTime} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
 						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">סטטוס</label>
@@ -1676,10 +1703,14 @@
 						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">דיין 3</label>
 							<input type="text" bind:value={rulingDayan3} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
 						<div><label class="block text-sm font-bold text-gray-300 mb-1.5">תאריך *</label>
-							<input type="date" bind:value={rulingDate} class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
+							<HebrewDateInput bind:value={rulingDate} yearsBack={10} yearsForward={1} class="px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white" /></div>
 						<div class="md:col-span-2">
 							<label class="block text-sm font-bold text-gray-300 mb-1.5">סיכום הדיון *</label>
 							<textarea bind:value={rulingSummary} rows="3" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white resize-y"></textarea>
+						</div>
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5">📄 פסק הדין כקובץ PDF (אופציונלי)</label>
+							<PdfAttach bind:pdf={rulingPdf} onText={applyRulingText} textLabel="שדה ההחלטה" />
 						</div>
 						<div class="md:col-span-2">
 							<label class="block text-sm font-bold text-gray-300 mb-1.5">החלטה *</label>
@@ -1745,11 +1776,12 @@
 						</div>
 						<div>
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="art-date">תאריך</label>
-							<input
+							<HebrewDateInput
 								id="art-date"
-								type="date"
 								bind:value={artDate}
-								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
+								yearsBack={10}
+								yearsForward={1}
+								class="px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
 							/>
 						</div>
 						<div class="md:row-span-2">
@@ -1781,6 +1813,10 @@
 								rows="2"
 								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none resize-y"
 							></textarea>
+						</div>
+						<div class="md:col-span-2">
+							<label class="block text-sm font-bold text-gray-300 mb-1.5">📄 מאמר כקובץ PDF (אופציונלי)</label>
+							<PdfAttach bind:pdf={artPdf} onText={applyArticleText} textLabel="גוף המאמר" />
 						</div>
 						<div class="md:col-span-2">
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="art-body">גוף המאמר *</label>
@@ -1842,7 +1878,7 @@
 							{#each managedArticles as a (a.documentId)}
 								<div class="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
 									<div class="min-w-0 flex-1">
-										<a href={'/articles/' + a.slug} target="_blank" rel="noopener" class="font-bold text-white text-sm hover:text-blue-300 hover:underline">{fmtAny(a.title)}</a>
+										<a href={'/articles/' + a.slug} target="_blank" rel="noopener" class="font-bold text-white text-sm hover:text-blue-300 hover:underline">{fmtAny(a.title)}</a>{#if a.pdf} <span class="text-xs text-blue-300" title="מצורף קובץ PDF">📎 PDF</span>{/if}
 										<div class="text-xs text-gray-400">{fmtAny(a.author)} • {a.date}</div>
 										{#if a.tags && a.tags.length > 0}
 											<div class="mt-1.5 flex flex-wrap gap-1">
@@ -1898,11 +1934,12 @@
 						</div>
 						<div>
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="vid-date">תאריך</label>
-							<input
+							<HebrewDateInput
 								id="vid-date"
-								type="date"
 								bind:value={vidDate}
-								class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none"
+								yearsBack={10}
+								yearsForward={1}
+								class="px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-teal-400 focus:outline-none"
 							/>
 						</div>
 						<div>

@@ -2,6 +2,7 @@
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import CaseShare from './CaseShare.svelte';
+	import { formatDual } from '$lib/hebrewDate';
 	import { approveCaseAs, setCaseMeet, type CaseParty, type CaseView } from '$lib/services/hearings-service';
 
 	// לוח האישורים של תיק: כל צד מאשר רק בשם עצמו. מה מותר למי — מגיע מהשרת
@@ -84,7 +85,7 @@
 		<p class="text-xs text-gray-600 whitespace-pre-line line-clamp-3 mb-1">{view.details}</p>
 	{/if}
 	<p class="text-gray-800 mb-3">
-		{tFn('req_hearing_proposed_date_prefix')} <strong class="text-amber-700">{view.proposedDate}</strong>
+		{tFn('req_hearing_proposed_date_prefix')} <strong class="text-amber-700">{formatDual(view.proposedDate)}</strong>
 		{tFn('req_hearing_proposed_date_suffix')}
 	</p>
 

@@ -83,6 +83,7 @@ export interface Ruling {
 	date: string;
 	summary: LocalizedString;
 	decision: LocalizedString;
+	pdf?: { url: string; name: string; size: number } | null; // פסק הדין כקובץ PDF (אם הועלה)
 }
 
 export const rulings: Ruling[] = [

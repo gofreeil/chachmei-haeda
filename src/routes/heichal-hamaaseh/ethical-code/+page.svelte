@@ -10,6 +10,7 @@
 	import { fade, scale } from 'svelte/transition';
 	import { goto, afterNavigate } from '$app/navigation';
 	import { onMount, tick } from 'svelte';
+	import HebrewDateInput from '$lib/components/HebrewDateInput.svelte';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
@@ -311,12 +312,12 @@
 				</div>
 				<div>
 					<label class="block text-sm font-bold text-gray-300 mb-1.5" for="join-birth-date">{tFn('charter_join_label_birth_date')}</label>
-					<input
+					<HebrewDateInput
 						id="join-birth-date"
-						type="date"
 						bind:value={birthDate}
-						dir="ltr"
-						class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none text-right"
+						yearsBack={110}
+						yearsForward={0}
+						class="px-3 py-2 rounded-lg bg-black/30 border border-white/15 text-white focus:border-blue-400 focus:outline-none"
 					/>
 				</div>
 				<div>

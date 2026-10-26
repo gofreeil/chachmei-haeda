@@ -1,5 +1,6 @@
 import { articles as staticArticles, type Article, type LocalizedString } from '$lib/data/articles';
 import { safeStrapiList, strapiPost, strapiPut, strapiDelete } from '$lib/strapi';
+import { packPdf, unpackPdf } from '$lib/pdfAttachment';
 
 const COLLECTION = 'ch-articles';
 
@@ -11,7 +12,7 @@ type StrapiArticleAttrs = {
 	author?: LocalizedString;
 	articleDate?: string;
 	excerpt?: LocalizedString;
-	body?: LocalizedString;
+	body?: LocalizedString & { pdf?: unknown }; // ה-PDF המצורף נשמר תחת body.pdf (ראה pdfAttachment.ts)
 	approvedBy?: LocalizedString[];
 	tags?: LocalizedString[];
 	order?: number;
@@ -21,6 +22,7 @@ type StrapiArticleAttrs = {
 export type ArticleWithId = Article & { documentId?: string };
 
 function fromStrapi(item: StrapiArticleAttrs): ArticleWithId {
+	const { value: body, pdf } = unpackPdf(item.body);
 	return {
 		documentId: item.documentId,
 		slug: item.slug ?? String(item.documentId ?? item.id ?? ''),
@@ -28,7 +30,8 @@ function fromStrapi(item: StrapiArticleAttrs): ArticleWithId {
 		author: item.author ?? { he: '', en: '', ru: '' },
 		date: item.articleDate ?? '',
 		excerpt: item.excerpt ?? { he: '', en: '', ru: '' },
-		body: item.body ?? { he: '', en: '', ru: '' },
+		body,
+		pdf,
 		approvedBy: item.approvedBy ?? [],
 		tags: item.tags ?? []
 	};
@@ -58,7 +61,7 @@ export async function addArticle(input: Omit<Article, 'date'> & { date?: string 
 		author: input.author,
 		articleDate: input.date ?? new Date().toISOString().slice(0, 10),
 		excerpt: input.excerpt,
-		body: input.body,
+		body: packPdf(input.body, input.pdf),
 		approvedBy: input.approvedBy ?? [],
 		tags: input.tags ?? []
 	};
@@ -78,13 +81,13 @@ export async function saveArticleEdit(
 		author: article.author,
 		articleDate: article.date,
 		excerpt: patch.excerpt ?? article.excerpt,
-		body: patch.body ?? article.body,
+		body: packPdf(patch.body ?? article.body, article.pdf),
 		approvedBy: article.approvedBy ?? [],
 		tags: article.tags ?? []
 	};
 	if (article.documentId) {
 		await strapiPut(COLLECTION, article.documentId, payload);
-		return { ...article, title: payload.title, excerpt: payload.excerpt, body: payload.body };
+		return { ...article, title: payload.title, excerpt: payload.excerpt, body: patch.body ?? article.body };
 	}
 	const resp = await strapiPost<{ data: StrapiArticleAttrs }>(COLLECTION, payload, { needAuth: true });
 	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiArticleAttrs);

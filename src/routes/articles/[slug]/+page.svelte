@@ -8,6 +8,7 @@
 	import { articleSchema, breadcrumbSchema } from '$lib/seo';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { formatDual } from '$lib/hebrewDate';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
@@ -123,7 +124,7 @@
 		<header class="mt-4 mb-8">
 			<h1 class="text-3xl md:text-4xl font-black text-white leading-tight">{pickLang(a.title, _loc as string)}</h1>
 			<div class="mt-3 text-sm text-gray-400">
-				{tFn('article_view_by_author')} <span class="text-blue-300">{pickLang(a.author, _loc as string)}</span> • {a.date}
+				{tFn('article_view_by_author')} <span class="text-blue-300">{pickLang(a.author, _loc as string)}</span> • {formatDual(a.date)}
 			</div>
 			{#if a.tags && a.tags.length > 0}
 				<div class="mt-3 flex flex-wrap gap-1.5">
@@ -137,6 +138,14 @@
 						</a>
 					{/each}
 				</div>
+			{/if}
+			{#if a.pdf}
+				<a
+					href={a.pdf.url}
+					target="_blank"
+					rel="noopener"
+					class="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/80 hover:bg-blue-600 text-white text-sm font-bold transition-colors"
+				>📄 {tFn('pdf_open_original')}</a>
 			{/if}
 		</header>
 

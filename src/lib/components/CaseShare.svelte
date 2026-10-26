@@ -3,6 +3,7 @@
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import type { CaseView } from '$lib/services/hearings-service';
+	import { formatDual } from '$lib/hebrewDate';
 
 	// שיתוף קישור התיק ע"י התובע בכל הערוצים המקובלים — הנתבע נכנס מהקישור,
 	// מתחבר ומאשר את המועד בעצמו (רק הוא יכול, ראה hearingCases.ts).
@@ -26,7 +27,7 @@
 			tFn('req_hearing_share_invite'),
 			`${tFn('req_hearing_case_label')} #${view.caseRef}${view.nickname ? ` — ${view.nickname}` : ''}`,
 			`${tFn('req_hearing_share_subject')} ${view.subject}`,
-			`${tFn('req_hearing_share_date')} ${view.proposedDate}`,
+			`${tFn('req_hearing_share_date')} ${formatDual(view.proposedDate)}`,
 			tFn('req_hearing_share_cta')
 		].join('\n')
 	);

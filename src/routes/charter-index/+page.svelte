@@ -7,6 +7,7 @@
 	import type { CharterEntry } from '$lib/data/charter';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { formatDual } from '$lib/hebrewDate';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
@@ -241,10 +242,10 @@
 							{pickLang(e.role)}{pickLang(e.role) && pickLang(e.city) ? ' • ' : ''}{pickLang(e.city)}
 						</p>
 						{#if tab === 'signed'}
-							<p class="text-[11px] text-emerald-300 mt-0.5">{tFn('charter_idx_signed_on')}: {e.date}</p>
+							<p class="text-[11px] text-emerald-300 mt-0.5">{tFn('charter_idx_signed_on')}: {formatDual(e.date)}</p>
 						{:else}
 							<p class="text-[11px] text-red-300 mt-0.5">
-								{tFn('charter_idx_disqualified_on')}: {e.disqualifiedDate || e.date}
+								{tFn('charter_idx_disqualified_on')}: {formatDual(e.disqualifiedDate || e.date)}
 							</p>
 							{#if e.disqualifiedReason}
 								<p class="text-[11px] text-gray-400 mt-0.5 italic">"{e.disqualifiedReason}"</p>

@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { formatDual } from '$lib/hebrewDate';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => {
@@ -537,7 +538,7 @@
 							<div class="grid grid-cols-2 gap-2 text-sm text-gray-300 mt-3">
 								<div><span class="text-gray-500">{tFn('profile_plaintiff')}:</span> {c.plaintiffName}</div>
 								<div><span class="text-gray-500">{tFn('profile_defendant')}:</span> {c.defendantName}</div>
-								<div><span class="text-gray-500">{tFn('profile_proposed_date')}:</span> {c.proposedDate}</div>
+								<div><span class="text-gray-500">{tFn('profile_proposed_date')}:</span> {formatDual(c.proposedDate)}</div>
 								<div><span class="text-gray-500">{tFn('profile_opened')}:</span> {formatDate(c.createdAt)}</div>
 							</div>
 						</div>
@@ -558,7 +559,7 @@
 							<div class="flex items-start justify-between gap-2 flex-wrap">
 								<div>
 									<p class="font-bold text-white">{pickLang(h.caseName, _loc)}</p>
-									<p class="text-sm text-gray-400">{h.date} · {h.time}</p>
+									<p class="text-sm text-gray-400">{formatDual(h.date)} · {h.time}</p>
 								</div>
 								<a href={h.zoomLink} target="_blank" rel="noopener" class="text-sm px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-200 font-bold hover:bg-blue-500/30">🎥 {tFn('profile_join_hearing')}</a>
 							</div>
@@ -571,7 +572,7 @@
 					{#each myRulings as r}
 						<div class="rounded-xl border border-white/10 bg-white/5 p-4">
 							<p class="font-bold text-white">{pickLang(r.caseName, _loc)}</p>
-							<p class="text-sm text-gray-400 mt-1">{r.date}</p>
+							<p class="text-sm text-gray-400 mt-1">{formatDual(r.date)}</p>
 							{#if r.summary}
 								<p class="text-sm text-gray-300 mt-2 line-clamp-2">{pickLang(r.summary, _loc)}</p>
 							{/if}

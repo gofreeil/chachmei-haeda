@@ -7,6 +7,7 @@ import {
 	type Ruling
 } from '$lib/data/hearings';
 import { safeStrapiList, strapiPost, strapiPut, strapiDelete, getJwt, StrapiError } from '$lib/strapi';
+import { packPdf, unpackPdf, type PdfRef } from '$lib/pdfAttachment';
 
 const HEARINGS = 'ch-hearings';
 const RULINGS = 'ch-rulings';
@@ -65,10 +66,11 @@ type StrapiRulingAttrs = {
 	dayanim?: LocalizedString[];
 	rulingDate?: string;
 	summary?: LocalizedString;
-	decision?: LocalizedString;
+	decision?: LocalizedString & { pdf?: unknown }; // ה-PDF המצורף נשמר תחת decision.pdf
 };
 
 function fromStrapiRuling(item: StrapiRulingAttrs): Ruling & { documentId: string } {
+	const { value: decision, pdf } = unpackPdf(item.decision);
 	return {
 		id: String(item.documentId ?? item.id ?? ''),
 		documentId: String(item.documentId ?? item.id ?? ''),
@@ -77,7 +79,8 @@ function fromStrapiRuling(item: StrapiRulingAttrs): Ruling & { documentId: strin
 		dayanim: item.dayanim ?? [],
 		date: item.rulingDate ?? '',
 		summary: item.summary ?? { he: '', en: '', ru: '' },
-		decision: item.decision ?? { he: '', en: '', ru: '' }
+		decision,
+		pdf
 	};
 }
 
@@ -290,6 +293,7 @@ export async function createRuling(input: {
 	date: string;
 	summary: string;
 	decision: string;
+	pdf?: PdfRef | null;
 }): Promise<void> {
 	await strapiPost(RULINGS, {
 		caseRef: input.caseRef,
@@ -297,7 +301,7 @@ export async function createRuling(input: {
 		dayanim: input.dayanim.filter(Boolean).map((d) => ({ he: d, en: d, ru: d })),
 		rulingDate: input.date,
 		summary: { he: input.summary, en: input.summary, ru: input.summary },
-		decision: { he: input.decision, en: input.decision, ru: input.decision }
+		decision: packPdf({ he: input.decision, en: input.decision, ru: input.decision }, input.pdf)
 	}, { needAuth: true });
 }
 
@@ -308,6 +312,7 @@ export async function updateRuling(id: string, input: {
 	date: string;
 	summary: string;
 	decision: string;
+	pdf?: PdfRef | null;
 }): Promise<void> {
 	await strapiPut(RULINGS, id, {
 		caseRef: input.caseRef,
@@ -315,7 +320,7 @@ export async function updateRuling(id: string, input: {
 		dayanim: input.dayanim.filter(Boolean).map((d) => ({ he: d, en: d, ru: d })),
 		rulingDate: input.date,
 		summary: { he: input.summary, en: input.summary, ru: input.summary },
-		decision: { he: input.decision, en: input.decision, ru: input.decision }
+		decision: packPdf({ he: input.decision, en: input.decision, ru: input.decision }, input.pdf)
 	});
 }
 

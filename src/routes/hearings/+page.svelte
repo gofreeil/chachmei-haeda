@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { hearings as staticHearings, pickLang, type Hearing } from '$lib/data/hearings';
 	import { loadHearings } from '$lib/services/hearings-service';
+	import { formatDual } from '$lib/hebrewDate';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
@@ -52,7 +53,7 @@
 							{tFn('hearings_page_panel_label')}: {h.dayanim.map((d) => pickLang(d, _loc)).join(' • ')}
 						</p>
 						<p class="mt-2 text-sm">
-							<span class="text-yellow-300">📆 {h.date}</span>
+							<span class="text-yellow-300">📆 {formatDual(h.date)}</span>
 							<span class="text-yellow-300 mr-3">🕐 {h.time}</span>
 						</p>
 					</div>
@@ -77,7 +78,7 @@
 				<p class="mt-1 text-sm text-gray-400">
 					{tFn('hearings_page_panel_label')}: {h.dayanim.map((d) => pickLang(d, _loc)).join(' • ')}
 				</p>
-				<p class="mt-2 text-sm text-gray-500">{h.date} {h.time}</p>
+				<p class="mt-2 text-sm text-gray-500">{formatDual(h.date)} {h.time}</p>
 				<a href="/rulings" class="inline-block mt-3 text-sm text-blue-300 hover:text-blue-200">
 					{tFn('hearings_page_view_ruling')}
 				</a>

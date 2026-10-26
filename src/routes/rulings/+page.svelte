@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { rulings as staticRulings, pickLang, type Ruling } from '$lib/data/hearings';
 	import { loadRulings } from '$lib/services/hearings-service';
+	import { formatDual } from '$lib/hebrewDate';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	let _loc = $state(get(locale));
@@ -40,7 +41,7 @@
 			<article class="rounded-2xl border border-white/10 bg-white/5 p-6">
 				<div class="flex items-start justify-between gap-3 flex-wrap mb-3">
 					<h2 class="text-xl md:text-2xl font-bold text-white">{pickLang(r.caseName, _loc)}</h2>
-					<span class="text-sm text-gray-500">{r.date}</span>
+					<span class="text-sm text-gray-500">{formatDual(r.date)}</span>
 				</div>
 				<p class="text-sm text-blue-300 mb-4">{tFn('rulings_page_dayanim_panel')}: {r.dayanim.map((d) => pickLang(d, _loc)).join(' • ')}</p>
 
@@ -51,8 +52,16 @@
 					</div>
 					<div class="rounded-xl border border-green-500/30 bg-green-900/10 p-4">
 						<h3 class="font-bold text-green-300 mb-1">{tFn('rulings_page_decision_label')}</h3>
-						<p class="text-gray-100 leading-relaxed">{pickLang(r.decision, _loc)}</p>
+						<p class="text-gray-100 leading-relaxed whitespace-pre-line">{pickLang(r.decision, _loc)}</p>
 					</div>
+					{#if r.pdf}
+						<a
+							href={r.pdf.url}
+							target="_blank"
+							rel="noopener"
+							class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/80 hover:bg-blue-600 text-white text-sm font-bold transition-colors"
+						>📄 {tFn('pdf_open_original')}</a>
+					{/if}
 				</div>
 			</article>
 		{/each}

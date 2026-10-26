@@ -12,6 +12,7 @@ export interface Article {
 	body: LocalizedString;
 	approvedBy: LocalizedString[]; // שמות 3 הרבנים שאישרו
 	tags?: LocalizedString[]; // תגיות לאיתור (#שבטאפרים, #גיור וכו')
+	pdf?: { url: string; name: string; size: number } | null; // קובץ ה-PDF המקורי (אם הועלה)
 }
 
 export const articles: Article[] = [

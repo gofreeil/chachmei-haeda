@@ -15,6 +15,7 @@
 	import { websiteSchema, organizationSchema, serviceSchema, PARENT_SITE } from '$lib/seo';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { formatDual } from '$lib/hebrewDate';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
@@ -132,7 +133,7 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {recentActivity.date} · {tFn('home_by_author')} {pickLang(recentActivity.author, _loc)}</span>
+						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {formatDual(recentActivity.date)} · {tFn('home_by_author')} {pickLang(recentActivity.author, _loc)}</span>
 					</div>
 				</div>
 			</div>
@@ -223,7 +224,7 @@
 			<div class="flex items-center justify-between gap-3 flex-wrap mb-3">
 				<div class="text-right">
 					<div class="flex items-center gap-2 flex-wrap">
-						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {latestArticle.date} · {tFn('home_by_author')} {pickLang(latestArticle.author, _loc)}</span>
+						<span class="text-xs text-gray-400">{tFn('home_uploaded_on')} {formatDual(latestArticle.date)} · {tFn('home_by_author')} {pickLang(latestArticle.author, _loc)}</span>
 					</div>
 				</div>
 			</div>

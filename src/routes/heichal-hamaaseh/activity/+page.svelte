@@ -8,6 +8,7 @@
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { formatDual } from '$lib/hebrewDate';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
@@ -182,7 +183,7 @@
 								{kindIcons[a.kind]} {tFn(kindLabelKeys[a.kind])}
 							</span>
 						{/if}
-						<span class="text-[11px] text-gray-500">{a.date}</span>
+						<span class="text-[11px] text-gray-500">{formatDual(a.date)}</span>
 					</div>
 					<span class="text-xs text-indigo-300">{tFn('activity_by_author')}: {pickLang(a.author)}</span>
 				</div>

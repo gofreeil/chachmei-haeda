@@ -3,6 +3,8 @@
 	import { onMount } from 'svelte';
 	import FancyHeading from './FancyHeading.svelte';
 	import CaseBoard from './CaseBoard.svelte';
+	import HebrewDateInput from './HebrewDateInput.svelte';
+	import { formatDual, toISO } from '$lib/hebrewDate';
 	import { openCase, type CaseView } from '$lib/services/hearings-service';
 	import { getCurrentUser, type StrapiUser } from '$lib/strapi';
 	import { t, locale } from 'svelte-i18n';
@@ -18,6 +20,7 @@
 	};
 
 	const preferredDate = $derived(page.url.searchParams.get('date') ?? '');
+	const todayISO = toISO(new Date());
 
 	// ───────────────── חתימה על UECC (פרופיל קיים) ─────────────────
 	// פתיחת תיק — רק למשתמש רשום ומחובר (JWT), שנרשם בשרת כתובע.
@@ -393,7 +396,7 @@
 
 		{#if preferredDate}
 			<div class="mb-3 rounded-xl border border-green-500/40 bg-green-500/10 p-4 text-center">
-				<span class="text-green-300 font-bold">{tFn('req_hearing_date_from_calendar')} {preferredDate}</span>
+				<span class="text-green-300 font-bold">{tFn('req_hearing_date_from_calendar')} {formatDual(preferredDate)}</span>
 			</div>
 		{/if}
 
@@ -538,12 +541,14 @@
 					<div class="p-4 pt-0 border-t border-amber-400/40">
 						<label class="block">
 							<span class="text-sm font-bold text-gray-700">{tFn('req_hearing_agreed_date_label')}</span>
-							<input
-								type="date"
-								bind:value={proposedDate}
-								required
-								class="mt-1 w-full rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
-							/>
+							<div class="mt-1">
+								<HebrewDateInput
+									bind:value={proposedDate}
+									required
+									min={todayISO}
+									class="rounded-lg bg-white/60 border border-amber-400/40 px-4 py-3 text-gray-900 focus:border-blue-600 focus:outline-none"
+								/>
+							</div>
 						</label>
 						<p class="text-xs text-gray-600 mt-2">
 							{tFn('req_hearing_date_lock_note')}

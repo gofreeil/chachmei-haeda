@@ -11,6 +11,7 @@
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
+	import { formatDual } from '$lib/hebrewDate';
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
@@ -226,7 +227,7 @@
 						>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
 								<h2 class="text-lg md:text-xl font-bold text-white">{@html highlight(pickLang(a.title, _loc), searchQuery)}</h2>
-								<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
+								<span class="text-xs text-gray-400 flex-shrink-0">{formatDual(a.date)}</span>
 							</div>
 							<p class="mt-1 text-xs text-blue-300">{tFn('articles_by')} {@html highlight(pickLang(a.author, _loc), searchQuery)}</p>
 							<p class="mt-2 text-sm text-gray-300 leading-relaxed">{@html highlight(snippet(pickLang(a.excerpt, _loc), searchQuery, 180), searchQuery)}</p>
@@ -310,7 +311,7 @@
 							</div>
 							<div class="flex items-start justify-between gap-3 flex-wrap">
 								<h2 class="text-xl md:text-2xl font-bold text-white">{pickLang(a.title, _loc)}</h2>
-								<span class="text-xs text-gray-400 flex-shrink-0">{a.date}</span>
+								<span class="text-xs text-gray-400 flex-shrink-0">{formatDual(a.date)}</span>
 							</div>
 							<p class="mt-1 text-sm text-blue-300">{tFn('articles_by')} {pickLang(a.author, _loc)}</p>
 							<p class="mt-3 text-gray-200 leading-relaxed font-medium">{pickLang(a.excerpt, _loc)}</p>
