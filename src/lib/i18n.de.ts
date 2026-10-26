@@ -443,6 +443,7 @@ export default {
     ask_label_name: "Name",
     ask_placeholder_name: "Ihr vollständiger Name",
     ask_label_email: "E-Mail-Adresse für die Antwort",
+    ask_label_phone: "Handynummer für eine SMS, wenn die Antwort fertig ist (optional)",
     ask_label_topic: "Thema der Frage",
     ask_label_question: "Die Frage",
     ask_placeholder_question: "Schildern Sie die Frage so genau wie möglich – Zusammenhang, Hintergrund, was Sie bereits versucht haben ...",

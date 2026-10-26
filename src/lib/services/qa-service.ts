@@ -1,5 +1,5 @@
 import { qa as staticQa, type QaItem, type QaTopic, type LocalizedText } from '$lib/data/qa';
-import { safeStrapiList, strapiPost, strapiPut, strapiDelete, jsonText } from '$lib/strapi';
+import { safeStrapiList, strapiPost, strapiPut, strapiDelete, jsonText, getJwt } from '$lib/strapi';
 
 const COLLECTION = 'ch-qa-items';
 const SUBMISSIONS = 'ch-question-submissions';
@@ -54,14 +54,22 @@ export async function submitQuestion(input: {
 	question: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
 	try {
-		await strapiPost(SUBMISSIONS, {
-			askerName: input.askerName.trim(),
-			askerEmail: input.askerEmail?.trim() || undefined,
-			askerPhone: input.askerPhone?.trim() || undefined,
-			topic: input.topic?.trim() || undefined,
-			question: input.question.trim(),
-			status: 'pending'
+		// דרך השרת של האתר: הוא שומר את השאלה ושולח לאדמינים הודעה + SMS
+		const res = await fetch('/api/ask', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				askerName: input.askerName.trim(),
+				askerEmail: input.askerEmail?.trim() || undefined,
+				askerPhone: input.askerPhone?.trim() || undefined,
+				topic: input.topic?.trim() || undefined,
+				question: input.question.trim()
+			})
 		});
+		if (!res.ok) {
+			const body = await res.json().catch(() => ({}));
+			throw new Error(body?.message || `HTTP ${res.status}`);
+		}
 		return { ok: true };
 	} catch (e) {
 		return { ok: false, error: e instanceof Error ? e.message : String(e) };
@@ -123,6 +131,22 @@ export async function publishAnswer(input: {
 
 export async function markSubmissionAnswered(id: string, qaSlug: string): Promise<void> {
 	await strapiPut(SUBMISSIONS, id, { status: 'answered', publishedQaSlug: qaSlug });
+}
+
+/** SMS עם קישור לתשובה למי ששאל (אם השאיר נייד). best-effort — התשובה כבר פורסמה. */
+export async function notifyAskerAnswered(submissionId: string, slug: string): Promise<boolean> {
+	try {
+		const jwt = getJwt();
+		const res = await fetch('/api/ask/answered', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}) },
+			body: JSON.stringify({ submissionId, slug })
+		});
+		if (!res.ok) return false;
+		return !!(await res.json().catch(() => ({})))?.sent;
+	} catch {
+		return false;
+	}
 }
 
 export async function rejectSubmission(id: string): Promise<void> {

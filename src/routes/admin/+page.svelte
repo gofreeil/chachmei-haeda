@@ -29,6 +29,7 @@
 		loadAllSubmissions,
 		publishAnswer,
 		markSubmissionAnswered,
+		notifyAskerAnswered,
 		rejectSubmission,
 		deleteSubmission,
 		deleteQa,
@@ -737,6 +738,7 @@
 				answeredBy: answerBy.trim() || (currentUser?.username ?? 'חכמי העדה')
 			});
 			await markSubmissionAnswered(s.documentId, slug);
+			if (s.askerPhone) void notifyAskerAnswered(s.documentId, slug);
 			answeringId = null;
 			answerText = '';
 			await loadAdminContent();
