@@ -491,7 +491,7 @@ export async function openCaseMeet(id: string, viewer: CaseViewer, siteOrigin: s
         sealed: sealSecret({ joinUrl: room.joinUrl, hostUrl: room.hostUrl } satisfies MeetSecret),
     };
     await saveMeta(c.id, meta);
-    await notifyPartiesMeetOpen(meta, `${siteOrigin}/case/${c.id}/meet`);
+    await notifyPartiesMeetOpen(meta, `${siteOrigin}${meetPagePath(c.id)}`);
     return publicView(c, viewer);
 }
 
@@ -522,6 +522,36 @@ export async function caseMeetEntry(id: string, viewer: CaseViewer) {
         caseRef: meta.caseRef,
         nickname: meta.nickname,
     };
+}
+
+/** החדרים הפתוחים שהצופה נכנס אליהם — לבית הדין כולם, לצד רק בתיקים שלו (לחדר הדיון בהיכל המשפט) */
+export async function listOpenMeets(viewer: CaseViewer) {
+    const res = await strapiGet<{ data: StrapiRequest[] }>(ENDPOINT, {
+        // רק תיקים שנפתח בהם חדר אי-פעם
+        'filters[documentsNotes][$contains]': '"sealed":"',
+        sort: 'updatedAt:desc',
+        'pagination[pageSize]': '200',
+    }).catch(() => ({ data: [] as StrapiRequest[] }));
+    const out: Array<{ id: string; caseRef: string; nickname: string; subject: string; openedAt: string; role: 'host' | 'participant' }> = [];
+    for (const r of res?.data ?? []) {
+        const meta = parseMeta(r.documentsNotes);
+        if (!meta || !r.documentId || !meetIsOpen(meta.meet)) continue;
+        if (!viewer.isAdmin && !isMeetParty(meta, viewer)) continue;
+        out.push({
+            id: r.documentId,
+            caseRef: meta.caseRef,
+            nickname: meta.nickname,
+            subject: meta.subject,
+            openedAt: meta.meet.openedAt,
+            role: viewer.isAdmin ? 'host' : 'participant',
+        });
+    }
+    return out.sort((a, b) => b.openedAt.localeCompare(a.openedAt));
+}
+
+/** הכתובת של חדר הדיון באתר — האזור "חדר הדיון הוירטואלי" בהיכל המשפט */
+export function meetPagePath(caseId: string): string {
+    return `/heichal-hamishpat?room=${encodeURIComponent(caseId)}#virtual-room`;
 }
 
 /** הודעה לתיבה של התובע ושל הנתבע שאישר — best-effort, החדר כבר נפתח */

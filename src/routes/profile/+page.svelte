@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { hearings as staticHearings, rulings as staticRulings, pickLang, type Hearing, type Ruling } from '$lib/data/hearings';
-	import { loadHearings, loadRulings, fetchMyCases, type CaseView } from '$lib/services/hearings-service';
+	import { loadHearings, loadRulings, fetchMyCases, meetPagePath, type CaseView } from '$lib/services/hearings-service';
 	import { getCurrentUser, strapiLogout, isChachmeiAdmin, isSuperAdmin, type StrapiUser } from '$lib/strapi';
 	import { hasSignedCharter, refreshSignedCharter } from '$lib/services/charter-service';
 	import { goto } from '$app/navigation';
@@ -162,7 +162,7 @@
 					link: `/case/${v.id}`,
 					asDefendant: v.viewer?.role === 'defendant',
 					awaitingMe: v.viewer?.role === 'defendant' ? !v.approvals.defendant : v.can.plaintiff,
-					meetLink: v.meet?.open ? `/case/${v.id}/meet` : undefined
+					meetLink: v.meet?.open ? meetPagePath(v.id) : undefined
 				}))
 			: cases
 	);

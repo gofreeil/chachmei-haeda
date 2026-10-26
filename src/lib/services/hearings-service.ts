@@ -211,6 +211,25 @@ export function fetchCaseMeetEntry(id: string): Promise<CaseMeetEntry> {
 	return caseFetch<CaseMeetEntry>(`/${encodeURIComponent(id)}/meet`);
 }
 
+export interface OpenMeet {
+	id: string;
+	caseRef: string;
+	nickname: string;
+	subject: string;
+	openedAt: string;
+	role: 'host' | 'participant';
+}
+
+/** החדרים הפתוחים שהמשתמש נכנס אליהם — בית הדין: כולם; צד: רק בתיקים שלו */
+export function fetchOpenMeets(): Promise<OpenMeet[]> {
+	return caseFetch<OpenMeet[]>('/meets');
+}
+
+/** החדר עצמו חי באזור "חדר הדיון הוירטואלי" בהיכל המשפט */
+export function meetPagePath(caseId: string): string {
+	return `/heichal-hamishpat?room=${encodeURIComponent(caseId)}#virtual-room`;
+}
+
 // ───────────────────────── Admin ─────────────────────────
 
 export interface HearingRequest {

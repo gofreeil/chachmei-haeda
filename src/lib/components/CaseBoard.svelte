@@ -3,7 +3,7 @@
 	import { get } from 'svelte/store';
 	import CaseShare from './CaseShare.svelte';
 	import { formatDual } from '$lib/hebrewDate';
-	import { approveCaseAs, setCaseMeet, type CaseParty, type CaseView } from '$lib/services/hearings-service';
+	import { approveCaseAs, setCaseMeet, meetPagePath, type CaseParty, type CaseView } from '$lib/services/hearings-service';
 
 	// לוח האישורים של תיק: כל צד מאשר רק בשם עצמו. מה מותר למי — מגיע מהשרת
 	// (view.can / view.defendantBlock), כאן רק מציגים ושולחים.
@@ -40,7 +40,7 @@
 					: ''
 	);
 
-	// חדר המפגש (איתניום): בית הדין פותח/סוגר, הצדדים מצטרפים דרך /case/<id>/meet
+	// חדר המפגש (איתניום): בית הדין פותח/סוגר; הכניסה — לחדר הדיון בהיכל המשפט
 	let meetBusy = $state(false);
 	let meetError = $state('');
 	const meetSince = $derived(
@@ -155,7 +155,7 @@
 			</div>
 			<div class="flex items-center gap-2 shrink-0">
 				{#if view.meet.open}
-					<a href="/case/{view.id}/meet" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold">
+					<a href={meetPagePath(view.id)} class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold">
 						{view.meet.canManage ? tFn('case_meet_enter_host') : tFn('case_meet_join')}
 					</a>
 					{#if view.meet.canManage}

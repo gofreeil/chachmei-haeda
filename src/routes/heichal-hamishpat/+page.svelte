@@ -10,6 +10,14 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import { serviceSchema, breadcrumbSchema } from '$lib/seo';
+	import { getJwt } from '$lib/strapi';
+	import {
+		fetchOpenMeets,
+		fetchCaseMeetEntry,
+		meetPagePath,
+		type OpenMeet,
+		type CaseMeetEntry
+	} from '$lib/services/hearings-service';
 
 	// tFn: reactive translation helper - $t forbidden in Svelte 5
 	let _loc = $state(get(locale));
@@ -80,6 +88,49 @@
 		} catch {
 			/* ignore */
 		}
+	});
+
+	// ───────────── חדר הדיון הוירטואלי (איתניום) ─────────────
+	// כשיש למשתמש חדר פתוח — החדר האמיתי מוטמע כאן; אחרת מוצגת ההדגמה.
+	// ?room=<תיק> (מדף התיק, מהפרופיל, מההודעה) נכנס ישר לחדר של אותו תיק.
+	let openMeets = $state<OpenMeet[]>([]);
+	let room = $state<CaseMeetEntry | null>(null);
+	let roomCaseId = $state('');
+	let roomBusy = $state(false);
+	let roomError = $state('');
+	let roomNeedLogin = $state(false);
+
+	function scrollToRoom() {
+		requestAnimationFrame(() => {
+			const el = document.getElementById('virtual-room');
+			if (!el) return;
+			const header = document.querySelector('.site-header') as HTMLElement | null;
+			const headerH = header?.getBoundingClientRect().height ?? 0;
+			window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - headerH - 8, behavior: 'smooth' });
+		});
+	}
+
+	async function joinRoom(caseId: string) {
+		roomCaseId = caseId;
+		roomBusy = true;
+		roomError = '';
+		roomNeedLogin = false;
+		try {
+			room = await fetchCaseMeetEntry(caseId);
+		} catch (e) {
+			const err = e as { status?: number; serverMessage?: string };
+			roomNeedLogin = err.status === 401;
+			roomError = err.serverMessage || tFn('case_meet_error');
+		} finally {
+			roomBusy = false;
+			scrollToRoom();
+		}
+	}
+
+	onMount(() => {
+		const roomId = page.url.searchParams.get('room');
+		if (roomId) joinRoom(roomId);
+		if (getJwt()) fetchOpenMeets().then((list) => (openMeets = list)).catch(() => {});
 	});
 
 	function statusColor(s: CaseStatus): string {
@@ -241,13 +292,68 @@
 		></div>
 	</div>
 
-	<section class="mb-8">
+	<section id="virtual-room" class="mb-8">
 		<header class="text-center mb-5">
 			<h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
 				{tFn('mishpat_virtual_room_title')}
 			</h2>
 			<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">{tFn('mishpat_virtual_room_subtitle')}</p>
 		</header>
+
+		{#if room}
+			<div class="max-w-5xl mx-auto">
+				<div class="flex items-center justify-between gap-2 mb-2 text-sm">
+					<p class="font-bold text-indigo-800 truncate">🟢 #{room.caseRef} · {room.nickname}</p>
+					<div class="flex items-center gap-2 shrink-0">
+						<!-- באותה לשונית: החדר המוטמע נסגר ונכנסים לאיתניום פעם אחת, בלי משתתף כפול -->
+						<a href={room.url} class="px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold">⛶ {tFn('case_meet_fullscreen')}</a>
+						<button type="button" onclick={() => (room = null)} class="px-2.5 py-1 rounded-lg bg-white/80 hover:bg-white text-gray-700 font-bold">
+							{tFn('case_meet_leave')}
+						</button>
+					</div>
+				</div>
+				<iframe
+					src={room.url}
+					title={tFn('mishpat_virtual_room_title')}
+					allow="camera; microphone; display-capture; fullscreen; autoplay; clipboard-write; screen-wake-lock"
+					allowfullscreen
+					class="block w-full rounded-2xl border-4 border-gray-800 bg-black meet-frame"
+				></iframe>
+				<p class="text-xs text-gray-600 mt-1 text-center">{tFn('case_meet_hint')}</p>
+			</div>
+		{:else}
+			{#if roomBusy}
+				<p class="text-center text-gray-600 text-sm mb-3">{tFn('case_meet_loading')}</p>
+			{/if}
+			{#if roomError}
+				<div class="max-w-4xl mx-auto mb-3 rounded-xl border border-red-400/40 bg-red-500/5 p-3 text-center">
+					<p class="text-red-700 text-sm">{roomError}</p>
+					{#if roomNeedLogin}
+						<a
+							href="/login?returnTo={encodeURIComponent(meetPagePath(roomCaseId))}"
+							class="inline-block mt-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold hover:opacity-90"
+						>
+							{tFn('case_meet_login')}
+						</a>
+					{/if}
+				</div>
+			{/if}
+			{#each openMeets as m (m.id)}
+				<div class="max-w-4xl mx-auto mb-2 rounded-xl border-2 border-green-500/50 bg-green-500/10 p-3 flex items-center justify-between gap-2 flex-wrap">
+					<div class="min-w-0">
+						<p class="font-bold text-green-800">🟢 {tFn('mishpat_room_live_now')} · #{m.caseRef}</p>
+						<p class="text-xs text-gray-700 truncate">{m.nickname} · {m.subject}</p>
+					</div>
+					<button
+						type="button"
+						onclick={() => joinRoom(m.id)}
+						disabled={roomBusy}
+						class="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold disabled:opacity-50"
+					>
+						{m.role === 'host' ? tFn('case_meet_enter_host') : tFn('case_meet_join')}
+					</button>
+				</div>
+			{/each}
 
 		<div class="relative rounded-2xl border-4 border-gray-800 bg-gradient-to-br from-gray-900 to-slate-900 p-3 md:p-5 shadow-2xl max-w-4xl mx-auto">
 			<!-- חלון וידאו ראשי + סייד-בר -->
@@ -316,6 +422,7 @@
 				</div>
 			</div>
 		</div>
+		{/if}
 
 		<p class="mt-4 text-center text-gray-700 text-xs md:text-sm font-bold">
 			{tFn('mishpat_recording_notice')}
@@ -484,3 +591,12 @@
 {/if}
 
 <PageTextEditor prefixes={['mishpat_']} />
+
+<style>
+	/* חדר הדיון האמיתי: כמעט כל גובה המסך, אבל לא פחות ממה שנוח לווידאו */
+	.meet-frame {
+		height: calc(100vh - 170px);
+		height: calc(100dvh - 170px);
+		min-height: 420px;
+	}
+</style>

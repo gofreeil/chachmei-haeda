@@ -24,13 +24,11 @@
 	let { children } = $props();
 	let currentUser = $state<StrapiUser | null>(null);
 
-	// מסתירים את הבאנר בעמודי auth (לא קשור להצטרפות לקוד), בעמוד הקוד עצמו
-	// ובחדר המפגש (שם כל הגובה שייך לווידאו)
+	// מסתירים את הבאנר בעמודי auth (לא קשור להצטרפות לקוד) ובעמוד הקוד עצמו
 	const hideEthicalBanner = $derived(
 		page.url.pathname.startsWith('/heichal-hamaaseh/ethical-code') ||
 		page.url.pathname.startsWith('/login') ||
-		page.url.pathname.startsWith('/signup') ||
-		/^\/case\/[^/]+\/meet\/?$/.test(page.url.pathname)
+		page.url.pathname.startsWith('/signup')
 	);
 
 	onMount(async () => {
