@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { strapiLogin, getCurrentUser, isChachmeiAdmin, isNetworkError } from '$lib/strapi';
@@ -194,9 +195,8 @@
 
 			<div>
 				<label class="block text-sm font-bold text-blue-200 mb-1.5" for="li-pw">{tFn('password_label')}</label>
-				<input
+				<PasswordInput
 					id="li-pw"
-					type="password"
 					bind:value={password}
 					required
 					autocomplete="current-password"

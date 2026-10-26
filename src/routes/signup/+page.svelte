@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { strapiRegister, getCurrentUser, claimRegistrationOrigin, isNetworkError } from '$lib/strapi';
@@ -132,12 +133,11 @@
 
 			<div>
 				<label class="block text-sm font-bold text-blue-200 mb-1.5" for="su-password">{tFn('password_label')}</label>
-				<input
+				<PasswordInput
 					id="su-password"
-					type="password"
 					bind:value={password}
 					required
-					minlength="6"
+					minlength={6}
 					autocomplete="new-password"
 					placeholder={tFn('password_min')}
 					class="w-full px-3 py-2.5 rounded-lg bg-black/40 border border-white/15 text-white placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
@@ -146,9 +146,8 @@
 
 			<div>
 				<label class="block text-sm font-bold text-blue-200 mb-1.5" for="su-confirm">{tFn('confirm_password_label')}</label>
-				<input
+				<PasswordInput
 					id="su-confirm"
-					type="password"
 					bind:value={confirmPassword}
 					required
 					autocomplete="new-password"
