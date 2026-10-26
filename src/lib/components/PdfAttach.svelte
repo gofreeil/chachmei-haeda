@@ -8,13 +8,20 @@
 	let {
 		pdf = $bindable(null),
 		onText,
-		textLabel = 'טקסט המאמר'
+		textLabel = 'טקסט המאמר',
+		buttonLabel = '📄 העלאת קובץ PDF',
+		hint = 'הטקסט והשדות מולאים אוטומטית'
 	}: {
 		pdf?: PdfRef | null;
-		/** מקבל את הטקסט שחולץ; ההורה מחליט איפה ואיך להטמיע (ומתייחס לטקסט קיים) */
-		onText?: (text: string, fileName: string) => void;
+		/**
+		 * מקבל את הטקסט שחולץ; ההורה מחליט איפה ואיך להטמיע (ומתייחס לטקסט קיים), ויכול גם לנתח אותו.
+		 * מחרוזת מוחזרת מחליפה את הודעת ההצלחה הרגילה (למשל: "מולאו כותרת, מחבר, תאריך…").
+		 */
+		onText?: (text: string, fileName: string) => string | void | Promise<string | void>;
 		/** שם השדה שאליו הטקסט מוטמע — להודעות */
 		textLabel?: string;
+		buttonLabel?: string;
+		hint?: string;
 	} = $props();
 
 	let busy = $state(false);
@@ -45,8 +52,14 @@
 			try {
 				const r = await extractPdfText(file);
 				if (r.hasText) {
-					onText(r.text, file.name);
-					msgs.push(`הטקסט חולץ (${r.pages} עמ׳) והוטמע ב${textLabel} — בדקו ותקנו לפני הפרסום`);
+					try {
+						const custom = await onText(r.text, file.name);
+						msgs.push(custom || `הטקסט חולץ (${r.pages} עמ׳) והוטמע ב${textLabel} — בדקו ותקנו לפני הפרסום`);
+					} catch (e) {
+						console.warn('[pdf] onText failed', e);
+						msgs.push('⚠️ הטמעת הטקסט בטופס נכשלה — ניתן להדביק אותו ידנית');
+						kind = 'warn';
+					}
 				} else {
 					msgs.push('לא נמצא טקסט בקובץ (כנראה PDF סרוק/תמונה) — הקובץ מצורף להורדה, אך את הטקסט יש להקליד או להדביק ידנית');
 					kind = 'warn';
@@ -91,10 +104,10 @@
 >
 	<div class="flex items-center gap-3 flex-wrap">
 		<label class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-bold cursor-pointer hover:opacity-90 {busy ? 'opacity-50 pointer-events-none' : ''}">
-			{busy ? '⏳ מעלה ומחלץ…' : '📄 העלאת קובץ PDF'}
+			{busy ? '⏳ מעלה ומנתח…' : buttonLabel}
 			<input type="file" accept="application/pdf,.pdf" class="hidden" onchange={onPick} disabled={busy} />
 		</label>
-		<span class="text-xs text-gray-400">או גררו לכאן · עד {MAX_PDF_MB}MB · הטקסט מחולץ אוטומטית</span>
+		<span class="text-xs text-gray-400">או גררו לכאן · עד {MAX_PDF_MB}MB · {hint}</span>
 	</div>
 
 	{#if pdf}

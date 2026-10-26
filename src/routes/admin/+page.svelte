@@ -4,6 +4,7 @@
 	import HebrewDateInput from '$lib/components/HebrewDateInput.svelte';
 	import PdfAttach from '$lib/components/PdfAttach.svelte';
 	import type { PdfRef } from '$lib/pdfAttachment';
+	import { analyzePdfText, stripHeaderLines, tagsToField, type PdfAnalysis, type PdfDocType } from '$lib/pdfAnalyze';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
@@ -1000,21 +1001,142 @@
 			.slice(0, 60) || `art-${Date.now().toString(36)}`;
 	}
 
-	/** טקסט שחולץ מ-PDF → גוף המאמר. שדות ריקים אחרים (כותרת/תקציר) מקבלים הצעה — תמיד ניתנת לעריכה. */
-	async function applyArticleText(text: string) {
-		if (artBody.trim() && !(await askConfirm('בשדה "גוף המאמר" כבר יש טקסט. להחליף אותו בטקסט שחולץ מה-PDF?'))) return;
-		artBody = text;
-		const firstLine = text.split(/\r?\n/, 1)[0].trim();
-		if (!artTitle.trim() && firstLine && firstLine.length <= 90) artTitle = firstLine;
-		if (!artExcerpt.trim()) {
-			const flat = text.replace(/\s+/g, ' ').trim();
-			artExcerpt = flat.length > 220 ? flat.slice(0, 220).replace(/\s+\S*$/, '') + '…' : flat;
+	// ───────────── מילוי אוטומטי מ-PDF ─────────────
+	// הטקסט מחולץ בדפדפן; ניתוח AI (/api/pdf-analyze) מזהה סוג מסמך, כותרת, מחבר, תאריך, תקציר,
+	// תגיות ודיינים. ממלאים רק שדות ריקים — מה שהאדמין כבר הקליד לא נדרס. כשהניתוח לא זמין
+	// (אין מפתח בשרת / תקלה) נשארים עם המילוי הבסיסי; הפרסום עצמו תמיד ידני.
+	const knownRabbiNames = $derived(rabbis.map((r) => r.name));
+	const knownTagNames = $derived([...new Set(managedArticles.flatMap((a) => (a.tags ?? []).map(fmtAny)).filter(Boolean))]);
+	let autoPdf = $state<PdfRef | null>(null);
+
+	async function analyzeOrNull(text: string, hint?: PdfDocType): Promise<{ ai: PdfAnalysis | null; error: string }> {
+		try {
+			return { ai: await analyzePdfText(text, { hint, knownNames: knownRabbiNames, knownTags: knownTagNames }), error: '' };
+		} catch (e) {
+			return { ai: null, error: e instanceof Error ? e.message : 'הניתוח נכשל' };
 		}
 	}
 
-	async function applyRulingText(text: string) {
-		if (rulingDecision.trim() && !(await askConfirm('בשדה "החלטה" כבר יש טקסט. להחליף אותו בטקסט שחולץ מה-PDF?'))) return;
+	function fillMessage(target: string, filled: string[], ai: PdfAnalysis | null, error: string, todo: string[]): string {
+		const parts = [`הטקסט הוטמע ב${target}`];
+		if (ai) parts.push(filled.length ? `✨ מולאו אוטומטית: ${filled.join(', ')}` : 'שאר השדות כבר היו מלאים');
+		else parts.push(`ניתוח אוטומטי לא זמין (${error})`);
+		if (todo.length) parts.push(`נותר למלא: ${todo.join(', ')}`);
+		parts.push('בדקו ותקנו לפני הפרסום');
+		return parts.join(' · ');
+	}
+
+	function clearArticleForm() {
+		artTitle = '';
+		artAuthor = '';
+		artDate = '';
+		artExcerpt = '';
+		artBody = '';
+		artApprover1 = '';
+		artApprover2 = '';
+		artApprover3 = '';
+		artTags = '';
+		artPdf = null;
+	}
+
+	function fillArticleFromPdf(text: string, ai: PdfAnalysis | null): string[] {
+		const filled: string[] = [];
+		const stripped = ai ? stripHeaderLines(text, ai.headerLines) : text;
+		artBody = stripped.length >= 40 ? stripped : text;
+		const firstLine = text.split(/\r?\n/, 1)[0].trim();
+		const flat = text.replace(/\s+/g, ' ').trim();
+		const title = ai?.title || (firstLine && firstLine.length <= 90 ? firstLine : '');
+		const excerpt = ai?.excerpt || (flat.length > 220 ? flat.slice(0, 220).replace(/\s+\S*$/, '') + '…' : flat);
+		if (!artTitle.trim() && title) { artTitle = title; filled.push('כותרת'); }
+		if (!artAuthor.trim() && ai?.author) { artAuthor = ai.author; filled.push('מחבר'); }
+		if (!artDate && ai?.dateISO) { artDate = ai.dateISO; filled.push('תאריך'); }
+		if (!artExcerpt.trim() && excerpt) { artExcerpt = excerpt; filled.push('תקציר'); }
+		if (!artTags.trim() && ai?.tags.length) { artTags = tagsToField(ai.tags); filled.push('תגיות'); }
+		return filled;
+	}
+
+	function articleTodo(): string[] {
+		return [
+			!artAuthor.trim() && 'מחבר',
+			[artApprover1, artApprover2, artApprover3].some((s) => !s.trim()) && 'שלושת הרבנים המאשרים'
+		].filter((x): x is string => Boolean(x));
+	}
+
+	function fillRulingFromPdf(text: string, ai: PdfAnalysis | null): string[] {
+		const filled: string[] = [];
 		rulingDecision = text;
+		if (!ai) return filled;
+		if (!rulingCaseName.trim() && ai.title) { rulingCaseName = ai.title; filled.push('שם תיק'); }
+		if (!rulingCaseRef.trim() && ai.caseRef) { rulingCaseRef = ai.caseRef; filled.push('מזהה תיק'); }
+		if (!rulingDate && ai.dateISO) { rulingDate = ai.dateISO; filled.push('תאריך'); }
+		if (!rulingSummary.trim() && ai.excerpt) { rulingSummary = ai.excerpt; filled.push('סיכום'); }
+		const present = new Set([rulingDayan1, rulingDayan2, rulingDayan3].map((s) => s.trim()).filter(Boolean));
+		const incoming = ai.dayanim.filter((n) => !present.has(n));
+		let added = 0;
+		if (!rulingDayan1.trim() && incoming[added]) rulingDayan1 = incoming[added++];
+		if (!rulingDayan2.trim() && incoming[added]) rulingDayan2 = incoming[added++];
+		if (!rulingDayan3.trim() && incoming[added]) rulingDayan3 = incoming[added++];
+		if (added) filled.push('דיינים');
+		return filled;
+	}
+
+	function rulingTodo(): string[] {
+		return [
+			!rulingCaseName.trim() && 'שם תיק',
+			!rulingDate && 'תאריך',
+			!rulingSummary.trim() && 'סיכום',
+			!rulingDayan1.trim() && !rulingDayan2.trim() && !rulingDayan3.trim() && 'דיינים'
+		].filter((x): x is string => Boolean(x));
+	}
+
+	/** טקסט שחולץ מ-PDF בטופס המאמר → גוף המאמר + שאר השדות הריקים. */
+	async function applyArticleText(text: string): Promise<string> {
+		if (artBody.trim() && !(await askConfirm('בשדה "גוף המאמר" כבר יש טקסט. להחליף אותו בטקסט שחולץ מה-PDF?'))) {
+			return 'הטקסט הקיים ב"גוף המאמר" נשמר — לא הוטמע טקסט חדש';
+		}
+		const { ai, error } = await analyzeOrNull(text, 'article');
+		const filled = fillArticleFromPdf(text, ai);
+		const wrongType = ai?.docType === 'ruling' ? ' · ⚠️ נראה שהמסמך הוא פסק דין — ניתן לייבא אותו דרך "ייבוא PDF אוטומטי"' : '';
+		return fillMessage('גוף המאמר', filled, ai, error, articleTodo()) + wrongType;
+	}
+
+	async function applyRulingText(text: string): Promise<string> {
+		if (rulingDecision.trim() && !(await askConfirm('בשדה "החלטה" כבר יש טקסט. להחליף אותו בטקסט שחולץ מה-PDF?'))) {
+			return 'הטקסט הקיים בשדה ההחלטה נשמר — לא הוטמע טקסט חדש';
+		}
+		const { ai, error } = await analyzeOrNull(text, 'ruling');
+		const filled = fillRulingFromPdf(text, ai);
+		const wrongType = ai?.docType === 'article' ? ' · ⚠️ נראה שהמסמך הוא מאמר — ניתן לייבא אותו דרך "ייבוא PDF אוטומטי"' : '';
+		return fillMessage('שדה ההחלטה', filled, ai, error, rulingTodo()) + wrongType;
+	}
+
+	/** ייבוא PDF "בלי לבחור לשונית": מזהה את סוג המסמך, עובר ללשונית המתאימה ומלא את הטופס שלה. */
+	async function importPdfAuto(text: string): Promise<string> {
+		const pdf = autoPdf;
+		autoPdf = null; // ההפניה עוברת לטופס היעד — לא משאירים אותה מוצגת גם בסרגל הייבוא
+		const { ai, error } = await analyzeOrNull(text);
+		if (!ai) {
+			autoPdf = pdf;
+			return `⚠️ ניתוח אוטומטי לא זמין (${error}) — פתחו את לשונית "מאמרים" או "פסקי דין" והעלו את הקובץ שם`;
+		}
+		if (ai.docType === 'ruling') {
+			if ((rulingCaseName || rulingSummary || rulingDecision || rulingCaseRef).trim() && !(await askConfirm('בטופס "פסקי דין" יש טיוטה. להחליף אותה בפסק הדין מה-PDF?'))) {
+				return 'הייבוא בוטל — הטיוטה בטופס פסקי הדין נשמרה';
+			}
+			clearRulingForm();
+			rulingPdf = pdf;
+			const filled = fillRulingFromPdf(text, ai);
+			activeTab = 'rulings';
+			return '✅ זוהה כפסק דין והועבר ללשונית "פסקי דין" · ' + fillMessage('שדה ההחלטה', filled, ai, error, rulingTodo());
+		}
+		if ((artTitle || artBody || artExcerpt).trim() && !(await askConfirm('בטופס "מאמרים" יש טיוטה. להחליף אותה במאמר מה-PDF?'))) {
+			return 'הייבוא בוטל — הטיוטה בטופס המאמרים נשמרה';
+		}
+		clearArticleForm();
+		artPdf = pdf;
+		const filled = fillArticleFromPdf(text, ai);
+		activeTab = 'articles';
+		return '✅ זוהה כמאמר והועבר ללשונית "מאמרים" · ' + fillMessage('גוף המאמר', filled, ai, error, articleTodo());
 	}
 
 	async function submitArticle(e: Event) {
@@ -1047,16 +1169,7 @@
 			artNotice = '⚠️ הפרסום נכשל — ' + saveErrorMessageHe(err);
 			return;
 		}
-		artTitle = '';
-		artAuthor = '';
-		artDate = '';
-		artExcerpt = '';
-		artBody = '';
-		artApprover1 = '';
-		artApprover2 = '';
-		artApprover3 = '';
-		artTags = '';
-		artPdf = null;
+		clearArticleForm();
 		artNotice = '✅ המאמר פורסם ומופיע באתר';
 		await loadAdminContent();
 		setTimeout(() => (artNotice = ''), 4000);
@@ -1277,6 +1390,18 @@
 				</div>
 			{/each}
 		</div>
+
+		<!-- ייבוא PDF אוטומטי: מזהה מאמר/פסק דין, עובר ללשונית הנכונה וממלא את הטופס -->
+		{#if ['hearings', 'rulings', 'articles', 'videos', 'news', 'qa', 'rabbis'].includes(activeTab)}
+			<div class="mb-4">
+				<PdfAttach
+					bind:pdf={autoPdf}
+					onText={importPdfAuto}
+					buttonLabel="📥 ייבוא PDF אוטומטי"
+					hint="מזהה מאמר / פסק דין, עובר ללשונית הנכונה וממלא את הטופס"
+				/>
+			</div>
+		{/if}
 
 		<!-- ───────────── תוכן הלשוניות ───────────── -->
 		{#if activeTab === 'qa-submissions'}
