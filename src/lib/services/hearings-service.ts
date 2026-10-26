@@ -236,6 +236,33 @@ export function fetchRoomBoard(): Promise<RoomBoard> {
 	return caseFetch<RoomBoard>('/rooms');
 }
 
+// ───── "חדר כללי" — לא קשור לתיק (פיוס שתואם בטלפון, פגישה, בדיקה) ─────
+
+export interface GeneralRoomOpened {
+	entry: CaseMeetEntry;
+	/** הכניסה של בית הדין, מוצפנת — נשמרת בדפדפן שלו כדי לחזור לחדר */
+	hostToken: string;
+	/** קישור ההזמנה למשתתפים — לאתר, נכנסים גם בלי חשבון */
+	inviteUrl: string;
+	openedAt: string;
+}
+
+function roomsPost<T>(body: Record<string, string>): Promise<T> {
+	return caseFetch<T>('/rooms', { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function openGeneralRoom(): Promise<GeneralRoomOpened> {
+	return roomsPost({ action: 'open-general' });
+}
+
+export function enterGeneralRoom(hostToken: string): Promise<CaseMeetEntry> {
+	return roomsPost({ action: 'enter-general', token: hostToken });
+}
+
+export function joinInviteRoom(invite: string): Promise<CaseMeetEntry> {
+	return roomsPost({ action: 'join-invite', token: invite });
+}
+
 /** החדר עצמו חי באזור "חדר הדיון הוירטואלי" בהיכל המשפט */
 export function meetPagePath(caseId: string): string {
 	return `/heichal-hamishpat?room=${encodeURIComponent(caseId)}#virtual-room`;
