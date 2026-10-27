@@ -102,6 +102,7 @@
             logoOriginal: ad.logo ?? '',
             hasCircleCrop: design.logoShape === 'circle',
             logoShape: design.logoShape,
+            logoBg: design.logoBg ?? 'white',
             logoPosition: design.logoAnchor,
             logoPositionExplicit: Boolean(st),
             logoFreeX: design.logoX,
