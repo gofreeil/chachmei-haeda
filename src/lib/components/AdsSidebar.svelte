@@ -21,7 +21,7 @@
             cta: a.cta,
             hover: a.hover,
             href: a.href,
-            target: '_blank' as const,
+            target: '_self' as const,
             image: a.image,
             color: a.color,
             imageHeight: a.imageHeight,
@@ -47,10 +47,17 @@
             >
                 <div class="relative overflow-hidden" style="height: {ad.imageHeight ?? '160px'}">
                     <div class="absolute inset-0 overflow-hidden">
+                        <!-- loading="lazy" חובה: הטור הזה הוא hidden lg:block, כלומר
+                             display:none בנייד - אבל כרום מוריד תמונות שבתוך display:none
+                             בכל זאת, וכך כל גולש נייד סחב את כל תמונות הפרסומות של טור
+                             שהוא בכלל לא רואה. עם lazy הן לא נמשכות כלל, כפי שכבר קורה
+                             ב-RightAdBanner. -->
                         <img
                             src={ad.image}
                             alt={pickLang(ad.title, _loc)}
                             class="w-full h-full object-cover transition-opacity duration-[1500ms] group-hover:opacity-0"
+                            loading="lazy"
+                            decoding="async"
                         />
                     </div>
                     <div
