@@ -493,6 +493,11 @@ html:lang(de) :is(p, h1, h2, h3, h4, h5, h6, li, label, summary, figcaption, blo
 .welcome-dark .text-gray-200 { color: #e5e7eb !important; }
 .welcome-dark .text-purple-200 { color: #e9d5ff !important; }
 .welcome-dark .text-amber-300 { color: #fcd34d !important; }
+.welcome-dark .text-gray-300 { color: #d1d5db !important; }
+.welcome-dark .text-indigo-200 { color: #c7d2fe !important; }
+.welcome-dark .text-indigo-300 { color: #a5b4fc !important; }
+.welcome-dark .text-green-300 { color: #86efac !important; }
+.welcome-dark .text-red-300 { color: #fca5a5 !important; }
 .welcome-dark .bg-white\/5  { background-color: rgba(255, 255, 255, 0.05) !important; }
 .welcome-dark .bg-white\/10,
 .welcome-dark .hover\:bg-white\/10:hover { background-color: rgba(255, 255, 255, 0.10) !important; }
