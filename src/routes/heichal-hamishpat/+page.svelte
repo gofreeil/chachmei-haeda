@@ -7,6 +7,7 @@
 	import LiveCalendar from '$lib/components/LiveCalendar.svelte';
 	import FancyHeading from '$lib/components/FancyHeading.svelte';
 	import RequestHearingForm from '$lib/components/RequestHearingForm.svelte';
+	import RoomInvite from '$lib/components/RoomInvite.svelte';
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import { serviceSchema, breadcrumbSchema } from '$lib/seo';
@@ -145,13 +146,20 @@
 	const GENERAL_TTL_MS = 28 * 60 * 60 * 1000;
 	type GeneralRoom = { hostToken: string; inviteUrl: string; openedAt: string };
 	let general = $state<GeneralRoom | null>(null);
-	let inviteCopied = $state(false);
 	const generalSince = $derived(
 		general ? new Date(general.openedAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : ''
 	);
-	const inviteWhatsapp = $derived(
-		general ? `https://wa.me/?text=${encodeURIComponent(`${tFn('mishpat_room_invite_text')} ${general.inviteUrl}`)}` : ''
+
+	// ───── הזמנה חכמה: 'general' = ההיכל בלי תיק, אחרת מזהה התיק שחדרו פתוח ─────
+	let inviteFor = $state('');
+	const inviteLink = $derived(
+		inviteFor === 'general' ? (general?.inviteUrl ?? '') : inviteFor ? `${page.url.origin}${meetPagePath(inviteFor)}` : ''
 	);
+
+	function toggleInvite(target: string) {
+		inviteFor = inviteFor === target ? '' : target;
+		if (inviteFor) requestAnimationFrame(() => document.getElementById('room-invite')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+	}
 
 	function saveGeneral(g: GeneralRoom | null) {
 		general = g;
@@ -181,6 +189,7 @@
 			saveGeneral({ hostToken: r.hostToken, inviteUrl: r.inviteUrl, openedAt: r.openedAt });
 			roomCaseId = '';
 			room = r.entry;
+			inviteFor = 'general'; // נפתח — מיד בוחרים מי מוזמן
 			scrollToRoom();
 		} catch (e) {
 			boardError = (e as { serverMessage?: string })?.serverMessage || tFn('case_meet_error');
@@ -198,18 +207,8 @@
 
 	function closeGeneral() {
 		saveGeneral(null);
+		if (inviteFor === 'general') inviteFor = '';
 		if (room && !room.caseRef) room = null;
-	}
-
-	async function copyInvite() {
-		if (!general) return;
-		try {
-			await navigator.clipboard.writeText(general.inviteUrl);
-			inviteCopied = true;
-			setTimeout(() => (inviteCopied = false), 2000);
-		} catch {
-			window.prompt('', general.inviteUrl);
-		}
 	}
 
 	async function loadBoard() {
@@ -245,6 +244,7 @@
 		try {
 			await setCaseMeet(caseId, 'close');
 			if (roomCaseId === caseId) room = null;
+			if (inviteFor === caseId) inviteFor = '';
 			await loadBoard();
 		} catch (e) {
 			boardError = (e as { serverMessage?: string })?.serverMessage || tFn('case_meet_error');
@@ -498,9 +498,9 @@
 				</div>
 				<div class="flex items-center gap-2 md:gap-3 shrink-0">
 					{#if room}
-						{#if !room.caseRef && room.role === 'host' && general}
-							<button type="button" onclick={copyInvite} title={tFn('mishpat_room_invite_copy')} aria-label={tFn('mishpat_room_invite_copy')} class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center text-lg md:text-xl">
-								{inviteCopied ? '✓' : '🔗'}
+						{#if room.role === 'host' && (room.caseRef ? roomCaseId : general)}
+							<button type="button" onclick={() => toggleInvite(room?.caseRef ? roomCaseId : 'general')} title={tFn('mishpat_invite_btn')} aria-label={tFn('mishpat_invite_btn')} class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center text-lg md:text-xl">
+								👥
 							</button>
 						{/if}
 						<!-- באותה לשונית: החדר המוטמע נסגר ונכנסים לאיתניום פעם אחת, בלי משתתף כפול -->
@@ -514,6 +514,16 @@
 					{/if}
 				</div>
 			</div>
+{#if board?.host && inviteFor && inviteLink}
+			{#key inviteFor}
+				<RoomInvite
+					link={inviteLink}
+					cases={board.cases}
+					fixedCaseId={inviteFor === 'general' ? '' : inviteFor}
+					onclose={() => (inviteFor = '')}
+				/>
+			{/key}
+{/if}
 {#if !room && board && (board.host || board.cases.length > 0)}
 			<!-- לוח החדרים — בתוך המסגרת, מתחת לבר הבקרה: בית הדין פותח/נכנס/סוגר, צד רואה את התיקים שלו -->
 			<div class="mt-3 md:mt-4 rounded-xl border border-white/10 bg-black/30 p-2 md:p-3">
@@ -548,8 +558,8 @@
 							>
 								{tFn('case_meet_enter_host')}
 							</button>
-							<button type="button" onclick={copyInvite} class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-indigo-300 text-xs font-bold">
-								{inviteCopied ? tFn('mishpat_room_invite_copied') : tFn('mishpat_room_invite_copy')}
+							<button type="button" onclick={() => toggleInvite('general')} class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold">
+								{tFn('mishpat_invite_btn')}
 							</button>
 							<button type="button" onclick={closeGeneral} class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-bold">
 								{tFn('case_meet_close_btn')}
@@ -583,6 +593,13 @@
 										{board.host ? tFn('case_meet_enter_host') : tFn('case_meet_join')}
 									</button>
 									{#if board.host}
+										<button
+											type="button"
+											onclick={() => toggleInvite(c.id)}
+											class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold"
+										>
+											{tFn('mishpat_invite_btn')}
+										</button>
 										<button
 											type="button"
 											onclick={() => closeRoom(c.id)}
@@ -624,12 +641,6 @@
 
 		{#if room}
 			<p class="text-xs text-gray-600 mt-1 text-center">{tFn('case_meet_hint')}</p>
-			{#if !room.caseRef && room.role === 'host' && general}
-				<p class="mt-1 text-xs text-center">
-					<span class="text-gray-700">{tFn('mishpat_room_general_hint')}</span>
-					<a href={inviteWhatsapp} target="_blank" rel="noopener" class="font-bold text-green-700 hover:underline">{tFn('mishpat_room_invite_whatsapp')}</a>
-				</p>
-			{/if}
 {/if}
 
 		<p class="mt-4 text-center text-gray-700 text-xs md:text-sm font-bold">

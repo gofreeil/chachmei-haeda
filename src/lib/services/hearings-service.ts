@@ -222,6 +222,8 @@ export interface RoomCase {
 	approved: boolean;
 	open: boolean;
 	openedAt: string | null;
+	/** הדיין שאישר את התיק בשם בית הדין (לבית הדין בלבד) */
+	beitDinId: string | null;
 }
 
 export interface RoomBoard {
@@ -236,7 +238,7 @@ export function fetchRoomBoard(): Promise<RoomBoard> {
 	return caseFetch<RoomBoard>('/rooms');
 }
 
-// ───── "חדר כללי" — לא קשור לתיק (פיוס שתואם בטלפון, פגישה, בדיקה) ─────
+// ───── "היכל משפט" — מפגש שלא קשור לתיק (פיוס שתואם בטלפון, פגישה, בדיקה) ─────
 
 export interface GeneralRoomOpened {
 	entry: CaseMeetEntry;
@@ -261,6 +263,36 @@ export function enterGeneralRoom(hostToken: string): Promise<CaseMeetEntry> {
 
 export function joinInviteRoom(invite: string): Promise<CaseMeetEntry> {
 	return roomsPost({ action: 'join-invite', token: invite });
+}
+
+// ───── הזמנה חכמה — בית הדין שולח את קישור המפגש למוזמנים שבחר ─────
+
+export interface InviteDayan {
+	id: number;
+	name: string;
+}
+
+export interface InviteSent {
+	name: string;
+	via: 'sms' | 'inbox' | 'both' | 'none';
+	/** קישור וואטסאפ אישי — כשיש טלפון */
+	wa?: string;
+}
+
+export async function fetchInviteDayanim(): Promise<InviteDayan[]> {
+	const res = await caseFetch<{ dayanim: InviteDayan[] }>('/invite');
+	return res.dayanim;
+}
+
+export async function sendRoomInvite(input: {
+	link: string;
+	caseId?: string;
+	parties?: Array<'plaintiff' | 'defendant'>;
+	dayanIds?: number[];
+	phones?: string[];
+}): Promise<InviteSent[]> {
+	const res = await caseFetch<{ results: InviteSent[] }>('/invite', { method: 'POST', body: JSON.stringify(input) });
+	return res.results;
 }
 
 /** החדר עצמו חי באזור "חדר הדיון הוירטואלי" בהיכל המשפט */

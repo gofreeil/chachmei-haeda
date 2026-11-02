@@ -43,7 +43,7 @@ interface Approval {
     name: string;
 }
 
-interface CaseMeta {
+export interface CaseMeta {
     _case: 1;
     caseRef: string;
     nickname: string;
@@ -154,7 +154,7 @@ export function normalizeName(s: string): string {
 }
 
 /** 9 הספרות האחרונות — 054-1234567 = +972541234567 */
-function phoneKey(s: string): string {
+export function phoneKey(s: string): string {
     const d = (s ?? '').replace(/\D/g, '');
     return d.length >= 9 ? d.slice(-9) : d;
 }
@@ -207,7 +207,7 @@ function parseMeta(raw: string | null | undefined): CaseMeta | null {
     }
 }
 
-async function loadCase(id: string): Promise<{ id: string; status: string; meta: CaseMeta } | null> {
+export async function loadCase(id: string): Promise<{ id: string; status: string; meta: CaseMeta } | null> {
     if (!/^[A-Za-z0-9]{8,64}$/.test(id)) return null;
     try {
         const res = await strapiGet<{ data: StrapiRequest }>(`${ENDPOINT}/${encodeURIComponent(id)}`);
@@ -300,16 +300,23 @@ export async function createCase(viewer: CaseViewer, raw: Partial<NewCaseInput>,
     return publicView({ id, status: 'pending', meta }, viewer);
 }
 
-interface UserRow {
+export interface UserRow {
     id: number;
     username?: string | null;
     name?: string | null;
     nickname?: string | null;
+    email?: string | null;
     phone?: string | null;
 }
 
+/** השם שמוצג לחשבון: כינוי/שם/שם-משתמש אמיתי (לא google_…), ובסוף תחילת המייל */
+export function userLabel(u: UserRow): string {
+    const names = [u.nickname, u.name, PROVIDER_USERNAME.test(u.username ?? '') ? '' : u.username];
+    return names.map((s) => (s ?? '').trim()).find(Boolean) || (u.email ?? '').split('@')[0] || `#${u.id}`;
+}
+
 /** חשבונות שנראים כמו הנתבע: הטלפון תואם, או השם תואם בלי טלפון סותר */
-async function findDefendantAccounts(meta: CaseMeta): Promise<UserRow[]> {
+export async function findDefendantAccounts(meta: CaseMeta): Promise<UserRow[]> {
     const want = phoneKey(meta.defendantPhone);
     const target = normalizeName(meta.defendantName);
     const word = target.split(' ').sort((a, b) => b.length - a.length)[0] ?? '';
@@ -349,28 +356,43 @@ async function notifyDefendant(meta: CaseMeta, link: string): Promise<void> {
         `${meta.plaintiffName} פתח/ה נגדך תיק ${meta.caseRef}: ${meta.subject}\n` +
         `מועד מוצע: ${meta.proposedDate}\n` +
         `לצפייה ולאישור המועד: ${link}`;
+    const accounts = await findDefendantAccounts(meta).catch(() => []);
+    await deliverMessage(text, meta.defendantPhone, accounts);
+}
+
+/**
+ * הודעה אחת לאדם: SMS לנייד, והודעה לתיבה של כל חשבון שלו. מי שכבר קיבל SMS
+ * לנייד שלו לא מקבל גם הודעת-תיבה — ה-lifecycle של messages שולח SMS לאדמינים,
+ * וכך נמנע SMS כפול. בלי טלפון: רק תיבה (ולאדמין — ה-lifecycle שולח SMS).
+ * best-effort: כשל לא זורק, התוצאה אומרת מה בפועל יצא.
+ */
+export async function deliverMessage(
+    text: string,
+    phone: string,
+    accounts: ReadonlyArray<{ id: number; phone?: string | null }>
+): Promise<{ sms: boolean; inbox: number }> {
     let smsPhone = '';
-    if (phoneKey(meta.defendantPhone).length >= 9) {
+    if (phoneKey(phone).length >= 9) {
         try {
             const res = await strapiPost<{ ok?: boolean; results?: Array<{ ok: boolean; error?: string }> }>(
                 '/api/admin/sms/send',
-                { recipients: [{ phone: meta.defendantPhone }], message: text }
+                { recipients: [{ phone }], message: text }
             );
-            if (res?.results?.[0]?.ok) smsPhone = phoneKey(meta.defendantPhone);
-            else console.warn('[cases] defendant SMS not sent:', res?.results?.[0]?.error ?? 'unknown');
+            if (res?.results?.[0]?.ok) smsPhone = phoneKey(phone);
+            else console.warn('[cases] SMS not sent:', res?.results?.[0]?.error ?? 'unknown');
         } catch (err) {
-            console.warn('[cases] defendant SMS failed:', err instanceof Error ? err.message : err);
+            console.warn('[cases] SMS failed:', err instanceof Error ? err.message : err);
         }
     }
+    const targets = accounts.filter((u) => !smsPhone || phoneKey(u.phone ?? '') !== smsPhone);
     try {
-        const accounts = await findDefendantAccounts(meta);
         await Promise.all(
-            accounts
-                .filter((u) => !smsPhone || phoneKey(u.phone ?? '') !== smsPhone)
-                .map((u) => strapiPost('/api/messages', { data: { receiver: u.id, content: text, read: false } }))
+            targets.map((u) => strapiPost('/api/messages', { data: { receiver: u.id, content: text, read: false } }))
         );
+        return { sms: !!smsPhone, inbox: targets.length };
     } catch (err) {
-        console.warn('[cases] defendant inbox notification failed:', err instanceof Error ? err.message : err);
+        console.warn('[cases] inbox notification failed:', err instanceof Error ? err.message : err);
+        return { sms: !!smsPhone, inbox: 0 };
     }
 }
 
@@ -537,6 +559,8 @@ export interface RoomCase {
     approved: boolean;
     open: boolean;
     openedAt: string | null;
+    /** הדיין שאישר את התיק בשם בית הדין — לבית הדין בלבד, כברירת מחדל בהזמנה */
+    beitDinId: string | null;
 }
 
 /**
@@ -568,6 +592,7 @@ export async function roomBoard(viewer: CaseViewer) {
             approved: !!(a.plaintiff && a.defendant && a.beitDin),
             open: !!meet,
             openedAt: meet?.openedAt ?? null,
+            beitDinId: viewer.isAdmin ? (a.beitDin?.userId ?? null) : null,
         });
     }
     const today = new Date().toISOString().slice(0, 10);
