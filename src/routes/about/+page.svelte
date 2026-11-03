@@ -130,7 +130,7 @@
 		</ul>
 
 		<div class="mt-8 pt-6 border-t border-amber-400/30 text-start space-y-4">
-			<p class="text-base md:text-lg text-gray-100 leading-loose">
+			<p class="text-base md:text-lg text-gray-100 leading-snug">
 				{tFn('about_dayanim_collective_intro')}
 			</p>
 			<blockquote class="py-2 text-center">
@@ -139,10 +139,10 @@
 				</p>
 				<footer class="mt-1 text-sm text-gray-400">{tFn('about_verse_devarim_16_18_source')}</footer>
 			</blockquote>
-			<p class="text-base md:text-lg text-gray-100 leading-loose font-semibold text-center">
+			<p class="text-base md:text-lg text-gray-100 leading-snug font-semibold text-center">
 				{tFn('about_purpose_peace')}
 			</p>
-			<p class="text-base md:text-lg text-gray-100 leading-loose pt-2">
+			<p class="text-base md:text-lg text-gray-100 leading-snug pt-2">
 				{tFn('about_chachmei_concept_prefix')}<strong class="text-orange-700">{tFn('about_chachmei_concept_emphasis')}</strong>{tFn('about_chachmei_concept_suffix')}
 			</p>
 		</div>
@@ -166,7 +166,7 @@
 						<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
 						<span>{item.q}</span>
 					</summary>
-					<p class="px-4 pb-4 ps-10 text-sm md:text-base text-gray-200 leading-loose">
+					<p class="px-4 pb-4 ps-10 text-sm md:text-base text-gray-200 leading-snug">
 						{item.a}
 					</p>
 				</details>

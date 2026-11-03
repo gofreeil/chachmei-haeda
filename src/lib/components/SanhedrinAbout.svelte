@@ -14,7 +14,7 @@
 				<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
 				<span>רקע — הקמת הסנהדרין</span>
 			</summary>
-			<div class="px-4 pb-4 ps-10 flex flex-col gap-3 text-sm md:text-base text-gray-200 leading-loose">
+			<div class="px-4 pb-4 ps-10 flex flex-col gap-2 text-sm md:text-base text-gray-200 leading-snug">
 				<p>
 					הסנהדרין של היום נוסדה בחודש תשרי שנת התשס"ה. תהליך ההקמה התחיל בכך ששלחו לכל הרבנים בישראל את ההצעה
 					שהרב משה הלברשטאם יהיה הסמוך הראשון של הסנהדרין. כל הרבנים, ללא יוצא מן הכלל, הסכימו.
@@ -50,7 +50,7 @@
 				<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
 				<span>ועדת פיוס</span>
 			</summary>
-			<div class="px-4 pb-4 ps-10 flex flex-col gap-3 text-sm md:text-base text-gray-200 leading-loose">
+			<div class="px-4 pb-4 ps-10 flex flex-col gap-2 text-sm md:text-base text-gray-200 leading-snug">
 				<p>
 					שלמה המלך אמר במשלי פרק י"ז, פסוק י"ד: "לפני התגלע הריב נטוש". לפעמים צדדים בסכסוכי ממון מתדיינים
 					בבתי משפט 20 שנה. ועדת פיוס נועדה למנוע את המציאות של דיונים של שנים, כאשר רק עוכרי הדין "מרוויחים"
@@ -74,7 +74,7 @@
 				<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
 				<span>מה נדרש מכל יהודי?</span>
 			</summary>
-			<ol class="px-4 pb-4 ps-10 list-decimal marker:text-amber-400 marker:font-bold flex flex-col gap-3 text-sm md:text-base text-gray-200 leading-loose">
+			<ol class="px-4 pb-4 ps-10 list-decimal marker:text-amber-400 marker:font-bold flex flex-col gap-2 text-sm md:text-base text-gray-200 leading-snug">
 				<li>
 					לפנות לרב שלו ולרבנים שהוא מכיר ולהגיד להם להצטרף לסנהדרין. כדי להקים את דברי התורה הזו,
 					"השיבה שופטנו כבראשונה ויועצנו כבתחילה והסר ממנו יגון ואנחה".
@@ -99,7 +99,7 @@
 				<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
 				<span>הארות והערות</span>
 			</summary>
-			<ul class="px-4 pb-4 ps-10 list-disc marker:text-amber-400 flex flex-col gap-2 text-sm md:text-base text-gray-200 leading-loose">
+			<ul class="px-4 pb-4 ps-10 list-disc marker:text-amber-400 flex flex-col gap-2 text-sm md:text-base text-gray-200 leading-snug">
 				<li>ממליכים רק את הקדוש ברוך הוא.</li>
 				<li>לא ממליכים אדם או אדמו"ר, או רב, אלא רק את הקדוש ברוך הוא.</li>
 				<li>לא מקבלים כסף מכל גורם כזה או אחר של המדינה, או כסף של גויים.</li>
