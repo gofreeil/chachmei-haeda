@@ -151,26 +151,6 @@
 	<!-- הסנהדרין — רקע, ועדת פיוס, מה נדרש מכל יהודי והערות -->
 	<div class="mt-8"><SanhedrinAbout /></div>
 
-	<!-- באנר קריאה להצטרפות (הועבר מ-/about/revenue) -->
-	<div class="mt-8 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/15 backdrop-blur-sm shadow-xl p-6 md:p-10 text-center">
-		<h2 class="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-xl md:text-2xl font-black text-transparent mb-4">
-			🤝 {tFn('about_join_call_heading')}
-		</h2>
-		<p class="text-base md:text-lg text-gray-100 leading-relaxed font-semibold">
-			{tFn('about_join_body_prefix')}<span class="text-orange-700 font-black">{tFn('about_join_body_emphasis')}</span>{tFn('about_join_body_suffix')}
-		</p>
-		<div class="mt-6 flex justify-center">
-			<a
-				href="mailto:freedomhasbegun@gmail.com?subject=%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94&body=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94.%0A%0A%D7%A9%D7%9D%20%D7%9E%D7%9C%D7%90%3A%20%0A%D7%AA%D7%A4%D7%A7%D7%99%D7%93%2F%D7%AA%D7%95%D7%90%D7%A8%3A%20%0A%D7%A4%D7%9C%D7%92%2F%D7%A7%D7%94%D7%99%D7%9C%D7%94%3A%20%0A%D7%A2%D7%99%D7%A8%3A%20%0A%D7%98%D7%9C%D7%A4%D7%95%D7%9F%3A%20%0A"
-				class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 font-black text-base border-2 border-amber-700/40 shadow-md hover:scale-105 hover:shadow-[0_0_20px_rgba(234,88,12,0.5)] transition-all"
-				style="color: #fff8e7; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
-			>
-				<span>✉️</span>
-				<span>{tFn('about_contact_email_btn')}</span>
-			</a>
-		</div>
-	</div>
-
 	<!-- שאלות ותשובות — אותו מקור אמת כמו ה-JSON-LD למעלה -->
 	<section id="faq" aria-labelledby="faq-title" class="mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
 		<h2 id="faq-title" class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent text-center mb-6">
@@ -193,6 +173,26 @@
 			{/each}
 		</div>
 	</section>
+
+	<!-- באנר קריאה להצטרפות (הועבר מ-/about/revenue) -->
+	<div class="mt-8 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/15 backdrop-blur-sm shadow-xl p-6 md:p-10 text-center">
+		<h2 class="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-xl md:text-2xl font-black text-transparent mb-4">
+			🤝 {tFn('about_join_call_heading')}
+		</h2>
+		<p class="text-base md:text-lg text-gray-100 leading-relaxed font-semibold">
+			{tFn('about_join_body_prefix')}<span class="text-orange-700 font-black">{tFn('about_join_body_emphasis')}</span>{tFn('about_join_body_suffix')}
+		</p>
+		<div class="mt-6 flex justify-center">
+			<a
+				href="mailto:freedomhasbegun@gmail.com?subject=%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94&body=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94.%0A%0A%D7%A9%D7%9D%20%D7%9E%D7%9C%D7%90%3A%20%0A%D7%AA%D7%A4%D7%A7%D7%99%D7%93%2F%D7%AA%D7%95%D7%90%D7%A8%3A%20%0A%D7%A4%D7%9C%D7%92%2F%D7%A7%D7%94%D7%99%D7%9C%D7%94%3A%20%0A%D7%A2%D7%99%D7%A8%3A%20%0A%D7%98%D7%9C%D7%A4%D7%95%D7%9F%3A%20%0A"
+				class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 font-black text-base border-2 border-amber-700/40 shadow-md hover:scale-105 hover:shadow-[0_0_20px_rgba(234,88,12,0.5)] transition-all"
+				style="color: #fff8e7; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
+			>
+				<span>✉️</span>
+				<span>{tFn('about_contact_email_btn')}</span>
+			</a>
+		</div>
+	</div>
 </section>
 
 <style>
