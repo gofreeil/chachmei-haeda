@@ -105,9 +105,9 @@
 
 		{#if headRabbi}
 			<div class="flex flex-col items-center text-center mb-5">
-				<div class="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
+				<div class="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
 					{#if headRabbi.photo}
-						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="176" height="176" class="w-full h-full object-cover" decoding="async" />
+						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="144" height="144" class="w-full h-full object-cover" decoding="async" />
 					{:else}
 						<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 							<circle cx="32" cy="24" r="12" />
