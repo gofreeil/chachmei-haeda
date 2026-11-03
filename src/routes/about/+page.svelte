@@ -10,7 +10,7 @@
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
 	import SanhedrinAbout from '$lib/components/SanhedrinAbout.svelte';
-	import { SITE_NAME, PARENT_SITE, faqSchema, breadcrumbSchema } from '$lib/seo';
+	import { SITE_NAME, faqSchema, breadcrumbSchema } from '$lib/seo';
 	import { aboutContentFor } from '$lib/aboutFaq';
 	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
 	import { loadRabbis } from '$lib/services/rabbis-service';
@@ -70,14 +70,6 @@
 		<p class="text-base md:text-lg text-gray-200 leading-loose">
 			{content.intro}
 		</p>
-		{#if !_loc || _loc.startsWith('he')}
-			<!-- שיוך גלוי לתנועה-האם עם קישור אמיתי (הפסקה למעלה מתורגמת ולכן טקסט בלבד) -->
-			<p class="mt-4 text-base md:text-lg text-gray-200 leading-loose">
-				חכמי העדה הוא מיזם של התנועה החברתית
-				<a href={PARENT_SITE.url} target="_blank" rel="noopener" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors">{PARENT_SITE.name}</a>
-				ומופעל בהתנדבות.
-			</p>
-		{/if}
 		<!-- משפט המטרה (הועבר מ-/about/revenue) — באותו כרטיס עם הפתיחה, בלי הפרדה -->
 		<p class="mt-6 text-xl md:text-2xl font-bold text-white leading-relaxed text-center">
 			{tFn('about_mission_statement')}
