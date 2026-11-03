@@ -15,7 +15,7 @@ export const defaultRabbis: Rabbi[] = [
 	{ id: 'r-wonder', name: 'הרב יעקב יוסף וונדר' },
 	{ id: 'r-moreno', name: 'הרב שמואל מורנו' },
 	{ id: 'r-sofi', name: 'הרב נדב סופי' },
-	{ id: 'r-halevi', name: 'הרב מאיר הלוי' },
+	{ id: 'r-halevi', name: 'הרב מאיר הלוי', photo: '/images/rabbis/halevi.jpg' },
 	{ id: 'r-schwartz', name: 'הרב בנימין שוורץ', photo: '/images/rabbis/schwartz.jpg' }
 ];
 
