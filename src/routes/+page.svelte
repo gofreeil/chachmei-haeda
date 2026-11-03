@@ -72,7 +72,7 @@
 	<h1 class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-3xl sm:text-4xl md:text-5xl font-black text-transparent inline-block pb-1">
 		{tFn('home_welcome_title')}<span class="sr-only"> — {PARENT_SITE.name}</span>
 	</h1>
-	<a href="/about/revenue" class="block group hover:opacity-90 transition-opacity" aria-label={tFn('home_read_more_about_us_aria')}>
+	<a href="/about" class="block group hover:opacity-90 transition-opacity" aria-label={tFn('home_read_more_about_us_aria')}>
 		<div class="mt-2 md:mt-6 flex justify-center">
 			<div class="h-40 w-40 md:h-56 md:w-56 rounded-full overflow-hidden flex-shrink-0 shadow-xl ring-2 ring-purple-500/30 group-hover:ring-blue-500/60 group-hover:scale-[1.02] transition-all">
 				<!-- ה-LCP של דף הבית: נטען מיד ובעדיפות גבוהה, בלי lazy -->

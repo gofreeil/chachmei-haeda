@@ -1,24 +1,48 @@
 <script lang="ts">
 	// ============================================================
-	// /about — דף "אודותינו": פסקת פתיחה + אגף שאלות ותשובות.
+	// /about — דף "אודותינו" היחיד: פסקת פתיחה, משפט המטרה, הסנהדרין, הדיינים,
+	// קריאה להצטרפות, בתי הפיוס ואגף שאלות ותשובות. (/about/revenue הופנה לכאן.)
 	// המטרה: שמנועי חיפוש ומנועי AI יזהו בקלות מה האתר, למי ומה עושים בו.
 	// התצוגה וסכמת FAQPage (JSON-LD) נבנות מאותו מקור אמת — $lib/aboutFaq —
 	// כך שהזחלן רואה בדיוק את הטקסט שהגולש רואה.
-	// הרבנים, החזון ומודל ההתנהלות נשארים בדף /about/revenue (מקושר מכאן).
 	// ============================================================
 	import Seo from '$lib/components/Seo.svelte';
 	import JsonLd from '$lib/components/JsonLd.svelte';
 	import HeichalotGrid from '$lib/components/HeichalotGrid.svelte';
+	import SanhedrinAbout from '$lib/components/SanhedrinAbout.svelte';
 	import { SITE_NAME, PARENT_SITE, faqSchema, breadcrumbSchema } from '$lib/seo';
 	import { aboutContentFor } from '$lib/aboutFaq';
-	import { locale } from 'svelte-i18n';
+	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+	import { loadRabbis } from '$lib/services/rabbis-service';
+	import { onMount } from 'svelte';
+	import { t, locale } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe((l) => (_loc = l)));
+	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
 	const content = $derived(aboutContentFor(_loc));
 	const dir = $derived(_loc && !['he', 'ps'].includes(_loc.slice(0, 2)) ? 'ltr' : 'rtl');
+
+	let rabbis = $state<Rabbi[]>(defaultRabbis);
+
+	onMount(async () => {
+		// גיבוי מיידי מ-localStorage כדי שלא יהבהב, ואז מקור-האמת מהבאקאנד
+		try {
+			const raw = localStorage.getItem(RABBIS_STORAGE_KEY);
+			if (raw) {
+				const saved = JSON.parse(raw);
+				if (Array.isArray(saved) && saved.every((r) => typeof r?.name === 'string')) {
+					rabbis = saved as Rabbi[];
+				}
+			}
+		} catch {}
+		try {
+			const backend = await loadRabbis();
+			if (backend.length) rabbis = backend;
+		} catch {}
+	});
 
 	// בלוק "בתי הפיוס" עבר לכאן מדף הבית — מיועד לזחלנים לשאילתות כמו
 	// "בית דין לבוררות", "דין תורה", "גישור בסכסוך שכנים", ולכן נכתב בעברית מפורשת.
@@ -59,7 +83,7 @@
 	title="{content.title} | {SITE_NAME}"
 	description={content.intro}
 	path="/about"
-	keywords="אודות חכמי העדה, בתי הפיוס, בית דין לבוררות, שאלות ותשובות, יוצאים לחירות"
+	keywords="אודות חכמי העדה, בתי הפיוס, בית דין לבוררות, סנהדרין, הרבנים, דיינים מתנדבים, חזון בתי הפיוס, שאלות ותשובות, יוצאים לחירות"
 />
 <JsonLd data={schemas} />
 
@@ -80,135 +104,108 @@
 				ומופעל בהתנדבות.
 			</p>
 		{/if}
-		<p class="mt-4 text-center">
-			<a href="/about/revenue" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors">
-				{content.moreLink} ←
-			</a>
+	</div>
+
+	<!-- משפט המטרה (הועבר מ-/about/revenue) -->
+	<div class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
+		<p class="text-xl md:text-2xl font-bold text-white leading-relaxed text-center">
+			{tFn('about_mission_statement')}
+		</p>
+
+		<blockquote class="mt-6 py-2 text-center">
+			<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
+				{tFn('about_verse_devarim_15_8')}
+			</p>
+			<footer class="mt-2 text-sm text-gray-400">{tFn('about_verse_devarim_15_8_source')}</footer>
+		</blockquote>
+
+		<p class="mt-8 text-base md:text-lg text-gray-200 leading-loose">
+			{tFn('about_platform_description')}
+		</p>
+		<p class="mt-4 text-lg md:text-xl font-bold text-white text-center">
+			{tFn('about_subject_to_torah')}
 		</p>
 	</div>
 
-	<!-- הסנהדרין — רקע, ועדת פיוס, מה נדרש מכל יהודי והערות (עברית בלבד, כמו בלוק בתי הפיוס) -->
-	<section class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-5 md:p-8" dir="rtl" aria-labelledby="sanhedrin-title">
-		<h2 id="sanhedrin-title" class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent text-center mb-5">
-			הסנהדרין
-		</h2>
-
-		<div class="flex flex-col gap-3">
-			<details class="group rounded-xl bg-white/5 border border-amber-400/20 open:border-amber-400/50 transition-colors" open>
-				<summary class="cursor-pointer list-none flex items-start gap-3 p-4 text-base md:text-lg font-bold text-white hover:bg-white/5 rounded-xl">
-					<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
-					<span>רקע — הקמת הסנהדרין</span>
-				</summary>
-				<div class="px-4 pb-4 ps-10 flex flex-col gap-3 text-sm md:text-base text-gray-200 leading-loose">
-					<p>
-						הסנהדרין של היום נוסדה בחודש תשרי שנת התשס"ה. תהליך ההקמה התחיל בכך ששלחו לכל הרבנים בישראל את ההצעה
-						שהרב משה הלברשטאם יהיה הסמוך הראשון של הסנהדרין. כל הרבנים, ללא יוצא מן הכלל, הסכימו.
-					</p>
-					<p>
-						הרב משה הלברשטאם היה ראש אב בתי הדין של העדה החרדית בירושלים, חסיד סאטמר, אוהב ישראל ממש כל יהודי,
-						הפוסק של מכון פועה, והרב הקים את זק"א.
-					</p>
-					<p>
-						באו עם התשובות לרב עובדיה יוסף. שאלו: האם הרב הלברשטאם ראוי להיות סמוך? הרב ענה: בוודאי שראוי.
-						באו עם התשובות לרב שלום אלישיב. שאלו: האם הרב משה הלברשטאם ראוי להיות סמוך? האם הוא ראוי להסמיך אחרים?
-						הרב ענה: ראוי וראוי.
-					</p>
-					<p>
-						הרב משה הלברשטאם הסמיך שלושה רבנים, והם הסמיכו 71 רבנים בטבריה בשנת התשס"ה.
-					</p>
-					<p>
-						נשיא הסנהדרין שנבחר היה כבוד הרב עדין שטיינזלץ זצ"ל, אב בית הדין היה כבוד הרב יואל שוורץ זצ"ל.
-						כיום הסנהדרין מונה מעל 1,000 רבנים, ואב בית הדין הוא כבוד הרב אליהו אברגי'ל שליט"א.
-					</p>
-					<p>
-						על תהליך ההקמה ופרטים נוספים אפשר לקבל באתר הסנהדרין:
-						<a href="https://www.TheSanhedrin.org" target="_blank" rel="noopener" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors" dir="ltr">www.TheSanhedrin.org</a>
-					</p>
-					<p>
-						כיום יש סנהדרין גדולה, סנהדראות קטנות ובתי דין ייעודיים. בית הדין מתכנס בכל שבוע.
-					</p>
-				</div>
-			</details>
-
-			<details class="group rounded-xl bg-white/5 border border-amber-400/20 open:border-amber-400/50 transition-colors">
-				<summary class="cursor-pointer list-none flex items-start gap-3 p-4 text-base md:text-lg font-bold text-white hover:bg-white/5 rounded-xl">
-					<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
-					<span>ועדת פיוס</span>
-				</summary>
-				<div class="px-4 pb-4 ps-10 flex flex-col gap-3 text-sm md:text-base text-gray-200 leading-loose">
-					<p>
-						שלמה המלך אמר במשלי פרק י"ז, פסוק י"ד: "לפני התגלע הריב נטוש". לפעמים צדדים בסכסוכי ממון מתדיינים
-						בבתי משפט 20 שנה. ועדת פיוס נועדה למנוע את המציאות של דיונים של שנים, כאשר רק עוכרי הדין "מרוויחים"
-						את כספם על חשבון הצדדים. לכן בית הדין מפעיל את ועדת הפיוס.
-					</p>
-					<p>
-						החלק החשוב של ועדת פיוס הוא לשקף לצדדים את מפות האינטרסים ומפות הרגישויות של שני הצדדים, ומתוך רצון טוב
-						בדרך כלל הצדדים מוצאים את הנוסחה לפתרון הבעיה.
-					</p>
-					<p>
-						אם זה לא עובד, אזי ועדת הפיוס משקפת לצדדים את רצון הבורא ברוך הוא על פי תורה.
-					</p>
-					<p>
-						ברוך השם יתברך, עד היום ועדת הפיוס לא הצטרכה להגיע לחיתוך הדין.
-					</p>
-				</div>
-			</details>
-
-			<details class="group rounded-xl bg-white/5 border border-amber-400/20 open:border-amber-400/50 transition-colors">
-				<summary class="cursor-pointer list-none flex items-start gap-3 p-4 text-base md:text-lg font-bold text-white hover:bg-white/5 rounded-xl">
-					<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
-					<span>מה נדרש מכל יהודי?</span>
-				</summary>
-				<ol class="px-4 pb-4 ps-10 list-decimal marker:text-amber-400 marker:font-bold flex flex-col gap-3 text-sm md:text-base text-gray-200 leading-loose">
-					<li>
-						לפנות לרב שלו ולרבנים שהוא מכיר ולהגיד להם להצטרף לסנהדרין. כדי להקים את דברי התורה הזו,
-						"השיבה שופטנו כבראשונה ויועצנו כבתחילה והסר ממנו יגון ואנחה".
-					</li>
-					<li>
-						ללמוד לדעת להקים ולעשות את הלכות סנהדרין והלכות מלכים ברמב"ם, ועל ידי זאת להיות מבורך מהקדוש ברוך הוא:
-						"ברוך אשר יקים את דברי התורה הזאת לעשות אותם". וכן את חושן משפט.
-					</li>
-					<li>
-						להצטרף לסנהדרין, בין לסנהדרין הגדולה, או לסנהדראות קטנות, או לבתי דין ייעודיים.
-					</li>
-					<li>
-						לקבל סמיכה של שלושה רבנים סמוכים — להיות סמוך בסנהדרין, ועל ידי כך מקבלים אור רוחני נוסף,
-						וסימן האות סמך במצח, וכן מוקדשים לקדוש ברוך הוא ביתר שאת. כל "לי" בתורה הוא לנצח ולעולמים.
-						ובסמוכים נאמר: "אספה לי שבעים איש מזקני ישראל".
-					</li>
-				</ol>
-			</details>
-
-			<details class="group rounded-xl bg-white/5 border border-amber-400/20 open:border-amber-400/50 transition-colors">
-				<summary class="cursor-pointer list-none flex items-start gap-3 p-4 text-base md:text-lg font-bold text-white hover:bg-white/5 rounded-xl">
-					<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
-					<span>הארות והערות</span>
-				</summary>
-				<ul class="px-4 pb-4 ps-10 list-disc marker:text-amber-400 flex flex-col gap-2 text-sm md:text-base text-gray-200 leading-loose">
-					<li>ממליכים רק את הקדוש ברוך הוא.</li>
-					<li>לא ממליכים אדם או אדמו"ר, או רב, אלא רק את הקדוש ברוך הוא.</li>
-					<li>לא מקבלים כסף מכל גורם כזה או אחר של המדינה, או כסף של גויים.</li>
-					<li>לא מקבלים משכורות.</li>
-					<li>כל סמוך מתחייב לפנות את מקומו אם יגיע גדול ממנו בתורה, בחכמה ובמידות.</li>
-					<li>כל סמוך חייב להיות הוגה בתורה יומם ולילה.</li>
-					<li>לקבל עיקרון הלכתי: "אחרי רבים להטות", ולא להיות דן יחידי במסגרת הסנהדרין.</li>
-					<li>להגיד את התורה והדעה של הסמוך בבירור ובצורה משכנעת.</li>
-					<li>ישנו איסור לכבוש את התורה ואת החכמה, אלא יש חובה לשתף בבית הדין את התורה והדעה של הסמוך.</li>
-					<li>
-						תמיד בעם ישראל היו 12 שבטים. מה שאיחד את כולם זה סנהדרין. עם ישראל הוא חי וחולה. המחלה היא גלות.
-						הסימפטומים של המחלה הם חצרות, עדות ופירוד. התרופה למחלה היא סנהדרין.
-					</li>
-					<li>
-						2000 שנה למדנו לבד, פסקנו לבד, היינו דן יחידי. כאן בסנהדרין עושים סיעור מוחות על כל נושא,
-						ומקבלים דעת הרוב. על פי רבים להטות.
-					</li>
-				</ul>
-			</details>
-		</div>
-	</section>
+	<!-- הסנהדרין — רקע, ועדת פיוס, מה נדרש מכל יהודי והערות -->
+	<div class="mt-8"><SanhedrinAbout /></div>
 
 	<div class="mt-8">
 		<HeichalotGrid />
+	</div>
+
+	<!-- הדיינים (הועבר מ-/about/revenue) -->
+	<div class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
+		<h2 class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent text-center mb-6">
+			{tFn('about_dayanim_heading')}
+		</h2>
+
+		<ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 list-none">
+			{#each rabbis as r (r.id)}
+				<li class="flex items-center gap-3 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10">
+					<div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
+						{#if r.photo}
+							<img src={r.photo} alt="תמונתו של {r.name}" width="80" height="80" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+						{:else}
+							<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
+								<circle cx="32" cy="24" r="12" />
+								<path d="M12 60c0-11 9-20 20-20s20 9 20 20v4H12v-4z" />
+							</svg>
+						{/if}
+					</div>
+					<div class="min-w-0 flex-1 text-start">
+						<div class="text-sm md:text-base text-white font-semibold leading-tight">{r.name}</div>
+						{#if r.title}
+							<div class="text-xs md:text-sm text-amber-200 font-bold leading-tight mt-0.5">{r.title}</div>
+						{/if}
+						{#if r.nickname}
+							<div class="text-xs text-amber-300 italic leading-tight mt-0.5">"{r.nickname}"</div>
+						{/if}
+						{#if r.city}
+							<div class="text-xs text-gray-300 leading-tight mt-0.5">📍 {r.city}</div>
+						{/if}
+					</div>
+				</li>
+			{/each}
+		</ul>
+
+		<div class="mt-8 pt-6 border-t border-amber-400/30 text-start space-y-4">
+			<p class="text-base md:text-lg text-gray-100 leading-loose">
+				{tFn('about_dayanim_collective_intro')}
+			</p>
+			<blockquote class="py-2 text-center">
+				<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
+					{tFn('about_verse_devarim_16_18')}
+				</p>
+				<footer class="mt-1 text-sm text-gray-400">{tFn('about_verse_devarim_16_18_source')}</footer>
+			</blockquote>
+			<p class="text-base md:text-lg text-gray-100 leading-loose font-semibold text-center">
+				{tFn('about_purpose_peace')}
+			</p>
+			<p class="text-base md:text-lg text-gray-100 leading-loose pt-2">
+				{tFn('about_chachmei_concept_prefix')}<strong class="text-orange-700">{tFn('about_chachmei_concept_emphasis')}</strong>{tFn('about_chachmei_concept_suffix')}
+			</p>
+		</div>
+	</div>
+
+	<!-- באנר קריאה להצטרפות (הועבר מ-/about/revenue) -->
+	<div class="mt-8 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/15 backdrop-blur-sm shadow-xl p-6 md:p-10 text-center">
+		<h2 class="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-xl md:text-2xl font-black text-transparent mb-4">
+			🤝 {tFn('about_join_call_heading')}
+		</h2>
+		<p class="text-base md:text-lg text-gray-100 leading-relaxed font-semibold">
+			{tFn('about_join_body_prefix')}<span class="text-orange-700 font-black">{tFn('about_join_body_emphasis')}</span>{tFn('about_join_body_suffix')}
+		</p>
+		<div class="mt-6 flex justify-center">
+			<a
+				href="mailto:freedomhasbegun@gmail.com?subject=%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94&body=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3%20%D7%9C%D7%97%D7%9B%D7%9E%D7%99%20%D7%94%D7%A2%D7%93%D7%94.%0A%0A%D7%A9%D7%9D%20%D7%9E%D7%9C%D7%90%3A%20%0A%D7%AA%D7%A4%D7%A7%D7%99%D7%93%2F%D7%AA%D7%95%D7%90%D7%A8%3A%20%0A%D7%A4%D7%9C%D7%92%2F%D7%A7%D7%94%D7%99%D7%9C%D7%94%3A%20%0A%D7%A2%D7%99%D7%A8%3A%20%0A%D7%98%D7%9C%D7%A4%D7%95%D7%9F%3A%20%0A"
+				class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 font-black text-base border-2 border-amber-700/40 shadow-md hover:scale-105 hover:shadow-[0_0_20px_rgba(234,88,12,0.5)] transition-all"
+				style="color: #fff8e7; text-shadow: 0 1px 2px rgba(120, 53, 15, 0.6);"
+			>
+				<span>✉️</span>
+				<span>{tFn('about_contact_email_btn')}</span>
+			</a>
+		</div>
 	</div>
 
 	<!-- בתי הפיוס — בוררות וגישור: עבר לכאן מדף הבית -->

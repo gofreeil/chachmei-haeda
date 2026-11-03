@@ -14,8 +14,7 @@
 - [שאלות ותשובות](https://chachmim.gofreeil.com/qa): שו"ת בהלכה, בממונות, בשלום בית ובמוסר עסקי. [שאלה חדשה](https://chachmim.gofreeil.com/ask).
 - [היכל המעשה](https://chachmim.gofreeil.com/heichal-hamaaseh/activity): הפעילות הציבורית לקידום שלום וצדק.
 - [הקוד האתי העולמי UECC](https://chachmim.gofreeil.com/heichal-hamaaseh/ethical-code): אמנת יושר ואחריות + [אינדקס החתומים](https://chachmim.gofreeil.com/charter-index).
-- [אודותינו](https://chachmim.gofreeil.com/about): מה האתר, למי הוא מיועד ומה עושים בו — פסקת פתיחה ושאלות ותשובות.
-- [אודותנו — הרבנים](https://chachmim.gofreeil.com/about/revenue): הרבנים והדיינים, החזון ומודל ההתנהלות.
+- [אודותינו](https://chachmim.gofreeil.com/about): מה האתר, למי הוא מיועד ומה עושים בו — הסנהדרין, הרבנים והדיינים, החזון, ועדת פיוס ושאלות ותשובות.
 
 ## למי זה מיועד
 
