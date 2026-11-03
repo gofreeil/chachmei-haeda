@@ -71,18 +71,18 @@
 			{content.intro}
 		</p>
 		<!-- משפט המטרה (הועבר מ-/about/revenue) — באותו כרטיס עם הפתיחה, בלי הפרדה -->
-		<p class="mt-6 text-base md:text-lg font-bold text-white leading-snug text-center">
+		<p class="mt-2 text-base md:text-lg font-bold text-white leading-snug text-center">
 			{tFn('about_mission_statement')}
 		</p>
 
-		<blockquote class="mt-6 py-2 text-center">
+		<blockquote class="mt-2 py-0 text-center">
 			<p class="text-base md:text-lg leading-snug font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
 				{tFn('about_verse_devarim_15_8')}
 			</p>
-			<footer class="mt-2 text-base md:text-lg text-gray-400">{tFn('about_verse_devarim_15_8_source')}</footer>
+			<footer class="mt-0 text-base md:text-lg text-gray-400">{tFn('about_verse_devarim_15_8_source')}</footer>
 		</blockquote>
 
-		<p class="mt-6 text-base md:text-lg text-gray-200 leading-snug">
+		<p class="mt-2 text-base md:text-lg text-gray-200 leading-snug">
 			{tFn('about_platform_description')}
 		</p>
 	</div>
