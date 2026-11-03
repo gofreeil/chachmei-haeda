@@ -107,7 +107,7 @@
 		</h2>
 
 		{#if headRabbi}
-			<div class="flex flex-col items-center text-center mb-5">
+			<div class="flex flex-col items-center text-center mb-3">
 				<div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
 					{#if headRabbi.photo}
 						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="128" height="128" class="w-full h-full object-cover" decoding="async" />
@@ -125,12 +125,12 @@
 			</div>
 		{/if}
 
-		<ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 list-none">
+		<ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 list-none">
 			{#each otherRabbis as r (r.id)}
-				<li class="flex items-center gap-3 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10 sm:last:odd:col-span-2 sm:last:odd:justify-self-center sm:last:odd:w-[calc(50%-0.375rem)]">
-					<div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
+				<li class="flex items-center gap-3 rounded-xl bg-white/5 border border-amber-400/20 p-2 transition-colors hover:bg-white/10 sm:last:odd:col-span-2 sm:last:odd:justify-self-center sm:last:odd:w-[calc(50%-0.25rem)]">
+					<div class="w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
 						{#if r.photo}
-							<img src={r.photo} alt="תמונתו של {r.name}" width="80" height="80" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+							<img src={r.photo} alt="תמונתו של {r.name}" width="64" height="64" class="w-full h-full object-cover" loading="lazy" decoding="async" />
 						{:else}
 							<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 								<circle cx="32" cy="24" r="12" />

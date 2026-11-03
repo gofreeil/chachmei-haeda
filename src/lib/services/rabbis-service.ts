@@ -60,34 +60,6 @@ function toPayload(r: Rabbi, order?: number) {
 	};
 }
 
-export async function addRabbi(r: Rabbi, order = 100): Promise<Rabbi> {
-	const payload = toPayload(r, order);
-	const resp = await strapiPost<{ data: StrapiRabbiAttrs }>(COLLECTION, payload, { needAuth: true });
-	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiRabbiAttrs);
-}
-
-export async function updateRabbi(documentId: string, r: Rabbi): Promise<void> {
-	await strapiPut(COLLECTION, documentId, toPayload(r));
-}
-
-export async function deleteRabbiBackend(documentId: string): Promise<void> {
-	await strapiDelete(COLLECTION, documentId);
-}
-
-/** קיבוע סדר התצוגה: order = המיקום ברשימה. */
-export async function saveRabbisOrder(rabbis: Rabbi[]): Promise<void> {
-	await Promise.all(rabbis.map((r, i) => strapiPut(COLLECTION, r.id, { order: i })));
-}
-
-/** זריעת הרשימה הנוכחית לסטראפי (כשעוד אין שם דיינים) — מחזירה את הרשימה
- *  כפי שנשמרה, עם documentId-ים אמיתיים בתור id. */
-export async function seedRabbis(rabbis: Rabbi[]): Promise<Rabbi[]> {
-	for (let i = 0; i < rabbis.length; i++) {
-		await strapiPost(COLLECTION, toPayload(rabbis[i], i), { needAuth: true });
-	}
-	return listBackendRabbis();
-}
-
 /** העלאת תמונה לספריית המדיה של Strapi (דרך שרת האתר) — מחזיר כתובת מוחלטת. */
 export async function uploadRabbiPhoto(file: Blob, name = 'rabbi.jpg'): Promise<string> {
 	const jwt = getJwt();
@@ -108,32 +80,45 @@ export async function uploadRabbiPhoto(file: Blob, name = 'rabbi.jpg'): Promise<
 	return data.url as string;
 }
 
-/** תמונה שעדיין לא בבאקאנד: נתיב יחסי מהאתר (/images/…) או data: URL. */
-export function isLocalPhoto(photo?: string): boolean {
+/** תמונה שלא בבאקאנד: נתיב יחסי מהאתר (/images/…) או data: URL מוטמע. */
+function isLocalPhoto(photo?: string): boolean {
 	return !!photo && (photo.startsWith('/') || photo.startsWith('data:'));
 }
 
-/** מעביר לבאקאנד את כל התמונות שעדיין מקומיות, ושומר את הכתובת החדשה בכל דיין. מחזיר כמה הועברו. */
-export async function migrateRabbiPhotosToBackend(rabbis: Rabbi[]): Promise<number> {
-	let moved = 0;
-	for (const r of rabbis) {
-		if (!isLocalPhoto(r.photo)) continue;
-		const blob = await (await fetch(r.photo!)).blob();
-		const url = await uploadRabbiPhoto(blob, r.photo!.split('/').pop() || 'rabbi.jpg');
-		await updateRabbi(r.id, { ...r, photo: url });
-		moved++;
-	}
-	return moved;
+/** מוודא שהתמונה יושבת בספריית המדיה של הבאקאנד: תמונה מקומית/מוטמעת מועלית ומוחזרת כתובתה,
+ *  וכתובת שכבר בבאקאנד (או חיצונית) נשארת כמות שהיא. כך שום דיין לא נשמר עם נתיב מקומי. */
+async function hostPhotoInBackend(photo?: string): Promise<string | undefined> {
+	if (!photo || !isLocalPhoto(photo)) return photo;
+	const res = await fetch(photo);
+	if (!res.ok) throw new Error(`התמונה לא נמצאה: ${photo}`);
+	const name = photo.startsWith('/') ? photo.split('/').pop() || 'rabbi.jpg' : 'rabbi.jpg';
+	return uploadRabbiPhoto(await res.blob(), name);
 }
 
-/** מוסיף לבאקאנד את ראש ואב בית הדין (הראשון ב-defaultRabbis) אם חסר, ומציב אותו ראשון ברשימה. */
-export async function ensureHeadRabbiInBackend(current: Rabbi[]): Promise<Rabbi[]> {
-	const head = defaultRabbis[0];
-	if (!current.some((r) => r.name === head.name)) {
-		await addRabbi(head, 0);
-		const list = await listBackendRabbis();
-		const h = list.find((r) => r.name === head.name);
-		if (h) await saveRabbisOrder([h, ...list.filter((r) => r !== h)]);
+export async function addRabbi(r: Rabbi, order = 100): Promise<Rabbi> {
+	const payload = toPayload({ ...r, photo: await hostPhotoInBackend(r.photo) }, order);
+	const resp = await strapiPost<{ data: StrapiRabbiAttrs }>(COLLECTION, payload, { needAuth: true });
+	return fromStrapi({ ...payload, ...(resp?.data ?? {}) } as StrapiRabbiAttrs);
+}
+
+export async function updateRabbi(documentId: string, r: Rabbi): Promise<void> {
+	await strapiPut(COLLECTION, documentId, toPayload({ ...r, photo: await hostPhotoInBackend(r.photo) }));
+}
+
+export async function deleteRabbiBackend(documentId: string): Promise<void> {
+	await strapiDelete(COLLECTION, documentId);
+}
+
+/** קיבוע סדר התצוגה: order = המיקום ברשימה. */
+export async function saveRabbisOrder(rabbis: Rabbi[]): Promise<void> {
+	await Promise.all(rabbis.map((r, i) => strapiPut(COLLECTION, r.id, { order: i })));
+}
+
+/** זריעת הרשימה הנוכחית לסטראפי (כשעוד אין שם דיינים) — מחזירה את הרשימה
+ *  כפי שנשמרה, עם documentId-ים אמיתיים בתור id. תמונות מקומיות מועלות לבאקאנד אוטומטית. */
+export async function seedRabbis(rabbis: Rabbi[]): Promise<Rabbi[]> {
+	for (let i = 0; i < rabbis.length; i++) {
+		await addRabbi(rabbis[i], i);
 	}
 	return listBackendRabbis();
 }
