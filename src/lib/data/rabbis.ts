@@ -26,3 +26,12 @@ export const defaultRabbis: Rabbi[] = [
 ];
 
 export const RABBIS_STORAGE_KEY = 'chachmei-rabbis';
+
+/** מבטיח שראש ואב בית הדין תמיד בראש הרשימה — גם כשהרשימה נטענת מהבאקאנד/localStorage שלא כוללים אותו. */
+export function withHeadRabbi(list: Rabbi[]): Rabbi[] {
+	const head = defaultRabbis[0];
+	const isHead = (r: Rabbi) => r.id === head.id || /אברג/.test(r.name);
+	const existing = list.find(isHead);
+	const rest = list.filter((r) => !isHead(r));
+	return [existing ? { ...head, ...existing, title: existing.title || head.title, photo: existing.photo || head.photo } : head, ...rest];
+}

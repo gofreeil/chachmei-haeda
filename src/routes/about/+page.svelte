@@ -12,7 +12,7 @@
 	import SanhedrinAbout from '$lib/components/SanhedrinAbout.svelte';
 	import { SITE_NAME, faqSchema, breadcrumbSchema } from '$lib/seo';
 	import { aboutContentFor } from '$lib/aboutFaq';
-	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+	import { defaultRabbis, RABBIS_STORAGE_KEY, withHeadRabbi, type Rabbi } from '$lib/data/rabbis';
 	import { loadRabbis } from '$lib/services/rabbis-service';
 	import { onMount } from 'svelte';
 	import { t, locale } from 'svelte-i18n';
@@ -34,13 +34,13 @@
 			if (raw) {
 				const saved = JSON.parse(raw);
 				if (Array.isArray(saved) && saved.every((r) => typeof r?.name === 'string')) {
-					rabbis = saved as Rabbi[];
+					rabbis = withHeadRabbi(saved as Rabbi[]);
 				}
 			}
 		} catch {}
 		try {
 			const backend = await loadRabbis();
-			if (backend.length) rabbis = backend;
+			if (backend.length) rabbis = withHeadRabbi(backend);
 		} catch {}
 	});
 
