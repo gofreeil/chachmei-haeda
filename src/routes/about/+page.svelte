@@ -127,9 +127,6 @@
 		</p>
 	</div>
 
-	<!-- הסנהדרין — רקע, ועדת פיוס, מה נדרש מכל יהודי והערות -->
-	<div class="mt-8"><SanhedrinAbout /></div>
-
 	<div class="mt-8">
 		<HeichalotGrid />
 	</div>
@@ -187,6 +184,9 @@
 			</p>
 		</div>
 	</div>
+
+	<!-- הסנהדרין — רקע, ועדת פיוס, מה נדרש מכל יהודי והערות -->
+	<div class="mt-8"><SanhedrinAbout /></div>
 
 	<!-- באנר קריאה להצטרפות (הועבר מ-/about/revenue) -->
 	<div class="mt-8 rounded-2xl border-2 border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/15 backdrop-blur-sm shadow-xl p-6 md:p-10 text-center">
