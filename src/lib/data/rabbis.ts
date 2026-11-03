@@ -8,6 +8,12 @@ export type Rabbi = {
 };
 
 export const defaultRabbis: Rabbi[] = [
+	{
+		id: 'r-abergil',
+		name: "הרב אליהו אברג'יל",
+		title: 'ראש ואב בית הדין',
+		photo: '/images/rabbis/abergil.png'
+	},
 	{ id: 'r-stavsky', name: 'הרב דניאל סטבסקי', photo: '/images/rabbis/stavsky.jpg' },
 	{ id: 'r-zaga', name: 'הרב רועי זאגא', photo: '/images/rabbis/zaga.jpg' },
 	{ id: 'r-lipo', name: 'הרב אריה ליפו', photo: '/images/rabbis/lipo.jpg' },
