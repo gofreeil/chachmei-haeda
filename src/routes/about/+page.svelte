@@ -26,9 +26,9 @@
 	const dir = $derived(_loc && !['he', 'ps'].includes(_loc.slice(0, 2)) ? 'ltr' : 'rtl');
 
 	let rabbis = $state<Rabbi[]>(defaultRabbis);
-	// הראשון ברשימה (לפי הסדר בפאנל הניהול) מוצג גדול ובמרכז — ראש ואב בית הדין
-	const headRabbi = $derived(rabbis[0]);
-	const otherRabbis = $derived(rabbis.slice(1));
+	// מוצג גדול ובמרכז רק דיין שהוגדר לו תפקיד (למשל "ראש ואב בית הדין"); בלי תפקיד — אף אחד לא מובלט
+	const headRabbi = $derived(rabbis.find((r) => r.title));
+	const otherRabbis = $derived(rabbis.filter((r) => r !== headRabbi));
 
 	onMount(async () => {
 		// גיבוי מיידי מ-localStorage כדי שלא יהבהב, ואז מקור-האמת מהבאקאנד
