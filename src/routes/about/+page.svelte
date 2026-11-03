@@ -67,7 +67,7 @@
 	</h1>
 
 	<div class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
-		<p class="text-base md:text-lg text-gray-200 leading-loose">
+		<p class="text-base md:text-lg text-gray-200 leading-relaxed">
 			{content.intro}
 		</p>
 		<!-- משפט המטרה (הועבר מ-/about/revenue) — באותו כרטיס עם הפתיחה, בלי הפרדה -->
@@ -76,19 +76,19 @@
 		</p>
 
 		<blockquote class="mt-6 py-2 text-center">
-			<p class="text-lg md:text-xl leading-loose font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
+			<p class="text-lg md:text-xl leading-relaxed font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
 				{tFn('about_verse_devarim_15_8')}
 			</p>
 			<footer class="mt-2 text-sm text-gray-400">{tFn('about_verse_devarim_15_8_source')}</footer>
 		</blockquote>
 
-		<p class="mt-8 text-base md:text-lg text-gray-200 leading-loose">
+		<p class="mt-6 text-base md:text-lg text-gray-200 leading-relaxed">
 			{tFn('about_platform_description')}
 		</p>
-		<p class="mt-4 text-lg md:text-xl font-bold text-white text-center">
-			{tFn('about_subject_to_torah')}
-		</p>
 	</div>
+	<p class="mt-4 text-lg md:text-xl font-bold text-white text-center">
+		{tFn('about_subject_to_torah')}
+	</p>
 
 	<div class="mt-8">
 		<HeichalotGrid />
