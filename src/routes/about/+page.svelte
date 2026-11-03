@@ -12,7 +12,7 @@
 	import SanhedrinAbout from '$lib/components/SanhedrinAbout.svelte';
 	import { SITE_NAME, faqSchema, breadcrumbSchema } from '$lib/seo';
 	import { aboutContentFor } from '$lib/aboutFaq';
-	import { defaultRabbis, RABBIS_STORAGE_KEY, withHeadRabbi, type Rabbi } from '$lib/data/rabbis';
+	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
 	import { loadRabbis } from '$lib/services/rabbis-service';
 	import { onMount } from 'svelte';
 	import { t, locale } from 'svelte-i18n';
@@ -26,6 +26,9 @@
 	const dir = $derived(_loc && !['he', 'ps'].includes(_loc.slice(0, 2)) ? 'ltr' : 'rtl');
 
 	let rabbis = $state<Rabbi[]>(defaultRabbis);
+	// הראשון ברשימה (לפי הסדר בפאנל הניהול) מוצג גדול ובמרכז — ראש ואב בית הדין
+	const headRabbi = $derived(rabbis[0]);
+	const otherRabbis = $derived(rabbis.slice(1));
 
 	onMount(async () => {
 		// גיבוי מיידי מ-localStorage כדי שלא יהבהב, ואז מקור-האמת מהבאקאנד
@@ -34,13 +37,13 @@
 			if (raw) {
 				const saved = JSON.parse(raw);
 				if (Array.isArray(saved) && saved.every((r) => typeof r?.name === 'string')) {
-					rabbis = withHeadRabbi(saved as Rabbi[]);
+					rabbis = saved as Rabbi[];
 				}
 			}
 		} catch {}
 		try {
 			const backend = await loadRabbis();
-			if (backend.length) rabbis = withHeadRabbi(backend);
+			if (backend.length) rabbis = backend;
 		} catch {}
 	});
 
@@ -100,8 +103,27 @@
 			{tFn('about_dayanim_heading')}
 		</h2>
 
+		{#if headRabbi}
+			<div class="flex flex-col items-center text-center mb-5">
+				<div class="w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
+					{#if headRabbi.photo}
+						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="176" height="176" class="w-full h-full object-cover" decoding="async" />
+					{:else}
+						<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
+							<circle cx="32" cy="24" r="12" />
+							<path d="M12 60c0-11 9-20 20-20s20 9 20 20v4H12v-4z" />
+						</svg>
+					{/if}
+				</div>
+				<div class="mt-2 text-lg md:text-xl text-white font-black leading-tight">{headRabbi.name}</div>
+				{#if headRabbi.title}
+					<div class="text-sm md:text-base text-amber-200 font-bold leading-tight">{headRabbi.title}</div>
+				{/if}
+			</div>
+		{/if}
+
 		<ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 list-none">
-			{#each rabbis as r (r.id)}
+			{#each otherRabbis as r (r.id)}
 				<li class="flex items-center gap-3 rounded-xl bg-white/5 border border-amber-400/20 p-3 transition-colors hover:bg-white/10 sm:last:odd:col-span-2 sm:last:odd:justify-self-center sm:last:odd:w-[calc(50%-0.375rem)]">
 					<div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
 						{#if r.photo}

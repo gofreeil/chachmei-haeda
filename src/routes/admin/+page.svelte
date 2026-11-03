@@ -17,7 +17,11 @@
 		updateRabbi,
 		deleteRabbiBackend,
 		saveRabbisOrder,
-		seedRabbis
+		seedRabbis,
+		uploadRabbiPhoto,
+		isLocalPhoto,
+		migrateRabbiPhotosToBackend,
+		ensureHeadRabbiInBackend
 	} from '$lib/services/rabbis-service';
 	import {
 		loadEntries as loadCharterEntries,
@@ -455,9 +459,33 @@
 		const file = input.files?.[0];
 		if (!file) return;
 		try {
-			rabbiPhotoUrl = await fileToDataUrl(file);
-		} catch {
-			rabbiNotice = '⚠️ נכשלה טעינת התמונה';
+			// מקטינים בדפדפן ואז מעלים לספריית המדיה של הבאקאנד — נשמרת רק כתובת, לא תמונה מוטמעת
+			const small = await (await fetch(await fileToDataUrl(file))).blob();
+			rabbiNotice = '⏳ מעלה תמונה…';
+			rabbiPhotoUrl = await uploadRabbiPhoto(small, 'rabbi.jpg');
+			rabbiNotice = '';
+		} catch (err: any) {
+			rabbiNotice = '⚠️ נכשלה העלאת התמונה: ' + (err?.message ?? err);
+		}
+	}
+
+	const hasLocalRabbiPhotos = $derived(rabbis.some((r) => isLocalPhoto(r.photo)) || !rabbis.some((r) => r.name === defaultRabbis[0].name));
+
+	/** מעביר את כל התמונות לבאקאנד ומוודא שראש ואב בית הדין ראשון ברשימה. */
+	async function migrateRabbis() {
+		if (rabbisBusy) return;
+		rabbisBusy = true;
+		try {
+			await ensureRabbisSeeded();
+			rabbis = await ensureHeadRabbiInBackend(rabbis);
+			const n = await migrateRabbiPhotosToBackend(rabbis);
+			await refreshRabbis();
+			rabbiNotice = `✅ הועברו ${n} תמונות לבאקאנד`;
+			setTimeout(() => (rabbiNotice = ''), 6000);
+		} catch (err: any) {
+			rabbiNotice = '⚠️ ההעברה נכשלה: ' + (err?.message ?? err);
+		} finally {
+			rabbisBusy = false;
 		}
 	}
 
@@ -2458,6 +2486,16 @@
 				<div class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
 					<div class="flex items-center justify-between gap-3 flex-wrap mb-4">
 						<h2 class="text-xl font-black text-white">📋 דיינים ({rabbis.length})</h2>
+						{#if hasLocalRabbiPhotos}
+							<button
+								type="button"
+								onclick={migrateRabbis}
+								disabled={rabbisBusy}
+								class="px-3 py-1.5 rounded-lg bg-amber-500/30 hover:bg-amber-500/40 text-amber-100 text-xs font-bold disabled:opacity-50"
+							>
+								☁️ העבר תמונות לבאקאנד
+							</button>
+						{/if}
 						<button
 							type="button"
 							onclick={resetRabbisToDefault}
