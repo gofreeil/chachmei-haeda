@@ -66,23 +66,23 @@
 		{content.title}
 	</h1>
 
-	<div class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
-		<p class="text-base md:text-lg text-gray-200 leading-relaxed">
+	<div class="mt-8 px-1">
+		<p class="text-base md:text-lg text-gray-200 leading-snug">
 			{content.intro}
 		</p>
 		<!-- משפט המטרה (הועבר מ-/about/revenue) — באותו כרטיס עם הפתיחה, בלי הפרדה -->
-		<p class="mt-6 text-base md:text-lg font-bold text-white leading-relaxed text-center">
+		<p class="mt-6 text-base md:text-lg font-bold text-white leading-snug text-center">
 			{tFn('about_mission_statement')}
 		</p>
 
 		<blockquote class="mt-6 py-2 text-center">
-			<p class="text-base md:text-lg leading-relaxed font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
+			<p class="text-base md:text-lg leading-snug font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
 				{tFn('about_verse_devarim_15_8')}
 			</p>
 			<footer class="mt-2 text-base md:text-lg text-gray-400">{tFn('about_verse_devarim_15_8_source')}</footer>
 		</blockquote>
 
-		<p class="mt-6 text-base md:text-lg text-gray-200 leading-relaxed">
+		<p class="mt-6 text-base md:text-lg text-gray-200 leading-snug">
 			{tFn('about_platform_description')}
 		</p>
 	</div>
@@ -134,7 +134,7 @@
 				{tFn('about_dayanim_collective_intro')}
 			</p>
 			<blockquote class="py-2 text-center">
-				<p class="text-base md:text-lg leading-relaxed font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
+				<p class="text-base md:text-lg leading-snug font-semibold" style="font-family: 'Frank Ruhl Libre', 'David Libre', serif; color: #92400e;">
 					{tFn('about_verse_devarim_16_18')}
 				</p>
 				<footer class="mt-1 text-sm text-gray-400">{tFn('about_verse_devarim_16_18_source')}</footer>
