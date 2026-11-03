@@ -5,7 +5,7 @@
 
 <section class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-5 md:p-8" dir="rtl" aria-labelledby="sanhedrin-title">
 	<h2 id="sanhedrin-title" class="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-2xl md:text-3xl font-black text-transparent text-center mb-5">
-		הסנהדרין
+		רקע ופרטים נוספים
 	</h2>
 
 	<div class="flex flex-col gap-3">
