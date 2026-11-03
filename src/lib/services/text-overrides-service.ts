@@ -12,6 +12,10 @@ const COLLECTION = 'ch-text-overrides';
 
 export type TextOverride = { documentId?: string; key: string; values: Record<string, string> };
 
+/** טקסט שנמחק בעריכה נשמר כתו בלתי-נראה: ערך ריק מדולג בהחלה (applyTextOverrides) ו-svelte-i18n
+ *  מחזיר את המפתח עצמו להודעה ריקה, כך שהטקסט המקורי היה חוזר אחרי הרענון. U+200B לא נחתך ב-trim. */
+export const DELETED_MARK = '​';
+
 // מטמון ברמת המודול: בדפדפן — לכל חיי הטאב; בשרת (SSR) — משותף לבקשות, ולכן TTL קצר
 let cache: { at: number; list: TextOverride[] } | null = null;
 const TTL_MS = 60_000;

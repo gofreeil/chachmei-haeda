@@ -3,7 +3,7 @@
 	import { t, locale, dictionary } from 'svelte-i18n';
 	import { get } from 'svelte/store';
 	import { getCurrentUser, isSuperAdmin } from '$lib/strapi';
-	import { saveTextOverride } from '$lib/services/text-overrides-service';
+	import { saveTextOverride, DELETED_MARK } from '$lib/services/text-overrides-service';
 
 	// עריכת טקסטים בתוך התצוגה (סופר-אדמין): העיפרון מפעיל מצב עריכה שבו כל
 	// טקסט של הדף נערך במקומו בדף עצמו. המיפוי טקסט→מפתח נעשה בזמן-ריצה:
@@ -35,9 +35,12 @@
 		return Array.from(document.querySelectorAll<HTMLElement>(`[${KEY_ATTR}]`));
 	}
 
+	// טקסט שנמחק מוצג כתו הבלתי-נראה DELETED_MARK; להשוואה ולשמירה הוא נחשב ריק
+	const clean = (s: string) => s.replaceAll(DELETED_MARK, '').trim();
+
 	function updateChangedCount() {
 		changedCount = editableSpans().filter(
-			(el) => (el.innerText ?? '').trim() !== (originals.get(el.getAttribute(KEY_ATTR)!) ?? '')
+			(el) => clean(el.innerText ?? '') !== clean(originals.get(el.getAttribute(KEY_ATTR)!) ?? '')
 		).length;
 	}
 
@@ -102,8 +105,8 @@
 	async function saveAll() {
 		if (saving) return;
 		const changed = editableSpans()
-			.map((el) => ({ key: el.getAttribute(KEY_ATTR)!, value: (el.innerText ?? '').trim() }))
-			.filter((c) => c.value !== (originals.get(c.key) ?? '') && c.value);
+			.map((el) => ({ key: el.getAttribute(KEY_ATTR)!, value: clean(el.innerText ?? '') }))
+			.filter((c) => c.value !== clean(originals.get(c.key) ?? ''));
 		if (changed.length === 0) {
 			exitEditMode(false);
 			return;
@@ -114,7 +117,7 @@
 		try {
 			// נשמר בדיוק כפי שהוקלד — האתר מציג את המחרוזות כמו-שהן (בלי עיבוד ICU)
 			for (const c of changed) {
-				await saveTextOverride(c.key, loc, c.value);
+				await saveTextOverride(c.key, loc, c.value || DELETED_MARK); // ריק = נמחק; בלי הסימון הדריסה מדולגת והמקור חוזר
 			}
 			savedOk = true;
 			// הדף קורא את התרגומים בזמן-רינדור — רענון מציג את הנוסח החדש בכל מקום
@@ -147,7 +150,7 @@
 			<span class="text-sm font-bold text-green-700">✅ נשמר! מרענן…</span>
 		{:else}
 			<span class="text-xs text-gray-600 whitespace-nowrap">
-				✏️ לחצו על טקסט וערכו אותו במקומו{changedCount ? ` · ${changedCount} שונו` : ''}
+				✏️ לחצו על טקסט וערכו אותו במקומו (ריקון = מחיקה){changedCount ? ` · ${changedCount} שונו` : ''}
 			</span>
 			{#if error}
 				<span class="text-xs font-bold text-red-700 max-w-52 truncate" title={error}>{error}</span>
