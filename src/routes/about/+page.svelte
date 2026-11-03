@@ -22,6 +22,9 @@
 	$effect(() => locale.subscribe((l) => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
 
+	// כתובת אתר הרשת מופיעה בתשובות כטקסט רגיל (כך נשאר תקין גם ב-JSON-LD) — בתצוגה הופכים אותה לקישור
+	const NETWORK_DOMAIN = 'gofreeil.com';
+
 	const content = $derived(aboutContentFor(_loc));
 	const dir = $derived(_loc && !['he', 'ps'].includes(_loc.slice(0, 2)) ? 'ltr' : 'rtl');
 
@@ -105,9 +108,9 @@
 
 		{#if headRabbi}
 			<div class="flex flex-col items-center text-center mb-5">
-				<div class="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
+				<div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
 					{#if headRabbi.photo}
-						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="144" height="144" class="w-full h-full object-cover" decoding="async" />
+						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="128" height="128" class="w-full h-full object-cover" decoding="async" />
 					{:else}
 						<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 							<circle cx="32" cy="24" r="12" />
@@ -188,9 +191,7 @@
 						<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
 						<span>{item.q}</span>
 					</summary>
-					<p class="px-4 pb-4 ps-10 text-sm md:text-base text-gray-200 leading-snug">
-						{item.a}
-					</p>
+					<p class="px-4 pb-4 ps-10 text-sm md:text-base text-gray-200 leading-snug">{#each item.a.split(NETWORK_DOMAIN) as part, i}{#if i > 0}<a href="https://{NETWORK_DOMAIN}/" target="_blank" rel="noopener noreferrer" dir="ltr" class="font-bold text-amber-800 underline hover:text-amber-600 transition-colors">{NETWORK_DOMAIN}</a>{/if}{part}{/each}</p>
 				</details>
 			{/each}
 		</div>
