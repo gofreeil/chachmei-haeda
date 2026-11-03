@@ -16,7 +16,7 @@ export const defaultRabbis: Rabbi[] = [
 	{ id: 'r-moreno', name: 'הרב שמואל מורנו' },
 	{ id: 'r-sofi', name: 'הרב נדב סופי' },
 	{ id: 'r-halevi', name: 'הרב מאיר הלוי' },
-	{ id: 'r-schwartz', name: 'הרב בנימין שוורץ' }
+	{ id: 'r-schwartz', name: 'הרב בנימין שוורץ', photo: '/images/rabbis/schwartz.jpg' }
 ];
 
 export const RABBIS_STORAGE_KEY = 'chachmei-rabbis';
