@@ -211,10 +211,9 @@
 		</h2>
 
 		<div class="flex flex-col gap-3">
-			{#each content.faq as item, i (item.q)}
+			{#each content.faq as item (item.q)}
 				<details
 					class="group rounded-xl bg-white/5 border border-amber-400/20 open:border-amber-400/50 transition-colors"
-					open={i < 2}
 				>
 					<summary class="cursor-pointer list-none flex items-start gap-3 p-4 text-base md:text-lg font-bold text-white hover:bg-white/5 rounded-xl">
 						<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
