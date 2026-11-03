@@ -33,6 +33,14 @@
 	const headRabbi = $derived(rabbis.find((r) => r.title));
 	const otherRabbis = $derived(rabbis.filter((r) => r !== headRabbi));
 
+	// זום על הפנים בתמונת הדיין המובלט: המקור רחב (כיסא וספרייה), לכן מגדילים סביב נקודת הפנים
+	// (x,y — שברים מהתמונה) ומזיזים אותה למרכז העיגול. מכוון לתמונה הנוכחית.
+	const HEAD_ZOOM = 1.8;
+	const HEAD_FACE = { x: 0.6, y: 0.36 };
+	const headPhotoStyle =
+		`transform-origin: ${HEAD_FACE.x * 100}% ${HEAD_FACE.y * 100}%; ` +
+		`transform: translate(${((0.5 - HEAD_FACE.x) * 100).toFixed(1)}%, ${((0.5 - HEAD_FACE.y) * 100).toFixed(1)}%) scale(${HEAD_ZOOM});`;
+
 	onMount(async () => {
 		// גיבוי מיידי מ-localStorage כדי שלא יהבהב, ואז מקור-האמת מהבאקאנד
 		try {
@@ -110,7 +118,7 @@
 			<div class="flex flex-col items-center text-center mb-3">
 				<div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
 					{#if headRabbi.photo}
-						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="128" height="128" class="w-full h-full object-cover" decoding="async" />
+						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="128" height="128" class="w-full h-full object-cover" style={headPhotoStyle} decoding="async" />
 					{:else}
 						<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 							<circle cx="32" cy="24" r="12" />
