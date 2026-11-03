@@ -8,7 +8,7 @@ export type Rabbi = {
 };
 
 export const defaultRabbis: Rabbi[] = [
-	{ id: 'r-stavsky', name: 'הרב דניאל סטבסקי' },
+	{ id: 'r-stavsky', name: 'הרב דניאל סטבסקי', photo: '/images/rabbis/stavsky.jpg' },
 	{ id: 'r-zaga', name: 'הרב רועי זאגא' },
 	{ id: 'r-lipo', name: 'הרב אריה ליפו' },
 	{ id: 'r-malet', name: 'הרב בועז מלט' },
