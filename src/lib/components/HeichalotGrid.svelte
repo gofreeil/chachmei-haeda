@@ -11,6 +11,7 @@
 			icon: '⚖️',
 			titleKey: 'heichalot_hall_mishpat_title',
 			descKey: 'heichalot_hall_mishpat_desc',
+			tipKey: 'heichalot_tip_mishpat',
 			bg: 'bg-gradient-to-br from-slate-600 via-slate-800 to-slate-900',
 			border: 'border-slate-300',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(15,23,42,0.6),inset_0_2px_0_rgba(255,255,255,0.18)]',
@@ -24,6 +25,7 @@
 			icon: '🕊️',
 			titleKey: 'heichalot_hall_shalom_title',
 			descKey: 'heichalot_hall_shalom_desc',
+			tipKey: 'heichalot_tip_shalom',
 			bg: 'bg-gradient-to-br from-sky-200/60 via-cyan-100/50 to-blue-200/60 backdrop-blur-md',
 			border: 'border-sky-200',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(56,189,248,0.45),inset_0_2px_0_rgba(255,255,255,0.85)]',
@@ -37,6 +39,7 @@
 			icon: '🛠️',
 			titleKey: 'heichalot_hall_maaseh_title',
 			descKey: 'heichalot_hall_maaseh_desc',
+			tipKey: 'heichalot_tip_maaseh',
 			bg: '',
 			bgStyle:
 				"background-image:" +
@@ -56,6 +59,7 @@
 			image: '/images/heichal-haruach.webp',
 			titleKey: 'heichalot_hall_ruach_title',
 			descKey: 'heichalot_hall_ruach_desc',
+			tipKey: 'heichalot_tip_ruach',
 			bg: 'bg-gradient-to-br from-gray-200 via-slate-300 to-gray-400',
 			border: 'border-white',
 			shadow: 'shadow-[0_8px_24px_-4px_rgba(100,116,139,0.55),inset_0_2px_0_rgba(255,255,255,0.9)]',
@@ -75,23 +79,65 @@
 		<p class="mt-2 text-gray-700 text-sm md:text-base font-bold">{tFn('heichalot_tagline_justice')} <span class="text-[10px] align-middle mx-0.5 bg-gradient-to-br from-sky-300 via-blue-500 to-indigo-700 bg-clip-text text-transparent">◆</span> {tFn('heichalot_tagline_peace')} <span class="text-[10px] align-middle mx-0.5 bg-gradient-to-br from-sky-300 via-blue-500 to-indigo-700 bg-clip-text text-transparent">◆</span> {tFn('heichalot_tagline_spirit')} <span class="text-[10px] align-middle mx-0.5 bg-gradient-to-br from-sky-300 via-blue-500 to-indigo-700 bg-clip-text text-transparent">◆</span> {tFn('heichalot_tagline_action')}</p>
 	</header>
 	<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-		{#each heichalim as h}
-			<a
-				href={h.href}
-				class="block rounded-2xl border-4 {h.border} {h.bg} {h.hover} {h.shadow} transition-all p-4 md:p-6 text-center hover:scale-[1.04] hover:-translate-y-1 ring-1 ring-black/20"
-				style={h.bgStyle}
-			>
-				{#if h.image}
-					<div class="mb-2 md:mb-3 flex justify-center">
-						<!-- הכותרת שמתחת כבר נותנת את השם — alt ריק כדי שקורא מסך לא יקריא פעמיים -->
-						<img src={h.image} alt="" width="400" height="400" loading="lazy" decoding="async" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
-					</div>
-				{:else}
-					<div class="text-4xl md:text-5xl mb-2 md:mb-3 drop-shadow-lg">{h.icon}</div>
-				{/if}
-				<h4 class="text-base md:text-xl font-black mb-1 md:mb-2 drop-shadow-sm" style="color: {h.titleColor} !important">{tFn(h.titleKey)}</h4>
-				<p class="text-xs md:text-sm leading-snug font-bold" style="color: {h.descColor} !important">{tFn(h.descKey)}</p>
-			</a>
+		{#each heichalim as h, i}
+			<!-- הטולטיפ אח של הכרטיס (לא בן שלו) כדי שלא יוגדל יחד איתו ב-hover -->
+			<div class="hall relative">
+				<a
+					href={h.href}
+					aria-describedby="hall-tip-{i}"
+					class="block h-full rounded-2xl border-4 {h.border} {h.bg} {h.hover} {h.shadow} transition-all p-4 md:p-6 text-center hover:scale-[1.04] hover:-translate-y-1 ring-1 ring-black/20"
+					style={h.bgStyle}
+				>
+					{#if h.image}
+						<div class="mb-2 md:mb-3 flex justify-center">
+							<!-- הכותרת שמתחת כבר נותנת את השם — alt ריק כדי שקורא מסך לא יקריא פעמיים -->
+							<img src={h.image} alt="" width="400" height="400" loading="lazy" decoding="async" class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-full ring-2 ring-white/80 drop-shadow-lg" />
+						</div>
+					{:else}
+						<div class="text-4xl md:text-5xl mb-2 md:mb-3 drop-shadow-lg">{h.icon}</div>
+					{/if}
+					<h4 class="text-base md:text-xl font-black mb-1 md:mb-2 drop-shadow-sm" style="color: {h.titleColor} !important">{tFn(h.titleKey)}</h4>
+					<p class="text-xs md:text-sm leading-snug font-bold" style="color: {h.descColor} !important">{tFn(h.descKey)}</p>
+				</a>
+				<div id="hall-tip-{i}" role="tooltip" class="hall-tip">{tFn(h.tipKey)}</div>
+			</div>
 		{/each}
 	</div>
 </section>
+
+<style>
+	/* טולטיפ מעל כל היכל — מופיע רק במכשיר עם עכבר (hover) או בפוקוס מקלדת.
+	   נשאר ב-DOM (visibility ולא display) כך שהטקסט נשאר נגיש ונסרק. */
+	.hall-tip {
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+		z-index: 30;
+		width: max(100%, 15rem);
+		max-width: 18rem;
+		margin-bottom: 0.5rem;
+		padding: 0.6rem 0.85rem;
+		border-radius: 0.75rem;
+		border: 2px solid #b45309;
+		background: #f8eecb;
+		color: #1f2937;
+		font-size: 0.85rem;
+		font-weight: 600;
+		line-height: 1.5;
+		text-align: center;
+		box-shadow: 0 10px 24px -6px rgba(60, 30, 10, 0.45);
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transform: translate(-50%, 4px);
+		transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+	}
+	@media (hover: hover) {
+		.hall:hover .hall-tip,
+		.hall:focus-within .hall-tip {
+			opacity: 1;
+			visibility: visible;
+			transform: translate(-50%, 0);
+		}
+	}
+</style>

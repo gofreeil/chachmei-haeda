@@ -1,7 +1,7 @@
 <script lang="ts">
 	// ============================================================
 	// /about — דף "אודותינו" היחיד: פסקת פתיחה, משפט המטרה, הסנהדרין, הדיינים,
-	// קריאה להצטרפות, בתי הפיוס ואגף שאלות ותשובות. (/about/revenue הופנה לכאן.)
+	// קריאה להצטרפות ואגף שאלות ותשובות. (/about/revenue הופנה לכאן.)
 	// המטרה: שמנועי חיפוש ומנועי AI יזהו בקלות מה האתר, למי ומה עושים בו.
 	// התצוגה וסכמת FAQPage (JSON-LD) נבנות מאותו מקור אמת — $lib/aboutFaq —
 	// כך שהזחלן רואה בדיוק את הטקסט שהגולש רואה.
@@ -178,31 +178,6 @@
 			</a>
 		</div>
 	</div>
-
-	<!-- בתי הפיוס — בוררות וגישור: עבר לכאן מדף הבית -->
-	<section class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10" aria-labelledby="houses-of-reconciliation-title">
-		<h2 id="houses-of-reconciliation-title" class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl md:text-3xl font-black text-transparent text-center mb-6">
-			בתי הפיוס — בוררות וגישור על פי תורת ישראל
-		</h2>
-		<p class="text-base md:text-lg text-gray-200 leading-loose mb-3">
-			<strong>חכמי העדה</strong> מפעילים את <strong>בתי הפיוס</strong>: מסגרת התנדבותית
-			ל<strong>בוררות</strong>, <strong>גישור</strong> ו<strong>פיוס</strong> בין צדדים בסכסוך,
-			על פי תורת ישראל ובהסכמת הצדדים. סכסוכי שכנים, מחלוקות כספיות ועסקיות, שכירות ושותפות,
-			לשון הרע, שלום בית וסכסוכי משפחה — הכול נדון בפני דיינים מתנדבים, בלי אגרות, בלי עורכי דין
-			ובלי המתנה של שנים בבית המשפט.
-		</p>
-		<p class="text-base md:text-lg text-gray-200 leading-loose">
-			באתר תמצאו את <a href="/heichal-hamishpat" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors">היכל המשפט</a>
-			(פתיחת תיק, לוח דיונים ופסקי דין), את
-			<a href="/heichal-hashalom" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors">היכל השלום</a>
-			(שיעורים והמלצות לשלום בית ולפיוס), את
-			<a href="/articles" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors">היכל הרוח</a>
-			(מאמרים מחכמי ישראל),
-			<a href="/qa" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors">שאלות ותשובות בהלכה</a>
-			ואת
-			<a href="/heichal-hamaaseh/ethical-code" class="text-amber-300 hover:text-amber-200 font-bold underline underline-offset-4 transition-colors">הקוד האתי העולמי (UECC)</a>.
-		</p>
-	</section>
 
 	<!-- שאלות ותשובות — אותו מקור אמת כמו ה-JSON-LD למעלה -->
 	<section id="faq" aria-labelledby="faq-title" class="mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
