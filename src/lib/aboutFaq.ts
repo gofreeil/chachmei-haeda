@@ -28,12 +28,12 @@ export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
     he: {
         title: 'אודותינו',
         intro:
-            'חכמי העדה — בתי הפיוס (chachmim.gofreeil.com) הוא בית דין לבוררות ושלום על פי תורת ישראל: בוררות, גישור ופתרון סכסוכים בהתנדבות, בלי אגרות ובלי עלויות משפט. לצד בית הפיוס האתר מפרסם פסקי דין, מאמרים מחכמי ישראל, שאלות ותשובות בהלכה ואת הקוד האתי העולמי (UECC). האתר הוא חלק מרשת האתרים של התנועה החברתית "יוצאים לחירות".',
+            'חכמי העדה — בתי הפיוס הוא בית דין לבוררות ושלום על פי תורת ישראל: בוררות, גישור ופתרון סכסוכים בהתנדבות, בלי אגרות ובלי עלויות משפט. לצד בית הפיוס האתר מפרסם פסקי דין, מאמרים מחכמי ישראל, שאלות ותשובות בהלכה ואת הקוד האתי העולמי (UECC). האתר הוא חלק מרשת האתרים של התנועה החברתית "יוצאים לחירות".',
         faqTitle: 'שאלות ותשובות',
         faq: [
             {
                 q: 'מה זה "חכמי העדה — בתי הפיוס" ומה מטרתו?',
-                a: 'חכמי העדה — בתי הפיוס (chachmim.gofreeil.com) הוא בית דין לבוררות ושלום על פי תורת ישראל. המטרה היא לאפשר לצדדים בסכסוך להגיע להכרעה ולפיוס בפני דיינים ומורי הוראה מתנדבים, בהסכמת הצדדים, בלי עלויות של עורכי דין ובלי המתנה של שנים בבית המשפט. לצד זה האתר מבקש לקדם שלום בארץ ולהחזיר לישראל את מושג "חכמי העדה" — מקום אחד המשותף לכלל הפלגים והזרמים.',
+                a: 'חכמי העדה — בתי הפיוס הוא בית דין לבוררות ושלום על פי תורת ישראל. המטרה היא לאפשר לצדדים בסכסוך להגיע להכרעה ולפיוס בפני דיינים ומורי הוראה מתנדבים, בהסכמת הצדדים, בלי עלויות של עורכי דין ובלי המתנה של שנים בבית המשפט. לצד זה האתר מבקש לקדם שלום בארץ ולהחזיר לישראל את מושג "חכמי העדה" — מקום אחד המשותף לכלל הפלגים והזרמים.',
             },
             {
                 q: 'למי האתר מיועד?',
@@ -73,12 +73,12 @@ export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
     en: {
         title: 'About Us',
         intro:
-            "Chachmei HaEda — Houses of Reconciliation (chachmim.gofreeil.com) is a court of arbitration and peace according to the Torah of Israel: volunteer-based arbitration, mediation and dispute resolution, with no fees and no litigation costs. Alongside the House of Reconciliation, the site publishes rulings, articles by the sages of Israel, halachic questions and answers, and the Universal Ethical Code of Conduct (UECC). The site is part of the website network of the social movement \"Yotzim LeCherut\" (Going Out to Freedom).",
+            "Chachmei HaEda — Houses of Reconciliation is a court of arbitration and peace according to the Torah of Israel: volunteer-based arbitration, mediation and dispute resolution, with no fees and no litigation costs. Alongside the House of Reconciliation, the site publishes rulings, articles by the sages of Israel, halachic questions and answers, and the Universal Ethical Code of Conduct (UECC). The site is part of the website network of the social movement \"Yotzim LeCherut\" (Going Out to Freedom).",
         faqTitle: 'Questions and Answers',
         faq: [
             {
                 q: 'What is "Chachmei HaEda — Houses of Reconciliation" and what is its purpose?',
-                a: 'Chachmei HaEda — Houses of Reconciliation (chachmim.gofreeil.com) is a court of arbitration and peace according to the Torah of Israel. Its purpose is to let parties in a dispute reach a decision and reconciliation before volunteer judges and halachic authorities, by mutual consent, without lawyer costs and without years of waiting in court. Beyond that, the site seeks to promote peace in Israel and to restore the concept of "Chachmei HaEda" — one shared place for all legitimate streams and factions.',
+                a: 'Chachmei HaEda — Houses of Reconciliation is a court of arbitration and peace according to the Torah of Israel. Its purpose is to let parties in a dispute reach a decision and reconciliation before volunteer judges and halachic authorities, by mutual consent, without lawyer costs and without years of waiting in court. Beyond that, the site seeks to promote peace in Israel and to restore the concept of "Chachmei HaEda" — one shared place for all legitimate streams and factions.',
             },
             {
                 q: 'Who is the site for?',
@@ -118,12 +118,12 @@ export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
     ru: {
         title: 'О нас',
         intro:
-            'Хахмей а-Эда — Дома примирения (chachmim.gofreeil.com) — это суд арбитража и мира по Торе Израиля: арбитраж, посредничество и разрешение споров на добровольных началах, без пошлин и без судебных расходов. Наряду с Домом примирения сайт публикует судебные решения, статьи мудрецов Израиля, галахические вопросы и ответы и Всемирный этический кодекс (UECC). Сайт входит в сеть сайтов общественного движения «Йоцим ле-херут» («Выходим на свободу»).',
+            'Хахмей а-Эда — Дома примирения — это суд арбитража и мира по Торе Израиля: арбитраж, посредничество и разрешение споров на добровольных началах, без пошлин и без судебных расходов. Наряду с Домом примирения сайт публикует судебные решения, статьи мудрецов Израиля, галахические вопросы и ответы и Всемирный этический кодекс (UECC). Сайт входит в сеть сайтов общественного движения «Йоцим ле-херут» («Выходим на свободу»).',
         faqTitle: 'Вопросы и ответы',
         faq: [
             {
                 q: 'Что такое «Хахмей а-Эда — Дома примирения» и какова его цель?',
-                a: 'Хахмей а-Эда — Дома примирения (chachmim.gofreeil.com) — это суд арбитража и мира по Торе Израиля. Его цель — дать сторонам спора возможность прийти к решению и примирению перед судьями и законоучителями-добровольцами, по согласию сторон, без расходов на адвокатов и без многолетнего ожидания в суде. Кроме того, сайт стремится продвигать мир в стране и вернуть Израилю понятие «Хахмей а-Эда» — единое место, общее для всех легитимных течений и направлений.',
+                a: 'Хахмей а-Эда — Дома примирения — это суд арбитража и мира по Торе Израиля. Его цель — дать сторонам спора возможность прийти к решению и примирению перед судьями и законоучителями-добровольцами, по согласию сторон, без расходов на адвокатов и без многолетнего ожидания в суде. Кроме того, сайт стремится продвигать мир в стране и вернуть Израилю понятие «Хахмей а-Эда» — единое место, общее для всех легитимных течений и направлений.',
             },
             {
                 q: 'Для кого предназначен сайт?',
@@ -163,12 +163,12 @@ export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
     es: {
         title: 'Quiénes somos',
         intro:
-            'Jajmei HaEdá — Casas de Reconciliación (chachmim.gofreeil.com) es un tribunal de arbitraje y paz según la Torá de Israel: arbitraje, mediación y resolución de conflictos de forma voluntaria, sin tasas y sin costos judiciales. Junto a la Casa de Reconciliación, el sitio publica fallos, artículos de los sabios de Israel, preguntas y respuestas de halajá y el Código Ético Universal (UECC). El sitio forma parte de la red de sitios del movimiento social "Yotzim LeJerut" (Salimos a la libertad).',
+            'Jajmei HaEdá — Casas de Reconciliación es un tribunal de arbitraje y paz según la Torá de Israel: arbitraje, mediación y resolución de conflictos de forma voluntaria, sin tasas y sin costos judiciales. Junto a la Casa de Reconciliación, el sitio publica fallos, artículos de los sabios de Israel, preguntas y respuestas de halajá y el Código Ético Universal (UECC). El sitio forma parte de la red de sitios del movimiento social "Yotzim LeJerut" (Salimos a la libertad).',
         faqTitle: 'Preguntas y respuestas',
         faq: [
             {
                 q: '¿Qué es "Jajmei HaEdá — Casas de Reconciliación" y cuál es su propósito?',
-                a: 'Jajmei HaEdá — Casas de Reconciliación (chachmim.gofreeil.com) es un tribunal de arbitraje y paz según la Torá de Israel. Su propósito es permitir que las partes en conflicto lleguen a una decisión y a la reconciliación ante jueces y autoridades halájicas voluntarios, con el consentimiento de las partes, sin costos de abogados y sin años de espera en los tribunales. Además, el sitio busca promover la paz en el país y devolver a Israel el concepto de "Jajmei HaEdá": un único lugar común a todas las corrientes y facciones legítimas.',
+                a: 'Jajmei HaEdá — Casas de Reconciliación es un tribunal de arbitraje y paz según la Torá de Israel. Su propósito es permitir que las partes en conflicto lleguen a una decisión y a la reconciliación ante jueces y autoridades halájicas voluntarios, con el consentimiento de las partes, sin costos de abogados y sin años de espera en los tribunales. Además, el sitio busca promover la paz en el país y devolver a Israel el concepto de "Jajmei HaEdá": un único lugar común a todas las corrientes y facciones legítimas.',
             },
             {
                 q: '¿A quién está dirigido el sitio?',
@@ -208,12 +208,12 @@ export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
     ps: {
         title: 'زموږ په اړه',
         intro:
-            'د عدې حکیمان — د روغې جوړې کورونه (chachmim.gofreeil.com) د اسرائیلو د تورات له مخې د منځګړیتوب او سولې محکمه ده: په داوطلبانه توګه منځګړیتوب، میانجیګري او د شخړو حل، پرته له فیس او پرته له قضایي لګښتونو. د روغې جوړې کور تر څنګ، سایټ پرېکړې، د اسرائیلو د حکیمانو مقالې، د هلاخا پوښتنې او ځوابونه او نړیوال اخلاقي کوډ (UECC) خپروي. سایټ د ټولنیز غورځنګ «یوتسیم لحیروت» (آزادۍ ته وتل) د سایټونو د شبکې برخه ده.',
+            'د عدې حکیمان — د روغې جوړې کورونه د اسرائیلو د تورات له مخې د منځګړیتوب او سولې محکمه ده: په داوطلبانه توګه منځګړیتوب، میانجیګري او د شخړو حل، پرته له فیس او پرته له قضایي لګښتونو. د روغې جوړې کور تر څنګ، سایټ پرېکړې، د اسرائیلو د حکیمانو مقالې، د هلاخا پوښتنې او ځوابونه او نړیوال اخلاقي کوډ (UECC) خپروي. سایټ د ټولنیز غورځنګ «یوتسیم لحیروت» (آزادۍ ته وتل) د سایټونو د شبکې برخه ده.',
         faqTitle: 'پوښتنې او ځوابونه',
         faq: [
             {
                 q: '«د عدې حکیمان — د روغې جوړې کورونه» څه دي او موخه یې څه ده؟',
-                a: 'د عدې حکیمان — د روغې جوړې کورونه (chachmim.gofreeil.com) د اسرائیلو د تورات له مخې د منځګړیتوب او سولې محکمه ده. موخه یې دا ده چې د شخړې اړخونه د داوطلب قاضیانو او د هلاخا استادانو په وړاندې، د اړخونو په رضایت، پرته له وکیلانو لګښتونو او پرته له کلونو انتظار څخه پرېکړې او روغې جوړې ته ورسیږي. سربېره پر دې، سایټ غواړي په هېواد کې سوله وده ورکړي او د «د عدې حکیمان» مفهوم اسرائیلو ته بېرته راولي — یو ګډ ځای د ټولو مشروعو ډلو او جریانونو لپاره.',
+                a: 'د عدې حکیمان — د روغې جوړې کورونه د اسرائیلو د تورات له مخې د منځګړیتوب او سولې محکمه ده. موخه یې دا ده چې د شخړې اړخونه د داوطلب قاضیانو او د هلاخا استادانو په وړاندې، د اړخونو په رضایت، پرته له وکیلانو لګښتونو او پرته له کلونو انتظار څخه پرېکړې او روغې جوړې ته ورسیږي. سربېره پر دې، سایټ غواړي په هېواد کې سوله وده ورکړي او د «د عدې حکیمان» مفهوم اسرائیلو ته بېرته راولي — یو ګډ ځای د ټولو مشروعو ډلو او جریانونو لپاره.',
             },
             {
                 q: 'سایټ د چا لپاره دی؟',
@@ -253,12 +253,12 @@ export const ABOUT_CONTENT: Record<AboutLocale, AboutContent> = {
     de: {
         title: 'Über uns',
         intro:
-            'Chachmei HaEda – Versöhnungshäuser (chachmim.gofreeil.com) ist ein Beit Din für Schiedsverfahren und Frieden nach der Tora Israels: ehrenamtliche Schiedsverfahren, Mediation und Streitbeilegung – ohne Gebühren und ohne Prozesskosten. Neben dem Versöhnungshaus veröffentlicht die Website Urteile, Artikel der Weisen Israels, halachische Fragen und Antworten sowie den weltweiten Ethikkodex (UECC). Die Website gehört zum Netzwerk der sozialen Bewegung „Yotzim LaCherut“ („Aufbruch in die Freiheit“).',
+            'Chachmei HaEda – Versöhnungshäuser ist ein Beit Din für Schiedsverfahren und Frieden nach der Tora Israels: ehrenamtliche Schiedsverfahren, Mediation und Streitbeilegung – ohne Gebühren und ohne Prozesskosten. Neben dem Versöhnungshaus veröffentlicht die Website Urteile, Artikel der Weisen Israels, halachische Fragen und Antworten sowie den weltweiten Ethikkodex (UECC). Die Website gehört zum Netzwerk der sozialen Bewegung „Yotzim LaCherut“ („Aufbruch in die Freiheit“).',
         faqTitle: 'Fragen und Antworten',
         faq: [
             {
                 q: 'Was ist „Chachmei HaEda – Versöhnungshäuser“ und was ist sein Ziel?',
-                a: 'Chachmei HaEda – Versöhnungshäuser (chachmim.gofreeil.com) ist ein Beit Din für Schiedsverfahren und Frieden nach der Tora Israels. Das Ziel ist, Streitparteien zu ermöglichen, vor ehrenamtlichen Richtern (Dayanim) und Lehrautoritäten im Einvernehmen beider Seiten zu einer Entscheidung und zur Versöhnung zu gelangen – ohne Anwaltskosten und ohne jahrelanges Warten vor Gericht. Darüber hinaus möchte die Website den Frieden im Land fördern und Israel den Begriff „Chachmei HaEda“ zurückgeben – einen gemeinsamen Ort für alle Strömungen und Gruppierungen.',
+                a: 'Chachmei HaEda – Versöhnungshäuser ist ein Beit Din für Schiedsverfahren und Frieden nach der Tora Israels. Das Ziel ist, Streitparteien zu ermöglichen, vor ehrenamtlichen Richtern (Dayanim) und Lehrautoritäten im Einvernehmen beider Seiten zu einer Entscheidung und zur Versöhnung zu gelangen – ohne Anwaltskosten und ohne jahrelanges Warten vor Gericht. Darüber hinaus möchte die Website den Frieden im Land fördern und Israel den Begriff „Chachmei HaEda“ zurückgeben – einen gemeinsamen Ort für alle Strömungen und Gruppierungen.',
             },
             {
                 q: 'Für wen ist die Website gedacht?',

@@ -78,11 +78,8 @@
 				ומופעל בהתנדבות.
 			</p>
 		{/if}
-	</div>
-
-	<!-- משפט המטרה (הועבר מ-/about/revenue) -->
-	<div class="mt-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-xl p-6 md:p-10">
-		<p class="text-xl md:text-2xl font-bold text-white leading-relaxed text-center">
+		<!-- משפט המטרה (הועבר מ-/about/revenue) — באותו כרטיס עם הפתיחה, בלי הפרדה -->
+		<p class="mt-6 text-xl md:text-2xl font-bold text-white leading-relaxed text-center">
 			{tFn('about_mission_statement')}
 		</p>
 
