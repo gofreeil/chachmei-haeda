@@ -219,6 +219,7 @@
 	let rabbiCity = $state('');
 	let rabbiPhotoUrl = $state('');
 	let rabbiNotice = $state('');
+	let rabbiDragOver = $state(false);
 	let editingRabbiId = $state<string | null>(null);
 
 	// ───────────── טופס חדשות ─────────────
@@ -451,12 +452,13 @@
 		});
 	}
 
-	async function onRabbiPhotoFile(e: Event) {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
+	/** מקטין בדפדפן ומעלה לספריית המדיה של הבאקאנד — נשמרת רק כתובת, לא תמונה מוטמעת. */
+	async function uploadRabbiPhotoFile(file: File) {
+		if (!file.type.startsWith('image/')) {
+			rabbiNotice = '⚠️ יש לבחור קובץ תמונה';
+			return;
+		}
 		try {
-			// מקטינים בדפדפן ואז מעלים לספריית המדיה של הבאקאנד — נשמרת רק כתובת, לא תמונה מוטמעת
 			const small = await (await fetch(await fileToDataUrl(file))).blob();
 			rabbiNotice = '⏳ מעלה תמונה…';
 			rabbiPhotoUrl = await uploadRabbiPhoto(small, 'rabbi.jpg');
@@ -464,6 +466,28 @@
 		} catch (err: any) {
 			rabbiNotice = '⚠️ נכשלה העלאת התמונה: ' + (err?.message ?? err);
 		}
+	}
+
+	async function onRabbiPhotoFile(e: Event) {
+		const file = (e.target as HTMLInputElement).files?.[0];
+		if (file) await uploadRabbiPhotoFile(file);
+	}
+
+	function onRabbiPhotoDragOver(e: DragEvent) {
+		e.preventDefault();
+		rabbiDragOver = true;
+	}
+
+	// dragleave נורה גם במעבר בין אלמנטים בתוך האזור — מכבים את ההדגשה רק ביציאה אמיתית
+	function onRabbiPhotoDragLeave(e: DragEvent) {
+		if (!(e.currentTarget as Element).contains(e.relatedTarget as Node | null)) rabbiDragOver = false;
+	}
+
+	async function onRabbiPhotoDrop(e: DragEvent) {
+		e.preventDefault();
+		rabbiDragOver = false;
+		const file = e.dataTransfer?.files?.[0];
+		if (file) await uploadRabbiPhotoFile(file);
 	}
 
 	// זריעה חד-פעמית: כשהרשימה עוד לא בסטראפי, כל שינוי ראשון מעלה אותה במלואה
@@ -2395,13 +2419,22 @@
 
 						<div>
 							<label class="block text-sm font-bold text-gray-300 mb-1.5" for="rab-photo-file">תמונה (העלאה)</label>
-							<input
-								id="rab-photo-file"
-								type="file"
-								accept="image/*"
-								onchange={onRabbiPhotoFile}
-								class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-amber-500/30 file:text-amber-900 file:font-bold hover:file:bg-amber-500/40"
-							/>
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div
+								class="rounded-xl border-2 border-dashed px-3 py-3 text-center transition-colors {rabbiDragOver ? 'border-amber-500 bg-amber-500/20' : 'border-amber-500/50 bg-black/10'}"
+								ondragover={onRabbiPhotoDragOver}
+								ondragleave={onRabbiPhotoDragLeave}
+								ondrop={onRabbiPhotoDrop}
+							>
+								<input
+									id="rab-photo-file"
+									type="file"
+									accept="image/*"
+									onchange={onRabbiPhotoFile}
+									class="w-full text-sm text-gray-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-amber-500/30 file:text-amber-900 file:font-bold hover:file:bg-amber-500/40"
+								/>
+								<p class="mt-2 text-sm font-bold text-gray-300">{rabbiDragOver ? '⬇️ שחרר כאן להעלאה' : '🖼️ או גרור לכאן את התמונה'}</p>
+							</div>
 							<p class="text-xs text-gray-500 mt-1">התמונה תקטן אוטומטית ותישמר באתר</p>
 						</div>
 
