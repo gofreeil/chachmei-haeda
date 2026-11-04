@@ -12,7 +12,7 @@
 		<details class="group rounded-xl bg-white/5 border border-amber-400/20 open:border-amber-400/50 transition-colors">
 			<summary class="cursor-pointer list-none flex items-start gap-3 p-4 text-base md:text-lg font-bold text-white hover:bg-white/5 rounded-xl">
 				<span class="flex-shrink-0 text-amber-400 transition-transform group-open:rotate-90" aria-hidden="true">▸</span>
-				<span>רקע והקמת הסנהדרין</span>
+				<span>רקע והקמת הסמוכין</span>
 			</summary>
 			<div class="px-4 pb-4 ps-10 flex flex-col gap-2 text-sm md:text-base text-gray-200 leading-snug">
 				<p>
