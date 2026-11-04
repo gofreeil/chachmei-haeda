@@ -12,7 +12,7 @@
 	import SanhedrinAbout from '$lib/components/SanhedrinAbout.svelte';
 	import { SITE_NAME, faqSchema, breadcrumbSchema } from '$lib/seo';
 	import { aboutContentFor } from '$lib/aboutFaq';
-	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+	import { defaultRabbis, RABBIS_STORAGE_KEY, FEATURED_DEFAULT_FRAME, parsePhoto, frameStyle, type Rabbi } from '$lib/data/rabbis';
 	import { loadRabbis } from '$lib/services/rabbis-service';
 	import { onMount } from 'svelte';
 	import { t, locale } from 'svelte-i18n';
@@ -33,13 +33,8 @@
 	const headRabbi = $derived(rabbis.find((r) => r.title));
 	const otherRabbis = $derived(rabbis.filter((r) => r !== headRabbi));
 
-	// זום על הפנים בתמונת הדיין המובלט: המקור רחב (כיסא וספרייה), לכן מגדילים סביב נקודת הפנים
-	// (x,y — שברים מהתמונה) ומזיזים אותה למרכז העיגול. מכוון לתמונה הנוכחית.
-	const HEAD_ZOOM = 1.8;
-	const HEAD_FACE = { x: 0.6, y: 0.36 };
-	const headPhotoStyle =
-		`transform-origin: ${HEAD_FACE.x * 100}% ${HEAD_FACE.y * 100}%; ` +
-		`transform: translate(${((0.5 - HEAD_FACE.x) * 100).toFixed(1)}%, ${((0.5 - HEAD_FACE.y) * 100).toFixed(1)}%) scale(${HEAD_ZOOM});`;
+	// מסגור התמונה (זום והזזה) נשמר בבאקאנד לצד הכתובת; לדיין המובלט בלי מסגור שמור — זום ברירת מחדל על הפנים
+	const headPhoto = $derived(parsePhoto(headRabbi?.photo));
 
 	onMount(async () => {
 		// גיבוי מיידי מ-localStorage כדי שלא יהבהב, ואז מקור-האמת מהבאקאנד
@@ -117,8 +112,8 @@
 		{#if headRabbi}
 			<div class="flex flex-col items-center text-center mb-3">
 				<div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-4 border-amber-400 ring-4 ring-amber-300/40 shadow-[0_0_28px_rgba(251,191,36,0.55)] flex items-center justify-center">
-					{#if headRabbi.photo}
-						<img src={headRabbi.photo} alt="תמונתו של {headRabbi.name}" width="128" height="128" class="w-full h-full object-cover" style={headPhotoStyle} decoding="async" />
+					{#if headPhoto.src}
+						<img src={headPhoto.src} alt="תמונתו של {headRabbi.name}" width="128" height="128" class="w-full h-full object-cover" style={frameStyle(headPhoto.frame ?? FEATURED_DEFAULT_FRAME)} decoding="async" />
 					{:else}
 						<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 							<circle cx="32" cy="24" r="12" />
@@ -135,10 +130,11 @@
 
 		<ul class="grid grid-cols-1 sm:grid-cols-2 gap-1 list-none">
 			{#each otherRabbis as r (r.id)}
+				{@const photo = parsePhoto(r.photo)}
 				<li class="flex items-center gap-3 rounded-xl bg-white/5 border border-amber-400/20 px-2 py-0.5 transition-colors hover:bg-white/10 sm:last:odd:col-span-2 sm:last:odd:justify-self-center sm:last:odd:w-[calc(50%-0.1875rem)]">
 					<div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
-						{#if r.photo}
-							<img src={r.photo} alt="תמונתו של {r.name}" width="80" height="80" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+						{#if photo.src}
+							<img src={photo.src} alt="תמונתו של {r.name}" width="80" height="80" class="w-full h-full object-cover" style={frameStyle(photo.frame)} loading="lazy" decoding="async" />
 						{:else}
 							<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 								<circle cx="32" cy="24" r="12" />

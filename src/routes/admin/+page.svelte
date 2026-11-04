@@ -7,7 +7,17 @@
 	import { analyzePdfText, stripHeaderLines, tagsToField, type PdfAnalysis, type PdfDocType } from '$lib/pdfAnalyze';
 	import { articles as staticArticles, type Article } from '$lib/data/articles';
 	import { activity as staticActivity, type ActivityItem } from '$lib/data/activity';
-	import { defaultRabbis, RABBIS_STORAGE_KEY, type Rabbi } from '$lib/data/rabbis';
+	import {
+		defaultRabbis,
+		RABBIS_STORAGE_KEY,
+		FEATURED_DEFAULT_FRAME,
+		clampFrame,
+		buildPhoto,
+		parsePhoto,
+		frameStyle,
+		type PhotoFrame,
+		type Rabbi
+	} from '$lib/data/rabbis';
 	import { addArticle, loadArticles, deleteArticle, type ArticleWithId } from '$lib/services/articles-service';
 	import { addActivity, loadActivity, deleteActivity, type ActivityWithId } from '$lib/services/activity-service';
 	import { addNewsItem, loadNews, deleteNewsItem, type NewsItem as BackendNewsItem } from '$lib/services/news-service';
@@ -488,6 +498,73 @@
 		rabbiDragOver = false;
 		const file = e.dataTransfer?.files?.[0];
 		if (file) await uploadRabbiPhotoFile(file);
+	}
+
+	// ───────────── עריכת תמונת דיין: זום והזזה ─────────────
+	// המסגור נשמר בשדה התמונה לצד הכתובת (ראו parsePhoto/buildPhoto), והאתר מציג אותו כפי שנקבע כאן.
+	const featuredRabbiId = $derived(rabbis.find((x) => x.title)?.id);
+	let photoEditor = $state<{ id: string; src: string; frame: PhotoFrame } | null>(null);
+	let photoEditorBox = $state<HTMLDivElement | null>(null);
+	let photoDrag: { px: number; py: number; fx: number; fy: number } | null = null;
+
+	/** המסגור שהאתר מציג בפועל: השמור, ולדיין המובלט בלי מסגור שמור — ברירת המחדל (זום על הפנים). */
+	function frameOf(r: Rabbi): PhotoFrame | undefined {
+		return parsePhoto(r.photo).frame ?? (r.id === featuredRabbiId ? FEATURED_DEFAULT_FRAME : undefined);
+	}
+
+	function openPhotoEditor(r: Rabbi) {
+		const { src } = parsePhoto(r.photo);
+		if (src) photoEditor = { id: r.id, src, frame: frameOf(r) ?? { zoom: 1, x: 0.5, y: 0.5 } };
+	}
+
+	function setEditorZoom(zoom: number) {
+		if (photoEditor) photoEditor.frame = clampFrame({ ...photoEditor.frame, zoom });
+	}
+
+	function onEditorPointerDown(e: PointerEvent) {
+		if (!photoEditor) return;
+		(e.currentTarget as Element).setPointerCapture(e.pointerId);
+		photoDrag = { px: e.clientX, py: e.clientY, fx: photoEditor.frame.x, fy: photoEditor.frame.y };
+	}
+
+	// גרירה של התמונה בכיוון אחד = הזזת נקודת המרכז בכיוון ההפוך, מחולקת בזום
+	function onEditorPointerMove(e: PointerEvent) {
+		if (!photoEditor || !photoDrag || !photoEditorBox) return;
+		const size = photoEditorBox.clientWidth || 1;
+		const zoom = photoEditor.frame.zoom;
+		photoEditor.frame = clampFrame({
+			zoom,
+			x: photoDrag.fx - (e.clientX - photoDrag.px) / size / zoom,
+			y: photoDrag.fy - (e.clientY - photoDrag.py) / size / zoom
+		});
+	}
+
+	function onEditorPointerUp() {
+		photoDrag = null;
+	}
+
+	async function savePhotoEditor() {
+		if (!photoEditor || rabbisBusy) return;
+		const { id, src, frame } = photoEditor;
+		const photo = buildPhoto(src, frame);
+		rabbisBusy = true;
+		try {
+			rabbis = rabbis.map((x) => (x.id === id ? { ...x, photo } : x));
+			if (rabbisSeeded) {
+				const r = rabbis.find((x) => x.id === id);
+				if (r) await updateRabbi(id, r);
+			} else {
+				await ensureRabbisSeeded();
+			}
+			persistRabbis();
+			photoEditor = null;
+			rabbiNotice = '✅ התמונה עודכנה באתר';
+			setTimeout(() => (rabbiNotice = ''), 4000);
+		} catch (err: any) {
+			rabbiNotice = '⚠️ שמירת התמונה נכשלה: ' + (err?.message ?? err);
+		} finally {
+			rabbisBusy = false;
+		}
 	}
 
 	// זריעה חד-פעמית: כשהרשימה עוד לא בסטראפי, כל שינוי ראשון מעלה אותה במלואה
@@ -2453,7 +2530,7 @@
 						{#if rabbiPhotoUrl}
 							<div class="md:col-span-2 flex items-center gap-3">
 								<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-amber-400/40 bg-black/30">
-									<img src={rabbiPhotoUrl} alt="תצוגה מקדימה" class="w-full h-full object-cover" />
+									<img src={parsePhoto(rabbiPhotoUrl).src} alt="תצוגה מקדימה" class="w-full h-full object-cover" style={frameStyle(parsePhoto(rabbiPhotoUrl).frame)} />
 								</div>
 								<button
 									type="button"
@@ -2509,10 +2586,11 @@
 					{:else}
 						<div class="grid grid-cols-1 gap-2">
 							{#each rabbis as r, i (r.id)}
+								{@const photo = parsePhoto(r.photo)}
 								<div class="flex items-center gap-3 rounded-lg border border-white/10 bg-black/20 p-3">
 									<div class="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-amber-200/20 to-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center flex-shrink-0">
-										{#if r.photo}
-											<img src={r.photo} alt={r.name} class="w-full h-full object-cover" />
+										{#if photo.src}
+											<img src={photo.src} alt={r.name} class="w-full h-full object-cover" style={frameStyle(frameOf(r))} />
 										{:else}
 											<svg viewBox="0 0 64 64" class="w-full h-full text-amber-300/70" fill="currentColor" aria-hidden="true">
 												<circle cx="32" cy="24" r="12" />
@@ -2547,6 +2625,12 @@
 											title="הזז למטה"
 										>↓</button>
 										{#if r.photo}
+											<button
+												type="button"
+												onclick={() => openPhotoEditor(r)}
+												class="px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-100 text-xs font-bold"
+												title="זום והזזה של התמונה"
+											>✂️ ערוך תמונה</button>
 											<button
 												type="button"
 												onclick={() => removeRabbiPhoto(r.id)}
@@ -2886,6 +2970,83 @@
 			</div>
 		{/if}
 	</section>
+
+	<!-- ────────────── עריכת תמונת דיין: זום והזזה ────────────── -->
+	{#if photoEditor}
+		{@const ed = photoEditor}
+		<div class="fixed inset-0 z-[100] flex items-center justify-center p-4" dir="rtl">
+			<button
+				type="button"
+				aria-label="סגור"
+				class="absolute inset-0 bg-black/60"
+				onclick={() => (photoEditor = null)}
+			></button>
+			<div
+				role="dialog"
+				aria-modal="true"
+				aria-label="עריכת תמונה"
+				class="relative w-full max-w-sm rounded-2xl border border-white/10 bg-gray-900 p-5 text-center shadow-2xl"
+			>
+				<h3 class="text-base font-black text-gray-100">✂️ עריכת תמונה</h3>
+				<p class="mt-1 mb-3 text-xs text-gray-400">גרור את התמונה למיקום הרצוי, והגדל עם הסרגל</p>
+				<div
+					bind:this={photoEditorBox}
+					role="presentation"
+					class="mx-auto w-56 h-56 rounded-full overflow-hidden border-4 border-amber-400 bg-black/30 cursor-grab active:cursor-grabbing touch-none select-none"
+					onpointerdown={onEditorPointerDown}
+					onpointermove={onEditorPointerMove}
+					onpointerup={onEditorPointerUp}
+					onpointercancel={onEditorPointerUp}
+				>
+					<img
+						src={ed.src}
+						alt=""
+						draggable="false"
+						class="w-full h-full object-cover pointer-events-none"
+						style={frameStyle(ed.frame)}
+					/>
+				</div>
+				<div class="mt-4 flex items-center gap-3 text-gray-200" dir="ltr">
+					<span class="text-lg font-black" aria-hidden="true">−</span>
+					<input
+						type="range"
+						min="1"
+						max="3"
+						step="0.05"
+						value={ed.frame.zoom}
+						oninput={(e) => setEditorZoom(Number(e.currentTarget.value))}
+						aria-label="זום"
+						class="flex-1 accent-amber-500"
+					/>
+					<span class="text-lg font-black" aria-hidden="true">+</span>
+				</div>
+				<div class="mt-5 flex gap-2">
+					<button
+						type="button"
+						onclick={() => (photoEditor = null)}
+						class="flex-1 py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-sm font-bold text-gray-200 transition-colors"
+					>
+						ביטול
+					</button>
+					<button
+						type="button"
+						onclick={() => (photoEditor = { ...ed, frame: { zoom: 1, x: 0.5, y: 0.5 } })}
+						class="flex-1 py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-sm font-bold text-gray-200 transition-colors"
+					>
+						איפוס
+					</button>
+					<button
+						type="button"
+						onclick={savePhotoEditor}
+						disabled={rabbisBusy}
+						class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-sm font-black text-white transition-colors disabled:opacity-50"
+					>
+						{rabbisBusy ? 'שומר…' : 'שמור'}
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
 
 	<!-- ────────────── דיאלוג אישור מעוצב (במקום confirm() של הדפדפן) ────────────── -->
 	{#if confirmDialog}
