@@ -48,7 +48,7 @@
 			if (raw) {
 				const saved = JSON.parse(raw);
 				if (Array.isArray(saved) && saved.every((r) => typeof r?.name === 'string')) {
-					rabbis = saved as Rabbi[];
+					rabbis = (saved as Rabbi[]).map(({ photo, ...r }) => r);
 				}
 			}
 		} catch {}

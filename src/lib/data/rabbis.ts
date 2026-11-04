@@ -11,18 +11,17 @@ export const defaultRabbis: Rabbi[] = [
 	{
 		id: 'r-abergil',
 		name: "הרב אליהו אברג'יל",
-		title: 'ראש ואב בית הדין',
-		photo: '/images/rabbis/abergil.png'
+		title: 'ראש ואב בית הדין'
 	},
-	{ id: 'r-stavsky', name: 'הרב דניאל סטבסקי', photo: '/images/rabbis/stavsky.jpg' },
-	{ id: 'r-zaga', name: 'הרב רועי זאגא', photo: '/images/rabbis/zaga.jpg' },
-	{ id: 'r-lipo', name: 'הרב אריה ליפו', photo: '/images/rabbis/lipo.jpg' },
-	{ id: 'r-malet', name: 'הרב בועז מלט', photo: '/images/rabbis/malet.jpg' },
+	{ id: 'r-stavsky', name: 'הרב דניאל סטבסקי' },
+	{ id: 'r-zaga', name: 'הרב רועי זאגא' },
+	{ id: 'r-lipo', name: 'הרב אריה ליפו' },
+	{ id: 'r-malet', name: 'הרב בועז מלט' },
 	{ id: 'r-wonder', name: 'הרב יעקב יוסף וונדר' },
-	{ id: 'r-moreno', name: 'הרב שמואל מורנו', photo: '/images/rabbis/moreno.jpg' },
-	{ id: 'r-sofi', name: 'הרב נדב סופי', photo: '/images/rabbis/sofi.jpg' },
-	{ id: 'r-halevi', name: 'הרב מאיר הלוי', photo: '/images/rabbis/halevi.jpg' },
-	{ id: 'r-schwartz', name: 'הרב בנימין שוורץ', photo: '/images/rabbis/schwartz.jpg' }
+	{ id: 'r-moreno', name: 'הרב שמואל מורנו' },
+	{ id: 'r-sofi', name: 'הרב נדב סופי' },
+	{ id: 'r-halevi', name: 'הרב מאיר הלוי' },
+	{ id: 'r-schwartz', name: 'הרב בנימין שוורץ' }
 ];
 
 export const RABBIS_STORAGE_KEY = 'chachmei-rabbis';
