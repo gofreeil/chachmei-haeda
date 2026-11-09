@@ -5,7 +5,8 @@
 // הטקסט מחולץ בדפדפן (src/lib/pdfText.ts) — כאן נשלח רק הטקסט, לא הקובץ.
 // הטקסט הוא קלט לא-מהימן (מסמך שמישהו כתב): המודל מתבקש להתייחס אליו כנתונים בלבד,
 // ופלט ה-JSON מאומת ומנוקה בשרת לפני החזרה — שום שדה לא נשמר לפני שהאדמין לוחץ "פרסם".
-// כשאין ANTHROPIC_API_KEY (או שהמודל נכשל) מוחזר 503/502 והלקוח נשאר עם המילוי הבסיסי.
+// ספק המודל: GEMINI_API_KEY (שכבה חינמית של Google AI Studio) או, כחלופה, ANTHROPIC_API_KEY.
+// כשאין אף מפתח (או שהמודל נכשל) מוחזר 503/502 והלקוח נשאר עם המילוי הבסיסי.
 // ─────────────────────────────────────────────────────────────
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
@@ -19,7 +20,19 @@ const MAX_REQUEST_CHARS = 400_000;
 const HEAD_CHARS = 14_000;
 const TAIL_CHARS = 5_000;
 
-const MODEL = env.ANTHROPIC_MODEL || 'claude-opus-5-5';
+const GEMINI_MODEL = env.GEMINI_MODEL || 'gemini-3.8-flash';
+const CLAUDE_MODEL = env.ANTHROPIC_MODEL || 'claude-opus-5-5';
+const TIMEOUT_MS = 45_000;
+
+/** שגיאה עם סטטוס והודעה בעברית שמוחזרת כמות שהיא ללקוח. */
+class AnalyzeError extends Error {
+	constructor(
+		public status: number,
+		message: string
+	) {
+		super(message);
+	}
+}
 
 const SYSTEM = `אתה עוזר למנהל אתר "חכמי העדה" (בית דין ומאמרי תורה בעברית) למלא טופס פרסום מתוך קובץ PDF.
 תקבל את הטקסט שחולץ מהקובץ (ייתכן שסדר מילים/שורות בעברית פגום מעט, ושחלק האמצע קוצר).
@@ -97,6 +110,63 @@ function excerptForModel(text: string): string {
 	return `${text.slice(0, HEAD_CHARS)}\n\n[… החלק האמצעי של המסמך (${text.length - HEAD_CHARS - TAIL_CHARS} תווים) קוצר …]\n\n${text.slice(-TAIL_CHARS)}`;
 }
 
+async function callGemini(prompt: string, apiKey: string): Promise<unknown> {
+	let res: Response;
+	try {
+		res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+			body: JSON.stringify({
+				systemInstruction: { parts: [{ text: SYSTEM }] },
+				contents: [{ role: 'user', parts: [{ text: prompt }] }],
+				// מודלי Gemini 3 "חושבים" לפני התשובה והחשיבה נספרת במכסת הפלט — משאירים מקום
+				generationConfig: { responseMimeType: 'application/json', responseJsonSchema: SCHEMA, maxOutputTokens: 8192 }
+			}),
+			signal: AbortSignal.timeout(TIMEOUT_MS)
+		});
+	} catch {
+		throw new AnalyzeError(502, 'שירות הניתוח אינו זמין כרגע — מלאו את השדות ידנית');
+	}
+	if (res.status === 429) throw new AnalyzeError(429, 'מכסת הניתוח החינמית התמלאה כרגע — נסו שוב בעוד דקה');
+	const data = (await res.json().catch(() => null)) as {
+		candidates?: Array<{ finishReason?: string; content?: { parts?: Array<{ text?: string; thought?: boolean }> } }>;
+		promptFeedback?: { blockReason?: string };
+		error?: { message?: string };
+	} | null;
+	if (!res.ok) {
+		console.warn('[pdf-analyze] gemini', res.status, data?.error?.message);
+		throw new AnalyzeError(502, 'הניתוח האוטומטי נכשל — מלאו את השדות ידנית');
+	}
+	const cand = data?.candidates?.[0];
+	if (data?.promptFeedback?.blockReason || cand?.finishReason === 'SAFETY') {
+		throw new AnalyzeError(422, 'המודל סירב לנתח את המסמך — מלאו את השדות ידנית');
+	}
+	const out = (cand?.content?.parts ?? [])
+		.filter((p) => !p.thought)
+		.map((p) => p.text ?? '')
+		.join('');
+	return JSON.parse(out);
+}
+
+async function callClaude(prompt: string, apiKey: string): Promise<unknown> {
+	const client = new Anthropic({ apiKey, maxRetries: 1, timeout: TIMEOUT_MS });
+	try {
+		const res = await client.messages.create({
+			model: CLAUDE_MODEL,
+			max_tokens: 2000,
+			system: SYSTEM,
+			messages: [{ role: 'user', content: prompt }],
+			output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } }
+		});
+		if (res.stop_reason === 'refusal') throw new AnalyzeError(422, 'המודל סירב לנתח את המסמך — מלאו את השדות ידנית');
+		const block = res.content.find((b) => b.type === 'text');
+		return block && block.type === 'text' ? JSON.parse(block.text) : null;
+	} catch (e) {
+		if (e instanceof Anthropic.RateLimitError) throw new AnalyzeError(429, 'השירות עמוס כרגע — נסו שוב בעוד דקה');
+		throw e;
+	}
+}
+
 export const POST: RequestHandler = async ({ request }) => {
 	let user;
 	try {
@@ -105,7 +175,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ message: 'צריך להתחבר — היכנסו לחשבון ונסו שוב' }, { status: 401 });
 	}
 	if (!roleOf(user)) return json({ message: 'רק אדמין תוכן יכול להשתמש בניתוח אוטומטי' }, { status: 403 });
-	if (!env.ANTHROPIC_API_KEY) return json({ message: 'הניתוח האוטומטי אינו מוגדר בשרת (חסר ANTHROPIC_API_KEY)' }, { status: 503 });
+	const provider = env.GEMINI_API_KEY ? 'gemini' : env.ANTHROPIC_API_KEY ? 'claude' : null;
+	if (!provider) return json({ message: 'הניתוח האוטומטי אינו מוגדר בשרת (חסר GEMINI_API_KEY)' }, { status: 503 });
 
 	let body: { text?: unknown; hint?: unknown; knownNames?: unknown; knownTags?: unknown };
 	try {
@@ -131,25 +202,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		.filter(Boolean)
 		.join('\n\n');
 
-	const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 1, timeout: 45_000 });
 	try {
-		const res = await client.messages.create({
-			model: MODEL,
-			max_tokens: 2000,
-			system: SYSTEM,
-			messages: [{ role: 'user', content: prompt }],
-			output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } }
-		});
-		if (res.stop_reason === 'refusal') {
-			return json({ message: 'המודל סירב לנתח את המסמך — מלאו את השדות ידנית' }, { status: 422 });
-		}
-		const block = res.content.find((b) => b.type === 'text');
-		const analysis = block && block.type === 'text' ? sanitize(JSON.parse(block.text)) : null;
+		const raw = provider === 'gemini' ? await callGemini(prompt, env.GEMINI_API_KEY!) : await callClaude(prompt, env.ANTHROPIC_API_KEY!);
+		const analysis = sanitize(raw);
 		if (!analysis) return json({ message: 'הניתוח החזיר תשובה לא תקינה' }, { status: 502 });
 		return json(analysis);
 	} catch (e) {
+		if (e instanceof AnalyzeError) return json({ message: e.message }, { status: e.status });
 		console.warn('[pdf-analyze] failed:', e instanceof Error ? e.message : e);
-		if (e instanceof Anthropic.RateLimitError) return json({ message: 'השירות עמוס כרגע — נסו שוב בעוד דקה' }, { status: 429 });
 		return json({ message: 'הניתוח האוטומטי נכשל — מלאו את השדות ידנית' }, { status: 502 });
 	}
 };
