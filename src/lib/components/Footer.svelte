@@ -100,11 +100,6 @@
             >
                 <a href="/about" class="hover:text-white transition-colors leading-tight">{tFn("about_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
-                <a href="/about/legal" class="hover:text-white transition-colors leading-tight">
-                    <span class="md:hidden block">{tFn("footer_legal_mobile_line1")}<br />{tFn("footer_legal_mobile_line2")}</span>
-                    <span class="hidden md:inline-block whitespace-nowrap">{tFn("footer_legal_desktop")}</span>
-                </a>
-                <span class="text-gray-600 font-black" aria-hidden="true">|</span>
                 <a href="mailto:freedomhasbegun@gmail.com" class="hover:text-white transition-colors leading-tight" aria-label={tFn("footer_contact_aria_label")}>{tFn("contact_us")}</a>
                 <span class="text-gray-600 font-black" aria-hidden="true">|</span>
                 <a href="/about/advertise" class="hover:text-white transition-colors leading-tight">{tFn("footer_advertise")}</a>
