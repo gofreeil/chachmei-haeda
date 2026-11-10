@@ -2,10 +2,12 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { strapiGet, strapiPost } from '$lib/server/strapiClient';
 import { viewerFromRequest } from '$lib/server/hearingCases';
+import { sendEmailCopy } from '$lib/server/emailCopy';
 
 interface Submission {
     askerName?: string;
     askerPhone?: string | null;
+    askerEmail?: string | null;
     status?: string;
 }
 
@@ -44,6 +46,7 @@ export const POST: RequestHandler = async ({ request, url, setHeaders }) => {
         );
         const ok = !!out?.results?.[0]?.ok;
         if (!ok) console.warn('[ask] answer SMS not sent:', out?.results?.[0]?.error ?? 'unknown');
+        else void sendEmailCopy(sub.askerEmail, message, { subject: 'השאלה ששלחת לחכמי העדה נענתה', fromName: 'חכמי העדה' });
         return json({ ok: true, sent: ok });
     } catch (err) {
         console.warn('[ask] answer SMS failed:', err instanceof Error ? err.message : err);
