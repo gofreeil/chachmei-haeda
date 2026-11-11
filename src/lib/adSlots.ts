@@ -12,7 +12,7 @@ import { registerPaidAds } from './adPopupStore';
 import type { Ad as PopupAd } from './adsData';
 import { browser } from '$app/environment';
 import { rightAds, AD_SLOT_COUNT, type RightAd } from './rightAdsData';
-import type { AdStyle } from './adStyle';
+import { parseAdStyle, legacyAdStyle, type AdStyle } from './adStyle';
 
 /** הצורה הרזה שמחזיר /api/ads/approved (ApprovedAdPublic בשרת) */
 export interface ApprovedAd {
@@ -122,6 +122,13 @@ if (browser) {
                 href: `/ads/${a.id}`,
                 image: a.mainImage,
                 color: 'from-blue-500 to-purple-600',
+                // הפופ-אפ מצויר מהעיצוב שהמפרסם קבע (כולל הזזת הטקסטים בנייד)
+                card: a.shop ? undefined : {
+                    logo: a.logo ?? '',
+                    style: parseAdStyle(a.adStyle) ?? legacyAdStyle(a.title),
+                    gradient: a.gradient,
+                    fit: a.mainImageFit,
+                },
             }));
         registerPaidAds(paid);
     });

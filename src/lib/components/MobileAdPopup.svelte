@@ -1,6 +1,7 @@
 <script lang="ts">
     import { adPopup, closeAdPopup } from '$lib/adPopupStore';
     import { pickLang } from '$lib/adsData';
+    import MobileAdCard from '$lib/components/MobileAdCard.svelte';
     import { goto } from '$app/navigation';
     import { onDestroy } from 'svelte';
     import { t, locale } from 'svelte-i18n';
@@ -64,6 +65,25 @@
             ></div>
         </div>
 
+        {#if popup.ad.card}
+        <!-- פרסומת משולמת: אותו כרטיס בדיוק כמו התצוגה בשלב 7 בבילדר -->
+        <MobileAdCard
+            title={pickLang(popup.ad.title, _loc)}
+            subtitle={pickLang(popup.ad.description, _loc)}
+            cta={pickLang(popup.ad.cta, _loc)}
+            image={popup.ad.image}
+            imageFit={popup.ad.card.fit ?? { x: 50, y: 50, z: popup.ad.imageScale ?? 1 }}
+            logo={popup.ad.card.logo}
+            gradient={popup.ad.card.gradient}
+            st={popup.ad.card.style}
+            {countdown}
+            onclose={handleClose}
+            href={popup.ad.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onctaclick={() => closeAdPopup()}
+        />
+        {:else}
         <!-- Close button with countdown -->
         <button
             onclick={handleClose}
@@ -117,6 +137,7 @@
             </a>
             {/if}
         </div>
+        {/if}
     </div>
 </div>
 {/if}

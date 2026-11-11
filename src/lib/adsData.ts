@@ -1,3 +1,5 @@
+import type { AdStyle } from './adStyle';
+
 export type LocalizedText = { he: string; en: string; ru: string };
 
 export const pickLang = (v: any, l: string | null | undefined): string =>
@@ -15,6 +17,8 @@ export interface Ad {
     imageHeight?: string;   // גובה מותאם לתמונה (ברירת מחדל: auto)
     imageScale?: number;    // זום על התמונה (ברירת מחדל: 1)
     hover?: LocalizedText;  // טקסט tooltip בריחוף מעל כפתור ה-CTA
+    /** פרסומת משולמת מהבילדר: הפופ-אפ בנייד מצויר כמו התצוגה בשלב 7 (לוגו + עיצוב שנשמר) */
+    card?: { logo: string; style: AdStyle; gradient: string; fit?: { x: number; y: number; z: number } };
 }
 
 export const ads: Ad[] = [
