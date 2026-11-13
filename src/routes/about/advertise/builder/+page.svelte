@@ -938,7 +938,7 @@
     $effect(() => {
         if (!browser) return;
         const snapshot = {
-            logo, logoOriginal, hasCircleCrop, logoShape, logoBg, logoSize, logoPosition, logoPositionExplicit,
+            logo, logoOriginal, hasCircleCrop, logoShape, logoBg, logoSize, hoverLogo, hoverLogoX, hoverLogoY, hoverLogoSize, logoPosition, logoPositionExplicit,
             logoFreeX, logoFreeY,
             mainImage, mainImageObjectX, mainImageObjectY, mainImageZoom,
             mobileImage, mobileImageObjectX, mobileImageObjectY, mobileImageZoom, title, titleColor, titleOffsetY, titleFontSize, lpLogoAlign, lpLogoBg, lpLogoSize,
@@ -1148,7 +1148,12 @@
             <div class="builder-steps">
 
                 <!-- =================== שלב 1: תמונה ראשית =================== -->
-                <section bind:this={stepRefs.image} class="step-card">
+                <!-- לחיצה על הכרטיס היא קיצור עכבר; מקלדת - onfocusin -->
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <section bind:this={stepRefs.image} class="step-card"
+                         onclick={() => activeStep === "image" || (activeStep = "image")}
+                         onfocusin={() => activeStep === "image" || (activeStep = "image")}>
                     <div class="step-head" class:step-title-light={litFlags.image.title}>
                         <span class="step-num" class:step-num-light={litFlags.image.num}>1</span>
                         <h2>{$_("advertise.b_s1_title")}</h2>
@@ -1532,7 +1537,14 @@
                 </section>
 
                 <!-- =================== שלב 6: טקסט בריחוף =================== -->
-                <section bind:this={stepRefs.hover} class="step-card">
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <section bind:this={stepRefs.hover} class="step-card"
+                         onclick={(e) => {
+                             if (/** @type {HTMLElement} */ (e.target).closest("button, a, input, textarea")) return;
+                             if (activeStep !== "hover") activeStep = "hover";
+                         }}
+                         onfocusin={() => { if (activeStep !== "hover") activeStep = "hover"; }}>
                     <div class="step-head" class:step-title-light={litFlags.hover.title}>
                         <span class="step-num" class:step-num-light={litFlags.hover.num}>6</span>
                         <h2>{$_("advertise.b_s6_title")}</h2>
@@ -1562,7 +1574,8 @@
                     {#if logo}
                         <div class="mt-3 rounded-lg border border-white/10 bg-black/20 p-2.5 space-y-2">
                             <label class="flex items-center gap-2 text-sm font-bold text-gray-300 cursor-pointer">
-                                <input type="checkbox" bind:checked={hoverLogo} class="accent-amber-500" />
+                                <input type="checkbox" bind:checked={hoverLogo} class="accent-amber-500"
+                                       onchange={() => activeStep === "hover" || (activeStep = "hover")} />
                                 {$_('advertise.b_hover_logo')}
                             </label>
                             {#if hoverLogo}
