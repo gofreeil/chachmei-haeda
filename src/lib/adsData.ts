@@ -18,7 +18,7 @@ export interface Ad {
     imageScale?: number;    // זום על התמונה (ברירת מחדל: 1)
     hover?: LocalizedText;  // טקסט tooltip בריחוף מעל כפתור ה-CTA
     /** פרסומת משולמת מהבילדר: הפופ-אפ בנייד מצויר כמו התצוגה בשלב 7 (לוגו + עיצוב שנשמר) */
-    card?: { logo: string; style: AdStyle; gradient: string; fit?: { x: number; y: number; z: number } };
+    card?: { logo: string; style: AdStyle; gradient: string; fit?: { x: number; y: number; z: number }; /** תמונה ייעודית לנייד */ image?: string };
 }
 
 export const ads: Ad[] = [

@@ -69,6 +69,10 @@
     let mainImage = $state("");
     // מיקום+זום שנבחרו בבילדר — עוברים כמו-שהם אל המודעה בשליחה
     let mainImageFit = $state({ x: 50, y: 50, z: 1 });
+    // תמונה ייעודית לנייד שהועלתה בבילדר (שלב 7) - נשלחת עם המודעה ומוצגת
+    // בפרסומת-הביניים במקום התמונה הראשית. ריק = אין.
+    let mobileImage = $state("");
+    let mobileImageFit = $state({ x: 50, y: 50, z: 1 });
     let logo = $state("");
     let logoShape = $state(/** @type {'square' | 'circle'} */ ("square"));
     let logoBg = $state(/** @type {'white' | 'black' | 'clear'} */ ("white"));
@@ -121,6 +125,7 @@
         return {
             title, subtitle, hoverText, cta, gradient,
             logo, mainImage, mainImageFit,
+            mobileImage, mobileImageFit,
             adStyle: lpStyle,
             landing: {
                 headline: landingHeadline,
@@ -139,6 +144,7 @@
     /** החלת תמונות שכווצו בחזרה על המצב (אחרי shrinkAdPayload) @param {any} p */
     function applyPayloadImages(p) {
         if (p.mainImage !== mainImage) mainImage = p.mainImage;
+        if (p.mobileImage !== mobileImage) mobileImage = p.mobileImage;
         if (p.logo !== logo) logo = p.logo;
         if (p.landing.image !== landingImage) landingImage = p.landing.image;
         let productsChanged = false;
@@ -153,7 +159,7 @@
         try {
             const raw = localStorage.getItem(LS_KEY);
             const cur = raw ? JSON.parse(raw) : {};
-            localStorage.setItem(LS_KEY, JSON.stringify({ ...cur, logo: p.logo, mainImage: p.mainImage }));
+            localStorage.setItem(LS_KEY, JSON.stringify({ ...cur, logo: p.logo, mainImage: p.mainImage, mobileImage: p.mobileImage }));
         } catch {}
     }
 
@@ -381,6 +387,12 @@
                         x: typeof d.mainImageObjectX === "number" ? d.mainImageObjectX : 50,
                         y: typeof d.mainImageObjectY === "number" ? d.mainImageObjectY : 50,
                         z: typeof d.mainImageZoom === "number" ? d.mainImageZoom : 1,
+                    };
+                    mobileImage = d.mobileImage ?? "";
+                    mobileImageFit = {
+                        x: typeof d.mobileImageObjectX === "number" ? d.mobileImageObjectX : 50,
+                        y: typeof d.mobileImageObjectY === "number" ? d.mobileImageObjectY : 50,
+                        z: typeof d.mobileImageZoom === "number" ? d.mobileImageZoom : 1,
                     };
                     logo = d.logo ?? "";
                     logoShape = d.logoShape ?? "square";

@@ -51,6 +51,9 @@ export const PUT: RequestHandler = async ({ params, request }) => {
             logo: payload.logo ?? '',
             mainImage: payload.mainImage,
             mainImageFit: payload.mainImageFit,
+            // תמונה ייעודית לכרטיס הנייד: ריק = הוסרה; לא נשלחה = נשארת כמו שהיא
+            mobileImage: typeof payload.mobileImage === 'string' ? payload.mobileImage : undefined,
+            mobileImageFit: payload.mobileImageFit,
             // העיצוב שנקבע בבילדר נשמר גם בעריכה — בלעדיו עריכת טקסט
             // הייתה מאפסת את מיקום הלוגו, גובה הרצועה וצבע הכותרת
             adStyle: payload.adStyle,

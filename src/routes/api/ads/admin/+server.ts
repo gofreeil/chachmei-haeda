@@ -105,6 +105,8 @@ export const GET: RequestHandler = async ({ request, setHeaders }) => {
               : 0;
         return {
             ...a,
+            // המסך הזה לא מציג את התמונה הייעודית לנייד - לא סוחבים את ה-base64 שלה
+            mobileImage: '',
             totals: st?.totals ?? { ...EMPTY },
             week: sumDays(st),
             daysLeft,

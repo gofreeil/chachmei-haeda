@@ -27,6 +27,9 @@ export interface ApprovedAd {
     mainImage: string;  // data URI
     /** מיקום+זום מהבילדר; אופציונלי — קאש ישן בדפדפן עוד בלעדיו */
     mainImageFit?: { x: number; y: number; z: number };
+    /** תמונה ייעודית לנייד (ככתובת); ריק/חסר = התמונה הראשית */
+    mobileImage?: string;
+    mobileImageFit?: { x: number; y: number; z: number };
     /** העיצוב מהבילדר (לוגו, רצועה, כותרת); חסר במודעות ותיקות */
     adStyle?: AdStyle | null;
     /** מספר המקום בלוח (1..16) — נקבע במסך הניהול; חסר בקאש ישן */
@@ -127,7 +130,9 @@ if (browser) {
                     logo: a.logo ?? '',
                     style: parseAdStyle(a.adStyle) ?? legacyAdStyle(a.title),
                     gradient: a.gradient,
-                    fit: a.mainImageFit,
+                    // תמונה ייעודית לנייד גוברת (עם המיקום שלה); אחרת התמונה הראשית
+                    image: a.mobileImage || undefined,
+                    fit: a.mobileImage ? a.mobileImageFit : a.mainImageFit,
                 },
             }));
         registerPaidAds(paid);

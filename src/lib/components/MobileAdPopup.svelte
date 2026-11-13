@@ -71,7 +71,7 @@
             title={pickLang(popup.ad.title, _loc)}
             subtitle={pickLang(popup.ad.description, _loc)}
             cta={pickLang(popup.ad.cta, _loc)}
-            image={popup.ad.image}
+            image={popup.ad.card.image || popup.ad.image}
             imageFit={popup.ad.card.fit ?? { x: 50, y: 50, z: popup.ad.imageScale ?? 1 }}
             logo={popup.ad.card.logo}
             gradient={popup.ad.card.gradient}

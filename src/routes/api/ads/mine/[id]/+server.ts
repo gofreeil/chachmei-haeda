@@ -38,6 +38,9 @@ export const GET: RequestHandler = async ({ params, request, setHeaders }) => {
             logo: ad.logo,
             mainImage: ad.mainImage,
             mainImageFit: ad.mainImageFit,
+            // תמונה ייעודית לנייד - חוזרת לבילדר ב"ערוך" (בעלים/סופר-אדמין בלבד)
+            mobileImage: ad.mobileImage,
+            mobileImageFit: ad.mobileImageFit,
             // העיצוב מהבילדר - בלעדיו "ערוך" היה מאפס לוגו, רצועה וטיפוגרפיה
             adStyle: ad.adStyle,
             landing: ad.landing,
