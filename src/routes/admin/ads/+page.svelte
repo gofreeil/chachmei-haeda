@@ -18,6 +18,7 @@
     import { adImgFit, parseAdImageFit } from '$lib/adImageFit';
     import { AD_SLOT_COUNT } from '$lib/rightAdsData';
     import AdCardPreview from '$lib/components/AdCardPreview.svelte';
+    import AdRemoveDialog from '$lib/components/AdRemoveDialog.svelte';
 
     let loading = $state(true);
     let accessDenied = $state('');
@@ -29,16 +30,6 @@
     // שורות טבלת התזמון (כמו בגמ"ח) - מחושבות בשרת מהמאושרות
     let schedules = $state<any[]>([]);
     let inventory = $state({ totalSlots: AD_SLOT_COUNT, occupied: 0, freeNow: 0, pending: 0, expired: 0 });
-    // חלון הקציבה שמור לסופר-אדמין — השרת מחזיר את הדגל ב-GET
-    let superAdmin = $state(false);
-    // האשפה: נמחקו (שחזור) ופג תוקפן (חידוש) — מהשרת, החדשות בראש
-    let trash = $state<any[]>([]);
-    // תצוגה מקדימה מהאשפה: הכרטיס המלא (פגות נמצאות ב-allAds), ולמחוקות — נתוני האשפה
-    let trashPreview = $state<any>(null);
-    let trashOpen = $state(false);
-    function openTrashPreview(t: any) {
-        trashPreview = allAds.find((a) => String(a.id) === t.id) ?? t;
-    }
     // חלון הקציבה שמור לסופר-אדמין — השרת מחזיר את הדגל ב-GET
     let superAdmin = $state(false);
     // האשפה: נמחקו (שחזור) ופג תוקפן (חידוש) — מהשרת, החדשות בראש
@@ -657,7 +648,7 @@
                                             {#if superAdmin}
                                                 <button type="button" disabled={busy}
                                                         class="h-7 w-full inline-flex items-center justify-center px-1 rounded-lg bg-red-600/20 border border-red-500/40 text-red-300 text-[11px] font-black hover:bg-red-600/30 whitespace-nowrap"
-                                                        onclick={() => act('remove', { id: s.id }, `להעביר את "${s.title}" לאשפה? אפשר לשחזר אותה משם.`)}>
+                                                        onclick={() => askRemove(s.id, `להעביר את "${s.title}" לאשפה? אפשר לשחזר אותה משם.`)}>
                                                     🗑 מחק
                                                 </button>
                                             {/if}
@@ -1166,6 +1157,45 @@
         </div>
     </div>
 {/if}
+
+<!-- "מחק": חלון אישור עם כרטיס הפרסומת שנמחקת -->
+{#if removeAsk}
+    <AdRemoveDialog ad={removeAsk.ad} onremove={finishRemove} onclose={() => (removeAsk = null)} />
+{/if}
+
+{#snippet trashRows()}
+    <div class="trash-list">
+        {#each trash as t (t.id)}
+            <div class="trash-row">
+                <span class="trash-body">
+                    <button type="button" class="ad-title-btn trash-title" onclick={() => openTrashPreview(t)}
+                            title="תצוגה מקדימה של הפרסומת">{t.title}</button>
+                    <span class="trash-meta">
+                        <span class="status-pill {t.kind === 'deleted' ? 'rejected' : 'pending'}">{t.kind === 'deleted' ? 'נמחקה' : 'פג התוקף'}</span>
+                        {fmtDate(t.at)} · {t.advertiserName}
+                    </span>
+                </span>
+                <span class="trash-actions">
+                    {#if t.kind === 'deleted'}
+                        {#if superAdmin}
+                            <button type="button" class="a-btn approve" disabled={busy} title="חזרה למצב שלפני המחיקה"
+                                    onclick={() => act('restore', { id: t.id })}>♻ שחזר</button>
+                            <button type="button" class="a-btn reject" disabled={busy}
+                                    onclick={() => act('purge', { id: t.id }, `למחוק לצמיתות את "${t.title}"? אין דרך חזרה.`)}>✕ מחק לצמיתות</button>
+                        {/if}
+                    {:else}
+                        <button type="button" class="a-btn approve" disabled={busy} title="פרסום מחדש לתקופה חדשה מהיום, באותו מקום בלוח"
+                                    onclick={() => act('approve', { id: t.id, durationDays: t.requestedDurationDays })}>♻ חדש</button>
+                        {#if superAdmin}
+                            <button type="button" class="a-btn ghost" disabled={busy} title="העברה לאשפה — אפשר לשחזר"
+                                    onclick={() => askRemove(t.id)}>🗑 מחק</button>
+                        {/if}
+                    {/if}
+                </span>
+            </div>
+        {/each}
+    </div>
+{/snippet}
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') { durationModal = null; modalPreviewId = null; hoverPreview = null; } }} />
 
