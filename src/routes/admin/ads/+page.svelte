@@ -35,8 +35,31 @@
     let trash = $state<any[]>([]);
     // תצוגה מקדימה מהאשפה: הכרטיס המלא (פגות נמצאות ב-allAds), ולמחוקות — נתוני האשפה
     let trashPreview = $state<any>(null);
+    let trashOpen = $state(false);
     function openTrashPreview(t: any) {
         trashPreview = allAds.find((a) => String(a.id) === t.id) ?? t;
+    }
+    // חלון הקציבה שמור לסופר-אדמין — השרת מחזיר את הדגל ב-GET
+    let superAdmin = $state(false);
+    // האשפה: נמחקו (שחזור) ופג תוקפן (חידוש) — מהשרת, החדשות בראש
+    let trash = $state<any[]>([]);
+    // תצוגה מקדימה מהאשפה: הכרטיס המלא (פגות נמצאות ב-allAds), ולמחוקות — נתוני האשפה
+    let trashPreview = $state<any>(null);
+    let trashOpen = $state(false);
+    function openTrashPreview(t: any) {
+        trashPreview = allAds.find((a) => String(a.id) === t.id) ?? t;
+    }
+    // "מחק" פותח חלון עם כרטיס הפרסומת שנמחקת - לראות בדיוק מה מוחקים
+    let removeAsk = $state<{ id: unknown; ad: any } | null>(null);
+    function askRemove(id: unknown, question?: string) {
+        const ad = allAds.find((a) => String(a.id) === String(id));
+        if (ad) { removeAsk = { id, ad }; return; }
+        act('remove', { id }, question);
+    }
+    function finishRemove() {
+        const id = removeAsk?.id;
+        removeAsk = null;
+        if (id != null) act('remove', { id });
     }
     // חלון הקציבה: פרטי התקופה והתשלום + קציבה במסלולים או תאריך שרירותי
     let durationModal = $state<any | null>(null);
@@ -739,48 +762,7 @@
         {#if trash.length === 0}
             <p class="empty">האשפה ריקה.</p>
         {/if}
-        <div class="trash-list">
-            {#each trash as t (t.id)}
-                <div class="trash-row">
-                    <span class="trash-body">
-                        <button type="button" class="ad-title-btn trash-title" onclick={() => openTrashPreview(t)}
-                                title="תצוגה מקדימה של הפרסומת">{t.title}</button>
-                        <span class="trash-meta">
-                            <span class="status-pill {t.kind === 'deleted' ? 'rejected' : 'pending'}">{t.kind === 'deleted' ? 'נמחקה' : 'פג התוקף'}</span>
-                            {fmtDate(t.at)} · {t.advertiserName}
-                        </span>
-                    </span>
-                    <span class="trash-actions">
-                        {#if t.kind === 'deleted'}
-                            {#if superAdmin}
-                                <button type="button" class="a-btn approve" disabled={busy} title="חזרה למצב שלפני המחיקה"
-                                        onclick={() => act('restore', { id: t.id })}>♻ שחזר</button>
-                                <button type="button" class="a-btn reject" disabled={busy}
-                                        onclick={() => act('purge', { id: t.id }, `למחוק לצמיתות את "${t.title}"? אין דרך חזרה.`)}>✕ מחק לצמיתות</button>
-                            {/if}
-                        {:else}
-                            <button type="button" class="a-btn approve" disabled={busy} title="פרסום מחדש לתקופה חדשה מהיום, באותו מקום בלוח"
-                                        onclick={() => act('approve', { id: t.id, durationDays: t.requestedDurationDays })}>♻ חדש</button>
-                            {#if superAdmin}
-                                <button type="button" class="a-btn ghost" disabled={busy} title="העברה לאשפה — אפשר לשחזר"
-                                        onclick={() => act('remove', { id: t.id })}>🗑 מחק</button>
-                            {/if}
-                        {/if}
-                    </span>
-                </div>
-            {/each}
-        </div>
-        {#if trashPreview}
-            <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-            <div class="trash-preview-backdrop" role="presentation" onclick={() => (trashPreview = null)}>
-                <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-                <div class="trash-preview-dialog" role="dialog" aria-modal="true" aria-label="תצוגה מקדימה של הפרסומת"
-                     tabindex="-1" onclick={(e) => e.stopPropagation()}>
-                    <AdCardPreview ad={trashPreview} />
-                    <button type="button" class="a-btn ghost" onclick={() => (trashPreview = null)}>✕ סגור</button>
-                </div>
-            </div>
-        {/if}
+        {@render trashRows()}
     {:else if shown.length === 0}
         <p class="empty">אין פרסומות בקטגוריה הזו.</p>
     {/if}
@@ -1081,6 +1063,34 @@
             </div>
         {/if}
     {/if}
+
+    <!-- אשפה - קומה מתקפלת: כל המחוקים + שחזור -->
+    <section class="trash-floor">
+        <button type="button" class="trash-floor-head" onclick={() => (trashOpen = !trashOpen)} aria-expanded={trashOpen}>
+            <span>🗑 אשפה</span>
+            <span class="trash-floor-count">{trash.length}</span>
+            <span class="trash-floor-arrow">{trashOpen ? '▲' : '▼'}</span>
+        </button>
+        {#if trashOpen}
+            {#if trash.length === 0}
+                <p class="empty">האשפה ריקה</p>
+            {:else}
+                {@render trashRows()}
+            {/if}
+        {/if}
+    </section>
+
+        {#if trashPreview}
+            <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+            <div class="trash-preview-backdrop" role="presentation" onclick={() => (trashPreview = null)}>
+                <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+                <div class="trash-preview-dialog" role="dialog" aria-modal="true" aria-label="תצוגה מקדימה של הפרסומת"
+                     tabindex="-1" onclick={(e) => e.stopPropagation()}>
+                    <AdCardPreview ad={trashPreview} />
+                    <button type="button" class="a-btn ghost" onclick={() => (trashPreview = null)}>✕ סגור</button>
+                </div>
+            </div>
+        {/if}
 
     {/if}
 </div>
@@ -1584,6 +1594,11 @@
     .a-btn.approve:hover { background: #22c55e; }
 
     /* האשפה — שורה קומפקטית לכל פרסומת */
+    .trash-floor { margin-top: 1.5rem; }
+    .trash-floor-head { display: flex; width: 100%; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; font-weight: 900; font-size: 0.95rem; cursor: pointer; text-align: right; }
+    .trash-floor-head:hover { background: rgba(255,255,255,0.1); }
+    .trash-floor-count { font-size: 0.75rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: rgba(255,255,255,0.1); color: #d1d5db; }
+    .trash-floor-arrow { margin-right: auto; color: #9ca3af; font-size: 0.75rem; }
     .trash-list { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; }
     .trash-row {
         display: flex;
