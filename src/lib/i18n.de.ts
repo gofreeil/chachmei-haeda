@@ -872,6 +872,7 @@ export default {
     req_hearing_agreed_date_label: "Termin, den ich mit der Gegenpartei vereinbart habe *",
     hdi_placeholder: "Hebräisches Datum wählen",
     hdi_gregorian_prefix: "Gregorianisches Datum:",
+    hdi_gregorian_input_label: "Oder gregorianisches Datum:",
     hdi_today: "Heute",
     hdi_clear: "Löschen",
     hdi_close: "Schließen",

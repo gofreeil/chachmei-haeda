@@ -27,7 +27,8 @@
 		class: klass = '',
 		placeholder = '',
 		yearsBack = 3,
-		yearsForward = 6
+		yearsForward = 6,
+		gregorianInput = false
 	}: {
 		value?: string;
 		min?: string;
@@ -38,6 +39,8 @@
 		/** כמה שנים עבריות אחורה/קדימה מהשנה הנוכחית מוצעות בבורר */
 		yearsBack?: number;
 		yearsForward?: number;
+		/** שדה תאריך לועזי רגיל לצד הבורר העברי — שניהם מחזיקים את אותו ערך, מילוי אחד ממלא את השני */
+		gregorianInput?: boolean;
 	} = $props();
 
 	let _loc = $state(get(locale));
@@ -185,6 +188,21 @@
 		open = false;
 	}
 
+	// קלט לועזי: שדה date מקורי מחזיק ערכי ביניים תוך כדי הקלדה ("0002-…" כשמקלידים שנה).
+	// מעדכנים את הערך המשותף רק כשהתאריך שלם ותקין, ושנה בת 4 ספרות לפחות
+	// (parseISO ממפה שנה 26 ל-1926, לכן חייבים לסנן כאן).
+	function onGregInput(e: Event) {
+		const v = (e.currentTarget as HTMLInputElement).value;
+		// הבדיקה על המחרוזת ולא על Date: new Date(26, …) הופך ל-1926 ולכן getFullYear() לא מסנן
+		if (!parseISO(v) || Number(v.slice(0, 4)) < 1000) return;
+		if (v !== value) value = v;
+	}
+	// שדה שנשאר ריק/חלקי ביציאה ממנו = ניקוי (גם מהבורר העברי); לא נוגעים בו תוך כדי הקלדה
+	function onGregBlur(e: FocusEvent) {
+		if (!(e.currentTarget as HTMLInputElement).value && value) value = '';
+	}
+	const gregMax = $derived(yearsForward === 0 ? todayISO : undefined);
+
 	function onWindowClick(e: MouseEvent) {
 		if (open && root && !root.contains(e.target as Node)) open = false;
 	}
@@ -214,7 +232,21 @@
 		<input class="hdi-native" tabindex="-1" aria-hidden="true" required {value} />
 	{/if}
 
-	{#if gregLong}
+	{#if gregorianInput}
+		<label class="hdi-greg-row">
+			<span class="hdi-greg-label">{tFn('hdi_gregorian_input_label')}</span>
+			<input
+				type="date"
+				dir="ltr"
+				value={value}
+				min={min || undefined}
+				max={gregMax}
+				oninput={onGregInput}
+				onblur={onGregBlur}
+				class="hdi-greg-input {klass}"
+			/>
+		</label>
+	{:else if gregLong}
 		<p class="hdi-greg">{tFn('hdi_gregorian_prefix')} <strong>{gregLong}</strong></p>
 	{/if}
 
@@ -297,6 +329,22 @@
 		margin: 0.25rem 0 0;
 		font-size: 0.8rem;
 		color: var(--text-secondary, #374151);
+	}
+	.hdi-greg-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.35rem;
+	}
+	.hdi-greg-label {
+		flex: none;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: var(--text-secondary, #374151);
+	}
+	.hdi-greg-input {
+		flex: 1;
+		min-width: 0;
 	}
 	.hdi-panel {
 		margin-top: 0.4rem;

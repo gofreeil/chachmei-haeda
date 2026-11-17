@@ -931,6 +931,7 @@ register('he', () => Promise.resolve({
     // בורר תאריך עברי (HebrewDateInput)
     hdi_placeholder: "בחרו תאריך עברי",
     hdi_gregorian_prefix: "תאריך לועזי:",
+    hdi_gregorian_input_label: "או תאריך לועזי:",
     hdi_today: "היום",
     hdi_clear: "נקה",
     hdi_close: "סגור",
@@ -1960,6 +1961,7 @@ register('en', () => Promise.resolve({
     req_hearing_agreed_date_label: "Date agreed upon with the opposing party *",
     hdi_placeholder: "Choose a Hebrew date",
     hdi_gregorian_prefix: "Gregorian date:",
+    hdi_gregorian_input_label: "Or Gregorian date:",
     hdi_today: "Today",
     hdi_clear: "Clear",
     hdi_close: "Close",
@@ -2943,6 +2945,7 @@ register('ru', () => Promise.resolve({
     req_hearing_agreed_date_label: "Дата, согласованная с противоположной стороной *",
     hdi_placeholder: "Выберите еврейскую дату",
     hdi_gregorian_prefix: "Григорианская дата:",
+    hdi_gregorian_input_label: "Или григорианская дата:",
     hdi_today: "Сегодня",
     hdi_clear: "Очистить",
     hdi_close: "Закрыть",
