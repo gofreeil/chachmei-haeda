@@ -100,12 +100,52 @@ export function getJwt(): string | null {
 export function setJwt(jwt: string | null): void {
 	if (typeof localStorage === 'undefined') return;
 	try {
-		if (jwt) localStorage.setItem(JWT_STORAGE_KEY, jwt);
-		else localStorage.removeItem(JWT_STORAGE_KEY);
+		if (jwt) {
+			localStorage.setItem(JWT_STORAGE_KEY, jwt);
+			void shareJwt(jwt);
+		} else {
+			localStorage.removeItem(JWT_STORAGE_KEY);
+			localStorage.removeItem(SHARED_MARK_KEY);
+		}
 		// מנקים גם את sessionStorage למקרה שיש שאריות
 		if (typeof sessionStorage !== 'undefined') {
 			try { sessionStorage.removeItem(LEGACY_SESSION_KEY); } catch {}
 		}
+	} catch {}
+}
+
+// ── זיהוי משותף ברשת: נרשם/התחבר פעם אחת → מזוהה בכל *.gofreeil.com ──
+// כל JWT שנשמר כאן נכתב גם לעוגייה המשותפת gofreeil-auth (דרך השרת, היא httpOnly).
+// הסימון זוכר "החיבור הזה כבר שותף": אם העוגייה המשותפת נעלמה והסימון קיים,
+// המשתמש התנתק באתר אחר → מתנתקים גם כאן ולא מחזירים אותה בכוח.
+const SHARED_MARK_KEY = 'chachmei-shared';
+
+async function shareJwt(jwt: string): Promise<void> {
+	try {
+		const res = await fetch('/api/shared-session', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ jwt })
+		});
+		if (res.ok) localStorage.setItem(SHARED_MARK_KEY, '1');
+	} catch {}
+}
+
+/** נקרא בטעינת האתר: משתף חיבור מקומי עם הרשת, או מתנתק אם התנתקו באתר אחר. */
+export async function syncSharedSession(): Promise<void> {
+	if (typeof localStorage === 'undefined') return;
+	const jwt = getJwt();
+	try {
+		if (!jwt) {
+			localStorage.removeItem(SHARED_MARK_KEY);
+			return;
+		}
+		const res = await fetch('/api/shared-session');
+		if (!res.ok) return;
+		const { shared } = (await res.json()) as { shared?: boolean };
+		if (shared) localStorage.setItem(SHARED_MARK_KEY, '1');
+		else if (localStorage.getItem(SHARED_MARK_KEY)) setJwt(null);
+		else await shareJwt(jwt);
 	} catch {}
 }
 

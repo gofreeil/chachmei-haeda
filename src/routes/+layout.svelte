@@ -17,7 +17,7 @@
 	import { t, locale } from "svelte-i18n";
 	import { get } from "svelte/store";
 	import { onMount } from "svelte";
-	import { getCurrentUser, strapiLogout, type StrapiUser } from "$lib/strapi";
+	import { getCurrentUser, strapiLogout, syncSharedSession, type StrapiUser } from "$lib/strapi";
 	import { refreshSignedCharter, hasSignedCharter } from "$lib/services/charter-service";
 	import { PARENT_BRAND } from "$lib/seo";
 
@@ -32,6 +32,7 @@
 	);
 
 	onMount(async () => {
+		await syncSharedSession();
 		currentUser = await getCurrentUser();
 		if (currentUser) refreshSignedCharter();
 	});
