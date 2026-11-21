@@ -119,6 +119,7 @@ export function setJwt(jwt: string | null): void {
 // הסימון זוכר "החיבור הזה כבר שותף": אם העוגייה המשותפת נעלמה והסימון קיים,
 // המשתמש התנתק באתר אחר → מתנתקים גם כאן ולא מחזירים אותה בכוח.
 const SHARED_MARK_KEY = 'chachmei-shared';
+const ADOPT_TRIED_KEY = 'chachmei-adopt-tried';
 
 async function shareJwt(jwt: string): Promise<void> {
 	try {
@@ -138,6 +139,21 @@ export async function syncSharedSession(): Promise<void> {
 	try {
 		if (!jwt) {
 			localStorage.removeItem(SHARED_MARK_KEY);
+			// מי שהתחבר באתר אחר ברשת מזוהה כאן אוטומטית. פעם אחת לכל לשונית — לא
+			// קוראים לשרת בכל טעינה של מבקר אנונימי.
+			let tried = false;
+			try {
+				tried = sessionStorage.getItem(ADOPT_TRIED_KEY) === '1';
+				sessionStorage.setItem(ADOPT_TRIED_KEY, '1');
+			} catch {}
+			if (tried) return;
+			const adopt = await fetch('/api/shared-session?adopt=1');
+			if (!adopt.ok) return;
+			const body = (await adopt.json()) as { jwt?: string };
+			if (body.jwt) {
+				localStorage.setItem(JWT_STORAGE_KEY, body.jwt);
+				localStorage.setItem(SHARED_MARK_KEY, '1');
+			}
 			return;
 		}
 		const res = await fetch('/api/shared-session');
@@ -448,4 +464,9 @@ export function canEditAnyCharterEntry(user: StrapiUser | null | undefined): boo
 
 export function strapiLogout(): void {
 	setJwt(null);
+	// גם העוגייה המשותפת: בלעדיה הזיהוי האוטומטי היה מחבר את המשתמש מחדש מיד,
+	// וגם שאר אתרי הרשת היו נשארים מחוברים אחרי "התנתקות"
+	try {
+		void fetch('/api/shared-session', { method: 'DELETE', keepalive: true });
+	} catch {}
 }
