@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FirstTimeTip from '$lib/components/FirstTimeTip.svelte';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -137,10 +138,8 @@
 				</div>
 			</div>
 		{:else}
-			<!-- הודעה למשתמש חדש: הכניסה עם Google היא גם ההרשמה -->
-			<p class="mb-5 text-center text-amber-200 text-[13px] sm:text-sm font-bold leading-relaxed">
-				{tFn('auth_first_time_note')}
-			</p>
+			<!-- משתמש חדש: בועה עם יד שמצביעה על כפתור Google — הכניסה היא גם ההרשמה -->
+			<FirstTimeTip text={tFn('auth_first_time_note')} />
 		{/if}
 
 		<div class="mb-3">
