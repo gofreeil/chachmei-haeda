@@ -16,6 +16,7 @@
     import { fade } from "svelte/transition";
     import { ads, type Ad } from "$lib/adsData";
     import FullAdModal from "$lib/components/FullAdModal.svelte";
+    import SignupTip from "$lib/components/SignupTip.svelte";
 
     let { currentUser, onLogout, onShowAuth }: Props = $props();
 
@@ -326,6 +327,8 @@
 	let _loc = $state(get(locale));
 	$effect(() => locale.subscribe(l => (_loc = l)));
 	const tFn = (k: string) => { void _loc; return get(t)(k) as string; };
+	// בועת "לא רשום עדיין?" כתובה בעברית — מוצגת רק כשהאתר בעברית
+	const isHebrew = $derived(String(_loc || 'he').startsWith('he'));
 
 
 </script>
@@ -536,12 +539,15 @@
                                 >
                                     {tFn('login_register')}
                                 </a>
-                                <a
-                                    href="/signup"
-                                    class="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
-                                >
-                                    {tFn('register_btn')}
-                                </a>
+                                <span class="relative inline-flex">
+                                    <a
+                                        href="/signup"
+                                        class="px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
+                                    >
+                                        {tFn('register_btn')}
+                                    </a>
+                                    <SignupTip href="/signup" from="#ea580c" to="#dc2626" hidden={!isHebrew} />
+                                </span>
                             </div>
                         {/if}
                     </div>
@@ -805,12 +811,15 @@
                             >
                                 {tFn('login_register')}
                             </a>
-                            <a
-                                href="/signup"
-                                class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
-                            >
-                                {tFn('register_btn')}
-                            </a>
+                            <span class="relative inline-flex">
+                                <a
+                                    href="/signup"
+                                    class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
+                                >
+                                    {tFn('register_btn')}
+                                </a>
+                                <SignupTip href="/signup" from="#ea580c" to="#dc2626" hidden={!isHebrew} />
+                            </span>
                         </div>
                     {/if}
                 </div>
